@@ -1,4 +1,4 @@
-## Use Case 02 - Perform Sentiment analysis and Text translation with AI functions in Microsoft Fabric
+## Use Case 04 - Perform Sentiment analysis and Text translation with AI functions in Microsoft Fabric
 
 **Introduction**
 
