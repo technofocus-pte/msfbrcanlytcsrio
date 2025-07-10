@@ -1,4 +1,4 @@
-## Use case 09- Identifying and extracting text with Document Intelligence in Microsoft Fabric
+## Use case 05- Identifying and extracting text with Document Intelligence in Microsoft Fabric
 
 **Introduction**
 
