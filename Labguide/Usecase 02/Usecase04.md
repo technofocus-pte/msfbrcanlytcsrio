@@ -1,4 +1,4 @@
-# Use Case 4: Data Factory solution for moving and transforming data with dataflows and data pipelines
+# Use Case 02: Data Factory solution for moving and transforming data with dataflows and data pipelines
 
 **Introduction**
 
