@@ -92,8 +92,12 @@ reports.
 
 6.  In the **Create a workspace** pane that appears on the right side,
     enter the following details, and click on the **Apply** button.
+    |    |   |
+    |----|----|
+    |Name	|+++AI-Fabric-XXX+++ (XXX can be a unique number) |
+    |Advanced	|Under License mode, select Fabric capacity|
+    |Default storage format	|Small dataset storage format|
 
-[TABLE]
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image11.png)
@@ -150,30 +154,23 @@ notebook. Use the notebook to populate the lakehouse with the data.
 1.  In the query editor, copy and paste the following code. Select
     the **Run all** button to execute the query. After the query is
     completed, you will see the results.
-
-> import pandas as pd
->
-> from tqdm.auto import tqdm
->
-> base =
-> "https://synapseaisolutionsa.z13.web.core.windows.net/data/AdventureWorks"
->
-> \# load list of tables
->
-> df_tables = pd.read_csv(f"{base}/adventureworks.csv",
-> names=\["table"\])
->
-> for table in (pbar := tqdm(df_tables\['table'\].values)):
->
-> pbar.set_description(f"Uploading {table} to lakehouse")
->
-> \# download
->
-> df = pd.read_parquet(f"{base}/{table}.parquet")
->
-> \# save as lakehouse table
->
-> spark.createDataFrame(df).write.mode('overwrite').saveAsTable(table)
+    ```
+    import pandas as pd
+    from tqdm.auto import tqdm
+    base = "https://synapseaisolutionsa.z13.web.core.windows.net/data/AdventureWorks"
+    
+    # load list of tables
+    df_tables = pd.read_csv(f"{base}/adventureworks.csv", names=["table"])
+    
+    for table in (pbar := tqdm(df_tables['table'].values)):
+        pbar.set_description(f"Uploading {table} to lakehouse")
+    
+        # download
+        df = pd.read_parquet(f"{base}/{table}.parquet")
+    
+        # save as lakehouse table
+        spark.createDataFrame(df).write.mode('overwrite').saveAsTable(table)
+    ```
 >
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image19.png)
@@ -277,7 +274,7 @@ incorrect.](./media/image33.png)
 4.  Select **FactResellerSales** and enter the following text and click
     on the **Submit icon** as shown in the below image.
 
-+++**What is our most sold product?**+++
+**+++What is our most sold product?+++**
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image34.png)
@@ -291,7 +288,7 @@ instructions.
 5.  Select the **dimcustomer** , enter the following text and click on
     the **Submit icon**
 
-+++**how many active customers did we have June 1st, 2013?**+++
+ **+++how many active customers did we have June 1st, 2013?+++**
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image36.png)
@@ -306,7 +303,7 @@ incorrect.](./media/image36.png)
 7.  Select the **dimdate,** **FactInternetSales** , enter the following
     text and click on the **Submit icon**
 
-+++**what are the monthly sales trends for the last year?**+++
+ **+++what are the monthly sales trends for the last year?+++**
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image38.png)
@@ -441,156 +438,91 @@ incorrect.](./media/image54.png)
 8.  Use the **+ Code** icon below the cell output to add a new code cell
     to the notebook, enter the following code in it and replace the
     **URL**. Click on **▷ Run** button and review the output
-
-> import requests
->
-> import json
->
-> import pprint
->
-> import typing as t
->
-> import time
->
-> import uuid
->
-> from openai import OpenAI
->
-> from openai.\_exceptions import APIStatusError
->
-> from openai.\_models import FinalRequestOptions
->
-> from openai.\_types import Omit
->
-> from openai.\_utils import is_given
->
-> from synapse.ml.mlflow import get_mlflow_env_config
->
-> from sempy.fabric.\_token_provider import SynapseTokenProvider
->
-> base_url = "https://\<generic published base URL value\>"
->
-> question = "What datasources do you have access to?"
->
-> configs = get_mlflow_env_config()
->
-> \# Create OpenAI Client
->
-> class FabricOpenAI(OpenAI):
->
-> def \_\_init\_\_(
->
-> self,
->
-> api_version: str ="2024-05-01-preview",
->
-> \*\*kwargs: t.Any,
->
-> ) -\> None:
->
-> self.api_version = api_version
->
-> default_query = kwargs.pop("default_query", {})
->
-> default_query\["api-version"\] = self.api_version
->
-> super().\_\_init\_\_(
->
-> api_key="",
->
-> base_url=base_url,
->
-> default_query=default_query,
->
-> \*\*kwargs,
->
-> )
->
-> def \_prepare_options(self, options: FinalRequestOptions) -\> None:
->
-> headers: dict\[str, str | Omit\] = (
->
-> {\*\*options.headers} if is_given(options.headers) else {}
->
-> )
->
-> options.headers = headers
->
-> headers\["Authorization"\] = f"Bearer {configs.driver_aad_token}"
->
-> if "Accept" not in headers:
->
-> headers\["Accept"\] = "application/json"
->
-> if "ActivityId" not in headers:
->
-> correlation_id = str(uuid.uuid4())
->
-> headers\["ActivityId"\] = correlation_id
->
-> return super().\_prepare_options(options)
->
-> \# Pretty printing helper
->
-> def pretty_print(messages):
->
-> print("---Conversation---")
->
-> for m in messages:
->
-> print(f"{m.role}: {m.content\[0\].text.value}")
->
-> print()
->
-> fabric_client = FabricOpenAI()
->
-> \# Create assistant
->
-> assistant = fabric_client.beta.assistants.create(model="not used")
->
-> \# Create thread
->
-> thread = fabric_client.beta.threads.create()
->
-> \# Create message on thread
->
-> message =
-> fabric_client.beta.threads.messages.create(thread_id=thread.id,
-> role="user", content=question)
->
-> \# Create run
->
-> run = fabric_client.beta.threads.runs.create(thread_id=thread.id,
-> assistant_id=assistant.id)
->
-> \# Wait for run to complete
->
-> while run.status == "queued" or run.status == "in_progress":
->
-> run = fabric_client.beta.threads.runs.retrieve(
->
-> thread_id=thread.id,
->
-> run_id=run.id,
->
-> )
->
-> print(run.status)
->
-> time.sleep(2)
->
-> \# Print messages
->
-> response =
-> fabric_client.beta.threads.messages.list(thread_id=thread.id,
-> order="asc")
->
-> pretty_print(response)
->
-> \# Delete thread
->
-> fabric_client.beta.threads.delete(thread_id=thread.id)
->
+    ```
+    import requests
+    import json
+    import pprint
+    import typing as t
+    import time
+    import uuid
+    
+    from openai import OpenAI
+    from openai._exceptions import APIStatusError
+    from openai._models import FinalRequestOptions
+    from openai._types import Omit
+    from openai._utils import is_given
+    from synapse.ml.mlflow import get_mlflow_env_config
+    from sempy.fabric._token_provider import SynapseTokenProvider
+     
+    base_url = "https://<generic published base URL value>"
+    question = "What datasources do you have access to?"
+    
+    configs = get_mlflow_env_config()
+    
+    # Create OpenAI Client
+    class FabricOpenAI(OpenAI):
+        def __init__(
+            self,
+            api_version: str ="2024-05-01-preview",
+            **kwargs: t.Any,
+        ) -> None:
+            self.api_version = api_version
+            default_query = kwargs.pop("default_query", {})
+            default_query["api-version"] = self.api_version
+            super().__init__(
+                api_key="",
+                base_url=base_url,
+                default_query=default_query,
+                **kwargs,
+            )
+        
+        def _prepare_options(self, options: FinalRequestOptions) -> None:
+            headers: dict[str, str | Omit] = (
+                {**options.headers} if is_given(options.headers) else {}
+            )
+            options.headers = headers
+            headers["Authorization"] = f"Bearer {configs.driver_aad_token}"
+            if "Accept" not in headers:
+                headers["Accept"] = "application/json"
+            if "ActivityId" not in headers:
+                correlation_id = str(uuid.uuid4())
+                headers["ActivityId"] = correlation_id
+    
+            return super()._prepare_options(options)
+    
+    # Pretty printing helper
+    def pretty_print(messages):
+        print("---Conversation---")
+        for m in messages:
+            print(f"{m.role}: {m.content[0].text.value}")
+        print()
+    
+    fabric_client = FabricOpenAI()
+    # Create assistant
+    assistant = fabric_client.beta.assistants.create(model="not used")
+    # Create thread
+    thread = fabric_client.beta.threads.create()
+    # Create message on thread
+    message = fabric_client.beta.threads.messages.create(thread_id=thread.id, role="user", content=question)
+    # Create run
+    run = fabric_client.beta.threads.runs.create(thread_id=thread.id, assistant_id=assistant.id)
+    
+    # Wait for run to complete
+    while run.status == "queued" or run.status == "in_progress":
+        run = fabric_client.beta.threads.runs.retrieve(
+            thread_id=thread.id,
+            run_id=run.id,
+        )
+        print(run.status)
+        time.sleep(2)
+    
+    # Print messages
+    response = fabric_client.beta.threads.messages.list(thread_id=thread.id, order="asc")
+    pretty_print(response)
+    
+    # Delete thread
+    fabric_client.beta.threads.delete(thread_id=thread.id)
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image58.png)
 >
