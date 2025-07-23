@@ -343,7 +343,7 @@ then crosscheck the script syntax with the above image.
 
 > ![](./media/image44.png)
 
-# Exercise 2: Ingest data into the lakehouse
+# Exercise 3: Ingest data into the lakehouse
 
 In this exercise, you ingest additional dimensional and fact tables from
 the Wide World Importers (WWI) into the lakehouse.
@@ -463,7 +463,7 @@ the Wide World Importers (WWI) into the lakehouse.
 >
 > ![](./media/image62.png)
 
-# Exercise 3: Prepare and transform data in the lakehouse
+# Exercise 4: Prepare and transform data in the lakehouse
 
 ### Task 1: Prepare data
 
@@ -784,7 +784,7 @@ automatic table discovery and registration feature of Fabric picks up
 and registers them in the metastore. You don't need to explicitly
 call CREATE TABLE statements to create tables to use with SQL.
 
-# Exercise 4: Building reports in Microsoft Fabric
+# Exercise 5: Building reports in Microsoft Fabric
 
 In this section of the tutorial, you create a Power BI data model and
 create a report from scratch.
@@ -1038,7 +1038,7 @@ frequent updates at the source.
 24. You will get a notification stating that the report has been
     saved. ![](./media/image124.png)
 
-# Exercise 5: Clean up resources
+# Exercise 6: Clean up resources
 
 You can delete individual reports, pipelines, warehouses, and other
 items or remove the entire workspace. Use the following steps to delete
