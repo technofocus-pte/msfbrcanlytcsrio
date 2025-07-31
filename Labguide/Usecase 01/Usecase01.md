@@ -343,7 +343,7 @@ then crosscheck the script syntax with the above image.
 
 > ![](./media/image44.png)
 
-# Exercise 2: Ingest data into the lakehouse
+# Exercise 3: Ingest data into the lakehouse
 
 In this exercise, you ingest additional dimensional and fact tables from
 the Wide World Importers (WWI) into the lakehouse.
@@ -444,7 +444,7 @@ the Wide World Importers (WWI) into the lakehouse.
 
 > ![](./media/imagea19.png)
 
-# Exercise 3: Prepare and transform data in the lakehouse
+# Exercise 4: Prepare and transform data in the lakehouse
 
 ### Task 1: Transform data and load to silver Delta table
 
