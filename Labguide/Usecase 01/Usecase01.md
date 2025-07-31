@@ -343,7 +343,7 @@ then crosscheck the script syntax with the above image.
 
 > ![](./media/image44.png)
 
-# Exercise 3: Ingest data into the lakehouse
+# Exercise 2: Ingest data into the lakehouse
 
 In this exercise, you ingest additional dimensional and fact tables from
 the Wide World Importers (WWI) into the lakehouse.
@@ -354,183 +354,110 @@ the Wide World Importers (WWI) into the lakehouse.
     navigation pane.
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image34.png)
+> incorrect.](./media/imagea1.png)
 
 2.  In the **Fabric Lakehouse Tutorial-XX** workspace page, navigate and
     click on **+New item** button, then select **Data pipeline**.
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image45.png)
+> incorrect.](./media/imagea2.png)
 
 3.  In the New pipeline dialog box, specify the name
     as **+++IngestDataFromSourceToLakehouse+++** and
     select **Create.** A new data factory pipeline is created and opened
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image46.png)
+> incorrect.](./media/imagea3.png)
 >
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image47.png)
+> incorrect.](./media/imagea4.png)
 
 4.  On newly created data factory pipeline
     i.e **IngestDataFromSourceToLakehouse**, select  **Copy data
     assistant** .
 
-> ![](./media/image48.png)
+> ![](./media/imagea5.png)
 
-5.  Next, set up an **HTTP** connection to import the sample World Wide
-    Importers data into the Lakehouse. From the list of **New sources**,
-    select **View more**, search for +++**Http+++** and select it.
+5.  Next, set up an **Sample data** connection to import the sample
+    World Wide Importers data into the Lakehouse. From the list of **New
+    sources**, select **Retail Data Model from Wide World Importers**.
 
-> ![](./media/image49.png)
+> ![](./media/imagea6.png)
 
-6.  In the **Connect to data source** window, enter the details from the
-    table below and select **Next**.
-
-    |   |   |
-    |----|----|
-    |Property|	Value|
-    |URL	|+++https://assetsprod.microsoft.com/en-us/wwi-sample-dataset.zip+++|
-    |Connection	|Create a new connection|
-    |Connection name	|+++wwisampledata+++|
-    |Data gateway|	None|
-    |Authentication kind|	Anonymous|
-
+6.  In the **Connect to data source** window, Select **Retail Data Model
+    from Wide World Importers** data and select **Next**.
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image50.png)
+> incorrect.](./media/imagea7.png)
 
-7.  In the next step, enable the **Binary copy** and choose **ZipDeflate
-    (.zip)** as the **Compression type** since the source is a .zip
-    file. Keep the other fields at their default values and
-    click **Next**.
-
-> ![](./media/image51.png)
-
-8.  In the **Connect to data destination** window, select **OneLake
+7.  In the **Connect to data destination** window, select **OneLake
     catalog** and select **wwilakehouse.** Now specify the **Root
     folder** as **Files** and click **Next**. This will write the data
     to the **Files** section of the lakehouse.
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image52.png)
+> incorrect.](./media/imagea8.png)
 >
-> ![](./media/image53.png)
+> ![](./media/imagea9.png)
 
-9.  Choose the **File format** shoul be  empty for the destination.
+1.  Choose the **File format** shoul be  empty for the destination.
     Click **Next** and then **Save+Run**. You can schedule pipelines to
     refresh data periodically. In this tutorial, we only run the
     pipeline once.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image54.png)
-
-10.  The data copy process takes approximately 20-26 minutes to complete.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image55.png)
+> ![](./media/imagea10.png)
 >
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image56.png)
+> incorrect.](./media/imagea11.png)
 
-11.  Under the Output tab, select **Copy_a1n** to look at the details of
+2.  The data copy process takes approximately 1-3 minutes to complete.
+
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/imagea12.png)
+>
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/imagea13.png)
+>
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/imagea14.png)
+>
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/imagea15.png)
+
+3.  Under the Output tab, select **Copy_a1n** to look at the details of
     the data transfer. After seeing the **Status** as **Succeeded**,
     click on the **Close** button.
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image57.png)
+> incorrect.](./media/imagea16.png)
 >
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image58.png)
+> incorrect.](./media/imagea17.png)
 
-12.  After the successful execution of the pipeline, go to your lakehouse
+4.  After the successful execution of the pipeline, go to your lakehouse
     (**wwilakehouse**) and open the explorer to see the imported data.
 
-> ![](./media/image59.png)
+> ![](./media/imagea18.png)
 
-13.  Verify that the folder **WideWorldImportersDW** is present in
-    the **Explorer** view and contains data for all tables.
+5.  Verify that the all the  **WideWorldImporters f**olders is present
+    in the **Explorer** view and contains data for all tables.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image60.png)
+> ![](./media/imagea19.png)
 
-14.  The data is created under the **Files** section of the lakehouse
-    explorer. A new folder with GUID contains all the needed data.
-    Rename the GUID to **+++wwi-raw-data+++**
+# Exercise 3: Prepare and transform data in the lakehouse
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image61.png)
->
-> ![](./media/image62.png)
-
-# Exercise 4: Prepare and transform data in the lakehouse
-
-### Task 1: Prepare data
-
-From the previous exercise steps, we have raw data ingested from the
-source to the **Files** section of the lakehouse. Now you can transform
-that data and prepare it for creating delta tables.
-
-1.  Now, click on **Fabric Lakehouse** **Tutorial-XX** on the left-sided
-    navigation pane.
-
-> ![](./media/image63.png)
-
-2.  In the **Home** page, navigate to **Import** section, click
-    on **Notebook** and click on **From this computer**
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image64.png)
-
-3.  Select **Upload** from thenavigate to **Import** section, click
-    on **Notebook** and click on **From this computer**
-
-> **Note**: Ensure to select **All files (\*.\*)** from the dropdown
-> beside **File name** field. 
->
-> ![](./media/image65.png)
-
-4.  Navigate and select **01-Create Delta Tables, 02-Data
-    Transformation-Business Aggregation** notebook
-    from **C:\LabFiles** and click on the **Open** button.
-
-> ![](./media/image66.png)
-
-5.  You will see a notification stating **Imported successfully.**
-
-> ![](./media/image67.png)
-
-6.  After the import is successful, to see the newly imported notebooks
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image68.png)
-
-7.  In **Fabric Lakehouse Tutorial-XX** pane,
-    select **wwilakehouse** lakehouse to open it.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image69.png)
-
-### Task 2: Transform data and load to silver Delta table
+### Task 1: Transform data and load to silver Delta table
 
 1.  In the **wwilakehouse** page, navigate and click on **Open
-    notebook** drop in the command bar, then select **Existing
-    notebook**.
+    notebook** drop in the command bar, then select **New notebook**.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image70.png)
+> ![](./media/imagea20.png)
 
-2.  From the list of **Open existing notebook**, select the **01 -
-    Create Delta Tables** notebook and select **Open**.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image71.png)
-
-3.  In the open notebook in **Lakehouse explorer**, you see the notebook
+2.  In the open notebook in **Lakehouse explorer**, you see the notebook
     is already linked to your opened lakehouse.
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image72.png)
+> incorrect.](./media/imagea21.png)
 
 \*\* Note\*\*
 
@@ -546,18 +473,26 @@ write**](https://learn.microsoft.com/en-us/fabric/data-engineering/delta-optimiz
 the Apache Spark engine that reduces the number of files written and
 aims to increase individual file size of the written data.
 
-4.  Before you write data as delta lake tables in the **Tables** section
+3.  Before you write data as delta lake tables in the **Tables** section
     of the lakehouse, you use two Fabric features
     (**V-order** and **Optimize Write**) for optimized data writing and
     for improved reading performance. To enable these features in your
     session, set these configurations in the first cell of your
     notebook.
 
-5.  To start the notebook and execute the cell, select the **Run** icon
-    that appears to the left of the cell upon hover.
-
+4.  he code in the **cell** with the following code and click on **▷ Run
+    cell**  that appears to the left of the cell upon hover.
+    ```
+    # Copyright (c) Microsoft Corporation.
+    # Licensed under the MIT License.
+    spark.conf.set("spark.sql.parquet.vorder.enabled", "true")
+    spark.conf.set("spark.microsoft.delta.optimizeWrite.enabled", "true")
+    spark.conf.set("spark.microsoft.delta.optimizeWrite.binSize", "1073741824")
+    ```
+> ![](./media/image22.png)
+>
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image73.png)
+> incorrect.](./media/image23.png)
 >
 > When running a cell, you didn't have to specify the underlying Spark
 > pool or cluster details because Fabric provides them through Live
@@ -568,18 +503,16 @@ aims to increase individual file size of the written data.
 > running in a few seconds. And the Spark session is established and it
 > starts executing the code. Subsequent code execution is almost
 > instantaneous in this notebook while the Spark session is active. 
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image74.png)
 
-6.  Next, you read raw data from the **Files** section of the lakehouse
+5.  Next, you read raw data from the **Files** section of the lakehouse
     and add more columns for different date parts as part of the
     transformation. You use partitionBy Spark API to partition the data
     before writing it as delta table based on the newly created data
     part columns (Year and Quarter).
 
-7.  To execute the second cell, select **Run** icon that appears to the
-    left of the cell upon hover.
+6.  Use the **+ Code** icon below the cell output to add a new code cell
+    to the notebook, and enter the following code in it. Click on **▷
+    Run cell** button and review the output
 
     **Note**: In case, you are unable to see the output, then click on the
     horizontal lines on the left side of **Spark jobs**.
@@ -588,7 +521,7 @@ aims to increase individual file size of the written data.
     
     table_name = 'fact_sale'
     
-    df = spark.read.format("parquet").load('Files/wwi-raw-data/full/fact_sale_1y_full')
+    df = spark.read.format("parquet").load('Files/fact_sale_1y_full')
     df = df.withColumn('Year', year(col("InvoiceDateKey")))
     df = df.withColumn('Quarter', quarter(col("InvoiceDateKey")))
     df = df.withColumn('Month', month(col("InvoiceDateKey")))
@@ -596,11 +529,11 @@ aims to increase individual file size of the written data.
     df.write.mode("overwrite").format("delta").partitionBy("Year","Quarter").save("Tables/" + table_name)
     ```
 
+>  ![](./media/imagea24.png)
+>
+> ![](./media/imagea25.png)
 
->  ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image75.png)
-
-8.  After the fact tables load, you can move on to loading data for the
+7.  After the fact tables load, you can move on to loading data for the
     rest of the dimensions. The following cell creates a function to
     read raw data from the **Files** section of the lakehouse for each
     of the table names passed as a parameter. Next, it creates a list of
@@ -608,63 +541,45 @@ aims to increase individual file size of the written data.
     creates a delta table for each table name that's read from the input
     parameter.
 
-9.  Select the cell, and click the **Run** icon that appears to the left
-    of the cell when you hover over it
-
+8.  Use the **+ Code** icon below the cell output to add a new code cell
+    to the notebook, and enter the following code in it. Click on **▷
+    Run cell** button and review the output
+    ```
+    from pyspark.sql.types import *
+    
+    def loadFullDataFromSource(table_name):
+        df = spark.read.format("parquet").load('Files/' + table_name)
+        df = df.drop("Photo")
+        df.write.mode("overwrite").format("delta").save("Tables/" + table_name)
+    
+    full_tables = [
+        'dimension_city',
+        'dimension_customer',
+        'dimension_date',
+        'dimension_employee',
+        'dimension_stock_item'
+    ]
+    
+    for table in full_tables:
+        loadFullDataFromSource(table)
+    ```
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image76.png)
+> incorrect.](./media/imagea26.png)
 >
-> ![A screenshot of a computer program AI-generated content may be
-> incorrect.](./media/image77.png)
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/imagea27.png)
 
-10. To validate the created tables, click and select refresh on
+9.  To validate the created tables, click and select refresh on
     the **Tables**. The tables appear. 
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image78.png)
+> incorrect.](./media/imagea28.png)
 >
->  ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image79.png)
+>  ![](./media/imagea29.png)
 
-11. Go the items view of the workspace again, select **Fabric Lakehouse
-    Tutorial-XX** and select the **wwilakehouse** lakehouse to open it.
+### Task 2: Transforming Business Data for Aggregation
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image80.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image81.png)
-
-12. Now, open the second notebook. In the lakehouse view, dropdown
-    the **Open notebook** and select **Existing notebook** from the top
-    navigation menu.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image82.png)
-
-13. From the list of Open existing notebook, select the **02 - Data
-    Transformation - Business** **Aggregation** notebook and click on
-    the **Open**.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image83.png)
-
-14. In the open notebook in **Lakehouse explorer**, you see the notebook
-    is already linked to your opened lakehouse.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image84.png)
-
-15. To start the notebook and select the 1^(st) cell and select
-    the **Run** icon that appears to the left of the cell upon hover.
-
-> ![A screenshot of a computer screen AI-generated content may be
-> incorrect.](./media/image85.png)
->
-> ![A screenshot of a computer screen AI-generated content may be
-> incorrect.](./media/image85.png)
-
-16. An organization might have data engineers working with Scala/Python
+1.  An organization might have data engineers working with Scala/Python
     and other data engineers working with SQL (Spark SQL or T-SQL), all
     working on the same copy of the data. Fabric makes it possible for
     these different groups, with varied experience and preference, to
@@ -681,7 +596,7 @@ aims to increase individual file size of the written data.
       generating business aggregates. This approach is preferable to
       someone with SQL background, transitioning to Spark.
 
-17. **Approach \#1 (sale_by_date_city)** - Use PySpark to join and
+2.  **Approach \#1 (sale_by_date_city)** - Use PySpark to join and
     aggregate data for generating business aggregates. With the
     following code, you create three different Spark dataframes, each
     referencing an existing delta table. Then you join these tables
@@ -689,7 +604,11 @@ aims to increase individual file size of the written data.
     few of the columns, and finally write it as a delta table in
     the **Tables** section of the lakehouse to persist with the data.
 
-    In this cell, you create three different Spark dataframes, each
+3.  Use the **+ Code** icon below the cell output to add a new code cell
+    to the notebook, and enter the following code in it. Click on **▷
+    Run cell** button and review the output
+
+4.  In this cell, you create three different Spark dataframes, each
     referencing an existing delta table.
     ```
     df_fact_sale = spark.read.table("wwilakehouse.fact_sale") 
@@ -697,9 +616,16 @@ aims to increase individual file size of the written data.
     df_dimension_city = spark.read.table("wwilakehouse.dimension_city")
     ```
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image86.png)
+> incorrect.](./media/imagea30.png)
+>
+> ![A screen shot of a computer AI-generated content may be
+> incorrect.](./media/imagea31.png)
 
-18. In this cell, you join these tables using the dataframes created
+5.  Use the **+ Code** icon below the cell output to add a new code cell
+    to the notebook, and enter the following code in it. Click on **▷
+    Run cell** button and review the output
+
+6.  In this cell, you join these tables using the dataframes created
     earlier, do group by to generate aggregation, rename a few of the
     columns, and finally write it as a delta table in
     the **Tables** section of the lakehouse.
@@ -720,10 +646,12 @@ aims to increase individual file size of the written data.
     
     sale_by_date_city.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_city")
     ```
-> ![A screenshot of a computer program AI-generated content may be
-> incorrect.](./media/image87.png)
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/imagea32.png)
+>
+> ![](./media/imagea33.png)
 
-19. **Approach \#2 (sale_by_date_employee)** - Use Spark SQL to join and
+7.  **Approach \#2 (sale_by_date_employee)** - Use Spark SQL to join and
     aggregate data for generating business aggregates. With the
     following code, you create a temporary Spark view by joining three
     tables, do group by to generate aggregation, and rename a few of the
@@ -731,8 +659,13 @@ aims to increase individual file size of the written data.
     write it as a delta table in the **Tables** section of the lakehouse
     to persist with the data.
 
-    In this cell, you create a temporary Spark view by joining three tables,
-    do group by to generate aggregation, and rename a few of the columns.
+8.  Use the **+ Code** icon below the cell output to add a new code cell
+    to the notebook, and enter the following code in it. Click on **▷
+    Run cell** button and review the output
+
+9.  In this cell, you create a temporary Spark view by joining three
+    tables, do group by to generate aggregation, and rename a few of the
+    columns.
     ```
     %%sql
     CREATE OR REPLACE TEMPORARY VIEW sale_by_date_employee
@@ -753,27 +686,37 @@ aims to increase individual file size of the written data.
     ```
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image88.png)
+> incorrect.](./media/imagea34.png)
+>
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/imagea35.png)
 
-20. In this cell, you read from the temporary Spark view created in the
+10. Use the **+ Code** icon below the cell output to add a new code cell
+    to the notebook, and enter the following code in it. Click on **▷
+    Run cell** button and review the output
+
+11. In this cell, you read from the temporary Spark view created in the
     previous cell and finally write it as a delta table in
     the **Tables** section of the lakehouse.
     ```
     sale_by_date_employee = spark.sql("SELECT * FROM sale_by_date_employee")
     sale_by_date_employee.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_employee")
     ```
-
+>
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image89.png)
+> incorrect.](./media/imagea36.png)
+>
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/imagea37.png)
 
-23. To validate the created tables, click and select refresh on
+12. To validate the created tables, click and select refresh on
     the **Tables**. The aggregate tables appear.
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image90.png)
+> incorrect.](./media/imagea38.png)
 >
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image91.png)
+> incorrect.](./media/imagea39.png)
 
 Both the approaches produce a similar outcome. You can choose based on
 your background and preference, to minimize the need for you to learn a
@@ -783,6 +726,7 @@ Also you may notice that you're writing data as delta lake files. The
 automatic table discovery and registration feature of Fabric picks up
 and registers them in the metastore. You don't need to explicitly
 call CREATE TABLE statements to create tables to use with SQL.
+
 
 # Exercise 5: Building reports in Microsoft Fabric
 
