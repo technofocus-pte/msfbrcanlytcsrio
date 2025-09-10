@@ -1,4 +1,4 @@
-# Usecase 06- Chat with your data using Fabric Data Agent
+# Usecase 03- Chat with your data using Fabric Data Agent
 
 **Introduction:**
 
@@ -395,29 +395,29 @@ incorrect.](./media/image50.png)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image52.png)
 
-9.  Click on the **View publishing details**
+5.  Click on the **View publishing details**
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image53.png)
 
-5.  The published URL for the AI agent appears, as shown in this
+6.  The published URL for the AI agent appears, as shown in this
     screenshot.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image54.png)
 
-6.  Copy the URL and paste that in a notepad and then Save the notepad
+7.  Copy the URL and paste that in a notepad and then Save the notepad
     to use the information in the upcoming
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image54.png)
 
-7.  Select **Notebook1** in the left navigation pane.
+8.  Select **Notebook1** in the left navigation pane.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image55.png)
 
-10. Use the **+ Code** icon below the cell output to add a new code cell
+9. Use the **+ Code** icon below the cell output to add a new code cell
     to the notebook, enter the following code in it and replace the
     **URL**. Click on **▷ Run** button and review the output
 
@@ -426,7 +426,7 @@ incorrect.](./media/image54.png)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image56.png)
 
-11. Use the **+ Code** icon below the cell output to add a new code cell
+10. Use the **+ Code** icon below the cell output to add a new code cell
     to the notebook, enter the following code in it and replace the
     **URL**. Click on **▷ Run** button and review the output
 
@@ -435,7 +435,7 @@ incorrect.](./media/image54.png)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image57.png)
 
-8.  Use the **+ Code** icon below the cell output to add a new code cell
+11.  Use the **+ Code** icon below the cell output to add a new code cell
     to the notebook, enter the following code in it and replace the
     **URL**. Click on **▷ Run** button and review the output
     ```
@@ -568,3 +568,4 @@ programmatically from a Fabric notebook, demonstrating end-to-end AI
 integration. This lab empowers you to make enterprise data more
 accessible, usable, and intelligent for business users through natural
 language and generative AI technologies.
+
