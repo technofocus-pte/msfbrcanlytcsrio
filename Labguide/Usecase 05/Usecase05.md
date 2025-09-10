@@ -202,7 +202,7 @@ trial enabled.
     Select **Browse all** to see all of the data sources you can choose from,
     including data sources in your local OneLake data hub.
 
-    > !IMAGE[skillable_image2.png](instructions303922/skillable_image2.png)
+    > !IMAGE[]([instructions303922](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media)/skillable_image2.png)
 
 9.  On the **Get data** window, search **+++Azure Blobs+++** in, then
     click on the **Azure Blobs** storage button.
@@ -1331,3 +1331,4 @@ insights into resource management, emphasizing the importance of cleanup
 procedures to maintain an efficient workspace. Collectively, these tasks
 present a comprehensive understanding of setting up, managing, and
 analyzing data within Microsoft Fabric.
+
