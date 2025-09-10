@@ -1,57 +1,62 @@
-## Use case 05- Identifying and extracting text with Document Intelligence in Microsoft Fabric
+## Caso de uso 06: Identificación y extracción de texto con Document Intelligence en Microsoft Fabric
 
-**Introduction**
+**Introducción**
 
-Analyzing structured data has been an easy process for some time but the
-same cannot be said for unstructured data. Unstructured data, such as
-text, images, and videos, is more difficult to analyze and interpret.
-However, with the advent of advanced AI models, it is now becoming easier to analyze and gain insights from
-unstructured data.
+Analizar datos estructurados ha sido un proceso sencillo desde hace
+algún tiempo, pero lo mismo no puede decirse de los datos no
+estructurados. Los datos no estructurados, como texto, imágenes y
+videos, son más difíciles de analizar e interpretar. Sin embargo, con la
+aparición de modelos avanzados de IA, como GPT-3 y GPT-4 de OpenAI,
+ahora es más fácil analizar y obtener información de datos no
+estructurados.
 
-An example of such analysis is the ability to query a document for
-specific information using natural language which is achievable though a
-combination of information retrieval and language generation.
+Un ejemplo de este tipo de análisis es la capacidad de consultar un
+documento en busca de información específica utilizando lenguaje
+natural, lo cual es posible mediante una combinación de recuperación de
+información y generación de lenguaje.
 
-By leveraging the RAG (Retrieval-Augmented Generation) framework, you
-can create a powerful question-and-answering pipeline that uses a large
-language model (LLM) and you own data to generate responses.
+Al aprovechar el marco RAG (Retrieval-Augmented Generation), puede crear
+un potente flujo de trabajo de preguntas y respuestas que utilice un
+modelo de lenguaje grande (LLM) y sus propios datos para generar
+respuestas.
 
-The architecture of such an application is as shown below:
+La arquitectura de dicha aplicación se muestra a continuación:
 
 ![Architecture diagram connecting Azure OpenAI with Azure AI Search and
 Document Intelligence](./media/image1.png)
 
-**Objective**
+**Objetivo**
 
-- Create a multi-service resource for Azure AI services using Azure
-  portal
+- Crear un recurso multiservicio para los servicios de Azure AI
+  utilizando el portal de Azure.
 
-- To create fabric capacity and workspace, Key vault, and fabric
-  workspace
+- Crear capacidad de Fabric y workspace, Key Vault y workspace de
+  Fabric.
 
-- Pre-process PDF Documents using Azure AI Document Intelligence in
-  Azure AI Services.
+- Preprocesar documentos PDF utilizando Azure AI Document Intelligence
+  en los servicios de Azure AI.
 
-- Perform text chunking using SynapseML.
+- Realizar segmentación de texto (text chunking) usando SynapseML.
 
-- Generate embeddings for the chunks using SynapseML and Azure OpenAI
-  Services.
+- Generar embeddings para los fragmentos utilizando SynapseML y los
+  servicios de Azure OpenAI.
 
-- Store the embeddings in Azure AI Search.
+- Almacenar los embeddings en Azure AI Search.
 
-- Build a question answering pipeline.
+- Construir un pipeline de preguntas y respuestas.
 
-# **Exercise 1: Environment Setup**
+# **Ejercicio 1: Configuración del entorno** 
 
-## Task 1: Create a multi-service resource for Azure AI services
+## Tarea 1: Crear un recurso multiservicio para los servicios de Azure AI
 
-The multi-service resource is listed under **Azure AI
-services** \> **Azure AI services multi-service account** in the portal.
-To create a multi-service resource follow these instructions:
+El recurso multiservicio se encuentra listado en **Azure AI services \>
+Azure AI services multi-service account** en el portal. Para crear un
+recurso multiservicio, siga estas instrucciones:
 
-1.  Select this link to create a multi-service resource: 
+1.  Seleccione este enlace para crear un recurso multiservicio: 
 
-    +++https://portal.azure.com/#create/Microsoft.CognitiveServicesAllInOne+++
+++++https://portal.azure.com/#create/Microsoft.CognitiveServicesAllInOne+++
+
     |       |        |
     |-----|----|
     |Project details	|Description|
@@ -61,56 +66,58 @@ To create a multi-service resource follow these instructions:
     Name	|+++Cognitive-serviceXXXXX+++(XXXXX can be Lab instant ID)|
     |Pricing tier	|Standard S0|
 
-2.  On the **Create** page, provide the following information:
+2.  En la página **Create**, proporcione la siguiente información:
 
-3.  Configure other settings for your resource as needed, read and
-    accept the conditions (as applicable), and then select **Review +
-    create**.
+3.  Configure otras configuraciones para su recurso según sea necesario,
+    lea y acepte las condiciones (según corresponda) y luego seleccione
+    **Review + create**.
 
-    ![](./media/image2.png)
+![](./media/image2.png)
 
-4.  In the **Review+submit** tab, once the Validation is Passed, click
-    on the **Create** button.
+4.  En la pestaña **Review+submit**, una vez que la validación haya
+    pasado, haga clic en el botón **Create**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image3.png)
 
-5.  After the deployment is completed, click on the **Go to resource**
-    button.
+5.  Después de que se complete la implementación, seleccione el botón
+    **Go to resource**.
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image4.png)
 
-6.  In your **Azure** **AI service** window, navigate to the **Resource
-    Management** section, and click on **Keys and Endpoints**.
+6.  En la ventana de su servicio **Azure AI**, navegue a la sección
+    **Resource Management** y haga clic en **Keys and Endpoints**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image5.png)
 
-7.  In **Keys and Endpoints** page, copy **KEY1, KEY 2,** and
-    **Endpoint** values and paste them in a notepad as shown in the
-    below image, then **Save** the notepad to use the information in the
-    upcoming tasks.
+7.  En la página **Keys and Endpoints**, copie los valores **KEY1**,
+    **KEY2** y **Endpoint**, y péguelo en un bloc de notas como se
+    muestra en la imagen a continuación. Luego, **guarde** el bloc de
+    notas para usar la información en las próximas tareas.
 
 ![](./media/image6.png)
 
-## **Task 2: Create a key vault using the Azure portal**
+## **Tarea 2: Crear un Key Vault usando el portal de Azure**
 
-1.  In Azure portal home page, click on **+ Create Resource**.
+1.  En la página de inicio del portal de Azure, haga clic en **+ Create
+    Resource**.
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image7.png)
 
-2.  In the **Create a resource** page search bar, type **Key vault** and
-    click on the appeared **Key vault** .
-    ![](./media/image8.png)
+2.  En la página **Create a resource**, en la barra de búsqueda, escriba
+    **Key vault** y haga clic en el **Key vault** que
+    aparece.![](./media/image8.png)
 
-3.  Click on **Key Vault** section.
+3.  Haga clic en la sección **Key Vault**.
 
 > ![](./media/image9.png)
 
-4.  On the **Create a key Vault** page, provide the following
-    information and click on **Review+create** button.
+4.  En la página **Create a key Vault**, proporcione la siguiente
+    información y haga clic en el botón **Review+create**.
+
     |     |   |
     |-----|---|
     |Field	|Description|
@@ -120,127 +127,133 @@ To create a multi-service resource follow these instructions:
     |Name	|+++fabrickeyvaultXXXXX+++(XXXXX can be Lab instant ID)|
     |Pricing Tier|	Click on change Price Tire>select Standard |
 
-
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image10.png)
 
-5.  Once the Validation is passed, click on the **Create** button.
+5.  Una vez que la **validación** se haya completado, haga clic en el
+    botón **Create**.
 
 > ![](./media/image11.png)
 
-6.  After the deployment is completed, click on the **Go to resource**
-    button.
+6.  Después de que se complete la implementación, haga clic en el botón
+    **Go to resource**.
 
 > ![](./media/image12.png)
 
-5.  In your **fabrickeyvaultXX** window, from the left menu, click on
-    the **Access control(IAM).**
+5.  En la ventana **fabrickeyvaultXX**, en el menú de la izquierda, haga
+    clic en **Access control (IAM).**
 
-    ![](./media/image13.png)
+![](./media/image13.png)
 
-6.  On the Access control(IAM) page, Click +**Add** and select **Add
-    role assignments.**
+6.  En la página **Access control (IAM)**, haga clic en **+Add** y
+    seleccione **Add role assignment**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image14.png)
 
-5.  In **Job function roles,** type the **+++Key vault administrator+++** in the search box and select it. Click **Next**
+5.  En **Job function roles**, escriba **+++Key vault administrator+++**
+    en el cuadro de búsqueda y selecciónelo. Haga clic en **Next**.
 
 > ![](./media/image15.png)
 
-6.  In the **Add role assignment** tab, select Assign access to User
-    group or service principal. Under Members, click **+Select members**
+6.  En la pestaña **Add role assignment**, seleccione **Assign access to
+    User, group, or service principal**. Debajo de **Members**, haga
+    clic en **+ Select members**.
 
 > ![](./media/image16.png)
 
-7.  On the Select members tab, search your Azure OpenAI subscription and
-    click **Select.**
+7.  En la pestaña **Select members**, busque su suscripción de Azure
+    OpenAI y haga clic en **Select**.
 
 > ![](./media/image17.png)
 
-8.  In the **Add role assignment** page, Click **Review + Assign**, you
-    will get a notification once the role assignment is complete.
+8.  En la página **Add role assignment**, haga clic en **Review +
+    Assign**; recibirá una notificación una vez que la asignación del
+    rol se haya completado.
 
 > ![](./media/image18.png)
 >
 > ![](./media/image19.png)
 
-9.  You will see a notification – added as Azure AI Developer for
-    fabrickeyvaultXX
+9.  Verá una notificación – added as Azure AI Developer for
+    Azure-openai-testXX
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image20.png)
 
-## Task 3: Create a secret using Azure Key vault
+## Tarea 3: Crear un secreto usando Azure Key Vault
 
-1.  On the Key Vault left-hand sidebar, select **Objects** then
-    select **Secrets**.
+1.  En la barra lateral izquierda de **Key Vault**, seleccione
+    **Objects** y luego seleccione **Secrets**.
 
 > ![](./media/image21.png)
 
-2.  Select **+ Generate/Import**.
+2.  Seleccione **+ Generate/Import**.
 
 > ![](./media/image22.png)
 
-3.  On the **Create a secret** page, provide the following information
-    and click on **Create** button .
+3.  En la página **Create a secret**, proporcione la siguiente
+    información y haga clic en el botón **Create**.
 
     |Upload |options	Manual|
     |Name|	Enter the name +++aisearchkey+++|
     |Secret Value|	+++password321+++|
 
-
 > ![](./media/image23.png)
 
-4.  Select **+ Generate/Import**.
+4.  Seleccione **+ Generate/Import**.
 
 > ![](./media/image24.png)
 
-5.  On the **Create a secret** page, provide the following information
-    and click on **Create** button .
+5.  En la página **Create a secret**, proporcione la siguiente
+    información y haga clic en el botón **Create**.
+
     |    |   |
     |----|----|
     |Upload |options	Manual|
     |Name|	Enter the name +++aiservicekey+++|
     |Secret Value|	+++password321+++|
 
+![](./media/image25.png)
 
-    ![](./media/image25.png)
-    
-    ![](./media/image26.png)
+![](./media/image26.png)
 
-6.  In **Key vault** page, copy **Key vault** name, and **Secrets**
-    values and paste them in a notepad as shown in the below image, then
-    **Save** the notepad to use the information in the upcoming tasks.
+6.  En la página del **Key vault**, copie el nombre del Key vault y los
+    valores de **Secrets**, péguelo en un bloc de notas como se muestra
+    en la imagen a continuación y **guarde** el archivo para usar la
+    información en las próximas tareas.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image27.png)
 
-## **Task 4: Create an Azure AI Search service in the portal**
+## **Tarea 4: Crear un servicio Azure AI Search en el portal** 
 
-1.  In Azure portal home page, click on **+ Create Resource**.
+1.  En la página principal del portal de Azure, haga clic en **+ Create
+    Resource**.
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image7.png)
 
-2.  In the **Create a resource** page search bar, type **Azure AI
-    Search** and click on the appeared **azure ai search**.
+2.  En la página **Create a resource**, escriba **Azure AI Search** en
+    la barra de búsqueda y haga clic en el **Azure AI Search** que
+    aparece.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image28.png)
 
-3.  Click on **azure ai search** section.
+3.  Haga clic en la sección **azure ai search**.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image29.png)
 
-4.  In the **Azure AI Search** page, click on the **Create** button.
+4.  En la página **Azure AI Search**, haga clic en el botón **Create**.
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image30.png)
 
-5.  On the **Create a search service** page, provide the following
-    information and click on **Review+create** button.
+5.  En la página **Create a search service**, proporcione la siguiente
+    información y haga clic en el botón **Review+create**.
+
     |   |  |
     |----|----|
     |Field	|Description|
@@ -249,66 +262,69 @@ generated](./media/image29.png)
     |Region	|EastUS 2|
     |Name	|+++mysearchserviceXXXXX+++(XXXXX can be Lab instant ID)|
     |Pricing Tier	|Click on change Price Tire>select Basic|
-    
-    ![](./media/image31.png)
-    
-    ![A screenshot of a computer Description automatically generated](./media/image32.png)
 
-6.  Once the Validation is passed, click on the **Create** button.
+![](./media/image31.png)
+
+![A screenshot of a computer Description automatically
+generated](./media/image32.png)
+
+6.  Una vez que la validación sea exitosa, haga clic en el botón
+    **Create**.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image33.png)
 
-8.  After the deployment is completed, click on the **Go to resource**
-    button.
+8.  Después de que se complete la implementación, haga clic en el botón
+    **Go to resource**.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image34.png)
 
-9.  copy **AI search name** and paste them in a notepad as shown in the
-    below image, then **Save** the notepad to use the information in the
-    upcoming lab.
+9.  Copie el nombre de **Azure AI Search** y péguelo en un bloc de notas
+    como se muestra en la imagen a continuación, luego **guarde** el
+    bloc de notas para usar la información en las próximas tareas del
+    laboratorio.
 
-    ![](./media/image35.png)
+![](./media/image35.png)
 
-## **Task 5: Create a Fabric workspace**
+## **Task 5: Crear un workspace de Fabric**
 
-In this task, you create a Fabric workspace. The workspace contains all
-the items needed for this lakehouse tutorial, which includes lakehouse,
-dataflows, Data Factory pipelines, the notebooks, Power BI datasets, and
-reports.
+En esta tarea, cree un workspace de Fabric. El workspace contiene todos
+los elementos necesarios para este tutorial de lakehouse, incluyendo
+lakehouse, dataflows, pipelines de Data Factory, notebooks, conjuntos de
+datos de Power BI y reportes.
 
-1.  Open your browser, navigate to the address bar, and type or paste
-    the following URL: +++https://app.fabric.microsoft.com/+++ then press the
-    **Enter** button.
+1.  Abra su navegador, navegue a la barra de direcciones y escriba o
+    pegue la siguiente URL: https://app.fabric.microsoft.com/ y presione
+    el botón **Enter**.
 
 > ![A search engine window with a red box Description automatically
 > generated with medium confidence](./media/image36.png)
 
-2.  In the **Microsoft Fabric** window, enter your credentials, and
-    click on the **Submit** button.
+2.  En la ventana de **Microsoft** **Fabric**, ingrese sus credenciales
+    y haga clic en el botón **Submit**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image37.png)
 
-3.  Then, In the **Microsoft** window enter the password and click on
-    the **Sign in** button**.**
+3.  A continuación, en la ventana de **Microsoft**, ingrese la
+    contraseña y haga clic en el botón **Sign** **in**.
 
 > ![A login screen with a red box and blue text AI-generated content may
 > be incorrect.](./media/image38.png)
 
-4.  In **Stay signed in?** window, click on the **Yes** button.
+4.  En la ventana **Stay signed in?** haga clic en el botón **Yes**.
 
 > ![A screenshot of a computer error AI-generated content may be
 > incorrect.](./media/image39.png)
 
-5.  In the Workspaces pane Select **+New workspace**.
+5.  En el panel **Workspaces**, seleccione **+New workspace**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image40.png)
 
-6.  In the **Create a workspace** pane that appears on the right side,
-    enter the following details, and click on the **Apply** button.
+6.  En el panel **Create a workspace** que aparece en el lado derecho,
+    ingrese los siguientes detalles y haga clic en el botón **Apply**.
 
     |   |   |
     |----|-----|
@@ -316,35 +332,36 @@ reports.
     |Advanced|	Select Fabric Capacity|
     |Capacity	|Select Realtimefabriccapacity-West US 3|
 
-
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image41.png)
 >
 > ![](./media/image42.png)
 
-10. Wait for the deployment to complete. It takes 2-3 minutes to
-    complete.
+10. Espere a que se complete la implementación. Esto tarda entre 2 y 3
+    minutos.
 
-![A screenshot of a computer AI-generated content may be incorrect.](./media/image43.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image43.png)
 
-## **Task 6: Create a lakehouse**
+## **Tarea 6: Cree un lakehouse**
 
-1.  In the **Fabric** **Home** page, select **+New item** and
-    select **Lakehouse** tile.
+1.  En la página de inicio de **Fabric**, seleccione **+New item** y
+    seleccione el recuadro **Lakehouse**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image44.png)
 
-2.  In the **New lakehouse** dialog box, enter +++**data_lakehouse**+++
-    in the **Name** field, click on the **Create** button and open the
-    new lakehouse.
+2.  En el cuadro de diálogo **New lakehouse**, ingrese +++
+    **data_lakehouse** +++ en el campo **Name**, haga clic en el botón
+    **Create** y abra el nuevo **lakehouse**.
 
-> **Note**: Ensure to remove space before **data_lakehouse**.
+> **Nota**: Asegúrese de eliminar el espacio antes de
+> **data_lakehouse**.
 >
 > ![A screenshot of a computer Description automatically
 > generated](./media/image45.png)
 
-3.  You will see a notification stating **Successfully created SQL
+3.  Verá una notificación que indica **Successfully created SQL
     endpoint**.
 
 > ![A screenshot of a computer Description automatically
@@ -353,16 +370,17 @@ reports.
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image47.png)
 
-# **Exercise 2: Loading and Pre-processing PDF Documents **
+# **Ejercicio 2: Carga y preprocesamiento de documentos PDF**
 
-## **Task 1: Configure Azure API keys**
+## **Tarea 1: Configurar claves de API de Azure** 
 
-To begin, navigate back to the rag_workshop Lakehouse in your workspace
-and create a new notebook by selecting Open Notebook and selecting New
-Notebook from the options.
+Para comenzar, regrese al lakehouse rag\\workshop en su workspace y cree
+un nuevo notebook seleccionando Open Notebook y luego New Notebook de
+las opciones.
 
-1.  In the **Lakehouse** page, navigate and click on **Open notebook**
-    drop in the command bar, then select **New notebook**.
+1.  En la página del **lakehouse**, navegue y haga clic en **Open
+    notebook** en la barra de comandos, luego seleccione **New
+    notebook**.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image48.png)
@@ -370,9 +388,10 @@ incorrect.](./media/image48.png)
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image49.png)
 
-2.  In the query editor, paste the following code.  Provide the keys for
-    Azure AI Services, Azure Key Vault name and secrets to access the
-    services
+2.  En el editor de consultas, pegue el siguiente código. Proporcione
+    las claves de Azure AI Services, el nombre del Azure Key Vault y los
+    secretos para acceder a los servicios.
+
     ```
     # Azure AI Search
     AI_SEARCH_NAME = ""
@@ -386,16 +405,15 @@ incorrect.](./media/image49.png)
 
 > ![](./media/image50.png)
 
-## Task 2: Loading & Analyzing the Document
+## Tarea 2: Cargar y analizar el documento
 
-1.  we will be using a specific document
-    named [**support.pdf**](https://github.com/Azure-Samples/azure-openai-rag-workshop/blob/main/data/support.pdf) which
-    will be the source of our data.
+1.  Usaremos un documento específico llamado **support.pdf**, que será
+    la fuente de nuestros datos.
 
-2.  To download the document, use the **+ Code** icon below the cell
-    output to add a new code cell to the notebook, and enter the
-    following code in it. Click on **▷ Run cell** button and review the
-    output
+2.  Para descargar el documento, use el ícono **+ Code** debajo de la
+    salida de la celda para agregar una nueva celda de código al
+    notebook e ingrese el siguiente código en ella. Haga clic en el
+    botón **▷ Run cell** y revise la salida.
 
     **Copy**
     ```
@@ -417,14 +435,18 @@ incorrect.](./media/image49.png)
         f.write(response.content)
     ```
 
-    ![](./media/image51.png)
+![](./media/image51.png)
 
-3.  Now, load the PDF document into a Spark DataFrame using the
-    spark.read.format("binaryFile") method provided by Apache Spark
+3.  Ahora, cargue el documento PDF en un Spark DataFrame usando el
+    método spark.read.format("binaryFile") proporcionado por Apache
+    Spark.
 
-4.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
+4.  Use el icono **+ Code** debajo de la salida de la celda para agregar
+    una nueva celda de código al notebook e ingrese el siguiente código
+    en ella. Haga clic en el botón **▷ Run cell** y revise la salida.
+
+**Copiar**
+
     ```
     from pyspark.sql.functions import udf
     from pyspark.sql.types import StringType
@@ -433,19 +455,23 @@ incorrect.](./media/image49.png)
     display(df)
     ```
 
-  ![A screenshot of a computer AI-generated content may be incorrect.](./media/image52.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image52.png)
 
-  This code will read the PDF document and create a Spark DataFrame
-  named df with the contents of the PDF. The DataFrame will have a schema
-  that represents the structure of the PDF document, including its textual
-  content.
+Este código leerá el documento PDF y creará un Spark DataFrame llamado
+df con el contenido del PDF. El DataFrame tendrá un esquema que
+representa la estructura del documento PDF, incluyendo su contenido
+textual.
 
-5.  Next, we'll use the Azure AI Document Intelligence to read the PDF
-    documents and extract the text from them.
+5.  A continuación, utilizaremos Azure AI Document Intelligence para
+    leer los documentos PDF y extraer el texto de los mismos.
 
-6.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
+6.  Use el icono **+ Code** debajo del resultado de la celda para
+    agregar una nueva celda de código en el notebook, e ingrese el
+    siguiente código en ella. Haga clic en el botón ▷ **Run cell** y
+    revise la salida.
+
+**Copiar**
     ```
     from synapse.ml.services import AnalyzeDocument
     from pyspark.sql.functions import col
@@ -466,34 +492,43 @@ incorrect.](./media/image49.png)
     ).cache()
     ```
 
-    ![A screenshot of a computer code AI-generated content may be incorrect.](./media/image53.png)
+![A screenshot of a computer code AI-generated content may be
+incorrect.](./media/image53.png)
 
-7.  We can observe the analyzed Spark DataFrame named analyzed_df using
-    the following code. Note that we drop the content column as it is
-    not needed anymore.
+7.  Podemos observar el Spark DataFrame analizado llamado analyzed_df
+    usando el siguiente código. Note que eliminamos la columna content
+    ya que ya no es necesaria.
 
-8.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
+8.  Use el icono **+ Code** debajo del resultado de la celda para
+    agregar una nueva celda de código en el notebook, e ingrese el
+    siguiente código en ella. Haga clic en el botón ▷ **Run cell** y
+    revise la salida.
+
+**Copiar**
+
     ```
     analyzed_df = analyzed_df.drop("content")
     display(analyzed_df)
     ```
-![A screenshot of a computer AI-generated content may be incorrect.](./media/image54.png)
 
-# Exercise 3: Generating and Storing Embeddings
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image54.png)
 
-## **Task 1: Text Chunking**
+# Ejercicio 3: Generación y almacenamiento de embeddings
 
-Before we can generate the embeddings, we need to split the text into
-chunks. To do this we leverage SynapseML’s PageSplitter to divide the
-documents into smaller sections, which are subsequently stored in
-the chunks column. This allows for more granular representation and
-processing of the document content.
+## **Tarea 1: Fragmentación de texto**
 
-1.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
+Antes de que podamos generar los embeddings, necesitamos dividir el
+texto en fragmentos. Para ello, utilizamos PageSplitter de SynapseML
+para separar los documentos en secciones más pequeñas, que
+posteriormente se almacenan en la columna chunks. Esto permite una
+representación y procesamiento más granular del contenido del documento.
+
+1.  Use el icono **+ Code** debajo del resultado de la celda para
+    agregar una nueva celda de código al notebook, ingrese el siguiente
+    código en ella, haga clic en el botón ▷ **Run cell** y revise el
+    resultado.
+
     ```
     from synapse.ml.featurize.text import PageSplitter
     
@@ -508,15 +543,21 @@ processing of the document content.
     splitted_df = ps.transform(analyzed_df)
     display(splitted_df)
     ```
-   ![A screenshot of a computer AI-generated content may be incorrect.](./media/image55.png)
 
-    Note that the chunks for each document are presented in a single row
-    inside an array. In order to embed all the chunks in the following
-    cells, we need to have each chunk in a separate row.
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image55.png)
 
-2.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
+Tenga en cuenta que los chunks de cada documento se presentan en una
+sola fila dentro de un arreglo. Para poder generar embeddings de todos
+los chunks en las siguientes celdas, necesitamos que cada chunk esté en
+una fila separada.
+
+2.  Use el icono **+ Code** debajo de la salida de la celda para agregar
+    una nueva celda de código al notebook, e ingrese el siguiente código
+    en ella. Haga clic en el botón ▷ **Run cell** y revise la salida.
+
+**Copiar**
+
     ```
     from pyspark.sql.functions import posexplode, col, concat
     
@@ -530,23 +571,28 @@ processing of the document content.
     display(exploded_df)
     ```
 
-   ![A screenshot of a computer AI-generated content may be incorrect.](./media/image56.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image56.png)
 
-From this code snippet we first explode these arrays so there is only
-one chunk in each row, then filter the Spark DataFrame in order to only
-keep the path to the document and the chunk in a single row.
+A partir de este fragmento de código, primero "explotamos" estos
+arreglos para que haya un solo chunk en cada fila, y luego filtramos el
+Spark DataFrame para mantener únicamente la ruta del documento y el
+chunk en una sola fila.
 
-## Task 2: Generating Embeddings
+## Tarea 2: Generación de embeddings 
 
-Next we'll generate the embeddings for each chunk. To do this we utilize
-both SynapseML and Azure OpenAI Service. By integrating the built in
-Azure OpenAI service with SynapseML, we can leverage the power of the
-Apache Spark distributed computing framework to process numerous prompts
-using the OpenAI service.
+A continuación, generaremos los embeddings para cada fragmento. Para
+ello, utilizamos tanto SynapseML como el servicio Azure OpenAI. Al
+integrar el servicio Azure OpenAI incorporado con SynapseML, podemos
+aprovechar la potencia del framework de computación distribuida Apache
+Spark para procesar múltiples prompts utilizando el servicio de OpenAI.
 
-1.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
+1.  Use el icono **+ Code** debajo del resultado de la celda para
+    agregar una nueva celda de código en el notebook, ingrese el
+    siguiente código en ella, haga clic en el botón ▷ **Run cell** y
+    revise el resultado.
+
+**Copiar**
     ```
     from synapse.ml.services import OpenAIEmbedding
     
@@ -562,41 +608,48 @@ using the OpenAI service.
     
     display(df_embeddings)
     ```
-   ![A screenshot of a computer AI-generated content may be incorrect.](./media/image57.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image57.png)
 
-This integration enables the SynapseML embedding client to generate
-embeddings in a distributed manner, enabling efficient processing of
-large volumes of data
+Esta integración permite que el cliente de SynapseML Embedding genere
+embeddings de manera distribuida, facilitando el procesamiento eficiente
+de grandes volúmenes de datos.
 
-## Task 3: Storing Embeddings 
+## Tarea 3: Almacenar Embeddings
 
 [Azure AI
-Search](https://learn.microsoft.com/azure/search/search-what-is-azure-search?WT.mc_id=data-114676-jndemenge) is
-a powerful search engine that includes the ability to perform full text
-search, vector search, and hybrid search. For more examples of its
-vector search capabilities, see the [azure-search-vector-samples
+Search](https://learn.microsoft.com/azure/search/search-what-is-azure-search?WT.mc_id=data-114676-jndemenge) es
+un potente motor de búsqueda que incluye la capacidad de realizar
+búsqueda de texto completo, búsqueda vectorial y búsqueda híbrida. Para
+más ejemplos de sus características de búsqueda vectorial, consulte
+[azure-search-vector-samples
 repository](https://github.com/Azure/azure-search-vector-samples/).
 
-Storing data in Azure AI Search involves two main steps:
+Almacenar datos en Azure AI Search implica dos pasos principales::
 
-**Creating the index:** The first step is to define the schema of the
-search index, which includes the properties of each field as well as any
-vector search strategies that will be used.
+**Creación del índice:** El primer paso consiste en definir el esquema
+del índice de búsqueda, que incluye las propiedades de cada campo, así
+como las estrategias de búsqueda vectorial que se utilizarán.
 
-**Adding chunked documents and embeddings:** The second step is to
-upload the chunked documents, along with their corresponding embeddings,
-to the index. This allows for efficient storage and retrieval of the
-data using hybrid and vector search.
+**Agregar documentos segmentados y embeddings:** El segundo paso es
+subir los documentos segmentados, junto con sus embeddings
+correspondientes, al índice. Esto permite un almacenamiento y
+recuperación eficientes de los datos utilizando búsqueda híbrida y
+vectorial.
 
-1.  The following code snippet demonstrates how to create an index in
-    Azure AI Search using the Azure AI Search REST API. This code
-    creates an index with fields for the unique identifier of each
-    document, the text content of the document, and the vector embedding
-    of the text content.
+1.  El siguiente fragmento de código demuestra cómo crear un índice en
+    Azure AI Search utilizando la REST API de Azure AI Search. Este
+    código crea un índice con campos para el identificador único de cada
+    documento, el contenido de texto del documento y el embedding
+    vectorial del contenido de texto.
 
-2.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
+2.  Use el icono **+ Code** debajo del resultado de la celda para
+    agregar una nueva celda de código en el notebook, e ingrese el
+    siguiente código en ella. Haga clic en el botón **▷ Run cell** y
+    revise el resultado.
+
+**Copiar**
+
     ```
     import requests
     import json
@@ -653,18 +706,23 @@ data using hybrid and vector search.
         print(f"HTTP response body: {response.text}")
     ```
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](./media/image58.png)
-    
-    ![](./media/image59.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image58.png)
 
-3.  The next step is to upload the chunks to the newly created Azure AI
-    Search index. The Azure AI Search REST API supports up to 1000
-    "documents" per request. Note that in this case, each of our
-    "documents" is in fact a chunk of the original file
+![](./media/image59.png)
 
-4.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
+3.  El siguiente paso es cargar los chunks en el índice recién creado de
+    Azure AI Search. La REST API de Azure AI Search admite hasta 1000
+    “documentos” por solicitud. Tenga en cuenta que, en este caso, cada
+    uno de nuestros “documentos” es en realidad un chunk del archivo
+    original.
+
+4.  Use el icono **+ Code** debajo de la salida de la celda para agregar
+    una nueva celda de código en el notebook, e ingrese el siguiente
+    código en ella. Haga clic en el botón ▷ **Run cell** y revise la
+    salida.
+
+**Copiar**
     ```
     import re
     
@@ -722,28 +780,32 @@ data using hybrid and vector search.
     res = df_embeddings.rdd.mapPartitions(upload_rows)
     display(res.toDF(["start_index", "end_index", "insertion_status"]))
     ```
-    ![](./media/image60.png)
-    
-    ![A screenshot of a computer AI-generated content may be incorrect.](./media/image61.png)
+![](./media/image60.png)
 
-# Exercise 4: Retrieving Relevant Documents and Answering Questions
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image61.png)
 
-After processing the document, we can proceed to pose a question. We
-will use SynapseML to convert the user's question into an embedding and
-then utilize cosine similarity to retrieve the top K document chunks
-that closely match the user's question.
+# Ejercicio 4: Recuperación de documentos relevantes y respuesta a preguntas
 
-## Task 1: Configure Environment & Azure API Keys
+Después de procesar el documento, podemos proceder a formular una
+pregunta. Usaremos
+[SynapseML](https://microsoft.github.io/SynapseML/docs/Explore%20Algorithms/OpenAI/Quickstart%20-%20OpenAI%20Embedding/) para
+convertir la pregunta del usuario en un embedding y luego utilizaremos
+la similitud coseno para recuperar los top K fragmentos de documentos
+que coincidan más estrechamente con la pregunta del usuario.
 
-Create a new notebook in the Lakehouse and save it as rag_application.
-We'll use this notebook to build the RAG application.
+## Tarea 1: Configurar el entorno y las claves de API de Azure
 
-1.  Provide the credentials for access to Azure AI Search. You can copy
-    the values from the from Azure Portal.(Exercise 1\>Task 4)
+Cree un nuevo notebook en el Lakehouse y guárdelo como rag\\application.
+Usaremos este notebook para crear la aplicación RAG.
 
-2.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
+1.  Proporcione las credenciales para acceder a Azure AI Search. Puede
+    copiar los valores desde el Azure Portal (Ejercicio 1 \> Tarea 4).
+
+2.  Use el **icono + Code** debajo del resultado de la celda para
+    agregar una nueva celda de código en el notebook, e ingrese el
+    siguiente código en ella. Haga clic en **▷ Run cell** y revise el
+    resultado.
 
     Copy
     ```
@@ -752,16 +814,20 @@ We'll use this notebook to build the RAG application.
     AI_SEARCH_INDEX_NAME = 'rag-demo-index'
     AI_SEARCH_API_KEY = ''
     ```
-    ![A screenshot of a computer AI-generated content may be incorrect.](./media/image62.png)
 
-3.  The following function takes a user's question as input and converts
-    it into an embedding using the text-embedding-ada-002 model. This
-    code assumes you're using the Pre-built AI Services in Microsoft
-    Fabric
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image62.png)
 
-4.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
+3.  La siguiente función toma como entrada la pregunta del usuario y la
+    convierte en un embedding utilizando el modelo
+    text-embedding-ada-002. Este código asume que está utilizando los
+    servicios de IA preintegrados en Microsoft Fabric.
+
+4.  Use el icono **+ Code** debajo del resultado de la celda para
+    agregar una nueva celda de código en el notebook, e ingrese el
+    siguiente código en ella. Haga clic en el botón ▷ **Run cell** y
+    revise el resultado.
+
     ```
     def gen_question_embedding(user_question):
         """Generates embedding for user_question using SynapseML."""
@@ -784,16 +850,19 @@ We'll use this notebook to build the RAG application.
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image63.png)
 
-## Task 2: Retrieve Relevant Documents
+## Tarea 2: Recuperar documentos relevantes
 
-1.  The next step is to use the user question and its embedding to
-    retrieve the top K most relevant document chunks from the search
-    index. The following function retrieves the top K entries using
-    hybrid search
+1.  El siguiente paso es usar la pregunta del usuario y su embedding
+    para recuperar los top K fragmentos de documentos más relevantes del
+    índice de búsqueda. La siguiente función recupera los top K
+    registros utilizando hybrid search.
 
-2.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
+2.  Use el icono **+ Code** icon debajo de la salida de la celda para
+    agregar una nueva celda de código en el notebook, y pegue el
+    siguiente código en ella. Haga clic en el botón **▷ Run cell** y
+    revise la salida.
+
+**Copiar**
     ```
     import json 
     import requests
@@ -824,16 +893,22 @@ incorrect.](./media/image63.png)
         output = json.loads(response.text)
         return output
     ```
-    ![A screenshot of a computer AI-generated content may be incorrect.](./media/image64.png)
-    
-    With those functions defined, we can define a function that takes a
-    user's question, generates an embedding for the question, retrieves the
-    top K document chunks, and concatenates the content of the retrieved
-    documents to form the context for the user's question.
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image64.png)
 
-3.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
+Con esas funciones definidas, podemos definir una función que tome la
+pregunta de un usuario, genere un embedding para la pregunta, recupere
+los top K fragmentos de documentos y concatene el contenido de los
+documentos recuperados para formar el contexto de la pregunta del
+usuario..
+
+3.  Use el icono **+ Code** icon debajo de la salida de la celda para
+    agregar una nueva celda de código en el notebook, y pegue el
+    siguiente código en ella. Haga clic en el botón **▷ Run cell** y
+    revise la salida.
+
+**Copiar**
+
     ```
     def get_context(user_question, retrieved_k = 5):
         # Generate embeddings for the question
@@ -851,17 +926,21 @@ incorrect.](./media/image63.png)
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image65.png)
 
-## **Task 3: Answering the User's Question**
+## **Tarea 3: Responder la pregunta del usuario**
 
-Finally, we can define a function that takes a user's question,
-retrieves the context for the question, and sends both the context and
-the question to a large language model to generate a response. For this
-demo, we'll use the gpt-35-turbo-16k, a model that is optimized for
-conversation.
+Finalmente, podemos definir una función que tome la pregunta del
+usuario, recupere el contexto de la pregunta y envíe tanto el contexto
+como la pregunta a un modelo de lenguaje grande para generar una
+respuesta. Para esta demostración, utilizaremos gpt-35-turbo-16k, un
+modelo optimizado para la conversación.
 
-1.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
+1.  Use el icono **+ Code** icon debajo de la salida de la celda para
+    agregar una nueva celda de código en el notebook, y pegue el
+    siguiente código en ella. Haga clic en el botón **▷ Run cell** y
+    revise la salida.
+
+**Copiar**
+
     ```
     from pyspark.sql import Row
     from synapse.ml.services.openai import OpenAIChatCompletion
@@ -913,88 +992,92 @@ conversation.
         
         return result
     ```
-    ![](./media/image66.png)
-    
-    ![](./media/image67.png)
 
-2.  Now, we can call that function with an example question to see the
-    response:
+![](./media/image66.png)
 
-3.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
+![](./media/image67.png)
+
+2.  Ahora, podemos llamar a esa función con una pregunta de ejemplo para
+    ver la respuesta:
+
+3.  Use el icono **+ Code** icon debajo de la salida de la celda para
+    agregar una nueva celda de código en el notebook, y pegue el
+    siguiente código en ella. Haga clic en el botón **▷ Run cell** y
+    revise la salida.
+
     ```
     user_question = "how do i make a booking?"
     response = get_response(user_question)
     print(response)
     ```
-
 ![](./media/image68.png)
 
-## Task 4: Delete the resources
+## Tarea 4: Eliminar los recursos
 
-To avoid incurring unnecessary Azure costs, you should delete the
-resources you created in this quickstart if they're no longer needed. To
-manage resources, you can use the [Azure
+Para evitar incurrir en costos innecesarios en Azure, debe eliminar los
+recursos que creó en este inicio rápido si ya no son necesarios. Para
+administrar los recursos, puede usar el [Azure
 portal](https://portal.azure.com/?azure-portal=true).
 
-1.  To delete the storage account, navigate to **Azure portal Home**
-    page, click on **Resource groups**.
+1.  Para eliminar la cuenta de almacenamiento, navegue a la página de
+    inicio del **Azure portal**, y haga clic en **Resource groups**.
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image69.png)
 
-2.  Click on the assigned resource group.
+2.  Haga clic en el resource group asignado.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image70.png)
 
-3.  In the **Resource group** home page, select the resources Azure AI
-    services, Key valut and Search service. ![](./media/image71.png)
+3.  En la página principal del **Resource group**, seleccione los
+    recursos **Azure AI services**, **Key vault** y **Search service**.
+    ![](./media/image71.png)
 
-4.  Select **Delete**
+4.  Seleccione **Delete**
 
 ![](./media/image72.png)
 
 ![A screenshot of a computer error AI-generated content may be
 incorrect.](./media/image73.png)
 
-5.  In the **Delete Resources** pane that appears on the right side,
-    navigate to **Enter +++delete+++ to confirm deletion** field, then
-    click on the **Delete** button.
+5.  En el panel **Delete Resources** que aparece en el lado derecho,
+    vaya al campo **Enter +++delete+++ to confirm deletion**, luego haga
+    clic en el botón **Delete**.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image74.png)
 
-6.  On **Delete confirmation** dialog box, click on **Delete** button.
+6.  En el cuadro de diálogo de confirmación **Delete**, haga clic en el
+    botón **Delete**.
 
 > ![A screenshot of a computer error Description automatically
 > generated](./media/image75.png)
 
-7.  Open your browser, navigate to the address bar, and type or paste
-    the following URL: +++https://app.fabric.microsoft.com/+++ then
-    press the **Enter** button.
+7.  Abra su navegador, vaya a la barra de direcciones y escriba o pegue
+    la siguiente URL: +++https://app.fabric.microsoft.com/+++ y presione
+    el botón **Enter**.
 
 > ![](./media/image76.png)
 
-8.  Select the ***...*** option under the workspace name and
-    select **Workspace settings**.
+8.  Seleccione la opción ... debajo del nombre del workspace y
+    seleccione **Workspace settings**.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image77.png)
 
-9.  Select **General** and click on **Remove this workspace.**
+9.  Seleccione **General** y haga clic en **Remove this workspace.**
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image78.png)
 
-10. Click on **Delete** in the warning that pops up.
+10. Haga clic en **Delete** en la advertencia que aparece.
 
 ![A white background with black text Description automatically
 generated](./media/image79.png)
 
-11. Wait for a notification that the Workspace has been deleted, before
-    proceeding to the next lab.
+11. Espere a recibir una notificación de que el Workspace ha sido
+    eliminado antes de continuar con el siguiente laboratorio.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image80.png)
