@@ -1,103 +1,108 @@
-# Usecase 06- Chat with your data using Fabric Data Agent
+# Caso de uso 03: Chatee con sus datos utilizando Fabric Data Agent
 
-**Introduction:**
+**Introducción:**
 
-This usecase introduces you to Microsoft Fabric’s Data Agent, enabling
-natural language querying over structured datasets. By leveraging large
-language models (LLMs), the Fabric Data Agent can interpret plain
-English questions and translate them into valid T-SQL queries, executed
-over your chosen lakehouse data. This hands-on exercise guides you
-through the process of configuring your environment, setting up a Fabric
-workspace, uploading data, and using the AI skill to interact with your
-data conversationally. You will also explore advanced features like
-providing query examples, adding instructions to improve accuracy, and
-calling the AI skill programmatically from a Fabric notebook
+Este caso de uso le presenta Data Agent de Microsoft Fabric, que permite
+realizar consultas en lenguaje natural sobre conjuntos de datos
+estructurados. Al aprovechar los modelos de lenguaje de gran tamaño
+(LLMs), Fabric Data Agent puede interpretar preguntas en inglés sencillo
+y traducirlas en consultas T-SQL válidas, que se ejecutan sobre los
+datos de su Lakehouse seleccionado. Este ejercicio práctico lo guía a
+través del proceso de configurar su entorno, crear un espacio de trabajo
+en Fabric, cargar datos y utilizar la habilidad de IA para interactuar
+con sus datos de manera conversacional. También explorará funciones
+avanzadas como proporcionar ejemplos de consultas, agregar instrucciones
+para mejorar la precisión y llamar a la habilidad de IA de manera
+programática desde un notebook de Fabric.
 
-**Objectives:**
+**Objetivos:**
 
-- Set up a Fabric workspace and load data into a lakehouse.
+- Configure un espacio de trabajo en Fabric y cargue datos en un
+  Lakehouse.
 
-- Create and configure a Data Agent to enable natural language querying.
+- Cree y configure un Data Agentpara habilitar las consultas en lenguaje
+  natural.
 
-- Ask questions in plain English and view AI-generated SQL query
-  results.
+- Haga preguntas en inglés sencillo y visualice los resultados de las
+  consultas SQL generadas por la IA.
 
-- Enhance AI responses using custom instructions and example queries.
+- Mejore las respuestas de la IA utilizando instrucciones personalizadas
+  y consultas de ejemplo.
 
-- Use the Data agent programmatically from a Fabric notebook.
+- Use el Data Agent de manera programática desde un notebook de Fabric.
 
-## **Task 0: Sync Host environment time**
+## **Tarea 0: Sincronizar la hora del entorno Host**
 
-1.  In your VM, navigate and click in the **Search bar**, type
-    **Settings** and then click on **Settings** under **Best match**.
+1.  En su máquina virtual (VM), navegue y haga clic en la **barra de
+    búsqueda**, escriba **Settings** y luego haga clic en **Settings**
+    en la sección **Best match**.
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image1.png)
 
-2.  On Settings window, navigate and click on **Time & language**.
+2.  En la ventana **Settings**, navegue y haga clic en **Time &
+    language**.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image2.png)
 
-3.  On **Time & language** page, navigate and click on **Date & time**.
+3.  En la página **Time & language**, navegue y haga clic en **Date &
+    time**.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image3.png)
 
-4.  Scroll down and navigate to **Additional settings** section, then
-    click on **Syn now** button. It will take 3-5 minutes to syn.
+4.  Desplácese hacia abajo y navegue hasta la sección **Additional
+    settings**, luego haga clic en el botón **Sync now**. El proceso
+    tomará entre 3 y 5 minutos para sincronizarse.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image4.png)
 
-5.  Close the **Settings** window.
+5.  Cierre la ventana de **Settings**.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image5.png)
 
-## **Task 1: Create a Fabric workspace**
+## **Tarea 1: Crear un espacio de trabajo en Fabric**
 
-In this task, you create a Fabric workspace. The workspace contains all
-the items needed for this lakehouse tutorial, which includes lakehouse,
-dataflows, Data Factory pipelines, the notebooks, Power BI datasets, and
-reports.
+En esta tarea, creará un espacio de trabajo en Fabric. El espacio de
+trabajo contiene todos los elementos necesarios para este tutorial de
+Lakehouse, lo cual incluye: lakehouse, dataflows, Data Factory
+pipelines, notebooks, conjuntos de datos de Power BI y reportes.
 
-1.  Open your browser, navigate to the address bar, and type or paste
-    the following URL: +++https://app.fabric.microsoft.com/+++ then
-    press the **Enter** button.
+1.  Abra su explorador, vaya a la barra de direcciones y escriba o pegue
+    la siguiente URL: +++https://app.fabric.microsoft.com/+++ luego
+    presione el botón **Enter**.
 
 > ![A search engine window with a red box Description automatically
 > generated with medium confidence](./media/image6.png)
 
-2.  In the **Microsoft Fabric** window, enter your credentials, and
-    click on the **Submit** button.
+2.  En la ventana de **Microsoft Fabric**, ingrese sus credenciales y
+    haga clic en el botón **Submit**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image7.png)
 
-3.  Then, In the **Microsoft** window enter the password and click on
-    the **Sign in** button**.**
+3.  Luego, en la ventana de **Microsoft**, ingrese la contraseña y haga
+    clic en el botón **Sign in**.
 
 > ![A login screen with a red box and blue text AI-generated content may
 > be incorrect.](./media/image8.png)
 
-4.  In **Stay signed in?** window, click on the **Yes** button.
+4.  En la ventana **Stay signed in?** haga clic en el botón **Yes**.
 
 > ![A screenshot of a computer error AI-generated content may be
 > incorrect.](./media/image9.png)
 
-5.  In the Workspaces pane Select **+New workspace**.
+5.  En el panel **Workspaces**, seleccione **+New workspace**.
 
 > ![](./media/image10.png)
 
-6.  In the **Create a workspace** pane that appears on the right side,
-    enter the following details, and click on the **Apply** button.
-    |    |   |
-    |----|----|
-    |Name	|+++AI-Fabric-XXX+++ (XXX can be a unique number) |
-    |Advanced	|Under License mode, select Fabric capacity|
-    |Default storage format	|Small dataset storage format|
+6.  En el panel **Create a workspace** que aparece en el lado derecho,
+    ingrese los siguientes detalles y haga clic en el botón **Apply**.
 
+[TABLE]
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image11.png)
@@ -105,29 +110,30 @@ reports.
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image12.png)
 
-7.  Wait for the deployment to complete. It takes 2-3 minutes to
-    complete.
+7.  Espere a que se complete la implementación. Tomará aproximadamente
+    de 2 a 3 minutos.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image13.png)
 
-## **Task 2: Create a lakehouse**
+## **Tarea 2: Crear un lakehouse**
 
-1.  In the **Fabric** **Home** page, select **+New item** and
-    select **Lakehouse** tile.
+1.  En la página principal de **Fabric**, seleccione **+New item** y
+    luego seleccione el recuadro **Lakehouse**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image14.png)
 
-2.  In the **New lakehouse** dialog box, enter
-    +++**AI_Fabric_lakehouseXX**+++ in the **Name** field, click on the
-    **Create** button and open the new lakehouse.
+2.  En el cuadro de diálogo **New lakehouse**, ingrese
+    +++**AI_Fabric_lakehouseXX**+++ en el campo **Name**, haga clic en
+    el botón **Create** y abra el nuevo lakehouse.
 
-> **Note**: Ensure to remove space before **AI_Fabric_lakehouseXX**.
+> **Nota**: Asegúrese de eliminar el espacio antes de
+> **AI_Fabric_lakehouseXX**.
 >
 > ![](./media/image15.png)
 
-3.  You will see a notification stating **Successfully created SQL
+3.  Verá una notificación que indica **Successfully created SQL
     endpoint**.
 
 > ![A screenshot of a computer AI-generated content may be
@@ -136,41 +142,49 @@ reports.
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image17.png)
 
-4.  Next, create a new notebook to query the table. In
-    the **Home** ribbon, select the drop down for **Open notebook** and
-    choose **New notebook**.
+4.  A continuación, cree un nuevo notebook para consultar la tabla. En
+    la cinta **Home**, seleccione el menú desplegable **Open notebook**
+    y seleccione **New notebook**.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image18.png)
 
-## Task 3: Upload AdventureWorksDW data into lakehouse
+## Tarea 3: Cargar los datos de AdventureWorksDW en el lakehouse
 
-First, create a lakehouse and populate it with the necessary data.
+Primero, cree un lakehouse y cárguelo con los datos necesarios.
 
-If you already have an instance of AdventureWorksDW in a warehouse or
-lakehouse, you can skip this step. If not, create a lakehouse from a
-notebook. Use the notebook to populate the lakehouse with the data.
+Si ya tiene una instancia de AdventureWorksDW en un warehouse o
+lakehouse, puede omitir este paso. De lo contrario, cree un lakehouse
+desde un notebook y utilice el notebook para poblar el lakehouse con los
+datos.
 
-1.  In the query editor, copy and paste the following code. Select
-    the **Run all** button to execute the query. After the query is
-    completed, you will see the results.
-    ```
-    import pandas as pd
-    from tqdm.auto import tqdm
-    base = "https://synapseaisolutionsa.z13.web.core.windows.net/data/AdventureWorks"
-    
-    # load list of tables
-    df_tables = pd.read_csv(f"{base}/adventureworks.csv", names=["table"])
-    
-    for table in (pbar := tqdm(df_tables['table'].values)):
-        pbar.set_description(f"Uploading {table} to lakehouse")
-    
-        # download
-        df = pd.read_parquet(f"{base}/{table}.parquet")
-    
-        # save as lakehouse table
-        spark.createDataFrame(df).write.mode('overwrite').saveAsTable(table)
-    ```
+1.  En el editor de consultas, copie y pegue el siguiente código.
+    Seleccione el botón **Run all** para ejecutar la consulta. Una vez
+    completada la consulta, verá los resultados.
+
+> import pandas as pd
+>
+> from tqdm.auto import tqdm
+>
+> base =
+> "https://synapseaisolutionsa.z13.web.core.windows.net/data/AdventureWorks"
+>
+> \# load list of tables
+>
+> df_tables = pd.read_csv(f"{base}/adventureworks.csv",
+> names=\["table"\])
+>
+> for table in (pbar := tqdm(df_tables\['table'\].values)):
+>
+> pbar.set_description(f"Uploading {table} to lakehouse")
+>
+> \# download
+>
+> df = pd.read_parquet(f"{base}/{table}.parquet")
+>
+> \# save as lakehouse table
+>
+> spark.createDataFrame(df).write.mode('overwrite').saveAsTable(table)
 >
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image19.png)
@@ -181,26 +195,28 @@ notebook. Use the notebook to populate the lakehouse with the data.
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image21.png)
 
-After a few minutes, the lakehouse is populated with the necessary data.
+Después de unos minutos, el lakehouse queda poblado con los datos
+necesarios..
 
-## Task 4: Create Data agent
+## Tarea 4: Crear un Data Agent
 
-1.  Now, click on **AI-Fabric-XXXX** on the left-sided navigation pane.
+1.  Ahora, haga clic en **AI-Fabric-XXXX** en el panel de navegación
+    izquierdo.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image22.png)
 
-1.  In the **Fabric** home page, select **+New item.**
+1.  En la página principal de **Fabric**, seleccione **+New item**.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image23.png)
 
-2.  In the **Filter by item type** search box, enter **+++data
-    agent+++** and select the **Data agent**![A screenshot of a computer
+2.  En el cuadro de búsqueda **Filter by item type**, escriba **+++data
+    agent+++** y seleccione **Data agent**.![A screenshot of a computer
     AI-generated content may be incorrect.](./media/image24.png)
 
-3.  Enter **+++AI-agent+++** as the Data agent name and
-    select **Create**.
+3.  Ingrese +++**AI-agent**+++ como nombre del **Data agent** y
+    seleccione **Create**.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image25.png)
@@ -208,13 +224,13 @@ incorrect.](./media/image25.png)
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image26.png)
 
-4.  In AI-agent page, select **Add a data source**
+4.  En la página de AI-agent, seleccione **Add a data source**.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image27.png)
 
-5.  In the **OneLake catalog** tab, select the **AI-Fabric_lakehouse
-    lakehouse** and select **Add**.
+5.  En la pestaña **OneLake catalog**, seleccione el
+    **AI-Fabric_lakehouse** y haga clic en **Add**.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image28.png)
@@ -222,10 +238,10 @@ incorrect.](./media/image28.png)
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image29.png)
 
-2.  You must then select the tables for which you want the AI skill to
-    have available access.
+2.  A continuación, debe seleccionar las tablas a las que desea que la
+    habilidad de IA tenga acceso disponible.
 
-This lab uses these tables:
+Este laboratorio utiliza las siguientes tablas:
 
 - DimCustomer
 
@@ -250,12 +266,13 @@ This lab uses these tables:
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image30.png)
 
-## Task 5: Provide instructions
+## Task 5: Proporcionar instrucciones
 
-1.  When you first ask the questions with the listed tables select
-    **factinternetsales**, the data agent answers them fairly well.
+1.  Cuando haga las primeras preguntas con las tablas listadas,
+    seleccione **factinternetsales**; el Data Agent las responde
+    bastante bien.
 
-2.  For instance, for the question +++**What is the most sold
+2.  Por ejemplo, para la pregunta +++**What is the most sold
     product?+++**,:
 
 > ![A screenshot of a computer AI-generated content may be
@@ -264,17 +281,18 @@ This lab uses these tables:
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image32.png)
 
-3.  Copy the all question and SQL queries and paste them in a notepad
-    and then Save the notepad to use the information in the upcoming
-    tasks
+3.  Copie todas las preguntas y consultas SQL y péguelas en un bloc de
+    notas, luego guarde el bloc de notas para usar la información en las
+    próximas tareas.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image33.png)
 
-4.  Select **FactResellerSales** and enter the following text and click
-    on the **Submit icon** as shown in the below image.
+4.  Seleccione **FactResellerSales**, ingrese el siguiente texto y haga
+    clic en el icono **Submit**, como se muestra en la imagen a
+    continuación.
 
-**+++What is our most sold product?+++**
++++**What is our most sold product?**+++
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image34.png)
@@ -282,13 +300,13 @@ incorrect.](./media/image34.png)
 ![A screenshot of a chat AI-generated content may be
 incorrect.](./media/image35.png)
 
-As you continue to experiment with queries, you should add more
-instructions.
+A medida que continúe experimentando con las consultas, debe agregar más
+instrucciones.
 
-5.  Select the **dimcustomer** , enter the following text and click on
-    the **Submit icon**
+5.  Seleccione **dimcustomer**, ingrese el siguiente texto y haga clic
+    en el **icono** **Submit**
 
- **+++how many active customers did we have June 1st, 2013?+++**
++++**how many active customers did we have June 1st, 2013?**+++
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image36.png)
@@ -296,14 +314,14 @@ incorrect.](./media/image36.png)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image37.png)
 
-6.  Copy the all question and SQL queries and paste them in a notepad
-    and then Save the notepad to use the information in the upcoming
-    tasks
+6.  Copie todas las preguntas y consultas SQL, péguelas en un bloc de
+    notas y luego guarde el bloc de notas para usar la información en
+    las próximas tareas.
 
-7.  Select the **dimdate,** **FactInternetSales** , enter the following
-    text and click on the **Submit icon**
+7.  Seleccione **dimdate,** **FactInternetSales**, ingrese el siguiente
+    texto y haga clic en el **icono** **Submit**
 
- **+++what are the monthly sales trends for the last year?+++**
++++**what are the monthly sales trends for the last year?**+++
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image38.png)
@@ -311,8 +329,8 @@ incorrect.](./media/image38.png)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image39.png)
 
-6.  Select the **dimproduct,** **FactInternetSales** , enter the
-    following text and click on the **Submit icon**
+6.  Seleccione **dimproduct** y **FactInternetSales**, ingrese el
+    siguiente texto y haga clic en el icono **Submit**.
 
 +++**which product category had the highest average sales price?**+++
 
@@ -322,31 +340,32 @@ incorrect.](./media/image38.png)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image41.png)
 
-Part of the problem is that "active customer" doesn't have a formal
-definition. More instructions in the notes to the model text box might
-help, but users might frequently ask this question. You need to make
-sure that the AI handles the question correctly
+Parte del problema es que “cliente activo” no tiene una definición
+formal. Más instrucciones en el cuadro de texto \*\*Notes to the
+model\*\* podrían ayudar, pero los usuarios podrían hacer esta pregunta
+con frecuencia. Debe asegurarse de que la IA maneje la pregunta
+correctamente.
 
-7.  The relevant query is moderately complex, so provide an example by
-    selecting the **Example queries** button.
+7.  La consulta relevante es moderadamente compleja, por lo que
+    proporcione un ejemplo seleccionando el botón **Example queries**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image42.png)
 
-8.  Select the Edit
+8.  Seleccione **Edit**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image43.png)
 
-8.  In the Example SQL queries tab, select the **+Add example.**
+8.  En la pestaña **Example SQL queries**, seleccione **+Add example.**
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image44.png)
 
-9.  You can manually add examples, but you can also upload them from a
-    JSON file. Providing examples from a file is helpful when you have
-    many SQL queries that you want to upload all at once, instead of
-    manually uploading the queries one by one.
+9.  Puede agregar ejemplos manualmente, pero también puede cargarlos
+    desde un archivo JSON. Proporcionar ejemplos desde un archivo es
+    útil cuando tiene muchas consultas SQL que desea subir de una sola
+    vez, en lugar de cargarlas manualmente una por una.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image45.png)
@@ -357,37 +376,39 @@ incorrect.](./media/image46.png)
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image47.png)
 
-10.  Add all the queries and SQL queries that you have saved in Notepad,
-    and then click on ‘Download all as .json’.
+10.  Agregue todas las preguntas y consultas SQL que haya guardado en el
+    Bloc de notas, y luego haga clic en “Download all as .json”.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image48.png)
 
-## Task 6: Use the Data agent programmatically
+## Tarea 6: Usar el Data Agent de forma programática 
 
-Both instructions and examples were added to the Data agent. As testing
-proceeds, more examples and instructions can improve the AI skill even
-further. Work with your colleagues to see if you provided examples and
-instructions that cover the kinds of questions they want to ask.
+Se agregaron tanto las instrucciones como los ejemplos al Data Agent. A
+medida que continúe la fase de pruebas, agregar más ejemplos e
+instrucciones puede mejorar aún más la habilidad de IA. Colabore con sus
+colegas para verificar si las instrucciones y ejemplos proporcionados
+cubren el tipo de preguntas que ellos desean realizar.
 
-You can use the AI skill programmatically within a Fabric notebook. To
-determine whether or not the AI skill has a published URL value.
+Puede usar la habilidad de IA de forma programática dentro de un
+notebook de Fabric. Esto le permite verificar si la habilidad de IA
+tiene un valor de URL publicado.
 
-1.  In the Data agent Fabric page, in the **Home** ribbon select the
-    **Settings**.
+1.  En la página del Data Agent en Fabric, en la cinta de opciones
+    **Home**, seleccione **Settings**.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image49.png)
 
-2.  Before you publish the AI skill, it doesn't have a published URL
-    value, as shown in this screenshot.
+2.  Antes de publicar la habilidad de IA, no tiene un valor de URL
+    publicado, como se muestra en esta captura de pantalla.
 
-3.  Close the AI Skill setting.
+3.  Cierre la configuración de la habilidad de IA.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image50.png)
 
-4.  In the **Home** ribbon, select the **Publish**.
+4.  En la cinta de opciones **Home**, seleccione **Publish**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image51.png)
@@ -395,160 +416,231 @@ incorrect.](./media/image50.png)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image52.png)
 
-9.  Click on the **View publishing details**
+9.  Haga clic en **View publishing details**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image53.png)
 
-5.  The published URL for the AI agent appears, as shown in this
-    screenshot.
+5.  La URL publicada para el agente de IA aparece, como se muestra en
+    esta captura de pantalla.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image54.png)
 
-6.  Copy the URL and paste that in a notepad and then Save the notepad
-    to use the information in the upcoming
+6.  Copie la URL y péguela en un bloc de notas, luego guarde el bloc de
+    notas para usar la información en las próximas tareas.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image54.png)
 
-7.  Select **Notebook1** in the left navigation pane.
+7.  Seleccione **Notebook1** en el panel de navegación izquierdo.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image55.png)
 
-10. Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, enter the following code in it and replace the
-    **URL**. Click on **▷ Run** button and review the output
+10. Utilice el icono **+** **Code** debajo de la salida de la celda para
+    agregar una nueva celda de código al notebook, ingrese el siguiente
+    código en ella y reemplace la **URL**. Haga clic en el botón ▷
+    **Run** y revise la salida.
+
+11. .
 
 +++%pip install "openai==1.70.0"+++
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image56.png)
 
-11. Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, enter the following code in it and replace the
-    **URL**. Click on **▷ Run** button and review the output
+12. Utilice el icono **+ Code** debajo de la salida de la celda para
+    agregar una nueva celda de código al notebook, ingrese el siguiente
+    código en ella y reemplace la **URL**. Haga clic en el botón ▷
+    **Run** y revise la salida.
 
 > +++%pip install httpx==0.27.2+++
 >
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image57.png)
-
-8.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, enter the following code in it and replace the
-    **URL**. Click on **▷ Run** button and review the output
-    ```
-    import requests
-    import json
-    import pprint
-    import typing as t
-    import time
-    import uuid
-    
-    from openai import OpenAI
-    from openai._exceptions import APIStatusError
-    from openai._models import FinalRequestOptions
-    from openai._types import Omit
-    from openai._utils import is_given
-    from synapse.ml.mlflow import get_mlflow_env_config
-    from sempy.fabric._token_provider import SynapseTokenProvider
-     
-    base_url = "https://<generic published base URL value>"
-    question = "What datasources do you have access to?"
-    
-    configs = get_mlflow_env_config()
-    
-    # Create OpenAI Client
-    class FabricOpenAI(OpenAI):
-        def __init__(
-            self,
-            api_version: str ="2024-05-01-preview",
-            **kwargs: t.Any,
-        ) -> None:
-            self.api_version = api_version
-            default_query = kwargs.pop("default_query", {})
-            default_query["api-version"] = self.api_version
-            super().__init__(
-                api_key="",
-                base_url=base_url,
-                default_query=default_query,
-                **kwargs,
-            )
-        
-        def _prepare_options(self, options: FinalRequestOptions) -> None:
-            headers: dict[str, str | Omit] = (
-                {**options.headers} if is_given(options.headers) else {}
-            )
-            options.headers = headers
-            headers["Authorization"] = f"Bearer {configs.driver_aad_token}"
-            if "Accept" not in headers:
-                headers["Accept"] = "application/json"
-            if "ActivityId" not in headers:
-                correlation_id = str(uuid.uuid4())
-                headers["ActivityId"] = correlation_id
-    
-            return super()._prepare_options(options)
-    
-    # Pretty printing helper
-    def pretty_print(messages):
-        print("---Conversation---")
-        for m in messages:
-            print(f"{m.role}: {m.content[0].text.value}")
-        print()
-    
-    fabric_client = FabricOpenAI()
-    # Create assistant
-    assistant = fabric_client.beta.assistants.create(model="not used")
-    # Create thread
-    thread = fabric_client.beta.threads.create()
-    # Create message on thread
-    message = fabric_client.beta.threads.messages.create(thread_id=thread.id, role="user", content=question)
-    # Create run
-    run = fabric_client.beta.threads.runs.create(thread_id=thread.id, assistant_id=assistant.id)
-    
-    # Wait for run to complete
-    while run.status == "queued" or run.status == "in_progress":
-        run = fabric_client.beta.threads.runs.retrieve(
-            thread_id=thread.id,
-            run_id=run.id,
-        )
-        print(run.status)
-        time.sleep(2)
-    
-    # Print messages
-    response = fabric_client.beta.threads.messages.list(thread_id=thread.id, order="asc")
-    pretty_print(response)
-    
-    # Delete thread
-    fabric_client.beta.threads.delete(thread_id=thread.id)
-    ```
+>
+> Utilice el icono **+** **Code** debajo de la salida de la celda para
+> agregar una nueva celda de código al notebook, ingrese el siguiente
+> código en ella y reemplace la **URL**. Haga clic en el botón ▷ **Run**
+> y revise la salida.
+>
+> import requests
+>
+> import json
+>
+> import pprint
+>
+> import typing as t
+>
+> import time
+>
+> import uuid
+>
+> from openai import OpenAI
+>
+> from openai.\_exceptions import APIStatusError
+>
+> from openai.\_models import FinalRequestOptions
+>
+> from openai.\_types import Omit
+>
+> from openai.\_utils import is_given
+>
+> from synapse.ml.mlflow import get_mlflow_env_config
+>
+> from sempy.fabric.\_token_provider import SynapseTokenProvider
+>
+> base_url = "https://\<generic published base URL value\>"
+>
+> question = "What datasources do you have access to?"
+>
+> configs = get_mlflow_env_config()
+>
+> \# Create OpenAI Client
+>
+> class FabricOpenAI(OpenAI):
+>
+> def \_\_init\_\_(
+>
+> self,
+>
+> api_version: str ="2024-05-01-preview",
+>
+> \*\*kwargs: t.Any,
+>
+> ) -\> None:
+>
+> self.api_version = api_version
+>
+> default_query = kwargs.pop("default_query", {})
+>
+> default_query\["api-version"\] = self.api_version
+>
+> super().\_\_init\_\_(
+>
+> api_key="",
+>
+> base_url=base_url,
+>
+> default_query=default_query,
+>
+> \*\*kwargs,
+>
+> )
+>
+> def \_prepare_options(self, options: FinalRequestOptions) -\> None:
+>
+> headers: dict\[str, str | Omit\] = (
+>
+> {\*\*options.headers} if is_given(options.headers) else {}
+>
+> )
+>
+> options.headers = headers
+>
+> headers\["Authorization"\] = f"Bearer {configs.driver_aad_token}"
+>
+> if "Accept" not in headers:
+>
+> headers\["Accept"\] = "application/json"
+>
+> if "ActivityId" not in headers:
+>
+> correlation_id = str(uuid.uuid4())
+>
+> headers\["ActivityId"\] = correlation_id
+>
+> return super().\_prepare_options(options)
+>
+> \# Pretty printing helper
+>
+> def pretty_print(messages):
+>
+> print("---Conversation---")
+>
+> for m in messages:
+>
+> print(f"{m.role}: {m.content\[0\].text.value}")
+>
+> print()
+>
+> fabric_client = FabricOpenAI()
+>
+> \# Create assistant
+>
+> assistant = fabric_client.beta.assistants.create(model="not used")
+>
+> \# Create thread
+>
+> thread = fabric_client.beta.threads.create()
+>
+> \# Create message on thread
+>
+> message =
+> fabric_client.beta.threads.messages.create(thread_id=thread.id,
+> role="user", content=question)
+>
+> \# Create run
+>
+> run = fabric_client.beta.threads.runs.create(thread_id=thread.id,
+> assistant_id=assistant.id)
+>
+> \# Wait for run to complete
+>
+> while run.status == "queued" or run.status == "in_progress":
+>
+> run = fabric_client.beta.threads.runs.retrieve(
+>
+> thread_id=thread.id,
+>
+> run_id=run.id,
+>
+> )
+>
+> print(run.status)
+>
+> time.sleep(2)
+>
+> \# Print messages
+>
+> response =
+> fabric_client.beta.threads.messages.list(thread_id=thread.id,
+> order="asc")
+>
+> pretty_print(response)
+>
+> \# Delete thread
+>
+> fabric_client.beta.threads.delete(thread_id=thread.id)
+>
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image58.png)
 >
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image59.png)
 
-## Task 7: Delete the resources
+## Tarea 7: Eliminar los recursos
 
-1.  Select your workspace, the **AI-Fabric-XXXX** from the left-hand
-    navigation menu. It opens the workspace item view.
+1.  Seleccione su workspace, el **AI-Fabric-XXXX**, desde el menú de
+    navegación izquierdo. Esto abrirá la vista de elementos del
+    workspace.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image60.png)
 
-2.  Select the **...** option under the workspace name and
-    select **Workspace settings**.
+2.  Seleccione la opción ... debajo del nombre del workspace y
+    seleccione **Workspace settings**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image61.png)
 
-3.  Select **Other** and **Remove this workspace.**
+3.  Seleccione **Other** y **Remove this workspace.**
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image62.png)
 
-4.  Click on **Delete** in the warning that pops up.
+4.  Haga clic en **Delete** en la advertencia que aparece.
 
 > ![A white background with black text AI-generated content may be
 > incorrect.](./media/image63.png)
@@ -556,15 +648,16 @@ incorrect.](./media/image54.png)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image64.png)
 
-**Summary:**
+**Resumen:**
 
-In this lab, you learned how to unlock the power of conversational
-analytics using Microsoft Fabric’s Data Agent. You configured a Fabric
-workspace, ingested structured data into a lakehouse, and set up an AI
-skill to translate natural language questions into SQL queries. You also
-enhanced the AI agent’s capabilities by providing instructions and
-examples to refine query generation. Finally, you called the agent
-programmatically from a Fabric notebook, demonstrating end-to-end AI
-integration. This lab empowers you to make enterprise data more
-accessible, usable, and intelligent for business users through natural
-language and generative AI technologies.
+En este laboratorio, aprendió a desbloquear el poder del análisis
+conversacional utilizando el Data Agent de Microsoft Fabric. Configuró
+un workspace de Fabric, ingresó datos estructurados en un lakehouse y
+configuró una habilidad de IA para traducir preguntas en lenguaje
+natural a consultas SQL. También mejoró las capacidades del agente de IA
+proporcionando instrucciones y ejemplos para refinar la generación de
+consultas. Finalmente, llamó al agente de manera programática desde un
+notebook de Fabric, demostrando la integración de IA de principio a fin.
+Este laboratorio le permite hacer que los datos empresariales sean más
+accesibles, utilizables e inteligentes para los usuarios de negocio
+mediante lenguaje natural y tecnologías de IA generativa.
