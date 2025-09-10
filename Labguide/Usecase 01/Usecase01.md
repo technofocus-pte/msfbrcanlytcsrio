@@ -1,113 +1,120 @@
-# Use case 1: Creating a Lakehouse, ingesting sample data and building a report
+# Caso de uso 1: Crear un Lakehouse, ingerir datos de muestra y crear un reporte
 
-**Introduction**
+**Introducción**
 
-This usecase walks you through an end-to-end scenario from data acquisition
-to data consumption. It helps you build a basic understanding of Fabric,
-including the different experiences and how they integrate, as well as
-the professional and citizen developer experiences that come with
-working on this platform. This lab isn't intended to be a reference
-architecture, an exhaustive list of features and functionality, or a
-recommendation of specific best practices.
+Este laboratorio lo guía a través de un escenario de extremo a extremo,
+desde la adquisición de datos hasta el consumo de datos. Le ayuda a
+crear una comprensión básica de Fabric, incluidas las diferentes
+experiencias y cómo se integran, así como las experiencias tanto de
+desarrolladores profesionales como de desarrolladores ciudadanos que
+conlleva trabajar en esta plataforma. Este laboratorio no pretende ser
+una arquitectura de referencia, una lista exhaustiva de características
+y funcionalidades, ni una recomendación de prácticas específicas.
 
-Traditionally, organizations have been building modern data warehouses
-for their transactional and structured data analytics needs. And data
-lakehouses for big data (semi/unstructured) data analytics needs. These
-two systems ran in parallel, creating silos, data duplicity, and
-increased total cost of ownership.
+Tradicionalmente, las organizaciones han estado construyendo modern data
+warehouses para sus necesidades de analítica de datos transaccionales y
+estructurados. Y data lakehouses para las necesidades de analítica de
+big data (datos semiestructurados/no estructurados). Estos dos sistemas
+se ejecutaban en paralelo, creando silos, duplicación de datos e
+incremento en el costo total de propiedad.
 
-Fabric with its unification of data store and standardization on Delta
-Lake format allows you to eliminate silos, remove data duplicity, and
-drastically reduce total cost of ownership.
+Fabric, con su unificación de almacenamiento de datos y estandarización
+en el formato Delta Lake, le permite eliminar silos, remover duplicación
+de datos y reducir drásticamente el costo total de propiedad.
 
-With the flexibility offered by Fabric, you can implement either
-lakehouse or data warehouse architectures or combine them together to
-get the best of both with simple implementation. In this tutorial,
-you're going to take an example of a retail organization and build its
-lakehouse from start to finish. It uses the [medallion
-architecture](https://learn.microsoft.com/en-us/azure/databricks/lakehouse/medallion) where
-the bronze layer has the raw data, the silver layer has the validated
-and deduplicated data, and the gold layer has highly refined data. You
-can take the same approach to implement a lakehouse for any organization
-from any industry.
+Con la flexibilidad que ofrece Fabric, puede implementar arquitecturas
+de lakehouse o data warehouse, o combinarlas para obtener lo mejor de
+ambas con una implementación sencilla. En este tutorial, tomará como
+ejemplo una organización de retail y construirá su lakehouse de
+principio a fin. Utiliza la [arquitectura
+medallion](https://learn.microsoft.com/en-us/azure/databricks/lakehouse/medallion), donde
+la capa bronze contiene los datos en bruto, la capa silver contiene los
+datos validados y deduplicados, y la capa gold contiene datos altamente
+refinados. Puede aplicar el mismo enfoque para implementar un lakehouse
+en cualquier organización de cualquier industria.
 
-This lab explains how a developer at the fictional Wide World Importers
-company from the retail domain completes the following steps.
+Este laboratorio explica cómo un desarrollador de la empresa ficticia
+Wide World Importers, del sector retail, completa los siguientes pasos.
 
-**Objectives**:
+**Objetivos**:
 
-1\. Sign in to Power BI account and initiate a free Microsoft Fabric
-trial.
+1\. Inicie sesión en su cuenta de Power BI e inicie una prueba gratuita
+de Microsoft Fabric.
 
-2\. Start the Microsoft Fabric (Preview) trial within Power BI.
+2\. Comience la prueba de Microsoft Fabric (vista previa) dentro de
+Power BI.
 
-3\. Configure OneDrive sign-up for the Microsoft 365 admin center.
+3\. Configure el registro de OneDrive en el centro de administración de
+Microsoft 365.
 
-4\. Build and implement an end-to-end lakehouse for the organization,
-including creating a Fabric workspace and a lakehouse.
+4\. Cree e implemente un lakehouse de extremo a extremo para la
+organización, lo que incluye la creación de un workspace de Fabric y un
+lakehouse.
 
-5\. Ingest sample data into the lakehouse and prepare it for further
-processing.
+5\. Ingeste datos de muestra en el lakehouse y prepárelos para su
+posterior procesamiento.
 
-6\. Transform and prepare the data using Python/PySpark and SQL
-notebooks.
+6\. Transforme y prepare los datos utilizando notebooks de
+Python/PySpark y SQL.
 
-7\. Create business aggregate tables using different approaches.
+7\. Cree tablas de agregados de negocio utilizando diferentes enfoques.
 
-8\. Establish relationships between tables for seamless reporting.
+8\. Establezca relaciones entre tablas para generar reportes sin
+inconvenientes.
 
-9\. Build a Power BI report with visualizations based on the prepared
-data.
+9\. Elabore un reporte de Power BI con visualizaciones basadas en los
+datos preparados.
 
-10\. Save and store the created report for future reference and
-analysis.
+10\. Guarde y almacene el reporte creado para referencia y análisis
+futuros.
 
-## Exercise 1: Setup Lakehouse end-to-end scenario
+## Ejercicio 1: Configure el escenario de Lakehouse de extremo a extremo
 
-### Task 1: Sign in to Power BI account and sign up for the free Microsoft Fabric trial
+### Tarea 1: Inicie sesión en su cuenta de Power BI y regístrese en la prueba gratuita de Microsoft Fabric
 
-1.  Open your browser, navigate to the address bar, and type or paste
-    the following URL:+++https://app.fabric.microsoft.com/+++ then press
-    the **Enter** button.
+1.  Abra su navegador, vaya a la barra de direcciones y escriba o pegue
+    la siguiente URL:+++https://app.fabric.microsoft.com/+++ luego
+    presione el botón **Enter**.
 
 > ![](./media/image1.png)
 
-2.  In the **Microsoft Fabric** window, enter your credentials, and
-    click on the **Submit** button.
+2.  En la ventana de **Microsoft Fabric**, ingrese sus credenciales, y
+    haga clic en el botón **Submit**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image2.png)
 
-3.  Then, In the **Microsoft** window enter the password and click on
-    the **Sign in** button.
+3.  Luego, en la ventana de **Microsoft**, ingrese la contraseña y haga
+    clic en el botón **Sign in**.
 
 > ![A login screen with a red box and blue text AI-generated content may
 > be incorrect.](./media/image3.png)
 
-4.  In **Stay signed in?** window, click on the **Yes** button.
+4.  En la ventana **Stay signed in?**, haga clic en el botón **Yes**.
 
-> ![A screenshot of a computer error AI-generated content may be
-> incorrect.](./media/image4.png)
+> ![](./media/image4.png)
 
-5.  You’ll be directed to Fabric Home page.
+5.  Será dirigido a la página principal de Power BI.
 
 > ![](./media/image5.png)
 
-## Exercise 2: Build and implement an end-to-end lakehouse for your organization
+## Ejercicio 2: Cree e implemente un lakehouse de extremo a extremo para su organización
 
-### Task 1: Create a Fabric workspace
+### Tarea 1: Cree un workspace de Fabric
 
-In this task, you create a Fabric workspace. The workspace contains all
-the items needed for this lakehouse tutorial, which includes lakehouse,
-dataflows, Data Factory pipelines, the notebooks, Power BI datasets, and
-reports.
+En esta tarea, cree un workspace de Fabric. El workspace contiene todos
+los elementos necesarios para este tutorial de lakehouse, que incluyen
+lakehouse, dataflows, pipelines de Data Factory, notebooks, conjuntos de
+datos de Power BI e informes.
 
-1.  Fabric home page, select **+New workspace** tile.
+1.  En la página principal de Fabric, seleccione el recuadro **+New
+    workspace**.
 
 > ![](./media/image6.png)
 
-2.  In the **Create a workspace** pane that appears on the right side,
-    enter the following details, and click on the **Apply** button.
+2.  En el panel **Create a workspace** que aparece en el lado derecho,
+    ingrese los siguientes detalles y haga clic en el botón **Apply**.
+
     |   |   |
     |-------|-----|
     |Name|	+++Fabric Lakehouse Tutorial-XXXXX+++ (XXXXX can be Lab instant ID)|
@@ -119,94 +126,98 @@ reports.
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image7.png)
 
-Note: To find your lab instant ID, select 'Help' and copy the instant
-ID.
+Nota: Para encontrar su Lab instant ID, seleccione Help y copie el
+instant ID.
 
 > ![](./media/image8.png)
 >
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image9.png)
 
-3.  Wait for the deployment to complete. It takes 2-3 minutes to
-    complete.
+3.  Espere a que se complete la implementación. Esto tarda entre 2 y 3
+    minutos en finalizar.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image10.png)
 
-### Task 2: Create a lakehouse
+### Tarea 2: Cree un lakehouse
 
-1.  Create a new lakehouse by clicking on the **+New item** button in
-    the navigation bar.
+1.  Cree un nuevo lakehouse haciendo clic en el botón **+New item** en
+    la barra de navegación.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image11.png)
 
-2.  Click on the "**Lakehouse**" tile.
+2.  Haga clic en el recuadro "**Lakehouse**".
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image12.png)
 
-3.  In the **New lakehouse** dialog box, enter **+++wwilakehouse+++** in
-    the **Name** field, click on the **Create** button and open the new
-    lakehouse.
+3.  En el cuadro de diálogo **New lakehouse**,
+    ingrese +++**wwilakehouse+++** en el campo **Name**, haga clic en el
+    botón **Create** y abra el nuevo lakehouse.
 
-> **Note**: Ensure to remove space before **wwilakehouse**.
+> **Nota**: Asegúrese de eliminar el espacio antes de **wwilakehouse**.
 >
 > ![](./media/image13.png)
 >
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image14.png)
 
-4.  You will see a notification stating **Successfully created SQL
+4.  Verá una notificación que indica **Successfully created SQL
     endpoint**.
 
 > ![](./media/image15.png)
 
-### Task 3: Ingest sample data
+### Tarea 3: Ingeste datos de muestra
 
-1.  In the **wwilakehouse** page, navigate to **Get data in your
-    lakehouse** section, and click on **Upload files as shown in the
-    below image.**
+1.  En la página **wwilakehouse**, vaya a la sección **Get data in your
+    lakehouse**, y haga clic en **Upload files,** como se muestra en la
+    imagen a continuación.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image16.png)
 
-2.  On the Upload files tab, click on the folder under the Files
+2.  En la pestaña **Upload files**, haga clic debajo de la carpeta
+    **Files**.
 
 > ![](./media/image17.png)
 
-3.  Browse to **C:\LabFiles** on your VM, then
-    select **dimension_customer.csv** file and click
-    on **Open** button.
+3.  Vaya a **C:\LabFiles** en su máquina virtual (VM), luego seleccione
+    el archivo ***dimension_customer.csv*** y haga clic en el
+    botón **Open**.
 
 > ![](./media/image18.png)
 
-4.  Then, click on the **Upload** button and close
+4.  Luego, haga clic en el botón **Upload** y cierre.
 
 > ![](./media/image19.png)
 
-5.  Click and select refresh on the **Files**. The file appear.
+5.  Haga clic y seleccione **Refresh** en **Files**. El archivo
+    aparecerá.
 
 > ![](./media/image20.png)
 >
 > ![](./media/image21.png)
 
-6.  In the **Lakehouse** page, Under the Explorer pane select Files.
-    Now, however your mouse to **dimension_customer.csv** file. Click on
-    the horizontal ellipses **(…)** beside **dimension_customer**.csv.
-    Navigate and click on **Load Table**, then select **New table**.
+6.  En la página del **Lakehouse**, en el panel **Explorer**, seleccione
+    **Files**. Luego, pase el mouse sobre el
+    archivo **dimension_customer.csv**. Haga clic en los puntos
+    suspensivos horizontales **(…)** junto a **dimension_customer**.csv.
+    Navegue y haga clic en **Load Table**, luego seleccione **New
+    table**.
 
 > ![](./media/image22.png)
 
-7.  In the **Load file to new table** dialog box, click on
-    the **Load** button.
+7.  En el cuadro de diálogo **Load file to new table**, haga clic en el
+    botón **Load**.
 
 > ![](./media/image23.png)
 >
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image24.png)
 
-8.  Select **dimension_coustomer** table
+8.  Seleccione la tabla **dimension_coustomer**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image25.png)
@@ -214,26 +225,29 @@ ID.
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image26.png)
 
-9.  You can also use the SQL endpoint of the lakehouse to query the data
-    with SQL statements. Select **SQL analytics endpoint** from
-    the **Lakehouse** drop-down menu at the top right of the screen.
+9.  También puede usar el SQL endpoint del lakehouse para consultar los
+    datos con sentencias SQL. Seleccione **SQL analytics endpoint** en
+    el menú desplegable de **Lakehouse** en la parte superior derecha de
+    la pantalla.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image27.png)
 
-10. In the wwilakehouse page, under Explorer select
-    the **dimension_customer** table to preview its data and
-    select **New SQL query** to write your SQL statements.
+10. En la página wwilakehouse, en el panel **Explorer**, seleccione la
+    tabla **dimension_customer** para previsualizar sus datos y
+    seleccione **New SQL query** para escribir sus sentencias SQL.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image28.png)
 
-11. The following sample query aggregates the row count based on
-    the **BuyingGroup column** of the **dimension_customer** table. SQL
-    query files are saved automatically for future reference, and you
-    can rename or delete these files based on your need. Paste the code
-    as shown in the below image, then click on the play icon
-    to **Run** the script.
+11. La siguiente consulta de ejemplo agrega el conteo de filas según la
+    columna **BuyingGroup** de la tabla **dimension_customer**. Los
+    archivos de consultas SQL se guardan automáticamente para referencia
+    futura, y usted puede renombrar o eliminar estos archivos según lo
+    necesite. Pegue el código como se muestra en la imagen a
+    continuación, luego haga clic en el icono de play con el texto
+    **Run** para ejecutar el script.
+
     ```
     SELECT BuyingGroup, Count(*) AS Total
     
@@ -244,77 +258,79 @@ ID.
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image29.png)
 
-**Note**: If you encounter an error during the execution of the script,
-then crosscheck the script syntax with the above image.
+**Nota**: Si encuentra un error durante la ejecución del script,
+verifique la sintaxis del script con la imagen anterior.
 
 > ![](./media/image30.png)
 
-12. Previously all the lakehouse tables and views were automatically
-    added to the semantic model. With the recent updates, for new
-    lakehouses, you have to manually add your tables to the semantic
-    model.
+12. Anteriormente, todas las tablas y vistas del lakehouse se agregaban
+    automáticamente al modelo semántico. Con las actualizaciones
+    recientes, para los nuevos lakehouses, debe agregar manualmente sus
+    tablas al modelo semántico.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image31.png)
 
-13. From the lakehouse **Reporting** tab, select **Manage default
-    semantic model** and select the tables that you want to add to the
-    semantic model.
+13. Desde la pestaña **Reporting** del lakehouse, seleccione **Manage
+    default semantic model** y selecione las tablas que desea agregar al
+    modelo semántico.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image32.png)
 
-14. In **Manage default semantic model** tab, select
-    the **dimension_customer** table and click on **Confirm.**
+14. En la pestaña **Manage default semantic model**, seleccione la
+    tabla **dimension_customer** y haga clic en **Confirm.**
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image33.png)
 
-### Task 4: Build a report
+### Tarea 4: Elabore un informe
 
-1.  Now, click on **Fabric Lakehouse** **Tutorial-XX** on the left-sided
-    navigation pane.
+1.  Ahora, haga clic en **Fabric Lakehouse Tutorial-XX** en el panel de
+    navegación del lado izquierdo.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image34.png)
 
-2.  Now, select **wwilakehouse** of type **SQL analytics **
+2.  Ahora, seleccione **wwilakehouse** de tipo **SQL analytics**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image35.png)
 
-3.  From the lakehouse **Home** tab, select **Settings**
+3.  Desde la pestaña **Home** del lakehouse, seleccione **Settings**
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image36.png)
 
-4.  To ensure that the tables in the semantic model are always in sync,
-    switch to the **SQL analytics endpoint** view and open the
-    lakehouse **settings** pane. Select **Default Power BI semantic
-    model** and turn on **Sync the default Power BI semantic model**
+4.  Para asegurarse de que las tablas en el modelo semántico estén
+    siempre sincronizadas, cambie a la vista **SQL analytics endpoint**
+    y abra el panel de **configuración** del lakehouse. Seleccione
+    **Default Power BI semantic model** y active **Sync the default
+    Power BI semantic model**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image37.png)
 
-5.  Now, click on **Fabric Lakehouse** **Tutorial-XX** on the left-sided
-    navigation pane.
+5.  Ahora, haga clic en **Fabric Lakehouse Tutorial-XX** en el panel de
+    navegación del lado izquierdo.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image34.png)
 
-6.  In the **Fabric Lakehouse Tutorial-XX** view,
-    select **wwilakehouse** of Type **Semantic model(default)**. This
-    dataset is automatically created and has the same name as the
-    lakehouse.
+6.  En la vista **Fabric Lakehouse Tutorial-XX**,
+    seleccione **wwilakehouse** de tipo **Semantic model(default)**.
+    Este conjunto de datos se crea automáticamente y tiene el mismo
+    nombre que el lakehouse.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image38.png)
 
-7.  From the semantic model pane, you can view all the tables. You have
-    options to create reports either from scratch, paginated report, or
-    let Power BI automatically create a report based on your data. For
-    this tutorial, under **Explore this data**, select **Auto-create a
-    report** as shown in the below image.
+7.  Desde el panel del modelo semántico, puede ver todas las tablas.
+    Tiene opciones para crear reportes desde cero, crear un reporte
+    paginado o permitir que Power BI cree automáticamente un reporte
+    basado en sus datos. Para este tutorial, en **Explore this data**,
+    seleccione **Auto-create a report**, como se muestra en la imagen a
+    continuación.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image39.png)
@@ -323,165 +339,176 @@ then crosscheck the script syntax with the above image.
 >
 > ![](./media/image41.png)
 
-8.  Since the table is a dimension and there are no measures in it,
-    Power BI creates a measure for the row count and aggregates it
-    across different columns, and creates different charts as shown in
-    the following image.
+8.  Dado que la tabla es una dimensión y no contiene medidas, Power BI
+    crea una medida para el conteo de filas y la agrega en diferentes
+    columnas, generando distintos gráficos como se muestra en la
+    siguiente imagen.
 
-9.  Save this report for the future by selecting **Save** from the top
-    ribbon.
+9.  Guarde este informe para el futuro seleccionando **Save** en la
+    cinta superior.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image42.png)
 
-10. In the **Save your replort** dialog box, enter a name for your
-    report as +++dimension_customer-report+++ and select **Save.**
+10. En el cuadro de diálogo **Save your replort**, ingrese un nombre
+    para su reporte como +++dimension_customer-report+++ y
+    seleccione **Save**.
 
 > ![](./media/image43.png)
 
-11. You will see a notification stating **Report saved**.
+11. Verá una notificación que indica **Report saved**.
 
 > ![](./media/image44.png)
 
-# Exercise 3: Ingest data into the lakehouse
+# Ejercicio 2: Ingeste datos en el lakehouse
 
-In this exercise, you ingest additional dimensional and fact tables from
-the Wide World Importers (WWI) into the lakehouse.
+En este ejercicio, usted ingeste tablas dimensionales y de hechos
+adicionales de Wide World Importers (WWI) en el lakehouse.
 
-### Task 1: Ingest data
+### Tarea 1: Ingeste datos
 
-1.  Now, click on **Fabric Lakehouse** **Tutorial-XX** on the left-sided
-    navigation pane.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea1.png)
-
-2.  In the **Fabric Lakehouse Tutorial-XX** workspace page, navigate and
-    click on **+New item** button, then select **Data pipeline**.
+1.  Ahora, haga clic en **Fabric Lakehouse Tutorial-XX** en el panel de
+    navegación del lado izquierdo.
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea2.png)
+> incorrect.](./media/image34.png)
 
-3.  In the New pipeline dialog box, specify the name
-    as **+++IngestDataFromSourceToLakehouse+++** and
-    select **Create.** A new data factory pipeline is created and opened
+2.  En la página del workspace **Fabric Lakehouse Tutorial-XX**, navegue
+    y haga clic en el botón **+New item**, luego seleccione **Data
+    pipeline**.
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea3.png)
+> incorrect.](./media/image45.png)
+
+3.  En el cuadro de diálogo **New pipeline**, especifique el nombre
+    como **+++IngestDataFromSourceToLakehouse+++** y
+    seleccione **Create.** Se creará y abrirá un nuevo pipeline de Data
+    Factory.
+
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image46.png)
 >
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea4.png)
+> incorrect.](./media/image47.png)
 
-4.  On newly created data factory pipeline
-    i.e **IngestDataFromSourceToLakehouse**, select  **Copy data
+4.  En el pipeline de Data Factory recién creado, es decir,
+    **IngestDataFromSourceToLakehouse**, seleccione **Copy data
     assistant** .
 
-> ![](./media/imagea5.png)
+> ![](./media/image48.png)
 
-5.  Next, set up an **Sample data** connection to import the sample
-    World Wide Importers data into the Lakehouse. From the list of **New
-    sources**, select **Retail Data Model from Wide World Importers**.
+5.  A continuación, configure una conexión de **Sample data** para
+    importar los datos de muestra de **World Wide Importers** en el
+    Lakehouse. En la lista de **New sources**, seleccione **Retail Data
+    Model from Wide World Importers**.
 
-> ![](./media/imagea6.png)
+> ![](./media/image49.png)
 
-6.  In the **Connect to data source** window, Select **Retail Data Model
-    from Wide World Importers** data and select **Next**.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea7.png)
-
-7.  In the **Connect to data destination** window, select **OneLake
-    catalog** and select **wwilakehouse.** Now specify the **Root
-    folder** as **Files** and click **Next**. This will write the data
-    to the **Files** section of the lakehouse.
+6.  En la ventana **Connect to data source**, seleccione **Retail Data
+    Model from Wide World Importers data** y haga clic en **Next**.
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea8.png)
+> incorrect.](./media/image50.png)
+
+7.  En la ventana **Connect to data destination**, seleccione **OneLake
+    catalog** y seleccione **wwilakehouse.** Ahora especifique la
+    carpeta raíz como **Files** y haga clic en **Next**. Esto escribirá
+    los datos en la sección **Files** del lakehouse.
+
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image51.png)
 >
-> ![](./media/imagea9.png)
+> ![](./media/image52.png)
 
-1.  Choose the **File format** shoul be  empty for the destination.
-    Click **Next** and then **Save+Run**. You can schedule pipelines to
-    refresh data periodically. In this tutorial, we only run the
-    pipeline once.
+1.  Elija que el **File format** esté vacío para el destino. Haga clic
+    en **Next** y luego en **Save+Run**. Puede programar los pipelines
+    para actualizar los datos periódicamente. En este tutorial, solo
+    ejecutaremos el pipeline una vez.
 
-> ![](./media/imagea10.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea11.png)
-
-2.  The data copy process takes approximately 1-3 minutes to complete.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea12.png)
+> ![](./media/image53.png)
 >
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea13.png)
+> incorrect.](./media/image54.png)
+
+2.  El proceso de copia de datos tarda aproximadamente de 1 a 3 minutos
+    en completarse.
+
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image55.png)
 >
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea14.png)
+> incorrect.](./media/image56.png)
 >
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea15.png)
-
-3.  Under the Output tab, select **Copy_a1n** to look at the details of
-    the data transfer. After seeing the **Status** as **Succeeded**,
-    click on the **Close** button.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea16.png)
+> incorrect.](./media/image57.png)
 >
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea17.png)
+> incorrect.](./media/image58.png)
 
-4.  After the successful execution of the pipeline, go to your lakehouse
-    (**wwilakehouse**) and open the explorer to see the imported data.
-
-> ![](./media/imagea18.png)
-
-5.  Verify that the all the  **WideWorldImporters f**olders is present
-    in the **Explorer** view and contains data for all tables.
-
-> ![](./media/imagea19.png)
-
-# Exercise 4: Prepare and transform data in the lakehouse
-
-### Task 1: Transform data and load to silver Delta table
-
-1.  In the **wwilakehouse** page, navigate and click on **Open
-    notebook** drop in the command bar, then select **New notebook**.
-
-> ![](./media/imagea20.png)
-
-2.  In the open notebook in **Lakehouse explorer**, you see the notebook
-    is already linked to your opened lakehouse.
+3.  En la pestaña Output, seleccione **Copy_a1n** para ver los detalles
+    de la transferencia de datos. Después de verificar que el **estado**
+    sea **Succeeded**, haga clic en el botón **Close**.
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea21.png)
+> incorrect.](./media/image59.png)
+>
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image60.png)
 
-\*\* Note\*\*
+4.  Después de la ejecución exitosa del pipeline, vaya a su lakehouse
+    (**wwilakehouse**) y abra el explorador para ver los datos
+    importados.
 
-Fabric provides
-the [**V-order**](https://learn.microsoft.com/en-us/fabric/data-engineering/delta-optimization-and-v-order) capability
-to write optimized delta lake files. V-order often improves compression
-by three to four times and up to 10 times performance acceleration over
-the Delta Lake files that aren't optimized. Spark in Fabric dynamically
-optimizes partitions while generating files with a default 128 MB size.
-The target file size may be changed per workload requirements using
-configurations. With the [**optimize
-write**](https://learn.microsoft.com/en-us/fabric/data-engineering/delta-optimization-and-v-order#what-is-optimized-write) capability,
-the Apache Spark engine that reduces the number of files written and
-aims to increase individual file size of the written data.
+> ![](./media/image61.png)
 
-3.  Before you write data as delta lake tables in the **Tables** section
-    of the lakehouse, you use two Fabric features
-    (**V-order** and **Optimize Write**) for optimized data writing and
-    for improved reading performance. To enable these features in your
-    session, set these configurations in the first cell of your
-    notebook.
+5.  Verifique que todas las carpetas de **WideWorldImporters** estén
+    presentes en la vista **Explorer** y que contengan datos para todas
+    las tablas.
 
-4.  he code in the **cell** with the following code and click on **▷ Run
-    cell**  that appears to the left of the cell upon hover.
+> ![](./media/image62.png)
+
+# Ejercicio 3: Prepare y transforme datos en el lakehouse
+
+### Tarea 1: Transforme datos y cárguelos en una tabla Delta silver
+
+1.  En la página de **wwilakehouse**, navegue y haga clic en **Open
+    notebook** en la barra de comandos, luego seleccione **New
+    notebook**.
+
+> ![](./media/image63.png)
+
+2.  En el notebook abierto en **Lakehouse Explorer**, verá que el
+    notebook ya está vinculado a su lakehouse abierto.
+
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image64.png)
+
+\*\* Nota\*\*
+
+Fabric ofrece la característica
+[**V-order**](https://learn.microsoft.com/en-us/fabric/data-engineering/delta-optimization-and-v-order) para
+escribir archivos optimizados de Delta Lake. V-order a menudo mejora la
+compresión entre tres y cuatro veces y puede acelerar el rendimiento
+hasta 10 veces en comparación con los archivos de Delta Lake que no
+están optimizados. Spark en Fabric optimiza dinámicamente las
+particiones mientras genera archivos con un tamaño predeterminado de 128
+MB. El tamaño objetivo de los archivos puede modificarse según los
+requisitos de la carga de trabajo mediante configuraciones. Con la
+característica [**optimize
+write**](https://learn.microsoft.com/en-us/fabric/data-engineering/delta-optimization-and-v-order#what-is-optimized-write), el
+motor Apache Spark reduce la cantidad de archivos escritos y busca
+aumentar el tamaño individual de los archivos generados.
+
+3.  Antes de escribir datos como tablas de *Delta Lake* en la sección
+    **Tables** del lakehouse, utilice dos características de Fabric
+    (**V-order** y **Optimize Write**) para lograr una escritura de
+    datos optimizada y un mejor rendimiento de lectura. Para habilitar
+    estas características en su sesión, configure estos parámetros en la
+    primera celda de su notebook.
+
+4.  Escriba el siguiente código en la **celda** y haga clic en **▷ Run
+    cell**, que aparece a la izquierda de la celda al pasar el cursor.
+
     ```
     # Copyright (c) Microsoft Corporation.
     # Licensed under the MIT License.
@@ -489,33 +516,39 @@ aims to increase individual file size of the written data.
     spark.conf.set("spark.microsoft.delta.optimizeWrite.enabled", "true")
     spark.conf.set("spark.microsoft.delta.optimizeWrite.binSize", "1073741824")
     ```
-> ![](./media/image22.png)
+> ![](./media/image65.png)
 >
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image23.png)
+> incorrect.](./media/image66.png)
 >
-> When running a cell, you didn't have to specify the underlying Spark
-> pool or cluster details because Fabric provides them through Live
-> Pool. Every Fabric workspace comes with a default Spark pool, called
-> Live Pool. This means when you create notebooks, you don't have to
-> worry about specifying any Spark configurations or cluster details.
-> When you execute the first notebook command, the live pool is up and
-> running in a few seconds. And the Spark session is established and it
-> starts executing the code. Subsequent code execution is almost
-> instantaneous in this notebook while the Spark session is active. 
+> Al ejecutar una celda, no tuvo que especificar los detalles del Spark
+> pool o del clúster subyacente porque Fabric los proporciona a través
+> de Live Pool. Cada workspace de Fabric incluye un Spark pool
+> predeterminado, llamado Live Pool.
+>
+> Esto significa que, al crear notebooks, no es necesario preocuparse
+> por especificar configuraciones de Spark ni detalles de clúster.
+> Cuando ejecuta el primer comando del notebook, el Live Pool se inicia
+> y se encuentra en ejecución en unos segundos. Entonces se establece la
+> sesión de Spark y comienza a ejecutar el código.
+>
+> La ejecución de código subsiguiente es casi instantánea en este
+> notebook mientras la sesión de Spark permanezca activa. 
 
-5.  Next, you read raw data from the **Files** section of the lakehouse
-    and add more columns for different date parts as part of the
-    transformation. You use partitionBy Spark API to partition the data
-    before writing it as delta table based on the newly created data
-    part columns (Year and Quarter).
+5.  A continuación, lea los datos en bruto desde la sección **Files**
+    del lakehouse y agregue más columnas para diferentes partes de fecha
+    como parte de la transformación. Utilice la API partitionBy de Spark
+    para particionar los datos antes de escribirlos como una tabla
+    Delta, basándose en las nuevas columnas de partes de fecha (Year y
+    Quarter).
 
-6.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
+6.  Use el icono **+ Code** debajo de la salida de la celda para agregar
+    una nueva celda de código al notebook e ingrese en ella el siguiente
+    código. Haga clic en el botón **▷ Run cell** y revise la salida.
 
-    **Note**: In case, you are unable to see the output, then click on the
-    horizontal lines on the left side of **Spark jobs**.
+**Nota:** En caso de que no pueda ver la salida, haga clic en las líneas
+horizontales en el lado izquierdo de **Spark jobs**.
+
     ```
     from pyspark.sql.functions import col, year, month, quarter
     
@@ -528,22 +561,24 @@ aims to increase individual file size of the written data.
     
     df.write.mode("overwrite").format("delta").partitionBy("Year","Quarter").save("Tables/" + table_name)
     ```
-
->  ![](./media/imagea24.png)
+>  ![](./media/image67.png)
 >
-> ![](./media/imagea25.png)
+> ![](./media/image68.png)
 
-7.  After the fact tables load, you can move on to loading data for the
-    rest of the dimensions. The following cell creates a function to
-    read raw data from the **Files** section of the lakehouse for each
-    of the table names passed as a parameter. Next, it creates a list of
-    dimension tables. Finally, it loops through the list of tables and
-    creates a delta table for each table name that's read from the input
-    parameter.
+7.  Después de que las tablas de hechos se carguen, puede continuar con
+    la carga de datos para el resto de las dimensiones. La siguiente
+    celda crea una función para leer datos en bruto desde la sección
+    **Files** del lakehouse para cada uno de los nombres de tablas
+    pasados como parámetro. A continuación, crea una lista de tablas de
+    dimensiones. Finalmente, recorre en bucle la lista de tablas y crea
+    una tabla Delta para cada nombre de tabla leído desde el parámetro
+    de entrada.
 
-8.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
+8.  Use el ícono **+ Code** debajo de la salida de la celda para agregar
+    una nueva celda de código al notebook e ingrese en ella el siguiente
+    código. Haga clic en el botón **▷ Run cell** y revise la salida from
+    pyspark.sql.types import \*
+
     ```
     from pyspark.sql.types import *
     
@@ -564,71 +599,77 @@ aims to increase individual file size of the written data.
         loadFullDataFromSource(table)
     ```
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea26.png)
+> incorrect.](./media/image69.png)
 >
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea27.png)
+> incorrect.](./media/image70.png)
 
-9.  To validate the created tables, click and select refresh on
-    the **Tables**. The tables appear. 
+9.  Para validar las tablas creadas, haga clic en **Refresh** en
+    **Tables**. Las tablas aparecerán.
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea28.png)
+> incorrect.](./media/image71.png)
 >
->  ![](./media/imagea29.png)
+>  ![](./media/image72.png)
 
-### Task 2: Transforming Business Data for Aggregation
+### Tarea 2: Transforme datos de negocio para agregación
 
-1.  An organization might have data engineers working with Scala/Python
-    and other data engineers working with SQL (Spark SQL or T-SQL), all
-    working on the same copy of the data. Fabric makes it possible for
-    these different groups, with varied experience and preference, to
-    work and collaborate. The two different approaches transform and
-    generate business aggregates. You can pick the one suitable for you
-    or mix and match these approaches based on your preference without
-    compromising on the performance:
+1.  Una organización puede tener ingenieros de datos que trabajen con
+    Scala/Python y otros ingenieros que trabajen con SQL (Spark SQL o
+    T-SQL), todos trabajando sobre la misma copia de los datos. Fabric
+    hace posible que estos diferentes grupos, con experiencia y
+    preferencias variadas, trabajen y colaboren. Los dos enfoques
+    distintos transforman y generan agregados de negocio. Usted puede
+    elegir el que le resulte más adecuado o combinar ambos enfoques
+    según su preferencia, sin comprometer el rendimiento:
 
-    - **Approach \#1** - Use PySpark to join and aggregates data for
-      generating business aggregates. This approach is preferable to
-      someone with a programming (Python or PySpark) background.
+    - **Enfoque n.º 1** – Use PySpark para unir y agregar datos con el
+      fin de generar agregados de negocio. Este enfoque es preferible
+      para alguien con experiencia en programación (Python o PySpark).
 
-    - **Approach \#2** - Use Spark SQL to join and aggregates data for
-      generating business aggregates. This approach is preferable to
-      someone with SQL background, transitioning to Spark.
+    - **Enfoque n.º 2** – Use Spark SQL para unir y agregar datos con el
+      fin de generar agregados de negocio. Este enfoque es preferible
+      para alguien con experiencia en SQL que esté en transición hacia
+      Spark.
 
-2.  **Approach \#1 (sale_by_date_city)** - Use PySpark to join and
-    aggregate data for generating business aggregates. With the
-    following code, you create three different Spark dataframes, each
-    referencing an existing delta table. Then you join these tables
-    using the dataframes, do group by to generate aggregation, rename a
-    few of the columns, and finally write it as a delta table in
-    the **Tables** section of the lakehouse to persist with the data.
+2.  **Enfoque n.º 1 (sale_by_date_city) –** Use PySpark para unir y
+    agregar datos con el fin de generar agregados de negocio. Con el
+    siguiente código, cree tres *dataframes* de Spark diferentes, cada
+    uno haciendo referencia a una tabla Delta existente. Luego una estas
+    tablas usando los dataframes, aplique un group by para generar la
+    agregación, cambie el nombre de algunas columnas y finalmente
+    escriba el resultado como una tabla Delta en la sección **Tables**
+    del lakehouse para persistir los datos.
 
-3.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
+3.  Use el ícono **+ Code** debajo de la salida de la celda para agregar
+    una nueva celda de código al notebook e ingrese en ella el siguiente
+    código. Haga clic en el botón **▷ Run cell** y revise la salida.
 
-4.  In this cell, you create three different Spark dataframes, each
-    referencing an existing delta table.
+4.  En esta celda, cree tres dataframes de Spark diferentes, cada uno
+    haciendo referencia a una tabla Delta existente.
+
     ```
     df_fact_sale = spark.read.table("wwilakehouse.fact_sale") 
     df_dimension_date = spark.read.table("wwilakehouse.dimension_date")
     df_dimension_city = spark.read.table("wwilakehouse.dimension_city")
     ```
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea30.png)
+> incorrect.](./media/image73.png)
 >
 > ![A screen shot of a computer AI-generated content may be
-> incorrect.](./media/imagea31.png)
+> incorrect.](./media/image74.png)
 
-5.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
+5.  Use el ícono **+ Code** debajo de la salida de la celda para agregar
+    una nueva celda de código al notebook e introduzca en ella el
+    siguiente código. Haga clic en el botón **▷ Run cell** y revise la
+    salida.
 
-6.  In this cell, you join these tables using the dataframes created
-    earlier, do group by to generate aggregation, rename a few of the
-    columns, and finally write it as a delta table in
-    the **Tables** section of the lakehouse.
+6.  En esta celda, una estas tablas utilizando los dataframes creados
+    anteriormente, aplique un **group by** para generar la agregación,
+    cambie el nombre de algunas columnas y finalmente escriba el
+    resultado como una tabla Delta en la sección **Tables** del
+    lakehouse.
+
     ```
     sale_by_date_city = df_fact_sale.alias("sale") \
     .join(df_dimension_date.alias("date"), df_fact_sale.InvoiceDateKey == df_dimension_date.Date, "inner") \
@@ -647,25 +688,26 @@ aims to increase individual file size of the written data.
     sale_by_date_city.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_city")
     ```
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea32.png)
+> incorrect.](./media/image75.png)
 >
-> ![](./media/imagea33.png)
+> ![](./media/image76.png)
 
-7.  **Approach \#2 (sale_by_date_employee)** - Use Spark SQL to join and
-    aggregate data for generating business aggregates. With the
-    following code, you create a temporary Spark view by joining three
-    tables, do group by to generate aggregation, and rename a few of the
-    columns. Finally, you read from the temporary Spark view and finally
-    write it as a delta table in the **Tables** section of the lakehouse
-    to persist with the data.
+7.  **Enfoque n.º 2 (sale_by_date_employee)** – Use Spark SQL para unir
+    y agregar datos con el fin de generar agregados de negocio. Con el
+    siguiente código, cree una vista temporal de Spark uniendo tres
+    tablas, aplique un **group by** para generar la agregación y cambie
+    el nombre de algunas columnas. Finalmente, lea desde la vista
+    temporal de Spark y escriba el resultado como una tabla Delta en la
+    sección **Tables** del lakehouse para persistir los datos.
 
-8.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
+8.  Use el icono **+ Code** debajo de la salida de la celda para agregar
+    una nueva celda de código al notebook e ingrese en ella el siguiente
+    código. Haga clic en el botón **▷ Run cell** y revise la salida.
 
-9.  In this cell, you create a temporary Spark view by joining three
-    tables, do group by to generate aggregation, and rename a few of the
-    columns.
+9.  En esta celda, cree una vista temporal de Spark uniendo tres tablas,
+    aplique un **group by** para generar la agregación y cambie el
+    nombre de algunas columnas.
+
     ```
     %%sql
     CREATE OR REPLACE TEMPORARY VIEW sale_by_date_employee
@@ -685,337 +727,355 @@ aims to increase individual file size of the written data.
     ORDER BY DD.Date ASC, DE.PreferredName ASC, DE.Employee ASC
     ```
 
+
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea34.png)
+> incorrect.](./media/image77.png)
 >
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea35.png)
+> incorrect.](./media/image78.png)
 
-10. Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
+10. Use el icono **+ Code** debajo de la salida de la celda para agregar
+    una nueva celda de código al notebook e ingrese en ella el siguiente
+    código. Haga clic en el botón **▷ Run cell** y revise la salida.
 
-11. In this cell, you read from the temporary Spark view created in the
-    previous cell and finally write it as a delta table in
-    the **Tables** section of the lakehouse.
+11. En esta celda, lea desde la vista temporal de Spark creada en la
+    celda anterior y finalmente escriba el resultado como una tabla
+    Delta en la sección **Tables** del lakehouse.
+
     ```
     sale_by_date_employee = spark.sql("SELECT * FROM sale_by_date_employee")
     sale_by_date_employee.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_employee")
     ```
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image79.png)
 >
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea36.png)
+> incorrect.](./media/image80.png)
+
+12. Para validar las tablas creadas, haga clic en **Refresh** en
+    **Tables**. Las tablas de agregados aparecerán.
+
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image81.png)
 >
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea37.png)
+> incorrect.](./media/image82.png)
 
-12. To validate the created tables, click and select refresh on
-    the **Tables**. The aggregate tables appear.
+Ambos enfoques producen un resultado similar. Usted puede elegir en
+función de su experiencia y preferencia, para minimizar la necesidad de
+aprender una nueva tecnología o comprometer el rendimiento.
+
+Además, puede notar que está escribiendo datos como archivos de Delta
+Lake. La función de descubrimiento y registro automático de tablas de
+Fabric los detecta y los registra en el metastore. No necesita ejecutar
+explícitamente sentencias CREATE TABLE para crear tablas que se usen con
+SQL.
+
+# Ejercicio 4: Creación de reportes en Microsoft Fabric
+
+En esta sección del tutorial, cree un modelo de datos de Power BI y
+elabore un reporte desde cero.
+
+### Tarea 1: Explore los datos en la capa silver utilizando el SQL endpoint
+
+Power BI está integrado de forma nativa en toda la experiencia de
+Fabric. Esta integración nativa incorpora un modo único, llamado
+DirectLake, para acceder a los datos desde el lakehouse y ofrecer la
+experiencia de consultas y reportes con mayor rendimiento.
+
+El modo DirectLake es una capacidad innovadora del motor que permite
+analizar conjuntos de datos muy grandes en Power BI. La tecnología se
+basa en la idea de cargar archivos en formato parquet directamente desde
+un data lake, sin necesidad de consultar un data warehouse o un
+lakehouse endpoint, y sin tener que importar o duplicar datos en un
+conjunto de datos de Power BI.
+
+DirectLake es una ruta rápida para cargar los datos desde el data lake
+directamente en el motor de Power BI, listos para su análisis.
+
+En el modo tradicional DirectQuery, el motor de Power BI consulta
+directamente los datos desde la fuente para ejecutar cada consulta, y el
+rendimiento depende de la velocidad de recuperación de datos.
+DirectQuery elimina la necesidad de copiar los datos, garantizando que
+cualquier cambio en la fuente se refleje de inmediato en los resultados
+de las consultas durante la importación.
+
+Por otro lado, en el modo Import, el rendimiento es mejor porque los
+datos están disponibles en la memoria sin necesidad de consultarlos
+desde la fuente en cada ejecución. Sin embargo, el motor de Power BI
+primero debe copiar los datos en memoria durante la actualización de
+datos. Solo los cambios en la fuente subyacente se incorporan en la
+siguiente actualización de datos (ya sea programada o bajo demanda).
+
+El modo DirectLake elimina este requisito de importación al cargar
+directamente los archivos de datos en la memoria. Dado que no existe un
+proceso de importación explícito, es posible capturar cualquier cambio
+en la fuente a medida que ocurre, combinando así las ventajas de
+DirectQuery y del modo Import, evitando sus desventajas. Por lo tanto,
+el modo DirectLake es la opción ideal para analizar conjuntos de datos
+muy grandes y conjuntos de datos con actualizaciones frecuentes en la
+fuente.
+
+1.  Desde el panel de navegación izquierdo, seleccione
+    **Fabric_LakehouseXX** y luego seleccione **wwilakehouse** de tipo
+    **SQL analytics endpoint**.
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea38.png)
+> incorrect.](./media/image83.png)
 >
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/imagea39.png)
+> incorrect.](./media/image84.png)
 
-Both the approaches produce a similar outcome. You can choose based on
-your background and preference, to minimize the need for you to learn a
-new technology or compromise on the performance.
-
-Also you may notice that you're writing data as delta lake files. The
-automatic table discovery and registration feature of Fabric picks up
-and registers them in the metastore. You don't need to explicitly
-call CREATE TABLE statements to create tables to use with SQL.
-
-
-# Exercise 5: Building reports in Microsoft Fabric
-
-In this section of the tutorial, you create a Power BI data model and
-create a report from scratch.
-
-### Task 1: Explore data in the silver layer using the SQL endpoint
-
-Power BI is natively integrated in the whole Fabric experience. This
-native integration brings a unique mode, called DirectLake, of accessing
-the data from the lakehouse to provide the most performant query and
-reporting experience. DirectLake mode is a groundbreaking new engine
-capability to analyze very large datasets in Power BI. The technology is
-based on the idea of loading parquet-formatted files directly from a
-data lake without having to query a data warehouse or lakehouse
-endpoint, and without having to import or duplicate data into a Power BI
-dataset. DirectLake is a fast path to load the data from the data lake
-straight into the Power BI engine, ready for analysis.
-
-In traditional DirectQuery mode, the Power BI engine directly queries
-the data from the source to execute each query, and the query
-performance depends on data retrieval speed. DirectQuery eliminates the
-need to copy data, ensuring that any changes in the source are
-immediately reflected in the query results during the import. On the
-other hand, in Import mode performance is better because the data is
-readily available in the memory without querying data from the source
-for each query execution. However, the Power BI engine must first copy
-the data into memory during data refresh. Only changes to the underlying
-data source are picked up during the next data refresh(in scheduled as
-well as on-demand refresh).
-
-DirectLake mode now eliminates this import requirement by loading the
-data files directly into memory. Because there's no explicit import
-process, it's possible to pick up any changes at the source as they
-occur, thus combining the advantages of DirectQuery and import mode
-while avoiding their disadvantages. DirectLake mode is therefore the
-ideal choice for analyzing very large datasets and datasets with
-frequent updates at the source.
-
-1.  From your left navigation pane, select **Fabric_LakehouseXX** and
-    then select **wwilakehouse** of **Type** **SQL analytics endpoint.**
+2.  Desde el panel del **SQL endpoint**, debería poder ver todas las
+    tablas que creó. Si aún no las ve, seleccione el ícono **Refresh**
+    en la parte superior. A continuación, seleccione la pestaña **Model
+    layouts** en la parte inferior para abrir el conjunto de datos
+    predeterminado de Power BI.
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image92.png)
+> incorrect.](./media/image85.png)
 >
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image93.png)
+> ![](./media/image86.png)
 
-2.  From the SQL endpoint pane, you should be able to see all the tables
-    you created. If you don't see them yet, select the **Refresh** icon
-    at the top. Next, select the **Model layouts** tab at the bottom to
-    open the default Power BI dataset.
+3.  Desde la tabla **fact_sale**, arrastre el campo **CityKey** y
+    suéltelo sobre el campo **CityKey** en la tabla **dimension_city**
+    para crear una relación. Aparecerá el cuadro de diálogo **Create
+    Relationship**.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image94.png)
+> Nota: Reorganice las tablas haciendo clic en la tabla y arrastrándola
+> para colocar las tablas dimension_city y fact_sale una junto a la
+> otra. Lo mismo aplica para cualquier par de tablas en las que intente
+> crear una relación. Esto es solo para facilitar el arrastre y la
+> colocación de columnas entre tablas.
 
-3.  For this data model, you need to define the relationship between
-    different tables so that you can create reports and visualizations
-    based on data coming across different tables.Click on **Auto
-    layout**
-    ![](./media/image95.png)
-    ![](./media/image96.png)
+ ![](./media/image87.png)
 
-5.  From the **fact_sale** table, drag the **CityKey** field and drop it
-    on the **CityKey** field in the **dimension_city** table to create a
-    relationship. The **Create Relationship** dialog box appears.
+4.  En el cuadro de diálogo **Create Relationship**:
 
-> Note: Rearrange the tables by clicking on the table, dragging and
-> dropping to have the dimension_city and the fact_sale tables next to
-> each other. The same holds good for any two tables that you are trying
-> to create relationship. This is just to make the drag and drop of the
-> columns between the tables is easier. ![](./media/image97.png)
+    - **Table 1** se completa con **fact_sale** y la columna
+      **CityKey**.
 
-5.  In the **Create Relationship** dialog box:
-
-    - **Table 1** is populated with **fact_sale** and the column
-      of **CityKey**.
-
-    - **Table 2** is populated with **dimension_city** and the column
-      of **CityKey**.
+    - **Table 2** se completa con **dimension_city** y la columna
+      **CityKey**.
 
     - Cardinality: **Many to one (\*:1)**
 
     - Cross filter direction: **Single**
 
-    - Leave the box next to **Make this relationship active** selected.
+    - Mantenga seleccionada la casilla junto a **Make this relationship
+      active**.
 
-    - Select the box next to **Assume referential integrity.**
+    - Seleccione la casilla junto a **Assume referential integrity.**
 
-    - Select **Save.**
+    - Seleccione **Save.**
 
-> ![](./media/image98.png)
+> ![](./media/image88.png)
 
-6.  Next, add these relationships with the same **Create
-    Relationship** settings as shown above but with the following tables
-    and columns:
+5.  A continuación, agregue estas relaciones con la misma configuración
+    de **Create Relationship** indicada anteriormente, pero utilizando
+    las siguientes tablas y columnas:
 
     - **StockItemKey(fact_sale)** - **StockItemKey(dimension_stock_item)**
 
-> ![](./media/image99.png)
+> ![](./media/image89.png)
 >
-> ![](./media/image100.png)
+> ![](./media/image90.png)
 
 - **Salespersonkey(fact_sale)** - **EmployeeKey(dimension_employee)**
 
-> ![](./media/image101.png)
+> ![](./media/image91.png)
 
-7.  Ensure to create the relationships between the below two sets using
-    the same steps as above.
+6.  Asegúrese de crear las relaciones entre los siguientes dos conjuntos
+    utilizando los mismos pasos descritos anteriormente.
 
     - **CustomerKey(fact_sale)** - **CustomerKey(dimension_customer)**
 
     - **InvoiceDateKey(fact_sale)** - **Date(dimension_date)**
 
-8.  After you add these relationships, your data model should be as
-    shown in the below image and is ready for reporting.
+7.  Después de agregar estas relaciones, su modelo de datos debería
+    verse como en la imagen a continuación y estar listo para la
+    elaboración de reportes.
+
+> ![](./media/image92.png)
+
+### Tarea 2: Cree un reporte
+
+1.  Desde la cinta superior, seleccione **Reporting** y luego **New
+    report** para comenzar a crear reportes/tableros en Power BI.
+
+> ![](./media/image93.png)
+>
+> ![](./media/image94.png)
+
+2.  En el lienzo de reportes de Power BI, puede crear reportes que
+    satisfagan sus necesidades de negocio arrastrando las columnas
+    requeridas desde el panel **Data** hacia el lienzo y utilizando una
+    o más de las visualizaciones disponibles.
+
+> ![](./media/image95.png)
+
+**Agregue un título:**
+
+3.  En la cinta, seleccione **Text box**. Escriba **WW Importers Profit
+    Reporting**. **Resalte el texto** y aumente el tamaño a **20**.
+
+> ![](./media/image96.png)
+
+4.  Cambie el tamaño del cuadro de texto y colóquelo en la **parte
+    superior** izquierda de la página del reporte, luego haga clic fuera
+    del cuadro de texto.
+
+> ![](./media/image97.png)
+
+**Agregue una Card:**
+
+- En el panel **Data**, expanda **fact_sales** y marque la casilla junto
+  a **Profit**. Esta selección crea una **Card** que muestra el valor de
+  la medida Profit en el lienzo del reporte.
+
+> ![](./media/image98.png)
+
+5.  Con el gráfico de barras seleccionado, elija la visual **Card** en
+    el panel de visualizaciones.
+
+> ![](./media/image99.png)
+
+6.  Esta selección convierte el visual en una Card. Coloque la Card
+    debajo del título.
+
+> ![](./media/image100.png)
+
+7.  Haga clic en cualquier parte del lienzo en blanco (o presione la
+    tecla Esc) para que la Card que acaba de colocar deje de estar
+    seleccionada.
+
+**Agregue un Bar chart:**
+
+8.  En el panel **Data**, expanda **fact_sales** y marque la casilla
+    junto a **Profit**. Esta selección crea un gráfico de columnas y
+    agrega el campo al eje Y. 
+
+> ![](./media/image101.png)
+
+9.  En el panel **Data**, expanda **dimension_city** y marque la casilla
+    **SalesTerritory**. Esta selección agrega el campo al eje **Y**. 
 
 > ![](./media/image102.png)
 
-### Task 2: Build Report
-
-1.  From the top ribbon, select **Reporting** and select **New
-    report** to start creating reports/dashboards in Power BI.
+10. Con el gráfico de columnas seleccionado, elija el visual **Clustered
+    bar chart** en el panel de visualizaciones. Esta selección convierte
+    el gráfico de columnas en un gráfico de barras.
 
 > ![](./media/image103.png)
->
+
+11. Cambie el tamaño del gráfico de barras para que ocupe el área debajo
+    del título y la Card.
+
 > ![](./media/image104.png)
 
-2.  On the Power BI report canvas, you can create reports to meet your
-    business requirements by dragging required columns from
-    the **Data** pane to the canvas and using one or more of available
-    visualizations.
+12. Haga clic en cualquier parte del lienzo en blanco (o presione la
+    tecla **Esc**) para que el gráfico de barras deje de estar
+    seleccionado.
+
+**Cree un visual de tipo Stacked area chart:**
+
+13. En el panel **Visualizations**, seleccione el visual **Stacked area
+    chart**.
 
 > ![](./media/image105.png)
 
-**Add a title:**
-
-3.  In the Ribbon, select **Text box**. Type in **WW Importers Profit
-    Reporting**. **Highlight** the **text** and increase size to **20**.
+14. Reposicione y cambie el tamaño del stacked area chart para colocarlo
+    a la derecha de la Card y del gráfico de barras creados en los pasos
+    anteriores.
 
 > ![](./media/image106.png)
 
-4.  Resize the text box and place it in the **upper left** of the report
-    page and click outside the textbox.
+15. En el panel **Data**, expanda **fact_sales** y marque la casilla
+    junto a **Profit**. Luego, expanda **dimension_date** y marque la
+    casilla junto a **FiscalMonthNumber**. Esta selección crea un
+    gráfico de línea rellena que muestra la ganancia por mes fiscal.
 
 > ![](./media/image107.png)
 
-**Add a Card:**
+16. En el panel **Data**, expanda **dimension_stock_item** y arrastre
+    **BuyingPackage** al área **Legend**. Esta selección agrega una
+    línea para cada uno de los Buying Packages.
 
-- On the **Data** pane, expand **fact_sales** and check the box next
-  to **Profit**. This selection creates a column chart and adds the
-  field to the Y-axis.
+> ![](./media/image108.png) ![](./media/image109.png)
 
-> ![](./media/image108.png)
+17. Haga clic en cualquier parte del lienzo en blanco (o presione la
+    tecla Esc) para que el stacked area chart deje de estar
+    seleccionado.
 
-5.  With the bar chart selected, select the **Card** visual in the
-    visualization pane.
+**Cree un Column chart:**
 
-> ![](./media/image109.png)
-
-6.  This selection converts the visual to a card. Place the card under
-    the title.
+18. En el panel **Visualizations**, seleccione el visual **Stacked
+    column chart**.
 
 > ![](./media/image110.png)
 
-7.  Click anywhere on the blank canvas (or press the Esc key) so the
-    Card that we just placed is no longer selected.
+19. En el panel **Data**, expanda **fact_sales** y marque la casilla
+    junto a **Profit**. Esta selección agrega el campo al eje Y.
 
-**Add a Bar chart:**
-
-8.  On the **Data** pane, expand **fact_sales** and check the box next
-    to **Profit**. This selection creates a column chart and adds the
-    field to the Y-axis. 
+20.  En el panel **Data**, expanda **dimension_employee** y marque la
+    casilla junto a **Employee**. Esta selección agrega el campo al eje
+    **X**.
 
 > ![](./media/image111.png)
 
-9.  On the **Data** pane, expand **dimension_city** and check the box
-    for **SalesTerritory**. This selection adds the field to the
-    Y-axis. 
+21. Haga clic en cualquier parte del lienzo en blanco (o presione la
+    tecla Esc) para que el gráfico deje de estar seleccionado.
+
+22. Desde la cinta, seleccione **File** \> **Save**.
 
 > ![](./media/image112.png)
 
-10. With the bar chart selected, select the **Clustered bar
-    chart** visual in the visualization pane. This selection converts
-    the column chart into a bar chart.
+23. Ingrese el nombre de su reporte como **Profit Reporting**.
+    Seleccione **Save**.
 
 > ![](./media/image113.png)
 
-11. Resize the Bar chart to fill in the area under the title and Card.
+24. Recibirá una notificación que indica que el reporte ha sido
+    guardado.
+     ![](./media/image114.png)
 
-> ![](./media/image114.png)
+# Ejercicio 5: Limpieza de recursos
 
-12. Click anywhere on the blank canvas (or press the Esc key) so the bar
-    chart is no longer selected.
+Puede eliminar reportes, pipelines, warehouses y otros elementos de
+forma individual o bien quitar todo el *workspace*. Use los siguientes
+pasos para eliminar el workspace que creó para este tutorial:
 
-**Build a stacked area chart visual:**
-
-13. On the **Visualizations** pane, select the **Stacked area
-    chart** visual.
+1.  Seleccione su workspace, **Fabric Lakehouse Tutorial-XX**, desde el
+    menú de navegación izquierdo. Esto abrirá la vista de elementos del
+    workspace.
 
 > ![](./media/image115.png)
 
-14. Reposition and resize the stacked area chart to the right of the
-    card and bar chart visuals created in the previous steps.
+2.  Seleccione la opción ... debajo del nombre del workspace y
+    seleccione **Workspace settings**.
 
 > ![](./media/image116.png)
 
-15. On the **Data** pane, expand **fact_sales** and check the box next
-    to **Profit**. Expand **dimension_date** and check the box next
-    to **FiscalMonthNumber**. This selection creates a filled line chart
-    showing profit by fiscal month.
+3.  Seleccione **Other** y **Remove this workspace.**
 
 > ![](./media/image117.png)
 
-16. On the **Data** pane, expand **dimension_stock_item** and
-    drag **BuyingPackage** into the Legend field well. This selection
-    adds a line for each of the Buying Packages.
+4.  Haga clic en **Delete** en la advertencia que aparece en pantalla.
 
 > ![](./media/image118.png)
+
+5.  Espere la notificación que indica que el Workspace ha sido eliminado
+    antes de continuar con el siguiente laboratorio.
+
 > ![](./media/image119.png)
 
-17. Click anywhere on the blank canvas (or press the Esc key) so the
-    stacked area chart is no longer selected.
-
-**Build a column chart:**
-
-18. On the **Visualizations** pane, select the **Stacked column
-    chart** visual.
-
-> ![](./media/image120.png)
-
-19. On the **Data** pane, expand **fact_sales** and check the box next
-    to **Profit**. This selection adds the field to the Y-axis.
-
-20.  On the **Data** pane, expand **dimension_employee** and check the
-    box next to **Employee**. This selection adds the field to the
-    X-axis.
-
-> ![](./media/image121.png)
-
-21. Click anywhere on the blank canvas (or press the Esc key) so the
-    chart is no longer selected.
-
-22. From the ribbon, select **File** \> **Save**.
-
-> ![](./media/image122.png)
-
-23. Enter the name of your report as **Profit Reporting**.
-    Select **Save**.
-
-> ![](./media/image123.png)
-
-24. You will get a notification stating that the report has been
-    saved. ![](./media/image124.png)
-
-# Exercise 6: Clean up resources
-
-You can delete individual reports, pipelines, warehouses, and other
-items or remove the entire workspace. Use the following steps to delete
-the workspace you created for this tutorial.
-
-1.  Select your workspace, the **Fabric Lakehouse Tutorial-XX** from the
-    left-hand navigation menu. It opens the workspace item view.
-
-> ![](./media/image125.png)
-
-2.  Select the **...** option under the workspace name and
-    select **Workspace settings**.
-
-> ![](./media/image126.png)
-
-3.  Select **Other** and **Remove this workspace.**
-
-> ![](./media/image127.png)
-
-4.  Click on **Delete** in the warning that pops up.
-
-> ![](./media/image128.png)
-
-5.  Wait for a notification that the Workspace has been deleted, before
-    proceeding to the next lab.
-
-> ![](./media/image129.png)
-
-**Summary**: This practical lab focuses on setting up and configuring
-essential components within Microsoft Fabric and Power BI for data
-management and reporting. It includes tasks like activating trials,
-configuring OneDrive, creating workspaces, and setting up lakehouses.
-The lab also covers tasks related to ingesting sample data, optimizing
-delta tables, and building reports in Power BI for effective data
-analysis. The objectives aim to provide hands-on experience in utilizing
-Microsoft Fabric and Power BI for data management and reporting purpo
+**Resumen**: Este laboratorio práctico se centra en la configuración y
+preparación de los componentes esenciales dentro de Microsoft Fabric y
+Power BI para la gestión y el análisis de datos. Incluye tareas como
+activar pruebas gratuitas, configurar OneDrive, crear workspaces y
+establecer lakehouses. El laboratorio también abarca actividades
+relacionadas con la ingesta de datos de ejemplo, la optimización de
+tablas Delta y la creación de reportes en Power BI para un análisis de
+datos efectivo. Los objetivos buscan proporcionar experiencia práctica
+en el uso de Microsoft Fabric y Power BI para fines de gestión y
+generación de reportes de datos.
