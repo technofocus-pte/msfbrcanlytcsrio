@@ -1,114 +1,127 @@
-# Use Case 03: Analyze data with Apache Spark
+# Caso de uso 04: Analizar datos con Apache Spark
 
-**Introduction**
+**Introducción**
 
-Apache Spark is an open-source engine for distributed data processing,
-and is widely used to explore, process, and analyze huge volumes of data
-in data lake storage. Spark is available as a processing option in many
-data platform products, including Azure HDInsight, Azure Databricks,
-Azure Synapse Analytics, and Microsoft Fabric. One of the benefits of
-Spark is support for a wide range of programming languages, including
-Java, Scala, Python, and SQL; making Spark a very flexible solution for
-data processing workloads including data cleansing and manipulation,
-statistical analysis and machine learning, and data analytics and
-visualization.
+Apache Spark es un motor de código abierto para el procesamiento
+distribuido de datos, ampliamente utilizado para explorar, procesar y
+analizar grandes volúmenes de datos almacenados en un data lake. Spark
+está disponible como opción de procesamiento en muchos productos de
+plataformas de datos, incluyendo Azure HDInsight, Azure Databricks,
+Azure Synapse Analytics y Microsoft Fabric. Uno de los beneficios de
+Spark es su compatibilidad con una amplia variedad de lenguajes de
+programación, incluyendo Java, Scala, Python y SQL, lo que lo convierte
+en una solución muy flexible para cargas de trabajo de procesamiento de
+datos, incluyendo limpieza y manipulación de datos, análisis estadístico
+y aprendizaje automático, así como análisis y visualización de datos.
 
-Tables in a Microsoft Fabric lakehouse are based on the open
-source *Delta Lake* format for Apache Spark. Delta Lake adds support for
-relational semantics for both batch and streaming data operations, and
-enables the creation of a Lakehouse architecture in which Apache Spark
-can be used to process and query data in tables that are based on
-underlying files in a data lake.
+Las tablas en un lakehouse de Microsoft Fabric se basan en el formato de
+código abierto Delta Lake para Apache Spark. Delta Lake agrega soporte
+para semánticas relacionales tanto en operaciones por lotes como en
+tiempo real (streaming), y permite la creación de una arquitectura
+Lakehouse en la que Apache Spark puede usarse para procesar y consultar
+datos en tablas basadas en archivos subyacentes en un data lake.
 
-In Microsoft Fabric, Dataflows (Gen2) connect to various data sources
-and perform transformations in Power Query Online. They can then be used
-in Data Pipelines to ingest data into a lakehouse or other analytical
-store, or to define a dataset for a Power BI report.
+En Microsoft Fabric, los Dataflows (Gen2) se conectan a diversas fuentes
+de datos y realizan transformaciones mediante Power Query Online.
+Posteriormente, pueden utilizarse en Data Pipelines para ingerir datos
+en un lakehouse u otro almacén analítico, o para definir un conjunto de
+datos para un informe de Power BI.
 
-This lab is designed to introduce the different elements of Dataflows
-(Gen2), and not create a complex solution that may exist in an
-enterprise.
+Este laboratorio está diseñado para introducir los diferentes elementos
+de los Dataflows (Gen2), y no para crear una solución compleja que
+podría existir en un entorno empresarial.
 
-**Objectives**:
+**Objetivos**:
 
-- Create a workspace in Microsoft Fabric with the Fabric trial enabled.
+- Crear un workspace en Microsoft Fabric con la prueba de Fabric
+  habilitada.
 
-- Establish a lakehouse environment and upload data files for analysis.
+- Establecer un entorno lakehouse y cargar archivos de datos para
+  análisis.
 
-- Generate a notebook for interactive data exploration and analysis.
+- Generar un notebook para exploración y análisis interactivo de datos.
 
-- Load data into a dataframe for further processing and visualization.
+- Cargar datos en un DataFrame para procesamiento y visualización
+  adicionales.
 
-- Apply transformations to the data using PySpark.
+- Aplicar transformaciones a los datos usando PySpark.
 
-- Save and partition the transformed data for optimized querying.
+- Guardar y particionar los datos transformados para consultas
+  optimizadas.
 
-- Create a table in the Spark metastore for structured data management
+- Crear una tabla en el metastore de Spark para gestión de datos
+  estructurados.
 
-- Save DataFrame as a managed delta table named "salesorders."
+- Guardar el DataFrame como una tabla delta gestionada llamada
+  "salesorders".
 
-- Save DataFrame as an external delta table named "external_salesorder"
-  with a specified path.
+- Guardar el DataFrame como una tabla delta externa llamada
+  "external\\salesorder" con una ruta especificada.
 
-- Describe and compare properties of managed and external tables.
+- Describir y comparar las propiedades de las tablas gestionadas y
+  externas.
 
-- Execute SQL queries on tables for analysis and reporting.
+- Ejecutar consultas SQL sobre las tablas para análisis e informes.
 
-- Visualize data using Python libraries such as matplotlib and seaborn.
+- Visualizar datos usando bibliotecas de Python como matplotlib y
+  seaborn.
 
-- Establish a data lakehouse in the Data Engineering experience and
-  ingest relevant data for subsequent analysis.
+- Establecer un data lakehouse en la experiencia de Data Engineering e
+  ingerir los datos relevantes para análisis posteriores.
 
-- Define a dataflow for extracting, transforming, and loading data into
-  the lakehouse.
+- Definir un dataflow para extraer, transformar y cargar datos en el
+  lakehouse.
 
-- Configure data destinations within Power Query to store the
-  transformed data in the lakehouse.
+- Configurar destinos de datos dentro de Power Query para almacenar los
+  datos transformados en el lakehouse.
 
-- Incorporate the dataflow into a pipeline to enable scheduled data
-  processing and ingestion.
+- Incorporar el dataflow en un pipeline para habilitar el procesamiento
+  e ingestión de datos programados.
 
-- Remove the workspace and associated elements to conclude the exercise.
+- Eliminar el workspace y los elementos asociados para concluir el
+  ejercicio.
 
-# Exercise 1: Create a workspace, lakehouse, notebook and load data into dataframe 
+# Ejercicio 1: Crear un workspace, un lakehouse, un notebook y cargar datos en un dataframe
 
-## Task 1: Create a workspace 
+## Tarea 1: Crear un workspace
 
-Before working with data in Fabric, create a workspace with the Fabric
-trial enabled.
+Antes de trabajar con datos en Fabric, cree un workspace con la versión
+de prueba de Fabric habilitada.
 
-1.  Open your browser, navigate to the address bar, and type or paste
-    the following URL: +++https://app.fabric.microsoft.com/+++ then
-    press the **Enter** button.
+1.  Abra su navegador, navegue a la barra de direcciones y escriba o
+    pegue la siguiente URL: +++https://app.fabric.microsoft.com/+++ y
+    luego presione el botón **Enter**.
 
-> **Note**: If you are directed to Microsoft Fabric Home page, then skip
-> steps from \#2 to \#4.
+> **Nota**: Si es dirigido a la página de inicio de Microsoft Fabric,
+> omita los pasos del \#2 al \#4.
 >
 > ![](./media/image1.png)
 
-2.  In the **Microsoft Fabric** window, enter your credentials, and
-    click on the **Submit** button.
+2.  En la ventana de **Microsoft** **Fabric**, ingrese sus credenciales
+    y haga clic en el botón **Submit**.
 
 > ![](./media/image2.png)
 
-3.  Then, In the **Microsoft** window enter the password and click on
-    the **Sign in** button**.**
+3.  Luego, en la ventana de **Microsoft**, ingrese la contraseña y haga
+    clic en el botón **Sign in**.
 
 > ![A login screen with a red box and blue text Description
 > automatically generated](./media/image3.png)
 
-4.  In **Stay signed in?** window, click on the **Yes** button.
+4.  En la ventana **Stay signed in?** haga clic en el botón **Yes**.
 
 > ![A screenshot of a computer error Description automatically
 > generated](./media/image4.png)
 
-5.  Fabric home page, select **+New workspace** tile.
+5.  En la página principal de Fabric, seleccione el **tile +New
+    workspace**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image5.png)
 
-6.  In the **Create a workspace tab**, enter the following details and
-    click on the **Apply** button.
+6.  En la pestaña **Create a workspace**, ingrese los siguientes
+    detalles y haga clic en el botón **Apply**.
+
     |  |  |
     |-----|----|
     |Name|	+++dp_FabricXXXX+++ (XXXX can be a unique number)| 
@@ -116,118 +129,123 @@ trial enabled.
     |Advanced|	Under License mode, select Fabric capacity|
     |Default storage format	|Small dataset storage format|
 
-
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image6.png)
 >
 > ![](./media/image7.png)
 
-7.  Wait for the deployment to complete. It takes 2-3 minutes to
-    complete. When your new workspace opens, it should be empty.
+7.  Espere a que se complete la implementación. Toma de 2 a 3 minutos.
+    Cuando se abra su nuevo workspace, debería estar vacío.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image8.png)
 
-## Task 2: Create a lakehouse and upload files
+## Tarea 2: Crear un lakehouse y cargar archivos
 
-Now that you have a workspace, it’s time to switch to the *Data
-engineering* experience in the portal and create a data lakehouse for
-the data files you’re going to analyze.
+Ahora que tiene un workspace, es momento de cambiar a la experiencia de
+*Data Engineering* en el portal y crear un data lakehouse para los
+archivos de datos que va a analizar.
 
-1.  Create a new Eventhouse by clicking on the **+New item** button in
-    the navigation bar.
+1.  Cree un nuevo Eventhouse haciendo clic en el botón **+New item** en
+    la barra de navegación.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image9.png)
 
-2.  Click on the "**Lakehouse**" tile.
+2.  Haga clic en el recuadro "**Lakehouse**".
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image10.png)
 
-3.  In the **New lakehouse** dialog box,
-    enter **+++Fabric_lakehouse+++** in the **Name** field, click on
-    the **Create** button and open the new lakehouse.
+3.  En el cuadro de diálogo **New lakehouse**, ingrese
+    +++**Fabric_lakehouse**+++ en el campo **Name**, haga clic en el
+    botón **Create** y abra el nuevo lakehouse.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image11.png)
 
-4.  After a minute or so, a new empty lakehouse will be created. You
-    need to ingest some data into the data lakehouse for analysis.
+4.  Después de un minuto aproximadamente, se creará un nuevo lakehouse
+    vacío. Debe ingerir algunos datos en el lakehouse para su análisis.
 
 ![](./media/image12.png)
 
-5.  You will see a notification stating **Successfully created SQL
+5.  Verá una notificación que indica **Successfully created SQL
     endpoint**.
 
 ![](./media/image13.png)
 
-6.  In the **Explorer** section, under the **fabric_lakehouse**, hover
-    your mouse beside **Files folder**, then click on the horizontal
-    ellipses **(…)** menu. Navigate and click on **Upload**, then click
-    on the **Upload folder** as shown in the below image.
+6.  En la sección **Explorer**, debajo de **fabric_lakehouse**, coloque
+    el cursor junto a la carpeta **Files**, luego haga clic en el menú
+    de puntos suspensivos horizontales (**…**). Navegue y haga clic en
+    **Upload**, después seleccione **Upload folder**, tal como se
+    muestra en la imagen a continuación.
 
 ![](./media/image14.png)
 
-7.  On the **Upload folder** pane that appears on the right side, select
-    the **folder icon** under the **Files/** and then browse to
-    **C:\LabFiles** and then select the **orders** folder and click on
-    the **Upload** button.
+7.  En el panel **Upload folder** que aparece en el lado derecho,
+    seleccione el **icono de carpeta** debajo de **Files/**, luego
+    busque la ruta **C:\LabFiles**, seleccione la carpeta **orders** y
+    haga clic en el botón **Upload**.
 
 ![](./media/image15.png)
 
-8.  In case, the **Upload 3 files to this site?** dialog box appears,
-    then click on **Upload** button.
+8.  En caso de que aparezca el cuadro de diálogo **Upload 3 files to
+    this site?** haga clic en el botón **Upload**.
 
 ![](./media/image16.png)
 
-9.  In the Upload folder pane, click on the **Upload** button.
+9.  En el panel **Upload folder**, haga clic en el botón **Upload**.
 
 > ![](./media/image17.png)
 
-10. After the files have been uploaded **close** the **Upload folder**
-    pane.
+10. Después de que los archivos se hayan subido, cierre el panel
+    **Upload folder**.
 
 > ![](./media/image18.png)
 
-11. Expand **Files** and select the **orders** folder and verify that
-    the CSV files have been uploaded.
+11. Expanda **Files** y seleccione la carpeta **orders** para verificar
+    que los archivos CSV se hayan subido.
 
 > ![](./media/image19.png)
 
-## Task 3: Create a notebook
+## Task 3: Crear un notebook
 
-To work with data in Apache Spark, you can create a *notebook*.
-Notebooks provide an interactive environment in which you can write and
-run code (in multiple languages), and add notes to document it.
+Para trabajar con datos en Apache Spark, puede crear un *notebook*. Los
+notebooks proporcionan un entorno interactivo en el que puede escribir y
+ejecutar código (en múltiples lenguajes) y agregar notas para
+documentarlo.
 
-1.  On the **Home** page while viewing the contents of
-    the **orders** folder in your datalake, in the **Open
-    notebook** menu, select **New notebook**.
+1.  En la página **Home**, mientras visualiza el contenido de la carpeta
+    **orders** en su **datalake**, en el menú **Open notebook**,
+    seleccione **New notebook**.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image20.png)
 
-2.  After a few seconds, a new notebook containing a single *cell* will
-    open. Notebooks are made up of one or more cells that can
-    contain *code* or *markdown* (formatted text).
+2.  Después de unos segundos, se abrirá un nuevo notebook que contiene
+    una sola *celda*. Los notebooks están compuestos por una o más
+    celdas que pueden contener *código* o *markdown* (texto con
+    formato).
 
 ![](./media/image21.png)
 
-3.  Select the first cell (which is currently a *code* cell), and then
-    in the dynamic tool bar at its top-right, use the **M↓** button to
-    **convert the cell to a markdown cell**.
+3.  Seleccione la primera celda (que actualmente es una celda de código)
+    y, en la barra de herramientas dinámica en la esquina superior
+    derecha, use el botón **M↓** **para convertir la celda en una celda
+    de markdown**.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image22.png)
 
-4.  When the cell changes to a markdown cell, the text it contains is
-    rendered.
+4.  Cuando la celda cambie a una celda de markdown, el texto que
+    contiene se mostrará formateado.
 
 ![](./media/image23.png)
 
-5.  Use the **🖉** (Edit) button to switch the cell to editing mode,
-    replace all the text then modify the markdown as follows:
+5.  Use el botón **🖉** (Edit) para cambiar la celda a modo de edición,
+    reemplace todo el texto y luego modifique el markdown de la
+    siguiente manera:
+
     CodeCopy
     ```
     # Sales order data exploration
@@ -240,33 +258,35 @@ incorrect.](./media/image22.png)
 ![A screenshot of a computer Description automatically
 generated](./media/image25.png)
 
-6.  Click anywhere in the notebook outside of the cell to stop editing
-    it and see the rendered markdown.
+6.  Haga clic en cualquier lugar del notebook fuera de la celda para
+    salir del modo de edición y ver el markdown renderizado.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image26.png)
 
-## Task 4: Load data into a dataframe
+## Tarea 4: Cargar datos en un dataframe
 
-Now you’re ready to run code that loads the data into a *dataframe*.
-Dataframes in Spark are similar to Pandas dataframes in Python, and
-provide a common structure for working with data in rows and columns.
+Ahora está listo para ejecutar código que cargue los datos en un
+*dataframe*. Los dataframes en Spark son similares a los dataframes de
+Pandas en Python y proporcionan una estructura común para trabajar con
+datos organizados en filas y columnas.
 
-**Note**: Spark supports multiple coding languages, including Scala,
-Java, and others. In this exercise, we’ll use *PySpark*, which is a
-Spark-optimized variant of Python. PySpark is one of the most commonly
-used languages on Spark and is the default language in Fabric notebooks.
+**Nota**: Spark soporta múltiples lenguajes de programación, incluyendo
+Scala, Java y otros. En este ejercicio, utilizaremos PySpark, que es una
+variante de Python optimizada para Spark. PySpark es uno de los
+lenguajes más utilizados en Spark y es el lenguaje predeterminado en los
+notebooks de Fabric.
 
-1.  With the notebook visible, expand the **Files** list and select
-    the **orders** folder so that the CSV files are listed next to the
-    notebook editor.
+1.  Con el notebook visible, expanda la lista de **Files** y seleccione
+    la carpeta **orders** para que los archivos CSV se muestren junto al
+    editor del notebook.
 
 ![](./media/image27.png)
 
-2.  Now, however your mouse to 2019.csv file. Click on the horizontal
-    ellipses **(…)** beside 2019.csv. Navigate and click on **Load
-    data**, then select **Spark**. A new code cell containing the
-    following code will be added to the notebook:
+2.  Ahora, coloque el cursor sobre el archivo 2019.csv. Haga clic en los
+    puntos suspensivos horizontales **(…)** junto a 2019.csv, luego
+    seleccione **Load data** y elija **Spark**. Se agregará una nueva
+    celda de código al notebook con el siguiente código:
 
     ```
     df = spark.read.format("csv").option("header","true").load("Files/orders/2019.csv")
@@ -278,36 +298,38 @@ used languages on Spark and is the default language in Fabric notebooks.
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image29.png)
 
-**Tip**: You can hide the Lakehouse explorer panes on the left by using
-their **«** icons. Doing
+**Sugerencia**: Puede ocultar los paneles del explorador del Lakehouse
+en el lado izquierdo usando sus iconos «. Hacer esto le ayudará a
+concentrarse en el notebook.
 
-so will help you focus on the notebook.
-
-3.  Use the **▷ Run cell** button on the left of the cell to run it.
+3.  Use el botón ▷ **Run cell** a la izquierda de la celda para
+    ejecutarla.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image30.png)
 
-**Note**: Since this is the first time you’ve run any Spark code, a
-Spark session must be started. This means that the first run in the
-session can take a minute or so to complete. Subsequent runs will be
-quicker.
+**Nota**: Dado que es la primera vez que ejecuta código de Spark, se
+debe iniciar una sesión de Spark. Esto significa que la primera
+ejecución en la sesión puede tardar alrededor de un minuto en
+completarse. Las ejecuciones posteriores serán más rápidas.
 
-4.  When the cell command has completed, review the output below the
-    cell, which should look similar to this:
+4.  Cuando el comando de la celda haya finalizado, revise la salida
+    debajo de la celda, que debería verse similar a esto:
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image31.png)
 
-5.  The output shows the rows and columns of data from the 2019.csv
-    file. However, note that the column headers don’t look right. The
-    default code used to load the data into a dataframe assumes that the
-    CSV file includes the column names in the first row, but in this
-    case the CSV file just includes the data with no header information.
+5.  La salida muestra las filas y columnas de datos del archivo
+    2019.csv. Sin embargo, observe que los encabezados de columna no se
+    ven correctos. El código predeterminado usado para cargar los datos
+    en un dataframe asume que el archivo CSV incluye los nombres de
+    columna en la primera fila, pero en este caso el archivo CSV solo
+    contiene los datos sin información de encabezado.
 
-6.  Modify the code to set the **header** option to **false**. Replace
-    all the code in the **cell** with the following code and click on
-    **▷ Run cell** button and review the output
+6.  Modifique el código para establecer la opción **header** en
+    **false**. Reemplace todo el código en la celda con el siguiente
+    código, haga clic en el botón ▷ **Run cell** y revise la salida
+
     ```
     df = spark.read.format("csv").option("header","false").load("Files/orders/2019.csv")
     # df now is a Spark DataFrame containing CSV data from "Files/orders/2019.csv".
@@ -316,13 +338,15 @@ incorrect.](./media/image31.png)
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image32.png)
 
-7.  Now the dataframe correctly includes first row as data values, but
-    the column names are auto-generated and not very helpful. To make
-    sense of the data, you need to explicitly define the correct schema
-    and data type for the data values in the file.
+7.  Ahora el dataframe incluye correctamente la primera fila como
+    valores de datos, pero los nombres de las columnas se generan
+    automáticamente y no son muy útiles. Para interpretar correctamente
+    los datos, necesita definir explícitamente el esquema correcto y el
+    tipo de datos de los valores en el archivo.
 
-8.  Replace all the code in the **cell** with the following code and
-    click on **▷ Run cell** button and review the output
+8.  Reemplace todo el código en la celda con el siguiente código y haga
+    clic en el botón **▷ Run cell** para revisar el resultado.
+
     ```
     from pyspark.sql.types import *
     
@@ -346,29 +370,35 @@ incorrect.](./media/image32.png)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image34.png)
 
-9.  Now the dataframe includes the correct column names (in addition to
-    the **Index**, which is a built-in column in all dataframes based on
-    the ordinal position of each row). The data types of the columns are
-    specified using a standard set of types defined in the Spark SQL
-    library, which were imported at the beginning of the cell.
+9.  Ahora el dataframe incluye los nombres correctos de las columnas
+    (además del **Index**, que es una columna incorporada en todos los
+    dataframes basada en la posición ordinal de cada fila). Los tipos de
+    datos de las columnas se especifican utilizando un conjunto estándar
+    de tipos definidos en la librería Spark SQL, que se importaron al
+    inicio de la celda.
 
-10. Confirm that your changes have been applied to the data by viewing
-    the dataframe.
+10. Confirme que sus cambios se han aplicado a los datos visualizando el
+    dataframe.
 
-11. Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
-    ```
-    display(df)
-    ```
+11. Use el **icono + Code** debajo de la salida de la celda para agregar
+    una nueva celda de código al notebook, ingrese el siguiente código
+    en ella. Haga clic en el botón **▷ Run cell** y revise la salida.
+
+> CodeCopy
+>
++++display(df)+++
+>
 > ![](./media/image35.png)
 
-12. The dataframe includes only the data from the **2019.csv** file.
-    Modify the code so that the file path uses a \* wildcard to read the
-    sales order data from all of the files in the **orders** folder
+12. El dataframe incluye únicamente los datos del archivo **2019.csv.**
+    Modifique el código para que la ruta del archivo use un comodín (\*)
+    y lea los datos de ventas de todos los archivos en la carpeta
+    **orders**.
 
-13. Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it.
+13. Use el icono **+ Code** debajo del resultado de la celda para
+    agregar una nueva celda de código al notebook, y escriba el
+    siguiente código en ella.
+
     ```
     from pyspark.sql.types import *
     
@@ -390,24 +420,27 @@ incorrect.](./media/image32.png)
     ```
 > ![](./media/image36.png)
 
-14. Run the modified code cell and review the output, which should now
-    include sales for 2019, 2020, and 2021.
+14. Ejecute la celda de código modificada y revise la salida, la cual
+    ahora debería incluir las ventas de 2019, 2020 y 2021.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image37.png)
 
-**Note**: Only a subset of the rows is displayed, so you may not be able
-to see examples from all years.
+**Nota**: Solo se muestra un subconjunto de las filas, por lo que puede
+que no pueda ver ejemplos de todos los años.
 
-# Exercise 2: Explore data in a dataframe
+# Ejercicio 2: Explorar datos en un dataframe
 
-The dataframe object includes a wide range of functions that you can use
-to filter, group, and otherwise manipulate the data it contains.
+El objeto dataframe incluye una amplia gama de funciones que puede usar
+para filtrar, agrupar y manipular de otras formas los datos que
+contiene.
 
-## Task 1: Filter a dataframe
+## Tarea 1: Filtrar un dataframe
 
-1.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it.
+1.  Use el icono + **Code** debajo del resultado de la celda para
+    agregar una nueva celda de código al notebook, e ingrese el
+    siguiente código en ella.
+
     ```
     customers = df['CustomerName', 'Email']
     print(customers.count())
@@ -416,66 +449,70 @@ to filter, group, and otherwise manipulate the data it contains.
     ```
 > ![](./media/image38.png)
 
-2.  **Run** the new code cell, and review the results. Observe the
-    following details:
+2.  **Ejecute** la nueva celda de código y revise los resultados.
+    Observe los siguientes detalles:
 
-    - When you perform an operation on a dataframe, the result is a new
-      dataframe (in this case, a new **customers** dataframe is created
-      by selecting a specific subset of columns from
-      the **df** dataframe)
+    - Cuando realiza una operación en un dataframe, el resultado es un
+      nuevo dataframe (en este caso, se crea un nuevo dataframe llamado
+      **customers** al seleccionar un subconjunto específico de columnas
+      del dataframe **df**)
 
-    - Dataframes provide functions such
-      as **count** and **distinct** that can be used to summarize and
-      filter the data they contain.
+    - Los dataframes proporcionan funciones como **count** y
+      **distinct**, que pueden usarse para resumir y filtrar los datos
+      que contienen.
 
-    - The dataframe\['Field1', 'Field2', ...\] syntax is a shorthand way
-      of defining a subset of columns. You can also
-      use **select** method, so the first line of the code above could
-      be written as customers = df.select("CustomerName", "Email")
+    - La sintaxis dataframe\['Field1', 'Field2', ...\] es una forma
+      abreviada de definir un subconjunto de columnas. También puede
+      usar el método **select**, por lo que la primera línea del código
+      anterior podría escribirse como customers =
+      df.select("CustomerName", "Email")
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image39.png)
 
-3.  Modify the code, replace all the code in the **cell** with the
-    following code and click on **▷ Run cell** button as follows:
+3.  Modifique el código: reemplace todo el contenido de la **celda** con
+    el siguiente código y haga clic en el botón ▷ **Run cell** para
+    ejecutarlo:
+
     ```
     customers = df.select("CustomerName", "Email").where(df['Item']=='Road-250 Red, 52')
     print(customers.count())
     print(customers.distinct().count())
     display(customers.distinct())
     ```
-
-4.  **Run** the modified code to view the customers who have purchased
-    the ***Road-250 Red, 52* product**. Note that you can “**chain**”
-    multiple functions together so that the output of one function
-    becomes the input for the next - in this case, the dataframe created
-    by the **select** method is the source dataframe for
-    the **where** method that is used to apply filtering criteria.
+4.  **Ejecute** el código modificado para ver los clientes que han
+    comprado el producto ***Road-250 Red, 52***. Tenga en cuenta que
+    puede “**encadenar**” múltiples funciones, de manera que la salida
+    de una función se convierta en la entrada de la siguiente; en este
+    caso, el dataframe creado por el método **select** es el dataframe
+    de origen para el método **where**, que se utiliza para aplicar los
+    criterios de filtrado.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image40.png)
 
-## Task 2: Aggregate and group data in a dataframe
+## Tarea 2: Agregar y agrupar datos en un dataframe
 
-1.  Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
+1.  Seleccione **+ Code** y copie y pegue el siguiente código en la
+    nueva celda. Luego, haga clic en el botón **▷ Run cell** para
+    ejecutar el código.
+
     ```
     productSales = df.select("Item", "Quantity").groupBy("Item").sum()
     display(productSales)
     ```
->
 > ![](./media/image41.png)
 
-2.  Note that the results show the sum of order quantities grouped by
-    product. The **groupBy** method groups the rows by *Item*, and the
-    subsequent **sum** aggregate function is applied to all of the
-    remaining numeric columns (in this case, *Quantity*)
+2.  Observe que los resultados muestran la suma de las cantidades de
+    pedido agrupadas por producto. El método **groupBy** agrupa las
+    filas por *Item*, y la función de agregación **sum** se aplica a
+    todas las columnas numéricas restantes (en este caso, *Quantity*).
 
-3.  Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
+3.  Haga clic en **+ Code**, copie y pegue el siguiente código en la
+    celda, luego haga clic en el botón **▷ Run cell**.
 
-    ![A screenshot of a computer AI-generated content may be
-    incorrect.](./media/image42.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image42.png)
     ```
     from pyspark.sql.functions import *
     
@@ -484,25 +521,28 @@ to filter, group, and otherwise manipulate the data it contains.
     ```
 > ![](./media/image43.png)
 
-4.  Note that the results show the number of sales orders per year. Note
-    that the **select** method includes a SQL **year** function to
-    extract the year component of the *OrderDate* field (which is why
-    the code includes an **import** statement to import functions from
-    the Spark SQL library). It then uses an **alias** method is used to
-    assign a column name to the extracted year value. The data is then
-    grouped by the derived *Year* column and the count of rows in each
-    group is calculated before finally the **orderBy** method is used to
-    sort the resulting dataframe.
+4.  Observe que los resultados muestran el número de órdenes de venta
+    por año. Note que el método **select** incluye la función SQL
+    **year** para extraer el componente de año del campo **OrderDate**
+    (por eso el código incluye una instrucción **import** para importar
+    funciones desde la biblioteca Spark SQL). Luego se utiliza el método
+    **alias** para asignar un nombre de columna al valor de año
+    extraído. Los datos se agrupan por la columna derivada **Year** y se
+    calcula el conteo de filas en cada grupo; finalmente, se utiliza el
+    método **orderBy** para ordenar el dataframe resultante.
 
-# Exercise 3: Use Spark to transform data files
+# Ejercicio 3: Usar Spark para transformar archivos de datos
 
-A common task for data engineers is to ingest data in a particular
-format or structure, and transform it for further downstream processing
-or analysis.
+Una tarea común para los ingenieros de datos es ingerir datos en un
+formato o estructura específica y transformarlos para su posterior
+procesamiento o análisis.
 
-## Task 1: Use dataframe methods and functions to transform data
+## Tarea 1: Utilizar métodos y funciones de un dataframe para transformar datos
 
-1.  Click on + Code and copy and paste the below code
+1.  Haga clic en + Code y copie y pegue el siguiente código
+
+**CodeCopy**
+
     ```
     from pyspark.sql.functions import *
     
@@ -520,90 +560,95 @@ or analysis.
     ```
 > ![](./media/image44.png)
 
-2.  **Run** the code to create a new dataframe from the original order
-    data with the following transformations:
+2.  **Ejecute** el código para crear un nuevo dataframe a partir de los
+    datos originales de pedidos con las siguientes transformaciones:
 
-    - Add **Year** and **Month** columns based on
-      the **OrderDate** column.
+    - Agregue columnas **Year** y **Month** basadas en la
+      columna **OrderDate**.
 
-    - Add **FirstName** and **LastName** columns based on
-      the **CustomerName** column.
+    - Agregue columnas **FirstName** y **LastName** basadas en la
+      columna **CustomerName**.
 
-    - Filter and reorder the columns, removing
-      the **CustomerName** column.
+    - Filtre y reordene las columnas, eliminando la
+      columna **CustomerName**.
 
 > ![](./media/image45.png)
 
-3.  Review the output and verify that the transformations have been made
-    to the data.
+3.  Revise la salida y verifique que las transformaciones se hayan
+    aplicado correctamente a los datos.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image46.png)
 
-You can use the full power of the Spark SQL library to transform the
-data by filtering rows, deriving, removing, renaming columns, and
-applying any other required data modifications.
+Puede usar todo el poder de la biblioteca Spark SQL para transformar los
+datos mediante filtrado de filas, creación de columnas derivadas,
+eliminación o renombrado de columnas y la aplicación de cualquier otra
+modificación requerida.
 
-**Tip**: See the [*Spark dataframe
-documentation*](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/dataframe.html) to
-learn more about the methods of the Dataframe object.
+**Consejo**: Consulte [*documentación de DataFrame de
+Spark*](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/dataframe.html) para
+conocer más sobre los métodos del objeto DataFrame.
 
-## Task 2: Save the transformed data
+## Tarea 2: Guardar los datos transformados
 
-1.  **Add a new cell** with the following code to save the transformed
-    dataframe in Parquet format (Overwriting the data if it already
-    exists). **Run** the cell and wait for the message that the data has
-    been saved.
+1.  **Agregue una nueva celda** con el siguiente código para guardar el
+    dataframe transformado en formato Parquet (sobrescribiendo los datos
+    si ya existen). **Ejecute** la celda y espere el mensaje que indique
+    que los datos han sido guardados.
+
     ```
     transformed_df.write.mode("overwrite").parquet('Files/transformed_data/orders')
     print ("Transformed data saved!")
     ```
-> **Note**: Commonly, *Parquet* format is preferred for data files that
-> you will use for further analysis or ingestion into an analytical
-> store. Parquet is a very efficient format that is supported by most
-> large scale data analytics systems. In fact, sometimes your data
-> transformation requirement may simply be to convert data from another
-> format (such as CSV) to Parquet!
+> **Nota**: Normalmente, el formato *Parquet* se prefiere para archivos
+> de datos que se utilizarán para análisis adicionales o para su
+> ingestión en un almacén analítico. Parquet es un formato muy eficiente
+> y es compatible con la mayoría de los sistemas de análisis de datos a
+> gran escala. De hecho, en ocasiones, el requisito de transformación de
+> datos puede ser simplemente convertir datos de otro formato (como CSV)
+> a Parquet.
 >
 > ![](./media/image47.png)
 >
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image48.png)
 
-2.  Then, in the **Lakehouse explorer** pane on the left, in
-    the **…** menu for the **Files** node, select **Refresh**.
+2.  Luego, en el panel del **explorador del Lakehouse** a la izquierda,
+    en el menú … del nodo **Files**, seleccione **Refresh**.
 
 > ![](./media/image49.png)
 
-3.  Click on the **transformed_data** folder to verify that it contains
-    a new folder named **orders**, which in turn contains one or more
-    **Parquet files**.
+3.  Haga clic en la carpeta **transformed_data** para verificar que
+    contiene una nueva carpeta llamada **orders**, la cual a su vez
+    contiene uno o más **archivos** **Parquet**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image50.png)
 
-4.  Click on **+ Code** following code to load a new dataframe from the
-    parquet files in the **transformed_data -\> orders** folder:
+4.  Haga clic en **+ Code** e ingrese el siguiente código para cargar un
+    nuevo dataframe desde los archivos **Parquet** en la carpeta
+    **transformed_data -\> orders**:
+
     ```
-    orders_df = spark.read.format("parquet").load("Files/transformed_data/orders")
-    display(orders_df)
+    orders_df.write.partitionBy("Year","Month").mode("overwrite").parquet("Files/partitioned_data")
+    print ("Transformed data saved!")
     ```
->
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image51.png)
 
-5.  **Run** the cell and verify that the results show the order data
-    that has been loaded from the parquet files.
+5.  **Ejecute** la celda y verifique que los resultados muestran los
+    datos de órdenes que se han cargado desde los archivos Parquet.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image52.png)
 
-## Task 3: Save data in partitioned files
+## Tarea 3: Guardar los datos en archivos particionados
 
-1.  Add a new cell, Click on **+ Code** with the following code; which
-    saves the dataframe, partitioning the data
-    by **Year** and **Month**. **Run** the cell and wait for the message
-    that the data has been saved
+1.  Agregue una nueva celda, haga clic en **+ Code** e ingrese el
+    siguiente código; este guarda el dataframe particionando los datos
+    por **Year** y **Month**. **Ejecute** la celda y espere el mensaje
+    que indique que los datos se han guardado.
+
     ```
     orders_df.write.partitionBy("Year","Month").mode("overwrite").parquet("Files/partitioned_data")
     print ("Transformed data saved!")
@@ -614,64 +659,70 @@ learn more about the methods of the Dataframe object.
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image54.png)
 
-2.  Then, in the **Lakehouse explorer** pane on the left, in
-    the **…** menu for the **Files** node, select **Refresh.**
+2.  Luego, en el panel **Lakehouse explorer** a la izquierda, haga clic
+    en el menú **…** del nodo **Files** y seleccione **Refresh**.
 
-    ![](./media/image55.png)
+![](./media/image55.png)
 
-3.  Expand the **partitioned_orders** folder to verify that it contains
-    a hierarchy of folders named **Year=*xxxx***, each containing
-    folders named **Month=*xxxx***. Each month folder contains a parquet
-    file with the orders for that month.
+3.  Expanda la carpeta **partitioned_orders** para verificar que
+    contiene una jerarquía de carpetas con nombres **Year=*xxxx***, cada
+    una conteniendo carpetas **Month= *xxxx***. Cada carpeta de mes
+    contiene uno o más archivos Parquet con los pedidos correspondientes
+    a ese mes.
 
-    ![A screenshot of a computer AI-generated content may be
-    incorrect.](./media/image56.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image56.png)
 
-    ![A screenshot of a computer AI-generated content may be
-    incorrect.](./media/image57.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image57.png)
 
-> Partitioning data files is a common way to optimize performance when
-> dealing with large volumes of data. This technique can significant
-> improve performance and make it easier to filter data.
+> El particionado de archivos de datos es una técnica común para
+> optimizar el rendimiento al trabajar con grandes volúmenes de
+> información. Esta técnica puede mejorar significativamente la
+> eficiencia de las consultas y facilita la filtración de los datos.
 
-4.  Add a new cell, click on **+ Code** with the following code to load
-    a new dataframe from the **orders.parquet** file:
+4.  Agregue una nueva celda, haga clic en + **Code** e ingrese el
+    siguiente código para cargar un nuevo dataframe desde el archivo
+    **orders.parquet**:
+
     ```
     orders_2021_df = spark.read.format("parquet").load("Files/partitioned_data/Year=2021/Month=*")
     display(orders_2021_df)
     ```
+5.  **Ejecute** la celda y verifique que los resultados muestren los
+    datos de pedidos de ventas de 2021. Note que las columnas de
+    partición especificadas en la ruta **(Year y Month)** no se incluyen
+    automáticamente en el dataframe.
 
-5.  **Run** the cell and verify that the results show the order data for
-    sales in 2021. Note that the partitioning columns specified in the
-    path (**Year** and **Month**) are not included in the dataframe.
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image58.png)
 
-    ![A screenshot of a computer AI-generated content may be
-    incorrect.](./media/image58.png)
+# **Ejercicio 3: Trabajar con tablas y SQL**
 
-# **Exercise 3: Work with tables and SQL**
-
-As you’ve seen, the native methods of the dataframe object enable you to
-query and analyze data from a file quite effectively. However, many data
-analysts are more comfortable working with tables that they can query
-using SQL syntax. Spark provides a *metastore* in which you can define
-relational tables. The Spark SQL library that provides the dataframe
-object also supports the use of SQL statements to query tables in the
-metastore. By using these capabilities of Spark, you can combine the
-flexibility of a data lake with the structured data schema and SQL-based
-queries of a relational data warehouse - hence the term “data
+Como ha observado, los métodos nativos del objeto dataframe le permiten
+consultar y analizar datos de un archivo de manera bastante efectiva.
+Sin embargo, muchos analistas de datos se sienten más cómodos trabajando
+con tablas que pueden consultar utilizando la sintaxis SQL. Spark
+proporciona un metastore en el que puede definir tablas relacionales. La
+biblioteca Spark SQL, que provee el objeto dataframe, también admite el
+uso de sentencias SQL para consultar tablas en el metastore. Al utilizar
+estas características de Spark, puede combinar la flexibilidad de un
+data lake con el esquema de datos estructurado y las consultas basadas
+en SQL de un data warehouse relacional; de ahí el término “data
 lakehouse”.
 
-## Task 1: Create a managed table
+## Tarea 1: Crear una tabla administrada
 
-Tables in a Spark metastore are relational abstractions over files in
-the data lake. tables can be *managed* (in which case the files are
-managed by the metastore) or *external* (in which case the table
-references a file location in the data lake that you manage
-independently of the metastore).
+Las tablas en un metastore de Spark son abstracciones relacionales sobre
+archivos en el data lake. Las tablas pueden ser *administradas* (en cuyo
+caso los archivos son gestionados por el metastore) o externas (en cuyo
+caso la tabla hace referencia a una ubicación de archivo en el data lake
+que usted administra de manera independiente al metastore).
 
-1.  Add a new code, click on **+ Code** cell to the notebook and enter
-    the following code, which saves the dataframe of sales order data as
-    a table named **salesorders**:
+1.  Agregue una nueva celda de código, haga clic en **+** **Code** en el
+    cuaderno e ingrese el siguiente código, que guarda el dataframe de
+    datos de órdenes de venta como una tabla llamada **salesorders**:
+
     ```
     # Create a new table
     df.write.format("delta").saveAsTable("salesorders")
@@ -679,121 +730,131 @@ independently of the metastore).
     # Get the table description
     spark.sql("DESCRIBE EXTENDED salesorders").show(truncate=False)
     ```
+**Nota**: Vale la pena destacar un par de aspectos sobre este ejemplo.
+Primero, no se proporciona una ruta explícita, por lo que los archivos
+de la tabla serán gestionados por el metastore. Segundo, la tabla se
+guarda en formato **delta**. Puede crear tablas basadas en múltiples
+formatos de archivo (incluyendo CSV, Parquet, Avro y otros), pero *Delta
+Lake* es una tecnología de Spark que agrega capacidades de base de datos
+relacional a las tablas; incluyendo soporte para transacciones,
+versionado de filas y otras funciones útiles. Crear tablas en formato
+delta es la práctica recomendada para data lakehouses en Fabric.
 
-**Note**: It’s worth noting a couple of things about this example.
-Firstly, no explicit path is provided, so the files for the table will
-be managed by the metastore. Secondly, the table is saved
-in **delta** format. You can create tables based on multiple file
-formats (including CSV, Parquet, Avro, and others) but *delta lake* is a
-Spark technology that adds relational database capabilities to tables;
-including support for transactions, row versioning, and other useful
-features. Creating tables in delta format is preferred for data
-lakehouses in Fabric.
+2.  **Ejecute** la celda de código y revise la salida, la cual describe
+    la definición de la nueva tabla.
 
-2.  **Run** the code cell and review the output, which describes the
-    definition of the new table.
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image59.png)
 
-    ![A screenshot of a computer AI-generated content may be
-    incorrect.](./media/image59.png)
+3.  En el panel **Lakehouse explorer**, en el menú **…** de la carpeta
+    **Tables**, seleccione **Refresh**.
 
-3.  In the **Lakehouse** **explorer** pane, in the **…** menu for
-    the **Tables** folder, select **Refresh.**
+![](./media/image60.png)
 
-    ![](./media/image60.png)
+4.  Luego, expanda el nodo **Tables** y verifique que la tabla
+    **salesorders** se haya creado.
 
-4.  Then, expand the **Tables** node and verify that
-    the **salesorders** table has been created.
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image61.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](./media/image61.png)
+5.  Coloque el cursor junto a la tabla **salesorders**, luego haga clic
+    en los puntos suspensivos horizontales (**…**). Navegue y haga clic
+    en **Load data**, luego seleccione **Spark**.
 
-5.  Hover your mouse beside **salesorders** table, then click on the
-    horizontal ellipses (…). Navigate and click on **Load data**, then
-    select **Spark**.
+![A screenshot of a computer Description automatically
+generated](./media/image62.png)
 
-    ![A screenshot of a computer Description automatically
-    generated](./media/image62.png)
+6.  Haga clic en el botón ▷ **Run cell**, el cual utiliza la biblioteca
+    **Spark SQL** para ejecutar una consulta SQL sobre la tabla
+    **salesorders** en código PySpark y cargar los resultados de la
+    consulta en un dataframe.
 
-6.  Click on **▷ Run cell** button and which uses the Spark SQL library
-    to embed a SQL query against the **salesorder** table in PySpark
-    code and load the results of the query into a dataframe.
     ```
     df = spark.sql("SELECT * FROM [your_lakehouse].salesorders LIMIT 1000")
     display(df)
     ```
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image63.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](./media/image63.png)
+## Tarea 2: Crear una tabla externa
 
-## Task 2: Create an external table
+También puede crear tablas externas, en las cuales los metadatos del
+esquema se definen en el metastore del lakehouse, pero los archivos de
+datos se almacenan en una ubicación externa.
 
-You can also create *external* tables for which the schema metadata is
-defined in the metastore for the lakehouse, but the data files are
-stored in an external location.
-
-1.  Under the results returned by the first code cell, use the **+
-    Code** button to add a new code cell if one doesn’t already exist.
-    Then enter the following code in the new cell.
+1.  Debajo de los resultados devueltos por la primera celda de código,
+    use el botón **+ Code** para agregar una nueva celda de código si
+    aún no existe. Luego, ingrese el siguiente código en la nueva celda.
 
     ```
     df.write.format("delta").saveAsTable("external_salesorder", path="<abfs_path>/external_salesorder")
     ```
-   ![A screenshot of a computer Description automatically generated](./media/image64.png)
 
-2.  In the **Lakehouse explorer** pane, in the **…** menu for
-    the **Files** folder, select **Copy ABFS path** in the notepad.
-  
-  > The ABFS path is the fully qualified path to the **Files** folder in
-  > the OneLake storage for your lakehouse - similar to this:
+![A screenshot of a computer Description automatically
+generated](./media/image64.png)
 
-    abfss://dp_Fabric29@onelake.dfs.fabric.microsoft.com/Fabric_lakehouse.Lakehouse/Files/external_salesorder
+2.  En el panel **Lakehouse explorer**, en el menú **…** de la carpeta
+    **Files**, seleccione **Copy ABFS path** en el bloc de notas.
 
-  ![A screenshot of a computer Description automatically generated](./media/image65.png)
+> La ruta ABFS es la ruta completamente calificada a la carpeta
+> **Files** en el almacenamiento OneLake de su lakehouse, similar a la
+> siguiente:
 
-3.  Now, move into the code cell, replace **\<abfs_path\>** with the
-    **path** you copied to the notepad so that the code saves the
-    dataframe as an external table with data files in a folder named
-    **external_salesorder** in your **Files** folder location. The full
-    path should look similar to this
+abfss://dp_Fabric29@onelake.dfs.fabric.microsoft.com/Fabric_lakehouse.Lakehouse/Files/external_salesorder
 
-   abfss://dp_Fabric29@onelake.dfs.fabric.microsoft.com/Fabric_lakehouse.Lakehouse/Files/external_salesorder
+![A screenshot of a computer Description automatically
+generated](./media/image65.png)
 
-4.  Use the **▷ (*Run cell*)** button on the left of the cell to run it.
+3.  Ahora, vaya a la celda de código y reemplace **\<abfs_path\>** con
+    la **ruta** que copió en el bloc de notas, de manera que el código
+    guarde el dataframe como una tabla externa con los archivos de datos
+    en una carpeta llamada **external_salesorder** dentro de la
+    ubicación de su carpeta **Files**. La ruta completa debería verse
+    similar a la siguiente:
+
+abfss://dp_Fabric29@onelake.dfs.fabric.microsoft.com/Fabric_lakehouse.Lakehouse/Files/external_salesorder
+
+4.  Use el botón ▷ (***Run cell***) a la izquierda de la celda para
+    ejecutarla.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image66.png)
 
-5.  In the **Lakehouse explorer** pane, in the **…** menu for
-    the **Tables** folder, select the **Refresh**.
+5.  En el panel **Lakehouse explorer**, en el menú **…** de la carpeta
+    **Tables**, seleccione **Refresh**.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image67.png)
 
-6.  Then expand the **Tables** node and verify that
-    the **external_salesorder** table has been created.
+6.  Luego, expanda el nodo **Tables** y verifique que la tabla
+    **external_salesorder** se haya creado.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image68.png)
 
-7.  In the **Lakehouse explorer** pane, in the **…** menu for
-    the **Files** folder, select **Refresh**.
+7.  En el panel **Lakehouse explorer**, en el menú **…** de la carpeta
+    **Files**, seleccione **Refresh**.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image69.png)
 
-8.  Then expand the **Files** node and verify that
-    the **external_salesorder** folder has been created for the table’s
-    data files.
+8.  Luego, expanda el nodo **Files** y verifique que se haya creado la
+    carpeta **external_salesorder** para los archivos de datos de la
+    tabla.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image70.png)
 
-## Task 3: Compare managed and external tables
+## Tarea 3: Comparar tablas administradas y externas
 
-Let’s explore the differences between managed and external tables.
+Exploraremos las diferencias entre las tablas administradas y las
+externas.
 
-1.  Under the results returned by the code cell, use the **+
-    Code** button to add a new code cell. Copy the code below into the
-    Code cell and use the **▷ (*Run cell*)** button on the left of the
-    cell to run it.
+1.  Debajo de los resultados devueltos por la celda de código, use el
+    botón **+ Code** para agregar una nueva celda de código. Copie el
+    siguiente código en la celda de código y utilice el botón ▷ (**Run
+    cell**) a la izquierda de la celda para ejecutarlo.
+
     ```
     %%sql
     
@@ -801,51 +862,57 @@ Let’s explore the differences between managed and external tables.
     ```
 > ![](./media/image71.png)
 
-2.  In the results, view the **Location** property for the table, which
-    should be a path to the OneLake storage for the lakehouse ending
-    with **/Tables/salesorders** (you may need to widen the **Data
-    type** column to see the full path).
+2.  En los resultados, consulte la propiedad **Location** de la tabla,
+    la cual debería ser una ruta al almacenamiento **OneLake** del
+    lakehouse que termina con **/Tables/salesorders** (es posible que
+    necesite ampliar la columna **Data type** para ver la ruta
+    completa).
 
-    ![A screenshot of a computer AI-generated content may be
-    incorrect.](./media/image72.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image72.png)
 
-3.  Modify the **DESCRIBE** command to show the details of
-    the **external_saleorder** table as shown here.
+3.  Modifique el comando **DESCRIBE** para mostrar los detalles de la
+    tabla **external_salesorder** como se muestra a continuación.
 
-4.  Under the results returned by the code cell, use the **+
-    Code** button to add a new code cell. Copy the below code and use
-    the **▷ (*Run cell*)** button on the left of the cell to run it.
+4.  Debajo de los resultados devueltos por la celda de código, use el
+    botón **+ Code** para agregar una nueva celda de código. Copie el
+    siguiente código en la celda y utilice el botón ▷ (**Run cell**) a
+    la izquierda de la celda para ejecutarlo.
+
     ```
     %%sql
     
     DESCRIBE FORMATTED external_salesorder;
     ```
-5.  In the results, view the **Location** property for the table, which
-    should be a path to the OneLake storage for the lakehouse ending
-    with **/Files/external_saleorder** (you may need to widen the **Data
-    type** column to see the full path).
+5.  En los resultados, consulte la propiedad **Location** de la tabla,
+    la cual debería ser una ruta al almacenamiento **OneLake** del
+    lakehouse que termina con **/Files/external_salesorder** (es posible
+    que necesite ampliar la columna **Data type** para ver la ruta
+    completa).
 
-   ![A screenshot of a computer AI-generated content may be incorrect.](./media/image73.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image73.png)
 
-## Task 4: Run SQL code in a cell
+## Tarea 4: Ejecutar código SQL en una celda
 
-While it’s useful to be able to embed SQL statements into a cell
-containing PySpark code, data analysts often just want to work directly
-in SQL.
+Si bien es útil poder incrustar sentencias SQL en una celda que contenga
+código PySpark, los analistas de datos a menudo solo desean trabajar
+directamente en SQL.
 
-1.  Click on **+ Code** cell to the notebook, and enter the following
-    code in it. Click on **▷ Run cell** button and review the results.
-    Observe that:
+1.  Haga clic en **+ Code** en el cuaderno e ingrese el siguiente código
+    en la celda. Haga clic en el botón ▷ (**Run cell**) y revise los
+    resultados. Observe que:
 
-    - The %%sql line at the beginning of the cell (called a *magic*)
-      indicates that the Spark SQL language runtime should be used to
-      run the code in this cell instead of PySpark.
+    - La línea %%sql al inicio de la celda (llamada magic) indica que se
+      debe utilizar el runtime de Spark SQL para ejecutar el código en
+      esta celda en lugar de PySpark.
 
-    - The SQL code references the **salesorders** table that you created
-      previously.
+    - El código SQL hace referencia a la tabla **salesorders** que creó
+      previamente.
 
-    - The output from the SQL query is automatically displayed as the
-      result under the cell
+    - La salida de la consulta SQL se muestra automáticamente como
+      resultado debajo de la celda.
+
       ```
       %%sql
       SELECT YEAR(OrderDate) AS OrderYear,
@@ -854,44 +921,48 @@ in SQL.
       GROUP BY YEAR(OrderDate)
       ORDER BY OrderYear;
       ```
+
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image74.png)
 
-**Note**: For more information about Spark SQL and dataframes, see
-the [*Spark SQL
-documentation*](https://spark.apache.org/docs/2.2.0/sql-programming-guide.html).
+**Nota**: Para obtener más información sobre Spark SQL y los dataframes,
+consulte la [*documentación de Spark
+SQL*](https://spark.apache.org/docs/2.2.0/sql-programming-guide.html).
 
-# Exercise 4: Visualize data with Spark
+# Ejercicio 4: Visualizar datos con Spark
 
-A picture is proverbially worth a thousand words, and a chart is often
-better than a thousand rows of data. While notebooks in Fabric include a
-built in chart view for data that is displayed from a dataframe or Spark
-SQL query, it is not designed for comprehensive charting. However, you
-can use Python graphics libraries like **matplotlib** and **seaborn** to
-create charts from data in dataframes.
+Una imagen vale más que mil palabras, y un gráfico suele ser mejor que
+mil filas de datos. Aunque los cuadernos en Fabric incluyen una vista de
+gráficos integrada para los datos que se muestran desde un dataframe o
+una consulta de Spark SQL, esta no está diseñada para creación de
+gráficos de manera integral. Sin embargo, puede utilizar bibliotecas
+gráficas de Python, como **matplotlib** y **seaborn**, para crear
+gráficos a partir de los datos en los dataframes.
 
-## Task 1: View results as a chart
+## Tarea 1: Visualizar resultados como un gráfico
 
-1.  Click on **+ Code** cell to the notebook, and enter the following
-    code in it. Click on **▷ Run cell** button and observe that it
-    returns the data from the **salesorders** view you created
-    previously.
+1.  Haga clic en **+ Code** en el cuaderno e ingrese el siguiente código
+    en la celda. Haga clic en el botón ▷ (**Run cell**) y observe que
+    devuelve los datos de la vista **salesorders** que creó previamente.
+
     ```
     %%sql
     SELECT * FROM salesorders
     ```
 
+
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image75.png)
 
-2.  In the results section beneath the cell, change the **View** option
-    from **Table** to **+New chart**.
+2.  En la sección de resultados debajo de la celda, cambie la opción
+    **View** de **Table** a **+New chart**.
 
 ![](./media/image76.png)
 
-3.  Use the **Start editing** button at the top right of the chart to
-    display the options pane for the chart. Then set the options as
-    follows and select **Apply**:
+3.  Utilice el botón **Start editing** en la esquina superior derecha
+    del gráfico para mostrar el panel de opciones del mismo. Luego,
+    configure las opciones como se indica a continuación y seleccione
+    **Apply**:
 
     - **Chart type**: Bar chart
 
@@ -899,11 +970,11 @@ incorrect.](./media/image75.png)
 
     - **Values**: Quantity
 
-    - **Series Group**: *leave blank*
+    - **Series Group**: *dejar en blanco*
 
     - **Aggregation**: Sum
 
-    - **Stacked**: *Unselected*
+    - **Stacked**: *No seleccionado*
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image77.png)
@@ -911,15 +982,16 @@ incorrect.](./media/image77.png)
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image78.png)
 
-4.  Verify that the chart looks similar to this
+4.  Verifique que el gráfico se vea de manera similar a esto.
 
 > ![](./media/image79.png)
 
-## Task 2: Get started with matplotlib
+## Tarea 2: Introducción a matplotlib
 
-1.  Click on **+ Code** and copy and paste the below code. **Run** the
-    code and observe that it returns a Spark dataframe containing the
-    yearly revenue.
+1.  Haga clic en **+ Code** y copie y pegue el siguiente código.
+    **Ejecute** la celda y observe que devuelve un dataframe de Spark
+    que contiene los ingresos anuales.
+
     ```
     sqlQuery = "SELECT CAST(YEAR(OrderDate) AS CHAR(4)) AS OrderYear, \
                     SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue \
@@ -932,14 +1004,16 @@ incorrect.](./media/image78.png)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image80.png)
 
-2.  To visualize the data as a chart, we’ll start by using
-    the **matplotlib** Python library. This library is the core plotting
-    library on which many others are based, and provides a great deal of
-    flexibility in creating charts.
+2.  Para visualizar los datos como un gráfico, comenzaremos utilizando
+    la biblioteca de Python **matplotlib**. Esta biblioteca es la
+    principal para creación de gráficos, sobre la cual se basan muchas
+    otras, y ofrece una gran flexibilidad para generar distintos tipos
+    de gráficos.
 
-3.  Click on **+ Code** and copy and paste the below code.
+3.  Haga clic en **+ Code** y copie y pegue el siguiente código.
 
-    **CodeCopy**
+**CodeCopy**
+
     ```
     from matplotlib import pyplot as plt
     
@@ -953,30 +1027,31 @@ incorrect.](./media/image78.png)
     plt.show()
     ```
 
-    ![A screenshot of a computer Description automatically generated](./media/image81.png)
+![A screenshot of a computer Description automatically
+generated](./media/image81.png)
 
-5.  Click on the **Run cell** button and review the results, which
-    consist of a column chart with the total gross revenue for each
-    year. Note the following features of the code used to produce this
-    chart:
+5.  Haga clic en el botón **Run cell** y revise los resultados, los
+    cuales consisten en un gráfico de columnas con el ingreso bruto
+    total por cada año. Observe las siguientes características del
+    código utilizado para generar este gráfico:
 
-    - The **matplotlib** library requires a *Pandas* dataframe, so you
-      need to convert the *Spark* dataframe returned by the Spark SQL
-      query to this format.
+    - La biblioteca **matplotlib** requiere un dataframe de Pandas, por
+      lo que es necesario convertir el dataframe de Spark devuelto por
+      la consulta Spark SQL a este formato.
 
-    - At the core of the **matplotlib** library is
-      the **pyplot** object. This is the foundation for most plotting
-      functionality.
+    - En el núcleo de la biblioteca **matplotlib** se encuentra el
+      objeto **pyplot**, que es la base de la mayoría de las
+      funcionalidades de creación de gráficos.
 
-    - The default settings result in a usable chart, but there’s
-      considerable scope to customize it
+    - La configuración predeterminada genera un gráfico funcional, pero
+      existe un amplio margen para personalizarlo.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image82.png)
 
-6.  Modify the code to plot the chart as follows, replace all the code
-    in the **cell** with the following code and click on **▷ Run
-    cell** button and review the output
+6.  Modifique el código para trazar el gráfico de la siguiente manera:
+    reemplace todo el código de la **celda** con el siguiente y haga
+    clic en el botón ▷ (**Run cell**) para revisar la salida.
     ```
     from matplotlib import pyplot as plt
     
@@ -1002,13 +1077,14 @@ incorrect.](./media/image78.png)
 > ![A graph with orange bars AI-generated content may be
 > incorrect.](./media/image84.png)
 
-7.  The chart now includes a little more information. A plot is
-    technically contained with a **Figure**. In the previous examples,
-    the figure was created implicitly for you; but you can create it
-    explicitly.
+7.  El gráfico ahora incluye un poco más de información. Técnicamente,
+    un gráfico (*plot*) está contenido dentro de una **Figure**. En los
+    ejemplos anteriores, la figura se creó de manera implícita; sin
+    embargo, usted puede crearla de forma explícita.
 
-8.  Modify the code to plot the chart as follows, replace all the code
-    in the **cell** with the following code.
+8.  Modifique el código para trazar el gráfico de la siguiente manera:
+    reemplace todo el código de la celda con el siguiente código.
+
     ```
     from matplotlib import pyplot as plt
     
@@ -1031,10 +1107,11 @@ incorrect.](./media/image78.png)
     # Show the figure
     plt.show()
     ```
-9.  **Re-run** the code cell and view the results. The figure determines
-    the shape and size of the plot.
+9.  **Vuelva a ejecutar la celda** de código y revise los resultados. La
+    figura determina la forma y el tamaño del gráfico.
 
-> A figure can contain multiple subplots, each on its own *axis*.
+> Una figura puede contener múltiples subplots, cada uno con su propio
+> eje (*axis*).
 >
 > ![A screenshot of a computer program AI-generated content may be
 > incorrect.](./media/image85.png)
@@ -1042,9 +1119,10 @@ incorrect.](./media/image78.png)
 > ![A screenshot of a graph AI-generated content may be
 > incorrect.](./media/image86.png)
 
-10. Modify the code to plot the chart as follows. **Re-run** the code
-    cell and view the results. The figure contains the subplots
-    specified in the code.
+10. Modifique el código para trazar el gráfico de la siguiente manera.
+    Vuelva a ejecutar la celda de código y revise los resultados. La
+    figura contiene los subplots especificados en el código.
+
       ```
       from matplotlib import pyplot as plt
       
@@ -1076,18 +1154,21 @@ incorrect.](./media/image78.png)
 > ![A screenshot of a computer screen AI-generated content may be
 > incorrect.](./media/image88.png)
 
-**Note**: To learn more about plotting with matplotlib, see
-the [*matplotlib documentation*](https://matplotlib.org/).
+**Nota**: Para obtener más información sobre la creación de gráficos con
+matplotlib, consulte la [*documentación de
+matplotlib*](https://matplotlib.org/).
 
-## Task 3: Use the seaborn library
+## Tarea 3: Utilizar la biblioteca seaborn
 
-While **matplotlib** enables you to create complex charts of multiple
-types, it can require some complex code to achieve the best results. For
-this reason, over the years, many new libraries have been built on the
-base of matplotlib to abstract its complexity and enhance its
-capabilities. One such library is **seaborn**.
+Aunque **matplotlib** le permite crear gráficos complejos de múltiples
+tipos, a veces se requiere código complejo para obtener los mejores
+resultados. Por esta razón, a lo largo de los años se han desarrollado
+muchas bibliotecas nuevas sobre la base de matplotlib para abstraer su
+complejidad y mejorar sus capacidades. Una de estas bibliotecas es
+**seaborn**.
 
-1.  Click on **+ Code** and copy and paste the below code.
+1.  Haga clic en **+ Code** y copie y pegue el siguiente código:
+
     ```
     import seaborn as sns
     
@@ -1098,15 +1179,17 @@ capabilities. One such library is **seaborn**.
     ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
     plt.show()
     ```
-2.  **Run** the code and observe that it displays a bar chart using the
-    seaborn library.
+
+2.  **Ejecute** la celda de código y observe que se muestra un gráfico
+    de barras utilizando la biblioteca seaborn.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image89.png)
 
-3.  **Modify** the code as follows. **Run** the modified code and note
-    that seaborn enables you to set a consistent color theme for your
-    plots.
+3.  **Modifique** el código de la siguiente manera. **Ejecute** el
+    código modificado y observe que seaborn le permite establecer un
+    tema de color consistente para sus gráficos.
+
     ```
     import seaborn as sns
     
@@ -1123,8 +1206,10 @@ incorrect.](./media/image89.png)
 > ![A screenshot of a graph AI-generated content may be
 > incorrect.](./media/image90.png)
 
-4.  **Modify** the code again as follows. **Run** the modified code to
-    view the yearly revenue as a line chart.
+4.  **Modifique** nuevamente el código de la siguiente manera.
+    **Ejecute** el código modificado para visualizar los ingresos
+    anuales como un gráfico de líneas.
+
     ```
     import seaborn as sns
     
@@ -1138,18 +1223,21 @@ incorrect.](./media/image89.png)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image91.png)
 
-**Note**: To learn more about plotting with seaborn, see the [*seaborn
-documentation*](https://seaborn.pydata.org/index.html).
+**Note**: Para obtener más información sobre la creación de gráficos con
+seaborn, consulte la [*documentación de
+seaborn*](https://seaborn.pydata.org/index.html).
 
-## Task 4: Use delta tables for streaming data
+## Tarea 4: Utilizar tablas delta para datos en streaming
 
-Delta lake supports streaming data. Delta tables can be a *sink* or
-a *source* for data streams created using the Spark Structured Streaming
-API. In this example, you’ll use a delta table as a sink for some
-streaming data in a simulated internet of things (IoT) scenario.
+Delta Lake admite datos en streaming. Las tablas Delta pueden funcionar
+como sink o source para flujos de datos creados mediante la API Spark
+Structured Streaming. En este ejemplo, utilizará una tabla Delta como
+sink para algunos datos en streaming en un escenario simulado de
+Internet of Things (IoT)**.**
 
-1.  Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
+1.  Haga clic en **+ Code**, copie y pegue el siguiente código, y luego
+    haga clic en el botón **Run cell**.
+
     ```
     from notebookutils import mssparkutils
     from pyspark.sql.types import *
@@ -1185,13 +1273,14 @@ streaming data in a simulated internet of things (IoT) scenario.
 > ![A screenshot of a computer program AI-generated content may be
 > incorrect.](./media/image93.png)
 
-2.  Ensure the message ***Source stream created…*** is printed. The code
-    you just ran has created a streaming data source based on a folder
-    to which some data has been saved, representing readings from
-    hypothetical IoT devices.
+2.  Asegúrese de que se imprima el mensaje ***Source stream created…***.
+    El código que acaba de ejecutar ha creado una fuente de datos en
+    **streaming** basada en una carpeta a la que se han guardado algunos
+    datos, que representan lecturas de dispositivos IoT hipotéticos.
 
-3.  Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
+3.  Haga clic en **+ Code**, copie y pegue el siguiente código, y luego
+    haga clic en el botón **Run cell**.
+
     ```
     # Write the stream to a delta table
     delta_stream_table_path = 'Tables/iotdevicedata'
@@ -1201,11 +1290,12 @@ streaming data in a simulated internet of things (IoT) scenario.
     ```
 > ![](./media/image94.png)
 
-4.  This code writes the streaming device data in delta format to a
-    folder named **iotdevicedata**. Because the path for the folder
-    location is in the **Tables** folder, a table will automatically be
-    created for it. Click on the horizontal ellipses beside table, then
-    click on **Refresh**.
+4.  Este código escribe los datos en streaming de los dispositivos en
+    formato **Delta** en una carpeta llamada **iotdevicedata**. Dado que
+    la ruta de la carpeta se encuentra en la carpeta **Tables**, se
+    creará automáticamente una tabla para ella. Haga clic en los **tres
+    puntos horizontales** junto a la tabla y luego seleccione
+    **Refresh**.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image95.png)
@@ -1213,8 +1303,9 @@ incorrect.](./media/image95.png)
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image96.png)
 
-5.  Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
+5.  Haga clic en **+ Code**, copie y pegue el siguiente código, y luego
+    haga clic en el botón **Run cell**.
+
     ```
     %%sql
     
@@ -1223,11 +1314,13 @@ incorrect.](./media/image96.png)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image97.png)
 
-6.  This code queries the **IotDeviceData** table, which contains the
-    device data from the streaming source.
+6.  Este código realiza una consulta a la tabla **IotDeviceData**, la
+    cual contiene los datos de los dispositivos provenientes de la
+    fuente en streaming.
 
-7.  Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
+7.  Haga clic en **+ Code**, copie y pegue el siguiente código, y luego
+    haga clic en el botón **Run cell**.
+
     ```
     # Add more data to the source stream
     more_data = '''{"device":"Dev1","status":"ok"}
@@ -1243,11 +1336,12 @@ incorrect.](./media/image96.png)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image98.png)
 
-8.  This code writes more hypothetical device data to the streaming
-    source.
+8.  Este código escribe más datos hipotéticos de los dispositivos en la
+    fuente de streaming.
 
-9.  Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
+9.  Haga clic en **+ Code**, copie y pegue el siguiente código, y luego
+    haga clic en el botón **Run cell**.
+
     ```
     %%sql
     
@@ -1256,39 +1350,40 @@ incorrect.](./media/image96.png)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image99.png)
 
-10. This code queries the **IotDeviceData** table again, which should
-    now include the additional data that was added to the streaming
-    source.
+10. Este código vuelve a consultar la tabla **IotDeviceData**, la cual
+    ahora debería incluir los datos adicionales que se agregaron a la
+    fuente de streaming.
 
-11. Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
+11. Haga clic en **+ Code**, copie y pegue el siguiente código, y luego
+    haga clic en el botón **Run cell**.
+
     ```
     deltastream.stop()
     ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image100.png)
 
-12. This code stops the stream.
+12. Este código detiene el stream.
 
-## Task 5: Save the notebook and end the Spark session
+## Tarea 5: Guardar el notebook y finalizar la sesión de Spark
 
-Now that you’ve finished working with the data, you can save the
-notebook with a meaningful name and end the Spark session.
+Ahora que ha terminado de trabajar con los datos, puede guardar el
+notebook con un nombre significativo y finalizar la sesión de Spark.
 
-1.  In the notebook menu bar, use the ⚙️ **Settings** icon to view the
-    notebook settings.
+1.  En la barra de menú del notebook, use el icono ⚙️ **Settings** para
+    ver la configuración del notebook.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image101.png)
 
-2.  Set the **Name** of the notebook to +++**Explore Sales Orders+++**,
-    and then close the settings pane.
+2.  Establezca el **Name** del notebook como **+++Explore Sales
+    Orders+++** y luego cierre el panel de settings.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image102.png)
 
-3.  On the notebook menu, select **Stop session** to end the Spark
-    session.
+3.  En el menú del **notebook**, seleccione **Stop session** para
+    finalizar la sesión de **Spark**.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image103.png)
@@ -1296,177 +1391,197 @@ generated](./media/image103.png)
 ![A screenshot of a computer Description automatically
 generated](./media/image104.png)
 
-# Exercise 5: Create a Dataflow (Gen2) in Microsoft Fabric
+**Ejercicio 5: Crear un Dataflow (Gen2) en Microsoft Fabric**
 
-In Microsoft Fabric, Dataflows (Gen2) connect to various data sources
-and perform transformations in Power Query Online. They can then be used
-in Data Pipelines to ingest data into a lakehouse or other analytical
-store, or to define a dataset for a Power BI report.
+En Microsoft Fabric, los Dataflows (Gen2) se conectan a diversas fuentes
+de datos y realizan transformaciones en Power Query Online.
+Posteriormente, pueden ser utilizados en Data Pipelines para ingerir
+datos en un lakehouse u otro almacén analítico, o para definir un
+dataset para un informe de Power BI.
 
-This exercise is designed to introduce the different elements of
-Dataflows (Gen2), and not create a complex solution that may exist in an
-enterprise
+Este ejercicio está diseñado para introducir los distintos elementos de
+los Dataflows (Gen2), y no para crear una solución compleja que pudiera
+existir en una empresa.
 
-## Task 1: Create a Dataflow (Gen2) to ingest data
+## Tarea 1: Crear un Dataflow (Gen2) para ingerir datos
 
-Now that you have a lakehouse, you need to ingest some data into it. One
-way to do this is to define a dataflow that encapsulates an *extract,
-transform, and load* (ETL) process.
+Ahora que dispone de un lakehouse, necesita ingerir datos en él. Una
+forma de hacerlo es definiendo un dataflow que encapsule un proceso de
+*extract, transform, and load (ETL)**.***
 
-1.  Now, click on **Fabric_lakehouse** on the left-sided navigation
-    pane.
+1.  Ahora, haga clic en **Fabric_lakehouse** en el panel de navegación
+    lateral izquierdo.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image105.png)
 
-2.  In the **Fabric_lakehouse** home page, click on the drop-down arrow
-    in the **Get data** and select **New Dataflow Gen2.** The Power
-    Query editor for your new dataflow opens.
+2.  En la página principal de **Fabric_lakehouse**, haga clic en la
+    flecha desplegable de **Get data** y seleccione **New Dataflow
+    Gen2**. Se abrirá el editor de Power Query para su nuevo
+    dataflow**.**
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image106.png)
 
-5.  In the **New Dataflow Gen2** dialog box,
-    enter **+++Gen2_Dataflow+++** in the **Name** field, click on
-    the **Create** button and open the new Dataflow Gen2.
+5.  En el cuadro de diálogo **New Dataflow Gen2**, ingrese
+    **+++Gen2_Dataflow+++** en el campo **Name**, haga clic en el botón
+    **Create** y abra el nuevo Dataflow Gen2.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image107.png)
 
-3.  In the **Power Query** pane under the **Home tab**, click on
-    **Import from a Text/CSV file**.
+3.  En el panel de **Power Query**, bajo la pestaña **Home**, haga clic
+    en **Import from a Text/CSV file**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image108.png)
 
-4.  In the **Connect to data source** pane, under **Connection
-    settings**, select **Link to file (Preview)** radio button
+4.  En el panel **Connect to data source**, bajo **Connection
+    settings**, seleccione el botón de opción **Link to file (vista
+    previa)**.
 
-    - **Link to file**: *Selected*
-    
-    - **File path or
-      URL**: +++https://raw.githubusercontent.com/MicrosoftLearning/dp-data/main/orders.csv+++
+- **Link to file**: **Seleccionado**
 
-    ![](./media/image109.png)
+- **File path or
+  URL**: +++https://raw.githubusercontent.com/MicrosoftLearning/dp-data/main/orders.csv+++
 
-5.  In the **Connect to data source** pane, under **Connection
-    credentials,** enter the following details and click on the **Next**
-    button.
+![](./media/image109.png)
 
-    - **Connection**: Create new connection
-    
-    - **data gateway**: (none)
-    
-    - **Authentication kind**: Anonymous
+5.  En el panel **Connect to data source**, bajo **Connection
+    credentials**, ingrese los siguientes detalles y haga clic en el
+    botón **Next**.
+
+- **Connection**: Create new connection
+
+- **data gateway**: (none)
+
+- **Authentication kind**: Anonymous
 
 > ![](./media/image110.png)
 
-6.  In **Preview file data** pane, click on **Create** to create the
-    data source.
-    ![A screenshot of a computer Description automatically generated](./media/image111.png)
+6.  En el panel **Preview file data**, haga clic en **Create** para
+    crear la fuente de datos.
+     ![A screenshot of a computer Description
+    automatically generated](./media/image111.png)
 
-8.  The **Power Query** editor shows the data source and an initial set
-    of query steps to format the data.
+8.  El editor de **Power Query** muestra la fuente de datos y un
+    conjunto inicial de pasos de consulta para dar formato a los datos.
 
-     ![A screenshot of a computer Description automatically generated](./media/image112.png)
+![A screenshot of a computer Description automatically
+generated](./media/image112.png)
 
-9.  On the toolbar ribbon, select the **Add column** tab. Then,
-    select **Custom column.**
+8.  En la cinta de opciones de la barra de herramientas, seleccione la
+    pestaña **Add column**. Luego, seleccione **Custom column**.
 
-     ![A screenshot of a computer AI-generated content may be incorrect.](./media/image113.png) 
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image113.png) 
 
-10.  Set the New column name to +++**MonthNo+++** , set the Data type to
-    **Whole Number** and then add the following
-    formula:+++**Date.Month(\[OrderDate\])+++** under **Custom column
-    formula**. Select **OK**.
+9.  Establezca el nombre de la nueva columna como +++**MonthNo+++** ,
+    configure el Data type como **Whole Number** y luego agregue la
+    siguiente fórmula:+++**Date.Month(\[OrderDate\])+++** en **Custom
+    column formula**. Seleccione **OK**.
 
-   ![A screenshot of a computer Description automatically generated](./media/image114.png)
+![A screenshot of a computer Description automatically
+generated](./media/image114.png)
 
-11. Notice how the step to add the custom column is added to the query.
-    The resulting column is displayed in the data pane.
+10. Observe cómo el paso para agregar la columna personalizada se añade
+    a la consulta. La columna resultante se muestra en el panel de
+    datos.
 
-    ![A screenshot of a computer Description automatically generated](./media/image115.png)
+![A screenshot of a computer Description automatically
+generated](./media/image115.png)
 
-**Tip:** In the Query Settings pane on the right side, notice
-the **Applied Steps** include each transformation step. At the bottom,
-you can also toggle the **Diagram flow** button to turn on the Visual
-Diagram of the steps.
+**Consejo:** En el panel Query Settings en el lado derecho, observe que
+**Applied** **Steps** incluye cada paso de transformación. En la parte
+inferior, también puede alternar el botón **Diagram** **flow** para
+activar el Diagrama visual de los pasos.  
+Los pasos se pueden mover hacia arriba o hacia abajo, editar
+seleccionando el icono de engranaje, y puede seleccionar cada paso para
+ver cómo se aplican las transformaciones en el panel de vista previa.
 
-Steps can be moved up or down, edited by selecting the gear icon, and
-you can select each step to see the transformations apply in the preview
-pane.
+Tarea 2: Agregar destino de datos para el Dataflow
 
-## Task 2: Add data destination for Dataflow
+1.  En la cinta de opciones de **Power** **Query**, seleccione la
+    pestaña **Home**. Luego, en el menú desplegable **Data**
+    **destination**, seleccione **Lakehouse** (si no está seleccionado
+    ya).
 
-1.  On the **Power Query** toolbar ribbon, select the **Home** tab. Then
-    in the D**ata destination** drop-down menu, select **Lakehouse**(if
-    not selected already).
+![](./media/image116.png)
 
-   ![](./media/image116.png)
+![A screenshot of a computer Description automatically
+generated](./media/image117.png)
 
-   ![A screenshot of a computer Description automatically generated](./media/image117.png)
+**Nota:** Si esta opción aparece atenuada, es posible que ya tenga un
+destino de datos configurado. Verifique el destino de datos en la parte
+inferior del panel Query settings, al lado derecho del editor de Power
+Query. Si ya hay un destino configurado, puede cambiarlo usando el ícono
+de engranaje.
 
-**Note:** If this option is grayed out, you may already have a data
-destination set. Check the data destination at the bottom of the Query
-settings pane on the right side of the Power Query editor. If a
-destination is already set, you can change it using the gear.
+2.  El destino **Lakehouse** se indica como un **icono** en la
+    **consulta** dentro del editor de Power Query.
 
-2.  The **Lakehouse** destination is indicated as an **icon** in the
-    **query** in the Power Query editor.
+![A screenshot of a computer Description automatically
+generated](./media/image118.png)
 
-    ![A screenshot of a computer Description automatically generated](./media/image118.png)
-    
-    ![A screenshot of a computer Description automatically generated](./media/image119.png)
+![A screenshot of a computer Description automatically
+generated](./media/image119.png)
 
-3.  Select **Publish** to publish the dataflow. Then wait for
-    the **Dataflow 1** dataflow to be created in your workspace.
+3.  Seleccione **Publish** para publicar el dataflow. Luego, espere a
+    que el dataflow **Dataflow 1** se cree en su espacio de trabajo.
 
-   ![A screenshot of a computer Description automatically generated](./media/image120.png)
-   ![](./media/image121.png)
+![A screenshot of a computer Description automatically
+generated](./media/image120.png)
 
-## Task 3: Add a dataflow to a pipeline
+![](./media/image121.png)
 
-You can include a dataflow as an activity in a pipeline. Pipelines are
-used to orchestrate data ingestion and processing activities, enabling
-you to combine dataflows with other kinds of operation in a single,
-scheduled process. Pipelines can be created in a few different
-experiences, including Data Factory experience.
+## Tarea 3: Agregar un dataflow a un pipeline
 
-1.  In the Synapse Data Engineering Home page , Under **dp_FabricXX**
-    pane, select **+New item** -\> **Data pipeline**
+Puede incluir un dataflow como una actividad en un pipeline. Los
+pipelines se utilizan para orquestar actividades de ingestión y
+procesamiento de datos, lo que le permite combinar dataflows con otros
+tipos de operaciones en un solo proceso programado. Los pipelines se
+pueden crear en varias experiencias, incluyendo la experiencia de Data
+Factory.
 
-    ![](./media/image122.png)
+1.  En la página de inicio de Synapse Data Engineering, en el panel
+    **dp_FabricXX**, seleccione **+New item** -\> **Data pipeline**
 
-2.  In the **New pipeline** dialog box, enter **Load data** in
-    the **Name** field, click on the **Create** button to open the new
+![](./media/image122.png)
+
+2.  En el cuadro de diálogo **New pipeline**, ingrese **Load data en el
+    campo Name**, y haga clic en el botón **Create** para abrir la nueva
     pipeline.
 
-    ![A screenshot of a computer Description automatically generated](./media/image123.png)
+![A screenshot of a computer Description automatically
+generated](./media/image123.png)
 
-3.  The pipeline editor opens.
+3.  Se abre el editor de la pipeline.
 
-    ![A screenshot of a computer Description automatically generated](./media/image124.png)
+![A screenshot of a computer Description automatically
+generated](./media/image124.png)
 
-> **Tip**: If the Copy Data wizard opens automatically, close it!
+> **Consejo**: ¡Si el asistente Copy Data se abre automáticamente,
+> ciérrelo!
 
-4.  Select **Pipeline activity**, and add a **Dataflow** activity to the
-    pipeline.
+4.  Seleccione **Pipeline activity** y agregue una **Dataflow activity**
+    al pipeline.
 
-    ![](./media/image125.png)
+![](./media/image125.png)
 
-5.  With the new **Dataflow1** activity selected, on
-    the **Settings** tab, in the **Dataflow** drop-down list,
-    select **Gen2_Dataflow** (the data flow you created previously)
+5.  Con la nueva **Dataflow1 activity** seleccionada, en la pestaña
+    **Settings**, en la lista desplegable **Dataflow**, seleccione
+    **Gen2_Dataflow** (el flujo de datos que creó previamente).
 
-    ![](./media/image126.png)
+![](./media/image126.png)
 
-6.  On the **Home** tab, save the pipeline using the **🖫 (*Save*)**
-    icon.
+6.  En la pestaña **Home**, guarde el pipeline usando el
+    icono **🖫 (*Guardar*)**.
 
-  ![A screenshot of a computer Description automatically generated](./media/image127.png)
+![A screenshot of a computer Description automatically
+generated](./media/image127.png)
 
-7.  Use the **▷ Run** button to run the pipeline, and wait for it to
-    complete. It may take a few minutes.
+7.  Use el botón ▷ (**Run**) para ejecutar el pipeline y espere a que se
+    complete. Esto puede tardar algunos minutos.
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image128.png)
@@ -1477,8 +1592,8 @@ experiences, including Data Factory experience.
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image130.png)
 
-8.  In the menu bar on the left edge, select your workspace i.e
-    **dp_FabricXX**.
+8.  En la barra de menú en el borde izquierdo, seleccione su workspace,
+    es decir, **dp_FabricXX**.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image131.png)
@@ -1486,8 +1601,8 @@ incorrect.](./media/image131.png)
 ![A screenshot of a computer Description automatically
 generated](./media/image132.png)
 
-9.  In the **Fabric_lakehouse** pane, select the
-    **Gen2_FabricLakehouse** of type Lakehouse.
+9.  En el panel **Fabric_lakehouse**, seleccione el
+    **Gen2_FabricLakehouse** de tipo Lakehouse.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image133.png)
@@ -1495,46 +1610,49 @@ incorrect.](./media/image133.png)
 ![A screenshot of a computer Description automatically
 generated](./media/image134.png)
 
-10. In **Explorer** pane, select the **…** menu for **Tables**,
-    select **refresh**. Then expand **Tables** and select
-    the **orders** table, which has been created by your dataflow.
+10. En el panel **Explorer**, seleccione el menú **…** de **Tables**,
+    haga clic en **Refresh**. Luego, expanda **Tables** y seleccione la
+    tabla **orders**, que ha sido creada por su dataflow.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image135.png)
 
 ![](./media/image136.png)
 
-**Tip**: Use the Power BI Desktop *Dataflows connector* to connect
-directly to the data transformations done with your dataflow.
+**Consejo**: Use el conector *Power BI Desktop Dataflows* para
+conectarse directamente a las transformaciones de datos realizadas con
+su dataflow.
 
-You can also make additional transformations, publish as a new dataset,
-and distribute with intended audience for specialized datasets.
+También puede realizar transformaciones adicionales, publicar como un
+nuevo conjunto de datos y distribuirlo al público objetivo para
+conjuntos de datos especializados.
 
-## Task 4: Clean up resources
+## Tarea 4: Liberar recursos
 
-In this exercise, you’ve learned how to use Spark to work with data in
-Microsoft Fabric.
+En este ejercicio, ha aprendido cómo usar Spark para trabajar con datos
+en Microsoft Fabric.
 
-If you’ve finished exploring your lakehouse, you can delete the
-workspace you created for this exercise.
+Si ha terminado de explorar su lakehouse, puede eliminar el workspace
+que creó para este ejercicio.
 
-1.  In the bar on the left, select the icon for your workspace to view
-    all of the items it contains.
+1.  En la barra de la izquierda, seleccione el icono de su workspace
+    para ver todos los elementos que contiene.
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image137.png)
 
-2.  In the **…** menu on the toolbar, select **Workspace settings**.
+2.  En el menú … de la barra de herramientas, seleccione **Workspace
+    settings**.
 
 ![](./media/image138.png)
 
-3.  Select **General** and click on **Remove this workspace.**
+3.  Seleccione **General** y haga clic en **Remove this workspace.**
 
 ![A screenshot of a computer settings Description automatically
 generated](./media/image139.png)
 
-4.  In the **Delete workspace?** dialog box, click on the **Delete**
-    button.
+4.  En el cuadro de diálogo **Delete workspace?** Haga clic en el botón
+    **Delete**.
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image140.png)
@@ -1542,38 +1660,41 @@ generated](./media/image139.png)
 > ![A screenshot of a computer Description automatically
 > generated](./media/image141.png)
 
-**Summary**
+**Resumen**
 
-This use case guides you through the process of working with Microsoft
-Fabric within Power BI. It covers various tasks, including setting up a
-workspace, creating a lakehouse, uploading and managing data files, and
-using notebooks for data exploration. Participants will learn how to
-manipulate and transform data using PySpark, create visualizations, and
-save and partition data for efficient querying.
+Este caso de uso lo guía a través del proceso de trabajo con Microsoft
+Fabric dentro de Power BI. Cubre diversas tareas, incluyendo la
+configuración de un workspace, la creación de un lakehouse, la carga y
+gestión de archivos de datos, y el uso de notebooks para la exploración
+de datos. Los participantes aprenderán a manipular y transformar datos
+utilizando PySpark, crear visualizaciones y guardar y particionar datos
+para consultas eficientes.
 
-In this use case, participants will engage in a series of tasks focused
-on working with delta tables in Microsoft Fabric. The tasks encompass
-uploading and exploring data, creating managed and external delta
-tables, comparing their properties, the lab introduces SQL capabilities
-for managing structured data and provides insights on data visualization
-using Python libraries like matplotlib and seaborn. The exercises aim to
-provide a comprehensive understanding of utilizing Microsoft Fabric for
-data analysis, and incorporating delta tables for streaming data in an
-IoT context.
+En este caso de uso, los participantes realizarán una serie de tareas
+centradas en trabajar con delta tables en Microsoft Fabric. Las tareas
+incluyen cargar y explorar datos, crear delta tables managed y external,
+comparar sus propiedades; el laboratorio introduce capacidades de SQL
+para la gestión de datos estructurados y proporciona información sobre
+la visualización de datos utilizando librerías de Python como matplotlib
+y seaborn. Los ejercicios buscan proporcionar una comprensión integral
+del uso de Microsoft Fabric para análisis de datos e incorporar delta
+tables para streaming data en un contexto de IoT.
 
-This use case guides you through the process of setting up a Fabric
-workspace, creating a data lakehouse, and ingesting data for analysis.
-It demonstrates how to define a dataflow to handle ETL operations and
-configure data destinations for storing the transformed data.
-Additionally, you'll learn how to integrate the dataflow into a pipeline
-for automated processing. Finally, you'll be provided with instructions
-to clean up resources once the exercise is complete.
+Este caso de uso lo guía en el proceso de configurar un Fabric
+workspace, crear un data lakehouse e ingerir datos para análisis.
+Demuestra cómo definir un dataflow para manejar operaciones de ETL y
+configurar destinos de datos para almacenar los datos transformados.
+Además, aprenderá a integrar el dataflow en un pipeline para
+procesamiento automatizado. Finalmente, se proporcionan instrucciones
+para limpiar los recursos una vez completado el ejercicio.
 
-This lab equips you with essential skills for working with Fabric,
-enabling you to create and manage workspaces, establish data lakehouses,
-and perform data transformations efficiently. By incorporating dataflows
-into pipelines, you'll learn how to automate data processing tasks,
-streamlining your workflow and enhancing productivity in real-world
-scenarios. The cleanup instructions ensure you leave no unnecessary
-resources, promoting an organized and efficient workspace management
-approach.
+Este laboratorio le brinda habilidades esenciales para trabajar con
+Fabric, permitiéndole crear y administrar workspaces, establecer data
+lakehouses y realizar transformaciones de datos de manera eficiente. Al
+incorporar dataflows en pipelines, aprenderá a automatizar tareas de
+procesamiento de datos, optimizando su flujo de trabajo y mejorando la
+productividad en escenarios reales. Las instrucciones de limpieza
+garantizan que no queden recursos innecesarios, promoviendo un enfoque
+organizado y eficiente para la gestión de workspaces.
+
+.
