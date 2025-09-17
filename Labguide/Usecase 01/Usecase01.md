@@ -274,7 +274,7 @@ reports.
         semantic model** and select the tables that you want to add to the
         semantic model.
 
-      ![](./media/image321.png)
+      ![](./media/imagea321.png)
 
     14. In **Manage default semantic model** tab, select
         the **dimension_customer** table and click on **Confirm.**
@@ -288,7 +288,7 @@ reports.
 1.  Now, click on **Fabric Lakehouse** **Tutorial-@lab.LabInstance.Id** on the left-sided
     navigation pane.
 
-    ![](./media/image341.png)
+    ![](./media/imagea341.png)
 
 2.  Now, select **wwilakehouse** of type **SQL analytics **
 
@@ -297,7 +297,7 @@ reports.
 
 3.  From the lakehouse **Home** tab, select **Settings**
 
-      ![](./media/image361.png)
+      ![](./media/imagea361.png)
 
 4.  To ensure that the tables in the semantic model are always in sync,
     switch to the **SQL analytics endpoint** view and open the
@@ -317,7 +317,7 @@ reports.
 6.  In the **Fabric Lakehouse Tutorial-@lab.LabInstance.Id** view,
     select **wwilakehouse** of Type **Semantic model**.
 
-       ![](./media/image381.png)
+       ![](./media/imagea381.png)
 
 7.  From the semantic model pane, you can view all the tables. You have
     options to create reports either from scratch, paginated report, or
@@ -325,7 +325,7 @@ reports.
     this tutorial, under **Explore this data**, select **Auto-create a
     report** as shown in the below image.
 
-      ![](./media/image391.png)
+      ![](./media/imagea391.png)
 
     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image40.png)
 
@@ -1058,6 +1058,7 @@ The lab also covers tasks related to ingesting sample data, optimizing
 delta tables, and building reports in Power BI for effective data
 analysis. The objectives aim to provide hands-on experience in utilizing
 Microsoft Fabric and Power BI for data management and reporting purposes.
+
 
 
 
