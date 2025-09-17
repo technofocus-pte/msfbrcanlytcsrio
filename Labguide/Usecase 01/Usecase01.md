@@ -264,11 +264,11 @@ reports.
 
 1. From the lakehouse **Home** tab, select **New semantic model** and then select the tables that you want to add to the semantic model.
 
-    ![](./media/image11a.png)
+    ![](./media/11a.png)
 	
 1. In the **New semantic model** dialog enter +++wwilakehouse+++ and then select the **dimension_customer** table from the list of tables and select **Confirm** to create the new model.
 
-      ![](./media/image11b.png)
+      ![](./media/11b.png)
 	
 13. From the lakehouse **Reporting** tab, select **Manage default
         semantic model** and select the tables that you want to add to the
@@ -1058,5 +1058,6 @@ The lab also covers tasks related to ingesting sample data, optimizing
 delta tables, and building reports in Power BI for effective data
 analysis. The objectives aim to provide hands-on experience in utilizing
 Microsoft Fabric and Power BI for data management and reporting purposes.
+
 
 
