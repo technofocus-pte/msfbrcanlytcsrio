@@ -758,23 +758,23 @@ The new Semantic model that you created will not automatically synchronize the s
 
 1. From the left menu select the **Fabric Lakehouse-@lab.LabInstance.Id** then select your Semantic model named **wwilakehouse**.
 
-    > !IMAGE[skillable_image3.png](instructions303918/skillable_image3.png)
+      ![](./media/imageab1.png)
 
 1. On the top menu bar select **Open semantic model** to open the data model designer.
 
-    > !IMAGE[skillable_image4.png](instructions303918/skillable_image4.png)
+      ![](./media/imageab2.png)
 
 1. At the top-right ensure that the data model designer is in the **Editing** mode. This should change the drop-down text to “Editing”.
 
-    > !IMAGE[skillable_image5.png](instructions303918/skillable_image5.png)
+   ![](./media/imageab3.png)
 
 1. In the menu ribbon select **Edit tables** to display the table synchronization dialog.
 
-    > !IMAGE[skillable_image6.png](instructions303918/skillable_image6.png)
+   ![](./media/imageab4.png)
 
 1. On the **Edit semantic model** dialog select all the tables and then select **Confirm** at the bottom of the dialog to synchronize the Semantic model.
 
-    > !IMAGE[skillable_image7.png](instructions303918/skillable_image7.png)
+      ![](./media/imageab5.png)
 
     >[!note]**Note**: Once the synchronization has been completed the Semantic model designer will display all the available tables.
 
@@ -838,7 +838,8 @@ frequent updates at the source.
     > dropping to have the dimension_city and the fact_sale tables next to
     > each other. The same holds good for any two tables that you are trying
     > to create relationship. This is just to make the drag and drop of the
-    > columns between the tables is easier. ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image97.png)
+    > columns between the tables is easier.
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image97.png)
 
 5.  In the **Create Relationship** dialog box:
 
@@ -1057,4 +1058,5 @@ The lab also covers tasks related to ingesting sample data, optimizing
 delta tables, and building reports in Power BI for effective data
 analysis. The objectives aim to provide hands-on experience in utilizing
 Microsoft Fabric and Power BI for data management and reporting purposes.
+
 
