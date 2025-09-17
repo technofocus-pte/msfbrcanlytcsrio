@@ -264,11 +264,11 @@ reports.
 
 1. From the lakehouse **Home** tab, select **New semantic model** and then select the tables that you want to add to the semantic model.
 
-    ![](./media/image11a.png)
+    ![](./media/11a.png)
 	
 1. In the **New semantic model** dialog enter +++wwilakehouse+++ and then select the **dimension_customer** table from the list of tables and select **Confirm** to create the new model.
 
-      ![](./media/image11b.png)
+      ![](./media/11b.png)
 	
 13. From the lakehouse **Reporting** tab, select **Manage default
         semantic model** and select the tables that you want to add to the
@@ -758,23 +758,23 @@ The new Semantic model that you created will not automatically synchronize the s
 
 1. From the left menu select the **Fabric Lakehouse-@lab.LabInstance.Id** then select your Semantic model named **wwilakehouse**.
 
-      ![](./media/imageab1.png)
+      ![](./media/ab1.png)
 
 1. On the top menu bar select **Open semantic model** to open the data model designer.
 
-      ![](./media/imageab2.png)
+      ![](./media/ab2.png)
 
 1. At the top-right ensure that the data model designer is in the **Editing** mode. This should change the drop-down text to “Editing”.
 
-   ![](./media/imageab3.png)
+   ![](./media/ab3.png)
 
 1. In the menu ribbon select **Edit tables** to display the table synchronization dialog.
 
-   ![](./media/imageab4.png)
+   ![](./media/ab4.png)
 
 1. On the **Edit semantic model** dialog select all the tables and then select **Confirm** at the bottom of the dialog to synchronize the Semantic model.
 
-      ![](./media/imageab5.png)
+      ![](./media/ab5.png)
 
     >[!note]**Note**: Once the synchronization has been completed the Semantic model designer will display all the available tables.
 
@@ -1058,5 +1058,6 @@ The lab also covers tasks related to ingesting sample data, optimizing
 delta tables, and building reports in Power BI for effective data
 analysis. The objectives aim to provide hands-on experience in utilizing
 Microsoft Fabric and Power BI for data management and reporting purposes.
+
 
 
