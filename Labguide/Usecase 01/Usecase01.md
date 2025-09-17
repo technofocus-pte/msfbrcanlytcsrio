@@ -480,15 +480,7 @@ the Wide World Importers (WWI) into the lakehouse.
     spark.conf.set("spark.microsoft.delta.optimizeWrite.enabled", "true")
     spark.conf.set("spark.microsoft.delta.optimizeWrite.binSize", "1073741824")
     ```
-	
-    
-   ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image22.png)
-
-![A screenshot of a computer AI-generated content may be
-        > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image23.png)
-
-
-    >[!note]**Note**: When running a cell, you didn't have to specify the underlying Spark
+	[!note]**Note**: When running a cell, you didn't have to specify the underlying Spark
     > pool or cluster details because Fabric provides them through Live
     > Pool. Every Fabric workspace comes with a default Spark pool, called
     > Live Pool. This means when you create notebooks, you don't have to
@@ -524,7 +516,7 @@ the Wide World Importers (WWI) into the lakehouse.
     df.write.mode("overwrite").format("delta").partitionBy("Year","Quarter").save("Tables/" + table_name)
     ```
 
-    ![](./media/imagea301.png)
+    ![](./media/aaa11.png)
 
     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea25.png)
 
@@ -1012,6 +1004,7 @@ The lab also covers tasks related to ingesting sample data, optimizing
 delta tables, and building reports in Power BI for effective data
 analysis. The objectives aim to provide hands-on experience in utilizing
 Microsoft Fabric and Power BI for data management and reporting purposes.
+
 
 
 
