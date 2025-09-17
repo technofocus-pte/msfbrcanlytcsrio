@@ -252,7 +252,7 @@ reports.
 
     >[!note]**Note**: If you encounter an error during the execution of the script, then crosscheck the script syntax with the above image.
 
-    ![](./media/image301.png)
+    ![](./media/aaa1.png)
 
     >[!note]**Note**: Previously all the lakehouse tables and views were automatically
     added to the semantic model. With the recent updates, for new
@@ -262,33 +262,21 @@ reports.
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image31.png)
 
-1. From the lakehouse **Home** tab, select **New semantic model** and then select the tables that you want to add to the semantic model.
+12. From the lakehouse **Home** tab, select **New semantic model** and then select the tables that you want to add to the semantic model.
 
     ![](./media/11a.png)
 	
-1. In the **New semantic model** dialog enter +++wwilakehouse+++ and then select the **dimension_customer** table from the list of tables and select **Confirm** to create the new model.
+13. In the **New semantic model** dialog enter +++wwilakehouse+++ and then select the **dimension_customer** table from the list of tables and select **Confirm** to create the new model.
 
       ![](./media/11b.png)
 	
-13. From the lakehouse **Reporting** tab, select **Manage default
-        semantic model** and select the tables that you want to add to the
-        semantic model.
-
-      ![](./media/imagea321.png)
-
-    14. In **Manage default semantic model** tab, select
-        the **dimension_customer** table and click on **Confirm.**
-
-        > ![A screenshot of a computer AI-generated content may be
-        > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image33.png)
--->
 
 ### Task 4: Build a report
 
 1.  Now, click on **Fabric Lakehouse** **Tutorial-@lab.LabInstance.Id** on the left-sided
     navigation pane.
 
-    ![](./media/imagea341.png)
+    ![](./media/aaa2.png)
 
 2.  Now, select **wwilakehouse** of type **SQL analytics **
 
@@ -297,7 +285,7 @@ reports.
 
 3.  From the lakehouse **Home** tab, select **Settings**
 
-      ![](./media/imagea361.png)
+      ![](./media/aaa3.png)
 
 4.  To ensure that the tables in the semantic model are always in sync,
     switch to the **SQL analytics endpoint** view and open the
@@ -317,7 +305,7 @@ reports.
 6.  In the **Fabric Lakehouse Tutorial-@lab.LabInstance.Id** view,
     select **wwilakehouse** of Type **Semantic model**.
 
-       ![](./media/imagea381.png)
+       ![](./media/aaa4.png)
 
 7.  From the semantic model pane, you can view all the tables. You have
     options to create reports either from scratch, paginated report, or
@@ -325,7 +313,7 @@ reports.
     this tutorial, under **Explore this data**, select **Auto-create a
     report** as shown in the below image.
 
-      ![](./media/imagea391.png)
+      ![](./media/aaa5.png)
 
     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image40.png)
 
@@ -475,7 +463,7 @@ the Wide World Importers (WWI) into the lakehouse.
     >write**](https://learn.microsoft.com/en-us/fabric/data-engineering/delta-optimization-and-v-order#what-is-optimized-write) capability, 
 	>the Apache Spark engine that reduces the number of files written and aims to increase individual file size of the written data.
     
-4.  Before you write data as delta lake tables in the **Tables** section
+3.  Before you write data as delta lake tables in the **Tables** section
     of the lakehouse, you use two Fabric features
     (**V-order** and **Optimize Write**) for optimized data writing and
     for improved reading performance. To enable these features in your
@@ -493,12 +481,12 @@ the Wide World Importers (WWI) into the lakehouse.
     spark.conf.set("spark.microsoft.delta.optimizeWrite.binSize", "1073741824")
     ```
 	
-    <!--
-        > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image22.png)
+    
+   ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image22.png)
 
-        > ![A screenshot of a computer AI-generated content may be
+![A screenshot of a computer AI-generated content may be
         > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image23.png)
-    -->
+
 
     >[!note]**Note**: When running a cell, you didn't have to specify the underlying Spark
     > pool or cluster details because Fabric provides them through Live
@@ -510,7 +498,7 @@ the Wide World Importers (WWI) into the lakehouse.
     > starts executing the code. Subsequent code execution is almost
     > instantaneous in this notebook while the Spark session is active. 
 
-5.  Next, you read raw data from the **Files** section of the lakehouse
+4.  Next, you read raw data from the **Files** section of the lakehouse
     and add more columns for different date parts as part of the
     transformation. You use partitionBy Spark API to partition the data
     before writing it as delta table based on the newly created data
@@ -536,11 +524,11 @@ the Wide World Importers (WWI) into the lakehouse.
     df.write.mode("overwrite").format("delta").partitionBy("Year","Quarter").save("Tables/" + table_name)
     ```
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea24.png)
+    ![](./media/imagea301.png)
 
     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea25.png)
 
-7.  After the tables load, you can move on to loading data for the
+5.  After the tables load, you can move on to loading data for the
     rest of the dimensions. The following cell creates a function to
     read raw data from the **Files** section of the lakehouse for each
     of the table names passed as a parameter. Next, it creates a list of
@@ -572,19 +560,17 @@ the Wide World Importers (WWI) into the lakehouse.
         loadFullDataFromSource(table)
     ```
 	
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea26.png)
+  ![](./media/imagea261.png)
 
-    > ![A screenshot of a computer AI-generated content may be
+> ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea27.png)
 
-9.  To validate the created tables, click and select refresh on
+6.  To validate the created tables, click and select refresh on
     the **Tables** in the **Explorer** panel until all the tables appear in the list. 
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea28.png)
+  ![](./media/imagea381.png)
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea29.png)
+![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea29.png)
 
 ### Task 2: Transforming Business Data for Aggregation
 
@@ -615,7 +601,7 @@ using the dataframes, do group by to generate aggregation, rename a
 few of the columns, and finally write it as a delta table in
 the **Tables** section of the lakehouse to persist with the data.
 
-3.  Use the **+ Code** icon below the cell output to add a new code cell
+1.  Use the **+ Code** icon below the cell output to add a new code cell
     to the notebook, and enter the following code in it. Click on **▷
     Run cell** button and review the output
 
@@ -628,13 +614,12 @@ the **Tables** section of the lakehouse to persist with the data.
     df_dimension_city = spark.read.table("wwilakehouse.dimension_city")
     ```
 	
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea30.png)
+  ![](./media/aaa6.png)
 
-    > ![A screen shot of a computer AI-generated content may be
+> ![A screen shot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea31.png)
 
-5.  Use the **+ Code** icon below the cell output to add a new code cell
+2.  Use the **+ Code** icon below the cell output to add a new code cell
     to the notebook, and enter the following code in it. Click on **▷
     Run cell** button and review the output
 
@@ -661,10 +646,9 @@ the **Tables** section of the lakehouse to persist with the data.
     sale_by_date_city.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_city")
     ```
 	
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea32.png)
+   ![](./media/aaa7.png)
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea33.png)
+ ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea33.png)
 
 <u>**Approach \#2 (sale_by_date_employee)** </u>
 
@@ -676,7 +660,7 @@ columns. Finally, you read from the temporary Spark view and finally
 write it as a delta table in the **Tables** section of the lakehouse
 to persist with the data.
 
-8.  Use the **+ Code** icon below the cell output to add a new code cell
+3.  Use the **+ Code** icon below the cell output to add a new code cell
     to the notebook, and enter the following code in it. Click on **▷
     Run cell** button and review the output
 
@@ -703,13 +687,11 @@ to persist with the data.
     ORDER BY DD.Date ASC, DE.PreferredName ASC, DE.Employee ASC
     ```
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea34.png)
-
+   ![](./media/aaa8.png)
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea35.png)
 
-10. Use the **+ Code** icon below the cell output to add a new code cell
+4. Use the **+ Code** icon below the cell output to add a new code cell
     to the notebook, and enter the following code in it. Click on **▷
     Run cell** button and review the output
 
@@ -722,19 +704,15 @@ to persist with the data.
     sale_by_date_employee.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_employee")
     ```
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea36.png)
-
+ ![](./media/aaa9.png)
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea37.png)
 
-12. To validate the created tables, click and select refresh on
+5. To validate the created tables, click and select refresh on
     the **Tables** until the aggregate tables appear.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea38.png)
-
-    > ![A screenshot of a computer AI-generated content may be
+ ![](./media/aaa10.png)
+   > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea39.png)
 
 Both the approaches produce a similar outcome. You can choose based on
@@ -751,32 +729,6 @@ call CREATE TABLE statements to create tables to use with SQL.
 
 In this section of the tutorial, you create a Power BI data model and
 create a report from scratch.
-
-### Task 0: Syncrhonizing the Saemantic model
-
-The new Semantic model that you created will not automatically synchronize the schema for tables that are created or modified. It will only keep the data aligned. Therefore you willl have to perform the synchronization manually.
-
-1. From the left menu select the **Fabric Lakehouse-@lab.LabInstance.Id** then select your Semantic model named **wwilakehouse**.
-
-      ![](./media/ab1.png)
-
-1. On the top menu bar select **Open semantic model** to open the data model designer.
-
-      ![](./media/ab2.png)
-
-1. At the top-right ensure that the data model designer is in the **Editing** mode. This should change the drop-down text to “Editing”.
-
-   ![](./media/ab3.png)
-
-1. In the menu ribbon select **Edit tables** to display the table synchronization dialog.
-
-   ![](./media/ab4.png)
-
-1. On the **Edit semantic model** dialog select all the tables and then select **Confirm** at the bottom of the dialog to synchronize the Semantic model.
-
-      ![](./media/ab5.png)
-
-    >[!note]**Note**: Once the synchronization has been completed the Semantic model designer will display all the available tables.
 
 ### Task 1: Explore data in the silver layer using the SQL endpoint
 
@@ -811,26 +763,28 @@ while avoiding their disadvantages. DirectLake mode is therefore the
 ideal choice for analyzing very large datasets and datasets with
 frequent updates at the source.
 
-1.  From your left navigation pane, select **Fabric_Lakehouse@lab.LabInstance.Id** and
-    then select **wwilakehouse** of Type **Semantic model**.
+1. From the left menu select the **Fabric Lakehouse-@lab.LabInstance.Id** then select your Semantic model named **wwilakehouse**.
 
-    > !IMAGE[skillable_image8.png](instructions303918/skillable_image8.png)
+      ![](./media/ab1.png)
 
-    > !IMAGE[skillable_image9.png](instructions303918/skillable_image9.png)
+2. On the top menu bar select **Open semantic model** to open the data model designer.
 
-1. From the Semantic model pane, select **Open semantic model** to open the data model designer.
+      ![](./media/ab2.png)
 
-    > !IMAGE[skillable_image10.png](instructions303918/skillable_image10.png)
+3. At the top-right ensure that the data model designer is in the **Editing** mode. This should change the drop-down text to “Editing”.
 
-1. For this data model, you need to define the relationship between different tables so that you can create reports and visualizations based on data coming across different tables. To increase the viewing area you can minimize the **Properties** and **Data** panels and then adjust the zoom factor from the bottom right.
+   ![](./media/ab3.png)
 
-    > !IMAGE[skillable_image11.png](instructions303918/skillable_image11.png)
+4. In the menu ribbon select **Edit tables** to display the table synchronization dialog.
 
-1. At the top-right ensure that the data model designer is in the **Editing** mode. This should change the drop-down text to **Editing**.
+   ![](./media/ab4.png)
 
-    > !IMAGE[skillable_image12.png](instructions303918/skillable_image12.png)
+5. On the **Edit semantic model** dialog select all the tables and then select **Confirm** at the bottom of the dialog to synchronize the Semantic model.
 
-5.  From the **fact_sale** table, drag the **CityKey** field and drop it
+      ![](./media/ab5.png)
+
+    >[!note]**Note**: Once the synchronization has been completed the Semantic model designer will display all the available tables.
+6.  From the **fact_sale** table, drag the **CityKey** field and drop it
     on the **CityKey** field in the **dimension_city** table to create a
     relationship. The **Create Relationship** dialog box appears.
 
@@ -841,7 +795,7 @@ frequent updates at the source.
     > columns between the tables is easier.
     ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image97.png)
 
-5.  In the **Create Relationship** dialog box:
+7.  In the **Create Relationship** dialog box:
 
     - **Table 1** is populated with **fact_sale** and the column
       of **CityKey**.
@@ -861,7 +815,7 @@ frequent updates at the source.
 
     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image98.png)
 
-6.  Next, add these relationships with the same **Create
+8.  Next, add these relationships with the same **Create
     Relationship** settings as shown above but with the following tables
     and columns:
 
@@ -875,17 +829,17 @@ frequent updates at the source.
 
     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image101.png)
 
-7.  Ensure to create the relationships between the below two sets using
+9.  Ensure to create the relationships between the below two sets using
     the same steps as above.
 
     - **CustomerKey(fact_sale)** - **CustomerKey(dimension_customer)**
 
     - **InvoiceDateKey(fact_sale)** - **Date(dimension_date)**
 
-8.  After you add these relationships, your data model should be as
+10.  After you add these relationships, your data model should be as
     shown in the below image and is ready for reporting.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image102.png)
+     [](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image102.png)
 
 ### Task 2: Build a Report
 
@@ -1058,6 +1012,7 @@ The lab also covers tasks related to ingesting sample data, optimizing
 delta tables, and building reports in Power BI for effective data
 analysis. The objectives aim to provide hands-on experience in utilizing
 Microsoft Fabric and Power BI for data management and reporting purposes.
+
 
 
 
