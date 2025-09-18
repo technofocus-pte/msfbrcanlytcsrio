@@ -831,7 +831,7 @@ frequent updates at the source.
 10.  After you add these relationships, your data model should be as
     shown in the below image and is ready for reporting.
 
-     [](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image102.png)
+      ![](./media/aaa12.png)
 
 ### Task 2: Build a Report
 
@@ -1004,6 +1004,7 @@ The lab also covers tasks related to ingesting sample data, optimizing
 delta tables, and building reports in Power BI for effective data
 analysis. The objectives aim to provide hands-on experience in utilizing
 Microsoft Fabric and Power BI for data management and reporting purposes.
+
 
 
 
