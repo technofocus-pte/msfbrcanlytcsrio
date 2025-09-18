@@ -837,7 +837,7 @@ frequent updates at the source.
 
 1.  From the **File** menu, select **Create new report** to start creating reports/dashboards in Power BI.
 
-    > !IMAGE[skillable_image13.png](instructions303918/skillable_image13.png)
+    ![](./media/aaa13.png)
 
 2.  On the Power BI report canvas, you can create reports to meet your
     business requirements by dragging required columns from
@@ -1004,6 +1004,7 @@ The lab also covers tasks related to ingesting sample data, optimizing
 delta tables, and building reports in Power BI for effective data
 analysis. The objectives aim to provide hands-on experience in utilizing
 Microsoft Fabric and Power BI for data management and reporting purposes.
+
 
 
 
