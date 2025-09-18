@@ -985,7 +985,7 @@ the workspace you created for this tutorial.
 
 3.  Navigate to the bottom of the **General** tab and select **Remove this workspace**.
 
-    > !IMAGE[skillable_image14.png](instructions303918/skillable_image14.png)
+    ![](./media/aaa13.png)
 
 4.  Click on **Delete** in the warning that pops up.
 
@@ -1004,6 +1004,7 @@ The lab also covers tasks related to ingesting sample data, optimizing
 delta tables, and building reports in Power BI for effective data
 analysis. The objectives aim to provide hands-on experience in utilizing
 Microsoft Fabric and Power BI for data management and reporting purposes.
+
 
 
 
