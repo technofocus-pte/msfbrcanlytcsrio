@@ -92,7 +92,11 @@ generated](./media/image5.png)
 6.  In the 오른쪽에 표시되는 **Create a workspace** 창에서 다음 세부
     정보를 입력하고 **Apply** 버튼을 클릭하세요.
 
-[TABLE]
+    |    |   |
+    |----|----|
+    |Name	|+++AI-Fabric-@lab.LabInstance.Id+++ (must be a unique Id) |
+    |Advanced	|Under License mode, select Fabric capacity|
+    |Default storage format	|Small dataset storage format|
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image11.png)
@@ -148,30 +152,23 @@ incorrect.](./media/image18.png)
     all **버튼을 선택하여 쿼리를 실행하세요. 쿼리가 완료되면 결과가
     표시됩니다.
 
-> import pandas as pd
->
-> from tqdm.auto import tqdm
->
-> base =
-> "https://synapseaisolutionsa.z13.web.core.windows.net/data/AdventureWorks"
->
-> \# load list of tables
->
-> df_tables = pd.read_csv(f"{base}/adventureworks.csv",
-> names=\["table"\])
->
-> for table in (pbar := tqdm(df_tables\['table'\].values)):
->
-> pbar.set_description(f"Uploading {table} to lakehouse")
->
-> \# download
->
-> df = pd.read_parquet(f"{base}/{table}.parquet")
->
-> \# save as lakehouse table
->
-> spark.createDataFrame(df).write.mode('overwrite').saveAsTable(table)
->
+    ```
+    import pandas as pd
+    from tqdm.auto import tqdm
+    base = "https://synapseaisolutionsa.z13.web.core.windows.net/data/AdventureWorks"
+    
+    # load list of tables
+    df_tables = pd.read_csv(f"{base}/adventureworks.csv", names=["table"])
+    
+    for table in (pbar := tqdm(df_tables['table'].values)):
+        pbar.set_description(f"Uploading {table} to lakehouse")
+    
+        # download
+        df = pd.read_parquet(f"{base}/{table}.parquet")
+    
+        # save as lakehouse table
+        spark.createDataFrame(df).write.mode('overwrite').saveAsTable(table)
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image19.png)
 >
@@ -272,7 +269,7 @@ incorrect.](./media/image33.png)
 4.  **FactResellerSales**를 선택하고 다음 텍스트를 입력한 후 아래
     이미지와 같이 Submit icon을 클릭하세요.
 
-+++**What is our most sold product?**+++
+**+++What is our most sold product?+++**
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image34.png)
@@ -432,155 +429,91 @@ incorrect.](./media/image54.png)
     셀을 추가하고 다음 코드를 입력한 후 **URL**을 바꾸세요. ▷ **Run**
     버튼을 클릭하고 출력을 검토하세요.
 
-> import requests
->
-> import json
->
-> import pprint
->
-> import typing as t
->
-> import time
->
-> import uuid
->
-> from openai import OpenAI
->
-> from openai.\_exceptions import APIStatusError
->
-> from openai.\_models import FinalRequestOptions
->
-> from openai.\_types import Omit
->
-> from openai.\_utils import is_given
->
-> from synapse.ml.mlflow import get_mlflow_env_config
->
-> from sempy.fabric.\_token_provider import SynapseTokenProvider
->
-> base_url = "https://\<generic published base URL value\>"
->
-> question = "What datasources do you have access to?"
->
-> configs = get_mlflow_env_config()
->
-> \# Create OpenAI Client
->
-> class FabricOpenAI(OpenAI):
->
-> def \_\_init\_\_(
->
-> self,
->
-> api_version: str ="2024-05-01-preview",
->
-> \*\*kwargs: t.Any,
->
-> ) -\> None:
->
-> self.api_version = api_version
->
-> default_query = kwargs.pop("default_query", {})
->
-> default_query\["api-version"\] = self.api_version
->
-> super().\_\_init\_\_(
->
-> api_key="",
->
-> base_url=base_url,
->
-> default_query=default_query,
->
-> \*\*kwargs,
->
-> )
->
-> def \_prepare_options(self, options: FinalRequestOptions) -\> None:
->
-> headers: dict\[str, str | Omit\] = (
->
-> {\*\*options.headers} if is_given(options.headers) else {}
->
-> )
->
-> options.headers = headers
->
-> headers\["Authorization"\] = f"Bearer {configs.driver_aad_token}"
->
-> if "Accept" not in headers:
->
-> headers\["Accept"\] = "application/json"
->
-> if "ActivityId" not in headers:
->
-> correlation_id = str(uuid.uuid4())
->
-> headers\["ActivityId"\] = correlation_id
->
-> return super().\_prepare_options(options)
->
-> \# Pretty printing helper
->
-> def pretty_print(messages):
->
-> print("---Conversation---")
->
-> for m in messages:
->
-> print(f"{m.role}: {m.content\[0\].text.value}")
->
-> print()
->
-> fabric_client = FabricOpenAI()
->
-> \# Create assistant
->
-> assistant = fabric_client.beta.assistants.create(model="not used")
->
-> \# Create thread
->
-> thread = fabric_client.beta.threads.create()
->
-> \# Create message on thread
->
-> message =
-> fabric_client.beta.threads.messages.create(thread_id=thread.id,
-> role="user", content=question)
->
-> \# Create run
->
-> run = fabric_client.beta.threads.runs.create(thread_id=thread.id,
-> assistant_id=assistant.id)
->
-> \# Wait for run to complete
->
-> while run.status == "queued" or run.status == "in_progress":
->
-> run = fabric_client.beta.threads.runs.retrieve(
->
-> thread_id=thread.id,
->
-> run_id=run.id,
->
-> )
->
-> print(run.status)
->
-> time.sleep(2)
->
-> \# Print messages
->
-> response =
-> fabric_client.beta.threads.messages.list(thread_id=thread.id,
-> order="asc")
->
-> pretty_print(response)
->
-> \# Delete thread
->
-> fabric_client.beta.threads.delete(thread_id=thread.id)
->
+    ```
+    import requests
+    import json
+    import pprint
+    import typing as t
+    import time
+    import uuid
+    
+    from openai import OpenAI
+    from openai._exceptions import APIStatusError
+    from openai._models import FinalRequestOptions
+    from openai._types import Omit
+    from openai._utils import is_given
+    from synapse.ml.mlflow import get_mlflow_env_config
+    from sempy.fabric._token_provider import SynapseTokenProvider
+     
+    base_url = "https://<generic published base URL value>"
+    question = "What datasources do you have access to?"
+    
+    configs = get_mlflow_env_config()
+    
+    # Create OpenAI Client
+    class FabricOpenAI(OpenAI):
+        def __init__(
+            self,
+            api_version: str ="2024-05-01-preview",
+            **kwargs: t.Any,
+        ) -> None:
+            self.api_version = api_version
+            default_query = kwargs.pop("default_query", {})
+            default_query["api-version"] = self.api_version
+            super().__init__(
+                api_key="",
+                base_url=base_url,
+                default_query=default_query,
+                **kwargs,
+            )
+        
+        def _prepare_options(self, options: FinalRequestOptions) -> None:
+            headers: dict[str, str | Omit] = (
+                {**options.headers} if is_given(options.headers) else {}
+            )
+            options.headers = headers
+            headers["Authorization"] = f"Bearer {configs.driver_aad_token}"
+            if "Accept" not in headers:
+                headers["Accept"] = "application/json"
+            if "ActivityId" not in headers:
+                correlation_id = str(uuid.uuid4())
+                headers["ActivityId"] = correlation_id
+    
+            return super()._prepare_options(options)
+    
+    # Pretty printing helper
+    def pretty_print(messages):
+        print("---Conversation---")
+        for m in messages:
+            print(f"{m.role}: {m.content[0].text.value}")
+        print()
+    
+    fabric_client = FabricOpenAI()
+    # Create assistant
+    assistant = fabric_client.beta.assistants.create(model="not used")
+    # Create thread
+    thread = fabric_client.beta.threads.create()
+    # Create message on thread
+    message = fabric_client.beta.threads.messages.create(thread_id=thread.id, role="user", content=question)
+    # Create run
+    run = fabric_client.beta.threads.runs.create(thread_id=thread.id, assistant_id=assistant.id)
+    
+    # Wait for run to complete
+    while run.status == "queued" or run.status == "in_progress":
+        run = fabric_client.beta.threads.runs.retrieve(
+            thread_id=thread.id,
+            run_id=run.id,
+        )
+        print(run.status)
+        time.sleep(2)
+    
+    # Print messages
+    response = fabric_client.beta.threads.messages.list(thread_id=thread.id, order="asc")
+    pretty_print(response)
+    
+    # Delete thread
+    fabric_client.beta.threads.delete(thread_id=thread.id)
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image58.png)
 >
@@ -625,3 +558,4 @@ Fabric Notebook에서 프로그래밍 방식으로 에이전트를 호출하여 
 AI 통합을 시연했습니다. 이 실습에서는 자연어 및 GenAI 기술을 통해
 비즈니스 사용자가 엔터프라이즈 데이터에 더 쉽게 액세스하고, 유용하고,
 지능적으로 만들 수 있도록 지원합니다.
+
