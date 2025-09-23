@@ -102,7 +102,10 @@ Fabric에서 제공하는 유연성을 통해 Lakehouse 또는 데이터 웨어�
 2.  오른쪽에 표시되는 **Create a workspace** 창에서 다음 세부 정보를
     입력하고 **Apply **버튼을 클릭하세요.
 
-[TABLE]
+    |   |   |
+    |---|---|
+    | Username | +++@lab.CloudPortalCredential(User1).Username+++ |
+    | Password | +++@lab.CloudPortalCredential(User1).Password+++ |
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image7.png)
@@ -219,12 +222,11 @@ Fabric에서 제공하는 유연성을 통해 Lakehouse 또는 데이터 웨어�
     삭제할 수 있습니다. 아래 이미지와 같이 코드를 붙여넣은 후 재생
     아이콘을 클릭하여 스크립트를 **실행하세요.**
 
-> SELECT BuyingGroup, Count(\*) AS Total
->
-> FROM dimension_customer
->
-> GROUP BY BuyingGroup
->
+    ```
+    SELECT BuyingGroup, Count(*) AS Total
+    FROM dimension_customer
+    GROUP BY BuyingGroup
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image29.png)
 
@@ -460,17 +462,13 @@ Apache Spark 엔진은 기록된 파일 수를 줄이고 기록된 데이터의 
 4.  다음 코드가 있는 **cell**의 코드를 클릭하고 마우스를 가져갈 때 셀
     왼쪽에 나타나는 **▷ Run cell**을 클릭하세요.
 
-> \# Copyright (c) Microsoft Corporation.
->
-> \# Licensed under the MIT License.
->
-> spark.conf.set("spark.sql.parquet.vorder.enabled", "true")
->
-> spark.conf.set("spark.microsoft.delta.optimizeWrite.enabled", "true")
->
-> spark.conf.set("spark.microsoft.delta.optimizeWrite.binSize",
-> "1073741824")
->
+    ```
+    # Copyright (c) Microsoft Corporation.
+    # Licensed under the MIT License.
+    spark.conf.set("spark.sql.parquet.vorder.enabled", "true")
+    spark.conf.set("spark.microsoft.delta.optimizeWrite.enabled", "true")
+    spark.conf.set("spark.microsoft.delta.optimizeWrite.binSize", "1073741824")
+    ```
 > ![](./media/image65.png)
 >
 > ![A screenshot of a computer AI-generated content may be
@@ -497,20 +495,18 @@ Apache Spark 엔진은 기록된 파일 수를 줄이고 기록된 데이터의 
 **참고**: 출력을 볼 수 없는 경우 **Spark jobs**의 왼쪽에 있는 수평선을
 클릭합니다 .
 
-from pyspark.sql.functions import col, year, month, quarter
-
-table_name = 'fact_sale'
-
-df = spark.read.format("parquet").load('Files/fact_sale_1y_full')
-
-df = df.withColumn('Year', year(col("InvoiceDateKey")))
-
-df = df.withColumn('Quarter', quarter(col("InvoiceDateKey")))
-
-df = df.withColumn('Month', month(col("InvoiceDateKey")))
-
-df.write.mode("overwrite").format("delta").partitionBy("Year","Quarter").save("Tables/" +
-table_name)
+    ```
+    from pyspark.sql.functions import col, year, month, quarter
+    
+    table_name = 'fact_sale'
+    
+    df = spark.read.format("parquet").load('Files/fact_sale_1y_full')
+    df = df.withColumn('Year', year(col("InvoiceDateKey")))
+    df = df.withColumn('Quarter', quarter(col("InvoiceDateKey")))
+    df = df.withColumn('Month', month(col("InvoiceDateKey")))
+    
+    df.write.mode("overwrite").format("delta").partitionBy("Year","Quarter").save("Tables/" + table_name)
+    ```
 
 >  ![](./media/image67.png)
 >
@@ -526,34 +522,25 @@ table_name)
 8.  셀 출력 아래에 있는 + **Code** 아이콘을 사용하여 Notebook에 새 코드
     셀을 추가하고 다음 코드를 입력하세요. **▷ Run cell **버튼을 클릭하고
     pyspark.sql.types 가져오기의 출력을 검토하세요. \*
-
-> def loadFullDataFromSource(table_name):
->
-> df = spark.read.format("parquet").load('Files/' + table_name)
->
-> df = df.drop("Photo")
->
-> df.write.mode("overwrite").format("delta").save("Tables/" +
-> table_name)
->
-> full_tables = \[
->
-> 'dimension_city',
->
-> 'dimension_customer',
->
-> 'dimension_date',
->
-> 'dimension_employee',
->
-> 'dimension_stock_item'
->
-> \]
->
-> for table in full_tables:
->
-> loadFullDataFromSource(table)
->
+  ```
+    from pyspark.sql.types import *
+    
+    def loadFullDataFromSource(table_name):
+        df = spark.read.format("parquet").load('Files/' + table_name)
+        df = df.drop("Photo")
+        df.write.mode("overwrite").format("delta").save("Tables/" + table_name)
+    
+    full_tables = [
+        'dimension_city',
+        'dimension_customer',
+        'dimension_date',
+        'dimension_employee',
+        'dimension_stock_item'
+    ]
+    
+    for table in full_tables:
+        loadFullDataFromSource(table)
+   ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image69.png)
 >
@@ -570,7 +557,7 @@ table_name)
 
 ### 작업 2: 집계를 위한 비즈니스 데이터 변환
 
-1.  조직에는 Scala/Python으로 작업하는 데이터 엔지니어와 SQL (Spark SQL
+    조직에는 Scala/Python으로 작업하는 데이터 엔지니어와 SQL (Spark SQL
     또는 T-SQL)으로 작업하는 다른 데이터 엔지니어가 있을 수 있으며, 모두
     동일한 데이터 복사본에서 작업할 수 있습니다. Fabric은 다양한 경험과
     선호도를 가진 다양한 그룹이 일하고 협업할 수 있도록 합니다. 두 가지
@@ -586,7 +573,7 @@ table_name)
       데이터를 조인하고 집계합니다. 이 접근 방식은 SQL 배경이 있는
       사람이 Spark로 전환하는 데 적합합니다.
 
-2.  **접근 \#1 (sale_by_date_city)** - PySpark를 사용하여 비즈니스
+   **접근 \#1 (sale_by_date_city)** - PySpark를 사용하여 비즈니스
     집계를 생성하기 위한 데이터를 조인하고 집계합니다. 다음 코드를
     사용하여 각각 기존 델타 테이블을 참조하는 세 개의 서로 다른 Spark
     데이터 프레임을 생성합니다. 그런 다음, 데이터 프레임을 사용하여
@@ -594,19 +581,18 @@ table_name)
     개의 열의 이름을 바꾸고, 마지막으로 Lakehouse의 **Tables** 섹션에
     델타 테이블로 작성하여 데이터를 유지합니다.
 
-3.  셀 출력 아래에 있는 + **Code** 아이콘을 사용하여 Notebook에 새 코드
+1.  셀 출력 아래에 있는 + **Code** 아이콘을 사용하여 Notebook에 새 코드
     셀을 추가하고 다음 코드를 입력하세요. **▷ Run cell **버튼을 클릭하고
     출력을 검토하세요.
 
-4.  이 셀에서는 각각 기존 델타 테이블을 참조하는 세 개의 서로 다른 Spark
+2.  이 셀에서는 각각 기존 델타 테이블을 참조하는 세 개의 서로 다른 Spark
     데이터 프레임을 생성합니다.
 
-> df_fact_sale = spark.read.table("wwilakehouse.fact_sale")
->
-> df_dimension_date = spark.read.table("wwilakehouse.dimension_date")
->
-> df_dimension_city = spark.read.table("wwilakehouse.dimension_city")
->
+    ```
+    df_fact_sale = spark.read.table("wwilakehouse.fact_sale") 
+    df_dimension_date = spark.read.table("wwilakehouse.dimension_date")
+    df_dimension_city = spark.read.table("wwilakehouse.dimension_city")
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image73.png)
 >
@@ -622,45 +608,24 @@ table_name)
     이름을 바꾸고, 마지막으로 Lakehouse의 **Tables** 섹션에 델타
     테이블로 씁니다.
 
-> sale_by_date_city = df_fact_sale.alias("sale") \\
->
-> .join(df_dimension_date.alias("date"), df_fact_sale.InvoiceDateKey ==
-> df_dimension_date.Date, "inner") \\
->
-> .join(df_dimension_city.alias("city"), df_fact_sale.CityKey ==
-> df_dimension_city.CityKey, "inner") \\
->
-> .select("date.Date", "date.CalendarMonthLabel", "date.Day",
-> "date.ShortMonth", "date.CalendarYear", "city.City",
-> "city.StateProvince",
->
-> "city.SalesTerritory", "sale.TotalExcludingTax", "sale.TaxAmount",
-> "sale.TotalIncludingTax", "sale.Profit")\\
->
-> .groupBy("date.Date", "date.CalendarMonthLabel", "date.Day",
-> "date.ShortMonth", "date.CalendarYear", "city.City",
-> "city.StateProvince",
->
-> "city.SalesTerritory")\\
->
-> .sum("sale.TotalExcludingTax", "sale.TaxAmount",
-> "sale.TotalIncludingTax", "sale.Profit")\\
->
-> .withColumnRenamed("sum(TotalExcludingTax)",
-> "SumOfTotalExcludingTax")\\
->
-> .withColumnRenamed("sum(TaxAmount)", "SumOfTaxAmount")\\
->
-> .withColumnRenamed("sum(TotalIncludingTax)",
-> "SumOfTotalIncludingTax")\\
->
-> .withColumnRenamed("sum(Profit)", "SumOfProfit")\\
->
-> .orderBy("date.Date", "city.StateProvince", "city.City")
->
-> sale_by_date_city.write.mode("overwrite").format("delta").option("overwriteSchema",
-> "true").save("Tables/aggregate_sale_by_date_city")
->
+    ```
+    sale_by_date_city = df_fact_sale.alias("sale") \
+    .join(df_dimension_date.alias("date"), df_fact_sale.InvoiceDateKey == df_dimension_date.Date, "inner") \
+    .join(df_dimension_city.alias("city"), df_fact_sale.CityKey == df_dimension_city.CityKey, "inner") \
+    .select("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", 
+     "city.SalesTerritory", "sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")\
+    .groupBy("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", 
+     "city.SalesTerritory")\
+    .sum("sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")\
+    .withColumnRenamed("sum(TotalExcludingTax)", "SumOfTotalExcludingTax")\
+    .withColumnRenamed("sum(TaxAmount)", "SumOfTaxAmount")\
+    .withColumnRenamed("sum(TotalIncludingTax)", "SumOfTotalIncludingTax")\
+    .withColumnRenamed("sum(Profit)", "SumOfProfit")\
+    .orderBy("date.Date", "city.StateProvince", "city.City")
+    
+    sale_by_date_city.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_city")
+    ```
+ 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image75.png)
 >
@@ -681,39 +646,24 @@ table_name)
     그룹화 기준을 수행하여 집계를 생성하고, 몇 개의 열의 이름을
     바꿉니다.
 
-%%sql
-
-CREATE OR REPLACE TEMPORARY VIEW sale_by_date_employee
-
-AS
-
-SELECT
-
-DD.Date, DD.CalendarMonthLabel
-
-, DD.Day, DD.ShortMonth Month, CalendarYear Year
-
-,DE.PreferredName, DE.Employee
-
-,SUM(FS.TotalExcludingTax) SumOfTotalExcludingTax
-
-,SUM(FS.TaxAmount) SumOfTaxAmount
-
-,SUM(FS.TotalIncludingTax) SumOfTotalIncludingTax
-
-,SUM(Profit) SumOfProfit
-
-FROM wwilakehouse.fact_sale FS
-
-INNER JOIN wwilakehouse.dimension_date DD ON FS.InvoiceDateKey = DD.Date
-
-INNER JOIN wwilakehouse.dimension_Employee DE ON FS.SalespersonKey =
-DE.EmployeeKey
-
-GROUP BY DD.Date, DD.CalendarMonthLabel, DD.Day, DD.ShortMonth,
-DD.CalendarYear, DE.PreferredName, DE.Employee
-
-ORDER BY DD.Date ASC, DE.PreferredName ASC, DE.Employee ASC
+    ```
+    %%sql
+    CREATE OR REPLACE TEMPORARY VIEW sale_by_date_employee
+    AS
+    SELECT
+           DD.Date, DD.CalendarMonthLabel
+     , DD.Day, DD.ShortMonth Month, CalendarYear Year
+          ,DE.PreferredName, DE.Employee
+          ,SUM(FS.TotalExcludingTax) SumOfTotalExcludingTax
+          ,SUM(FS.TaxAmount) SumOfTaxAmount
+          ,SUM(FS.TotalIncludingTax) SumOfTotalIncludingTax
+          ,SUM(Profit) SumOfProfit 
+    FROM wwilakehouse.fact_sale FS
+    INNER JOIN wwilakehouse.dimension_date DD ON FS.InvoiceDateKey = DD.Date
+    INNER JOIN wwilakehouse.dimension_Employee DE ON FS.SalespersonKey = DE.EmployeeKey
+    GROUP BY DD.Date, DD.CalendarMonthLabel, DD.Day, DD.ShortMonth, DD.CalendarYear, DE.PreferredName, DE.Employee
+    ORDER BY DD.Date ASC, DE.PreferredName ASC, DE.Employee ASC
+    ```
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image77.png)
@@ -728,12 +678,10 @@ ORDER BY DD.Date ASC, DE.PreferredName ASC, DE.Employee ASC
 11. 이 셀에서는 이전 셀에서 생성한 임시 Spark 보기에서 읽고 마지막으로
     Lakehouse의 **Tables** 섹션에 델타 테이블로 씁니다.
 
-> sale_by_date_employee = spark.sql("SELECT \* FROM
-> sale_by_date_employee")
->
-> sale_by_date_employee.write.mode("overwrite").format("delta").option("overwriteSchema",
-> "true").save("Tables/aggregate_sale_by_date_employee")
->
+    ```
+    sale_by_date_employee = spark.sql("SELECT * FROM sale_by_date_employee")
+    sale_by_date_employee.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_employee")
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image79.png)
 >
@@ -1032,3 +980,4 @@ Power BI 내에서 필수 구성 요소를 설정하고 구성하는 데 중점�
 위해 샘플 데이터 수집, 델타 테이블 최적화, Power BI에서 보고서 작성과
 관련된 작업도 다룹니다. 목표는 데이터 관리 및 보고 목적으로 Microsoft
 Fabric 및 Power BI를 활용하는 실습 경험을 제공하는 것을 목표로 합니다.
+
