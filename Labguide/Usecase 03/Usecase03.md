@@ -527,10 +527,10 @@ determine whether or not the AI skill has a published URL value.
     fabric_client.beta.threads.delete(thread_id=thread.id)
     ```
 	
-    > ![A screenshot of a computer AI-generated content may be
+ > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image58.png)
 
-    > ![A screenshot of a computer AI-generated content may be
+ > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image59.png)
 
 ### Task 7: Delete the resources
@@ -572,4 +572,5 @@ programmatically from a Fabric notebook, demonstrating end-to-end AI
 integration. This lab empowers you to make enterprise data more
 accessible, usable, and intelligent for business users through natural
 language and generative AI technologies.
+
 
