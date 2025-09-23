@@ -108,7 +108,12 @@ Fabric에서 데이터로 작업하기 전에 Fabric 평가판을 사용하도�
 6.  **Create a workspace tab**에서 다음 세부 정보를 입력하고 **Apply**
     버튼을 클릭하세요.
 
-[TABLE]
+    |  |  |
+    |-----|----|
+    |Name|	+++dp_Fabric@lab.LabInstance.Id+++ (must be a unique Id)| 
+    |Description|	This workspace contains Analyze data with Apache Spark|
+    |Advanced|	Under License mode, select Fabric capacity|
+    |Default storage format	|Small dataset storage format|
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image6.png)
@@ -216,11 +221,11 @@ incorrect.](./media/image22.png)
 5.  🖉 (**Edit**) 버튼을 사용하여 셀을 편집 모드로 전환하고 모든 텍스트를
     바꾼 다음 다음과 같이 마크다운을 수정하세요.
 
-> CodeCopy
->
-> \# Sales order data exploration
->
-> Use the code in this notebook to explore sales order data.
+    ```
+    # Sales order data exploration
+    
+    Use the code in this notebook to explore sales order data.
+    ```
 
 ![](./media/image24.png)
 
@@ -254,16 +259,11 @@ Notebook의 기본 언어입니다.
     **Spark**를 선택하세요. 다음 코드가 포함된 새 코드 셀이 노트북에
     추가됩니다:
 
-> CodeCopy
->
-> df =
-> spark.read.format("csv").option("header","true").load("Files/orders/2019.csv")
->
-> \# df now is a Spark DataFrame containing CSV data from
-> "Files/orders/2019.csv".
->
-> display(df)
->
+    ```nocopy
+    df = spark.read.format("csv").option("header","true").load("Files/orders/2019.csv")
+    # df now is a Spark DataFrame containing CSV data from "Files/orders/2019.csv".
+    display(df)
+    ```
 > ![](./media/image28.png)
 >
 > ![A screenshot of a computer AI-generated content may be
@@ -298,15 +298,11 @@ incorrect.](./media/image31.png)
     **Cell**의 모든 코드를 다음 코드로 바꾸고 **▷ Run cell** 버튼을
     클릭하고 출력을 검토하세요.
 
-> CodeCopy
->
-> df =
-> spark.read.format("csv").option("header","false").load("Files/orders/2019.csv")
->
-> \# df now is a Spark DataFrame containing CSV data from
-> "Files/orders/2019.csv".
->
-> display(df)
+    ```
+    df = spark.read.format("csv").option("header","false").load("Files/orders/2019.csv")
+    # df now is a Spark DataFrame containing CSV data from "Files/orders/2019.csv".
+    display(df)
+    ```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image32.png)
@@ -319,35 +315,24 @@ incorrect.](./media/image32.png)
 8.  **Cell**의 모든 코드를 다음 코드로 바꾸고 **▷ Run cell** 버튼을
     클릭하고 출력을 검토하세요.
 
-> from pyspark.sql.types import \*
->
-> orderSchema = StructType(\[
->
-> StructField("SalesOrderNumber", StringType()),
->
-> StructField("SalesOrderLineNumber", IntegerType()),
->
-> StructField("OrderDate", DateType()),
->
-> StructField("CustomerName", StringType()),
->
-> StructField("Email", StringType()),
->
-> StructField("Item", StringType()),
->
-> StructField("Quantity", IntegerType()),
->
-> StructField("UnitPrice", FloatType()),
->
-> StructField("Tax", FloatType())
->
-> \])
->
-> df =
-> spark.read.format("csv").schema(orderSchema).load("Files/orders/2019.csv")
->
-> display(df)
->
+    ```
+    from pyspark.sql.types import *
+    
+    orderSchema = StructType([
+        StructField("SalesOrderNumber", StringType()),
+        StructField("SalesOrderLineNumber", IntegerType()),
+        StructField("OrderDate", DateType()),
+        StructField("CustomerName", StringType()),
+        StructField("Email", StringType()),
+        StructField("Item", StringType()),
+        StructField("Quantity", IntegerType()),
+        StructField("UnitPrice", FloatType()),
+        StructField("Tax", FloatType())
+        ])
+    
+    df = spark.read.format("csv").schema(orderSchema).load("Files/orders/2019.csv")
+    display(df)
+    ```
 > ![](./media/image33.png)
 >
 > ![A screenshot of a computer AI-generated content may be
@@ -365,10 +350,9 @@ incorrect.](./media/image32.png)
     셀을 추가하고 다음 코드를 입력하세요. **▷ Run cell**버튼을 클릭하고
     출력을 검토하세요.
 
-> CodeCopy
->
-> display(df)
->
+    ```
+    display(df)
+    ```
 > ![](./media/image35.png)
 
 12. 데이터 프레임에는 **2019.csv** 파일의 데이터만 포함됩니다. 파일
@@ -380,35 +364,24 @@ incorrect.](./media/image32.png)
 
 CodeCopy
 
-> from pyspark.sql.types import \*
->
-> orderSchema = StructType(\[
->
->     StructField("SalesOrderNumber", StringType()),
->
->     StructField("SalesOrderLineNumber", IntegerType()),
->
->     StructField("OrderDate", DateType()),
->
->     StructField("CustomerName", StringType()),
->
->     StructField("Email", StringType()),
->
->     StructField("Item", StringType()),
->
->     StructField("Quantity", IntegerType()),
->
->     StructField("UnitPrice", FloatType()),
->
->     StructField("Tax", FloatType())
->
->     \])
->
-> df =
-> spark.read.format("csv").schema(orderSchema).load("Files/orders/\*.csv")
->
-> display(df)
->
+    ```
+    from pyspark.sql.types import *
+    
+    orderSchema = StructType([
+        StructField("SalesOrderNumber", StringType()),
+        StructField("SalesOrderLineNumber", IntegerType()),
+        StructField("OrderDate", DateType()),
+        StructField("CustomerName", StringType()),
+        StructField("Email", StringType()),
+        StructField("Item", StringType()),
+        StructField("Quantity", IntegerType()),
+        StructField("UnitPrice", FloatType()),
+        StructField("Tax", FloatType())
+        ])
+    
+    df = spark.read.format("csv").schema(orderSchema).load("Files/orders/*.csv")
+    display(df)
+    ```
 > ![](./media/image36.png)
 
 14. 수정된 코드 셀을 실행하고 출력을 검토하면 이제 2019년, 2020년,
@@ -429,14 +402,12 @@ dataframe 개체에는 포함된 데이터를 필터링, 그룹화 및 조작하
 1.  셀 출력 아래에 있는 + **Code** 아이콘을 사용하여 Notebook에 새 코드
     셀을 추가하고 다음 코드를 입력하세요.
 
-> customers = df\['CustomerName', 'Email'\]
->
-> print(customers.count())
->
-> print(customers.distinct().count())
->
-> display(customers.distinct())
->
+    ```
+    customers = df['CustomerName', 'Email']
+    print(customers.count())
+    print(customers.distinct().count())
+    display(customers.distinct())
+    ```
 > ![](./media/image38.png)
 
 2.  새 코드 셀을 실행하고 결과를 검토하세요. 다음 세부 사항을
@@ -462,16 +433,12 @@ dataframe 개체에는 포함된 데이터를 필터링, 그룹화 및 조작하
 3.  코드를 수정하고 cell의 모든 코드를 다음 코드로 바꾼 후 **▷ Run
     cell** 버튼을 클릭하세요:
 
-> CodeCopy
->
-> customers = df.select("CustomerName",
-> "Email").where(df\['Item'\]=='Road-250 Red, 52')
->
-> print(customers.count())
->
-> print(customers.distinct().count())
->
-> display(customers.distinct())
+    ```
+    customers = df.select("CustomerName", "Email").where(df['Item']=='Road-250 Red, 52')
+    print(customers.count())
+    print(customers.distinct().count())
+    display(customers.distinct())
+    ```
 
 4.  수정된 코드를 실행하여 ***Road-250 Red, 52*** 제품을 구매한 고객을
     봅니다. 한 함수의 출력이 다음 함수의 입력이 되도록 여러 함수를 함께
@@ -487,12 +454,10 @@ dataframe 개체에는 포함된 데이터를 필터링, 그룹화 및 조작하
 1.  \+ **Code**를 클릭하고 아래 코드를 복사하여 붙여넣은 후 **Run cell**
     버튼을 클릭하세요.
 
-> CodeCopy
->
-> productSales = df.select("Item", "Quantity").groupBy("Item").sum()
->
-> display(productSales)
->
+    ```
+    productSales = df.select("Item", "Quantity").groupBy("Item").sum()
+    display(productSales)
+    ```
 > ![](./media/image41.png)
 
 2.  결과에는 제품별로 그룹화된 주문 수량의 합계가 표시됩니다.
@@ -505,15 +470,12 @@ dataframe 개체에는 포함된 데이터를 필터링, 그룹화 및 조작하
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image42.png)
 
-> **CodeCopy**
->
-> from pyspark.sql.functions import \*
->
-> yearlySales =
-> df.select(year("OrderDate").alias("Year")).groupBy("Year").count().orderBy("Year")
->
-> display(yearlySales)
->
+    ```
+    from pyspark.sql.functions import *
+    
+    yearlySales = df.select(year("OrderDate").alias("Year")).groupBy("Year").count().orderBy("Year")
+    display(yearlySales)
+    ```
 > ![](./media/image43.png)
 
 4.  결과에는 연간 판매 주문 수가 표시됩니다. **select** 메서드 에는
@@ -534,31 +496,21 @@ incorrect.](./media/image42.png)
 
 1.  \+ Code를 클릭하고 아래 코드를 복사하여 붙여넣으세요.
 
-**CodeCopy**
-
-> from pyspark.sql.functions import \*
->
-> \## Create Year and Month columns
->
-> transformed_df = df.withColumn("Year",
-> year(col("OrderDate"))).withColumn("Month", month(col("OrderDate")))
->
-> \# Create the new FirstName and LastName fields
->
-> transformed_df = transformed_df.withColumn("FirstName",
-> split(col("CustomerName"), " ").getItem(0)).withColumn("LastName",
-> split(col("CustomerName"), " ").getItem(1))
->
-> \# Filter and reorder columns
->
-> transformed_df = transformed_df\["SalesOrderNumber",
-> "SalesOrderLineNumber", "OrderDate", "Year", "Month", "FirstName",
-> "LastName", "Email", "Item", "Quantity", "UnitPrice", "Tax"\]
->
-> \# Display the first five orders
->
-> display(transformed_df.limit(5))
->
+    ```
+    from pyspark.sql.functions import *
+    
+    ## Create Year and Month columns
+    transformed_df = df.withColumn("Year", year(col("OrderDate"))).withColumn("Month", month(col("OrderDate")))
+    
+    # Create the new FirstName and LastName fields
+    transformed_df = transformed_df.withColumn("FirstName", split(col("CustomerName"), " ").getItem(0)).withColumn("LastName", split(col("CustomerName"), " ").getItem(1))
+    
+    # Filter and reorder columns
+    transformed_df = transformed_df["SalesOrderNumber", "SalesOrderLineNumber", "OrderDate", "Year", "Month", "FirstName", "LastName", "Email", "Item", "Quantity", "UnitPrice", "Tax"]
+    
+    # Display the first five orders
+    display(transformed_df.limit(5))
+    ```
 > ![](./media/image44.png)
 
 2.  **코드를 실행**하여 다음 변환을 사용하여 원래 주문 데이터에서 새
@@ -626,13 +578,11 @@ documentation*](https://spark.apache.org/docs/latest/api/python/reference/pyspar
 4.  \+ **Code** 다음 코드를 클릭하여 **transformed_data -\> orders**
     폴더의 parquet 파일에서 새 데이터 프레임을 로드하세요:
 
-> **CodeCopy**
->
-> orders_df =
-> spark.read.format("parquet").load("Files/transformed_data/orders")
->
-> display(orders_df)
->
+	
+    ```
+    orders_df = spark.read.format("parquet").load("Files/transformed_data/orders")
+    display(orders_df)
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image51.png)
 
@@ -648,12 +598,10 @@ documentation*](https://spark.apache.org/docs/latest/api/python/reference/pyspar
     프레임을 저장하고 데이터를 **Year** 및**Month**로 분할하세요. 셀을
     실행하고 데이터가 저장되었다는 메시지를 기다리세요.
 
-> CodeCopy
->
-> orders_df.write.partitionBy("Year","Month").mode("overwrite").parquet("Files/partitioned_data")
->
-> print ("Transformed data saved!")
->
+    ```
+    orders_df.write.partitionBy("Year","Month").mode("overwrite").parquet("Files/partitioned_data")
+    print ("Transformed data saved!")
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image53.png)
 >
@@ -683,11 +631,10 @@ incorrect.](./media/image57.png)
 4.  새 셀을 추가하고 다음 코드로 **+ Code**를 클릭하여
     **orders.parquet** 파일에서 새 데이터 프레임을 로드하세요:
 
-> CodeCopy
->
-> orders_2021_df =
-> spark.read.format("parquet").load("Files/partitioned_data/Year=2021/Month=\*")
->
+    ```
+    orders_2021_df = spark.read.format("parquet").load("Files/partitioned_data/Year=2021/Month=*")
+    display(orders_2021_df)
+    ```
 > display(orders_2021_df)
 
 5.  셀을 실행하고 결과에 2021년 판매에 대한 주문 데이터가 표시되는지
@@ -720,15 +667,13 @@ Spark 메타스토어의 테이블은 데이터 레이크의 파일에 대한 �
     입력하면 판매 주문 데이터의 데이터 프레임이 **salesorder**라는
     테이블로 저장됩니다:
 
-> CodeCopy
->
-> \# Create a new table
->
-> df.write.format("delta").saveAsTable("salesorders")
->
-> \# Get the table description
->
-> spark.sql("DESCRIBE EXTENDED salesorders").show(truncate=False)
+    ```
+    # Create a new table
+    df.write.format("delta").saveAsTable("salesorders")
+    
+    # Get the table description
+    spark.sql("DESCRIBE EXTENDED salesorders").show(truncate=False)
+    ```
 
 **참고**: 이 예제에 대해 몇 가지 사항에 주목할 가치가 있습니다. 첫째,
 명시적 경로가 제공되지 않으므로 테이블의 파일은 메타스토어에서
@@ -766,12 +711,10 @@ generated](./media/image62.png)
     PySpark 코드의 **salesorder** 테이블 에 대한 SQL 쿼리를 포함하고
     쿼리 결과를 데이터 프레임에 로드하세요.
 
-> CodeCopy
->
-> df = spark.sql("SELECT \* FROM \[your_lakehouse\].salesorders LIMIT
-> 1000")
->
-> display(df)
+    ```
+    df = spark.sql("SELECT * FROM [your_lakehouse].salesorders LIMIT 1000")
+    display(df)
+    ```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image63.png)
@@ -785,10 +728,9 @@ incorrect.](./media/image63.png)
     새 코드 셀이 없는 경우 새 코드 셀을 추가하세요. 새 셀에 다음 코드를
     입력하세요.
 
-CodeCopy
-
-> df.write.format("delta").saveAsTable("external_salesorder",
-> path="\<abfs_path\>/external_salesorder")
+    ```
+    df.write.format("delta").saveAsTable("external_salesorder", path="<abfs_path>/external_salesorder")
+    ```
 
 ![A screenshot of a computer Description automatically
 generated](./media/image64.png)
@@ -848,12 +790,11 @@ incorrect.](./media/image70.png)
     셀을 추가하세요. 아래 코드를 코드 셀에 복사하고 셀 왼쪽에 있는
     **▷*(Run cell***) 버튼을 사용하여 실행하세요.
 
-> SqlCopy
->
-> %%sql
->
-> DESCRIBE FORMATTED salesorders;
->
+    ```
+    %%sql
+    
+    DESCRIBE FORMATTED salesorders;
+    ```
 > ![](./media/image71.png)
 
 2.  결과에서 **/Tables/salesorders**로 끝나는 Lakehouse의 OneLake
@@ -870,12 +811,11 @@ incorrect.](./media/image72.png)
     셀을 추가하세요. 아래 코드를 복사하고 셀 왼쪽에 있는 **▷ (Run
     cell**) 버튼을 사용하여 실행하세요.
 
-> SqlCopy
->
-> %%sql
->
-> DESCRIBE FORMATTED external_salesorder;
-
+    ```
+    %%sql
+    
+    DESCRIBE FORMATTED external_salesorder;
+    ```
 5.  결과에서 **/Files/external_saleorder**로 끝나는 Lakehouse의 OneLake
     스토리지에 대한 경로여야 하는 테이블의 **Location** 속성을
     봅니다(전체 경로를 보려면 **Data type** 열을 넓혀야 할 수 있음).
@@ -898,19 +838,14 @@ PySpark 코드가 포함된 셀에 SQL 문을 포함할 수 있는 것이 유용
 
     - SQL 쿼리의 출력은 셀 아래에 결과로 자동으로 표시됩니다.
 
-> SqlCopy
->
-> %%sql
->
-> SELECT YEAR(OrderDate) AS OrderYear,
->
-> SUM((UnitPrice \* Quantity) + Tax) AS GrossRevenue
->
-> FROM salesorders
->
-> GROUP BY YEAR(OrderDate)
->
-> ORDER BY OrderYear;
+      ```
+      %%sql
+      SELECT YEAR(OrderDate) AS OrderYear,
+             SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue
+      FROM salesorders
+      GROUP BY YEAR(OrderDate)
+      ORDER BY OrderYear;
+      ```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image74.png)
@@ -934,11 +869,10 @@ SQL 쿼리에서 표시되는 데이터에 대한 기본 제공 차트 보기가
     Run cell **버튼을 클릭하고 이전에 생성한 **salesorders **보기의
     데이터가 반환되는지 확인하세요.
 
-> SqlCopy
->
-> %%sql
->
-> SELECT \* FROM salesorders
+    ```
+    %%sql
+    SELECT * FROM salesorders
+    ```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image75.png)
@@ -980,22 +914,15 @@ incorrect.](./media/image78.png)
     **실행**하고 연간 수익이 포함된 Spark 데이터 프레임을 반환하는지
     확인하세요.
 
-> CodeCopy
->
-> sqlQuery = "SELECT CAST(YEAR(OrderDate) AS CHAR(4)) AS OrderYear, \\
->
-> SUM((UnitPrice \* Quantity) + Tax) AS GrossRevenue \\
->
-> FROM salesorders \\
->
-> GROUP BY CAST(YEAR(OrderDate) AS CHAR(4)) \\
->
-> ORDER BY OrderYear"
->
-> df_spark = spark.sql(sqlQuery)
->
-> df_spark.show()
->
+    ```
+    sqlQuery = "SELECT CAST(YEAR(OrderDate) AS CHAR(4)) AS OrderYear, \
+                    SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue \
+                FROM salesorders \
+                GROUP BY CAST(YEAR(OrderDate) AS CHAR(4)) \
+                ORDER BY OrderYear"
+    df_spark = spark.sql(sqlQuery)
+    df_spark.show()
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image80.png)
 
@@ -1006,21 +933,18 @@ incorrect.](./media/image78.png)
 
 3.  \+ Code를 클릭하고 아래 코드를 복사하여 붙여넣으세요.
 
-**CodeCopy**
-
-> from matplotlib import pyplot as plt
->
-> \# matplotlib requires a Pandas dataframe, not a Spark one
->
-> df_sales = df_spark.toPandas()
->
-> \# Create a bar plot of revenue by year
->
-> plt.bar(x=df_sales\['OrderYear'\], height=df_sales\['GrossRevenue'\])
->
-> \# Display the plot
->
-> plt.show()
+    ```
+    from matplotlib import pyplot as plt
+    
+    # matplotlib requires a Pandas dataframe, not a Spark one
+    df_sales = df_spark.toPandas()
+    
+    # Create a bar plot of revenue by year
+    plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'])
+    
+    # Display the plot
+    plt.show()
+    ```
 
 ![A screenshot of a computer Description automatically
 generated](./media/image81.png)
@@ -1045,36 +969,26 @@ generated](./media/image81.png)
 6.  다음과 같이 차트를 그리도록 코드를 수정하고 **cell**의 모든 코드를
     다음 코드로 바꾼 후 **▷ Run cell**버튼을 클릭하고 출력을 검토하세요.
 
-> CodeCopy
->
-> from matplotlib import pyplot as plt
->
-> \# Clear the plot area
->
-> plt.clf()
->
-> \# Create a bar plot of revenue by year
->
-> plt.bar(x=df_sales\['OrderYear'\], height=df_sales\['GrossRevenue'\],
-> color='orange')
->
-> \# Customize the chart
->
-> plt.title('Revenue by Year')
->
-> plt.xlabel('Year')
->
-> plt.ylabel('Revenue')
->
-> plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y',
-> alpha=0.7)
->
-> plt.xticks(rotation=45)
->
-> \# Show the figure
->
-> plt.show()
->
+    ```
+    from matplotlib import pyplot as plt
+    
+    # Clear the plot area
+    plt.clf()
+    
+    # Create a bar plot of revenue by year
+    plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
+    
+    # Customize the chart
+    plt.title('Revenue by Year')
+    plt.xlabel('Year')
+    plt.ylabel('Revenue')
+    plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)
+    plt.xticks(rotation=45)
+    
+    # Show the figure
+    plt.show()
+    ```
+
 > ![A screenshot of a computer program AI-generated content may be
 > incorrect.](./media/image83.png)
 >
@@ -1088,39 +1002,28 @@ generated](./media/image81.png)
 8.  다음과 같이 차트를 그리도록 코드를 수정하고 cell의 모든 코드를 다음
     코드로 바꾸세요.
 
-> CodeCopy
->
-> from matplotlib import pyplot as plt
->
-> \# Clear the plot area
->
-> plt.clf()
->
-> \# Create a Figure
->
-> fig = plt.figure(figsize=(8,3))
->
-> \# Create a bar plot of revenue by year
->
-> plt.bar(x=df_sales\['OrderYear'\], height=df_sales\['GrossRevenue'\],
-> color='orange')
->
-> \# Customize the chart
->
-> plt.title('Revenue by Year')
->
-> plt.xlabel('Year')
->
-> plt.ylabel('Revenue')
->
-> plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y',
-> alpha=0.7)
->
-> plt.xticks(rotation=45)
->
-> \# Show the figure
->
-> plt.show()
+    ```
+    from matplotlib import pyplot as plt
+    
+    # Clear the plot area
+    plt.clf()
+    
+    # Create a Figure
+    fig = plt.figure(figsize=(8,3))
+    
+    # Create a bar plot of revenue by year
+    plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
+    
+    # Customize the chart
+    plt.title('Revenue by Year')
+    plt.xlabel('Year')
+    plt.ylabel('Revenue')
+    plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)
+    plt.xticks(rotation=45)
+    
+    # Show the figure
+    plt.show()
+    ```
 
 9.  **코드 셀을 다시 실행**하고 결과를 보세요. 그림은 플롯의 모양과
     크기를 결정합니다.
@@ -1137,43 +1040,31 @@ generated](./media/image81.png)
     실행**하고 결과를 보세요. 그림에는 코드에 지정된 서브플롯이 포함되어
     있습니다.
 
-> CodeCopy
->
-> from matplotlib import pyplot as plt
->
-> \# Clear the plot area
->
-> plt.clf()
->
-> \# Create a figure for 2 subplots (1 row, 2 columns)
->
-> fig, ax = plt.subplots(1, 2, figsize = (10,4))
->
-> \# Create a bar plot of revenue by year on the first axis
->
-> ax\[0\].bar(x=df_sales\['OrderYear'\],
-> height=df_sales\['GrossRevenue'\], color='orange')
->
-> ax\[0\].set_title('Revenue by Year')
->
-> \# Create a pie chart of yearly order counts on the second axis
->
-> yearly_counts = df_sales\['OrderYear'\].value_counts()
->
-> ax\[1\].pie(yearly_counts)
->
-> ax\[1\].set_title('Orders per Year')
->
-> ax\[1\].legend(yearly_counts.keys().tolist())
->
-> \# Add a title to the Figure
->
-> fig.suptitle('Sales Data')
->
-> \# Show the figure
->
-> plt.show()
->
+    ```
+    from matplotlib import pyplot as plt
+    
+    # Clear the plot area
+    plt.clf()
+    
+    # Create a figure for 2 subplots (1 row, 2 columns)
+    fig, ax = plt.subplots(1, 2, figsize = (10,4))
+    
+    # Create a bar plot of revenue by year on the first axis
+    ax[0].bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
+    ax[0].set_title('Revenue by Year')
+    
+    # Create a pie chart of yearly order counts on the second axis
+    yearly_counts = df_sales['OrderYear'].value_counts()
+    ax[1].pie(yearly_counts)
+    ax[1].set_title('Orders per Year')
+    ax[1].legend(yearly_counts.keys().tolist())
+    
+    # Add a title to the Figure
+    fig.suptitle('Sales Data')
+    
+    # Show the figure
+    plt.show()
+    ```
 > ![A screenshot of a computer program AI-generated content may be
 > incorrect.](./media/image87.png)
 >
@@ -1193,19 +1084,16 @@ documentation*](https://matplotlib.org/)를 참조하세요.
 
 1.  \+ **Code**를 클릭하고 아래 코드를 복사하여 붙여넣으세요.
 
-CodeCopy
-
-> import seaborn as sns
->
-> \# Clear the plot area
->
-> plt.clf()
->
-> \# Create a bar chart
->
-> ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
->
-> plt.show()
+    ```
+    import seaborn as sns
+    
+    # Clear the plot area
+    plt.clf()
+    
+    # Create a bar chart
+    ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+    plt.show()
+    ```
 
 2.  **코드를 실행**하고 seaborn 라이브러리를 사용하여 막대 차트가
     표시되는지 확인하세요.
@@ -1216,44 +1104,35 @@ incorrect.](./media/image89.png)
 3.  다음과 같이 코드를 **수정하세요**. 수정된 코드를 실행하고 seaborn을
     사용하면 플롯에 대해 일관된 색상 테마를 설정할 수 있습니다.
 
-> CodeCopy
->
-> import seaborn as sns
->
-> \# Clear the plot area
->
-> plt.clf()
->
-> \# Set the visual theme for seaborn
->
-> sns.set_theme(style="whitegrid")
->
-> \# Create a bar chart
->
-> ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
->
-> plt.show()
->
+    ```
+    import seaborn as sns
+    
+    # Clear the plot area
+    plt.clf()
+    
+    # Set the visual theme for seaborn
+    sns.set_theme(style="whitegrid")
+    
+    # Create a bar chart
+    ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+    plt.show()
+    ```
 > ![A screenshot of a graph AI-generated content may be
 > incorrect.](./media/image90.png)
 
 4.  코드를 다시 **수정하세요**. 수정된 코드를 실행하여 연간 수익을
     꺾은선형 차트로 봅니다.
 
-> CodeCopy
->
-> import seaborn as sns
->
-> \# Clear the plot area
->
-> plt.clf()
->
-> \# Create a bar chart
->
-> ax = sns.lineplot(x="OrderYear", y="GrossRevenue", data=df_sales)
->
-> plt.show()
->
+    ```
+    import seaborn as sns
+    
+    # Clear the plot area
+    plt.clf()
+    
+    # Create a bar chart
+    ax = sns.lineplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+    plt.show()
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image91.png)
 
@@ -1270,59 +1149,35 @@ Delta Lake는 스트리밍 데이터를 지원합니다. Delta table은 Spark �
 1.  \+ **Code**를 클릭하고 아래 코드를 복사하여 붙여넣은 후 **Run cell**
     버튼을 클릭하세요.
 
-CodeCopy
-
-> from notebookutils import mssparkutils
->
-> from pyspark.sql.types import \*
->
-> from pyspark.sql.functions import \*
->
-> \# Create a folder
->
-> inputPath = 'Files/data/'
->
-> mssparkutils.fs.mkdirs(inputPath)
->
-> \# Create a stream that reads data from the folder, using a JSON
-> schema
->
-> jsonSchema = StructType(\[
->
-> StructField("device", StringType(), False),
->
-> StructField("status", StringType(), False)
->
-> \])
->
-> iotstream =
-> spark.readStream.schema(jsonSchema).option("maxFilesPerTrigger",
-> 1).json(inputPath)
->
-> \# Write some event data to the folder
->
-> device_data = '''{"device":"Dev1","status":"ok"}
->
-> {"device":"Dev1","status":"ok"}
->
-> {"device":"Dev1","status":"ok"}
->
-> {"device":"Dev2","status":"error"}
->
-> {"device":"Dev1","status":"ok"}
->
-> {"device":"Dev1","status":"error"}
->
-> {"device":"Dev2","status":"ok"}
->
-> {"device":"Dev2","status":"error"}
->
-> {"device":"Dev1","status":"ok"}'''
->
-> mssparkutils.fs.put(inputPath + "data.txt", device_data, True)
->
-> print("Source stream created...")
->
+    ```
+    from notebookutils import mssparkutils
+    from pyspark.sql.types import *
+    from pyspark.sql.functions import *
+    
+    # Create a folder
+    inputPath = 'Files/data/'
+    mssparkutils.fs.mkdirs(inputPath)
+    
+    # Create a stream that reads data from the folder, using a JSON schema
+    jsonSchema = StructType([
+    StructField("device", StringType(), False),
+    StructField("status", StringType(), False)
+    ])
+    iotstream = spark.readStream.schema(jsonSchema).option("maxFilesPerTrigger", 1).json(inputPath)
+    
+    # Write some event data to the folder
+    device_data = '''{"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev2","status":"error"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"error"}
+    {"device":"Dev2","status":"ok"}
+    {"device":"Dev2","status":"error"}
+    {"device":"Dev1","status":"ok"}'''
+    mssparkutils.fs.put(inputPath + "data.txt", device_data, True)
+    print("Source stream created...")
+    ```
 > ![A screenshot of a computer program AI-generated content may be
 > incorrect.](./media/image92.png)
 >
@@ -1336,20 +1191,13 @@ CodeCopy
 3.  \+ **Code**를 클릭하고 아래 코드를 복사하여 붙여넣은 후 **Run cell**
     버튼을 클릭하세요.
 
-CodeCopy
-
-> \# Write the stream to a delta table
->
-> delta_stream_table_path = 'Tables/iotdevicedata'
->
-> checkpointpath = 'Files/delta/checkpoint'
->
-> deltastream =
-> iotstream.writeStream.format("delta").option("checkpointLocation",
-> checkpointpath).start(delta_stream_table_path)
->
-> print("Streaming to delta sink...")
->
+    ```
+    # Write the stream to a delta table
+    delta_stream_table_path = 'Tables/iotdevicedata'
+    checkpointpath = 'Files/delta/checkpoint'
+    deltastream = iotstream.writeStream.format("delta").option("checkpointLocation", checkpointpath).start(delta_stream_table_path)
+    print("Streaming to delta sink...")
+    ```
 > ![](./media/image94.png)
 
 4.  이 코드는 Delta 형식의 스트리밍 디바이스 데이터를
@@ -1366,12 +1214,11 @@ incorrect.](./media/image96.png)
 5.  \+ **Code**를 클릭하고 아래 코드를 복사하여 붙여넣은 후 **Run cell**
     버튼을 클릭하세요.
 
-> SqlCopy
->
-> %%sql
->
-> SELECT \* FROM IotDeviceData;
->
+    ```
+    %%sql
+    
+    SELECT * FROM IotDeviceData;
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image97.png)
 
@@ -1381,26 +1228,20 @@ incorrect.](./media/image96.png)
 7.  \+ **Code**를 클릭하고 아래 코드를 복사하여 붙여넣은 후 **Run cell**
     버튼을 클릭하세요.
 
-> CodeCopy
->
-> \# Add more data to the source stream
->
-> more_data = '''{"device":"Dev1","status":"ok"}
->
-> {"device":"Dev1","status":"ok"}
->
-> {"device":"Dev1","status":"ok"}
->
-> {"device":"Dev1","status":"ok"}
->
-> {"device":"Dev1","status":"error"}
->
-> {"device":"Dev2","status":"error"}
->
-> {"device":"Dev1","status":"ok"}'''
->
-> mssparkutils.fs.put(inputPath + "more-data.txt", more_data, True)
->
+    ```
+    # Add more data to the source stream
+    more_data = '''{"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"error"}
+    {"device":"Dev2","status":"error"}
+    {"device":"Dev1","status":"ok"}'''
+    
+    mssparkutils.fs.put(inputPath + "more-data.txt", more_data, True)
+    ```
+
+
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image98.png)
 
@@ -1410,12 +1251,11 @@ incorrect.](./media/image96.png)
 9.  \+ **Code**를 클릭하고 아래 코드를 복사하여 붙여넣은 후 **Run cell**
     버튼을 클릭하세요.
 
-> SqlCopy
->
-> %%sql
->
-> SELECT \* FROM IotDeviceData;
->
+    ```
+    %%sql
+    
+    SELECT * FROM IotDeviceData;
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image99.png)
 
@@ -1425,10 +1265,9 @@ incorrect.](./media/image96.png)
 11. \+ **Code**를 클릭하고 아래 코드를 복사하여 붙여넣은 후 **Run cell**
     버튼을 클릭하세요.
 
-> CodeCopy
->
-> deltastream.stop()
->
+    ```
+    deltastream.stop()
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image100.png)
 
@@ -1742,3 +1581,4 @@ PySpark를 사용하여 데이터를 조작 및 변환하고, 시각화를 생�
 자동화하고 작업 흐름을 간소화하며 실제 시나리오에서 생산성을 향상시키는
 방법을 배우게 됩니다. 정리 지침을 통해 불필요한 리소스를 남기지 않고
 체계적이고 효율적인 작업 공간 관리 접근 방식을 촉진할 수 있습니다.
+
