@@ -68,7 +68,11 @@ Fabric에서 데이터를 사용하기 전에 Fabric 평가판을 사용하도�
 6.  **Create a workspace** 탭에서 다음 세부 정보를 입력하고 **Apply**
     버튼을 클릭하세요.
 
-[TABLE]
+    |  |  |
+    |----|----|
+    |Name	| +++Data-Factory@lab.LabInstance.Id+++ (must be a unique id)| 
+    |Advanced	|Under License mode, select Fabric capacity|
+    |Default storage format|	Small semantic model storage format|
 
 > ![](./media/image7.png)
 >
@@ -453,8 +457,7 @@ generated](./media/image63.png)
     type**에 대해 **Currency** 를 선택하고, **Custom column formula**에
     대해 다음 M 식을 제공하세요
 
-> *+++if \[totalAmount\] \> 0 then \[totalAmount\] \* ( 1 -\[Discount\]
-> ) else \[totalAmount\]+++*
++++if [totalAmount] > 0 then [totalAmount] * ( 1 -[Discount] ) else [totalAmount]+++
 
 **OK**를 선택하세요.
 
@@ -593,8 +596,7 @@ incorrect.](./media/image80.png)
 8.  **Pipeline expression builder** 대화 상자가 나타납니다. 다음 식을
     입력한 후 **OK**을 선택하세요:
 
-> *+++@concat('DI in an Hour Pipeline Succeeded with Pipeline Run Id',
-> pipeline().RunId)+++*
++++@concat('DI in an Hour Pipeline Succeeded with Pipeline Run Id', pipeline().RunId)+++
 >
 > ![](./media/image85.png)
 
@@ -603,10 +605,7 @@ incorrect.](./media/image80.png)
     **Pipeline expression builder** 대화 상자에서 다음 식을 다시 추가한
     후 **OK** 선택하세요:
 
-> *+++@concat('RunID = ', pipeline().RunId, ' ; ', 'Copied rows ',
-> activity('Copy data1').output.rowsCopied, ' ; ','Throughput ',
-> activity('Copy data1').output.throughput)+++*
->
+    +++@concat('RunID = ', pipeline().RunId, ' ; ', 'Copied rows ', activity('Copy data1').output.rowsCopied, ' ; ','Throughput ', activity('Copy data1').output.throughput)+++
 > ![](./media/image86.png)
 >
 > ![](./media/image87.png)
@@ -694,3 +693,4 @@ generated](./media/image101.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image102.png)
+
