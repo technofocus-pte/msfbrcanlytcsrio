@@ -428,8 +428,7 @@ incorrect.](./media/image54.png)
 8.  U셀 출력 아래에 있는 + **Code** 아이콘을 사용하여 Notebook에 새 코드
     셀을 추가하고 다음 코드를 입력한 후 **URL**을 바꾸세요. ▷ **Run**
     버튼을 클릭하고 출력을 검토하세요.
-
-    ```
+```
     import requests
     import json
     import pprint
@@ -513,7 +512,10 @@ incorrect.](./media/image54.png)
     
     # Delete thread
     fabric_client.beta.threads.delete(thread_id=thread.id)
-    ```
+```
+
+
+
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image58.png)
 >
@@ -558,4 +560,5 @@ Fabric Notebook에서 프로그래밍 방식으로 에이전트를 호출하여 
 AI 통합을 시연했습니다. 이 실습에서는 자연어 및 GenAI 기술을 통해
 비즈니스 사용자가 엔터프라이즈 데이터에 더 쉽게 액세스하고, 유용하고,
 지능적으로 만들 수 있도록 지원합니다.
+
 
