@@ -1,3 +1,4 @@
+## 사용 사례 05 - Microsoft Fabric에서 Contoso에 대한 영업 및 지리 데이터 웨어하우스 구축
 **소개**
 
 다국적 소매 회사인 Contoso는 판매 및 지리적 분석을 개선하기 위해 데이터
@@ -108,7 +109,12 @@ Fabric에서 데이터로 작업하기 전에 Fabric 평가판을 사용하도�
 2.  **Create a workspace tab**에서 다음 세부 정보를 입력하고 **Apply**
     버튼을 클릭하세요.
 
-[TABLE]
+    |  |  |
+    |----|---|
+    |Name	|+++Warehouse_Fabric@lab.LabInstance.Id+++ (must be a unique Id) |
+    |Description	|+++This workspace contains all the artifacts for the data warehouse+++|
+    |Advanced	Under License mode| select Fabric capacity|
+    |Default storage format	|Small dataset storage format|
 
 > ![](./media/image7.png)
 >
@@ -240,7 +246,11 @@ generated](./media/image25.png)
 
 14. **Destination** 탭에서 다음 설정을 입력하세요.
 
-[TABLE]
+    |  |  |
+    |---|---|
+    |Connection	|WideWorldImporters|
+    |Table option	|select the Auto create table radio button.|
+    |Table	|•	In the first box enter +++dbo+++<br>•	In the second box enter +++dimension_customer+++|
 
 > ![](./media/image26.png)
 
@@ -286,116 +296,67 @@ generated](./media/image25.png)
 4.  쿼리 편집기에서 다음 코드를 붙여넣고 **Run**을 선택하여 쿼리를
     실행하세요
 
-> SQLCopy
->
-> /\*
->
-> 1\. Drop the dimension_city table if it already exists.
->
-> 2\. Create the dimension_city table.
->
-> 3\. Drop the fact_sale table if it already exists.
->
-> 4\. Create the fact_sale table.
->
-> \*/
->
-> --dimension_city
->
-> DROP TABLE IF EXISTS \[dbo\].\[dimension_city\];
->
-> CREATE TABLE \[dbo\].\[dimension_city\]
->
-> (
->
-> \[CityKey\] \[int\] NULL,
->
-> \[WWICityID\] \[int\] NULL,
->
-> \[City\] \[varchar\](8000) NULL,
->
-> \[StateProvince\] \[varchar\](8000) NULL,
->
-> \[Country\] \[varchar\](8000) NULL,
->
-> \[Continent\] \[varchar\](8000) NULL,
->
-> \[SalesTerritory\] \[varchar\](8000) NULL,
->
-> \[Region\] \[varchar\](8000) NULL,
->
-> \[Subregion\] \[varchar\](8000) NULL,
->
-> \[Location\] \[varchar\](8000) NULL,
->
-> \[LatestRecordedPopulation\] \[bigint\] NULL,
->
-> \[ValidFrom\] \[datetime2\](6) NULL,
->
-> \[ValidTo\] \[datetime2\](6) NULL,
->
-> \[LineageKey\] \[int\] NULL
->
-> );
->
-> --fact_sale
->
-> DROP TABLE IF EXISTS \[dbo\].\[fact_sale\];
->
-> CREATE TABLE \[dbo\].\[fact_sale\]
->
-> (
->
-> \[SaleKey\] \[bigint\] NULL,
->
-> \[CityKey\] \[int\] NULL,
->
-> \[CustomerKey\] \[int\] NULL,
->
-> \[BillToCustomerKey\] \[int\] NULL,
->
-> \[StockItemKey\] \[int\] NULL,
->
-> \[InvoiceDateKey\] \[datetime2\](6) NULL,
->
-> \[DeliveryDateKey\] \[datetime2\](6) NULL,
->
-> \[SalespersonKey\] \[int\] NULL,
->
-> \[WWIInvoiceID\] \[int\] NULL,
->
-> \[Description\] \[varchar\](8000) NULL,
->
-> \[Package\] \[varchar\](8000) NULL,
->
-> \[Quantity\] \[int\] NULL,
->
-> \[UnitPrice\] \[decimal\](18, 2) NULL,
->
-> \[TaxRate\] \[decimal\](18, 3) NULL,
->
-> \[TotalExcludingTax\] \[decimal\](29, 2) NULL,
->
-> \[TaxAmount\] \[decimal\](38, 6) NULL,
->
-> \[Profit\] \[decimal\](18, 2) NULL,
->
-> \[TotalIncludingTax\] \[decimal\](38, 6) NULL,
->
-> \[TotalDryItems\] \[int\] NULL,
->
-> \[TotalChillerItems\] \[int\] NULL,
->
-> \[LineageKey\] \[int\] NULL,
->
-> \[Month\] \[int\] NULL,
->
-> \[Year\] \[int\] NULL,
->
-> \[Quarter\] \[int\] NULL
->
-> );
->
+    ```
+    /*
+    1. Drop the dimension_city table if it already exists.
+    2. Create the dimension_city table.
+    3. Drop the fact_sale table if it already exists.
+    4. Create the fact_sale table.
+    */
+    
+    --dimension_city
+    DROP TABLE IF EXISTS [dbo].[dimension_city];
+    CREATE TABLE [dbo].[dimension_city]
+        (
+            [CityKey] [int] NULL,
+            [WWICityID] [int] NULL,
+            [City] [varchar](8000) NULL,
+            [StateProvince] [varchar](8000) NULL,
+            [Country] [varchar](8000) NULL,
+            [Continent] [varchar](8000) NULL,
+            [SalesTerritory] [varchar](8000) NULL,
+            [Region] [varchar](8000) NULL,
+            [Subregion] [varchar](8000) NULL,
+            [Location] [varchar](8000) NULL,
+            [LatestRecordedPopulation] [bigint] NULL,
+            [ValidFrom] [datetime2](6) NULL,
+            [ValidTo] [datetime2](6) NULL,
+            [LineageKey] [int] NULL
+        );
+    
+    --fact_sale
+    
+    DROP TABLE IF EXISTS [dbo].[fact_sale];
+    
+    CREATE TABLE [dbo].[fact_sale]
+    
+        (
+            [SaleKey] [bigint] NULL,
+            [CityKey] [int] NULL,
+            [CustomerKey] [int] NULL,
+            [BillToCustomerKey] [int] NULL,
+            [StockItemKey] [int] NULL,
+            [InvoiceDateKey] [datetime2](6) NULL,
+            [DeliveryDateKey] [datetime2](6) NULL,
+            [SalespersonKey] [int] NULL,
+            [WWIInvoiceID] [int] NULL,
+            [Description] [varchar](8000) NULL,
+            [Package] [varchar](8000) NULL,
+            [Quantity] [int] NULL,
+            [UnitPrice] [decimal](18, 2) NULL,
+            [TaxRate] [decimal](18, 3) NULL,
+            [TotalExcludingTax] [decimal](29, 2) NULL,
+            [TaxAmount] [decimal](38, 6) NULL,
+            [Profit] [decimal](18, 2) NULL,
+            [TotalIncludingTax] [decimal](38, 6) NULL,
+            [TotalDryItems] [int] NULL,
+            [TotalChillerItems] [int] NULL,
+            [LineageKey] [int] NULL,
+            [Month] [int] NULL,
+            [Year] [int] NULL,
+            [Quarter] [int] NULL
+        );
+    ```
 > ![](./media/image34.png)
 >
 > ![](./media/image35.png)
@@ -438,28 +399,17 @@ generated](./media/image25.png)
 2.  쿼리 편집기에서 다음 코드를 **붙여넣은** 후 **Run 을** 클릭하여
     쿼리를 실행하세요.
 
-> SQLCopy
->
-> --Copy data from the public Azure storage account to the
-> dbo.dimension_city table.
->
-> COPY INTO \[dbo\].\[dimension_city\]
->
-> FROM
-> 'https://fabrictutorialdata.blob.core.windows.net/sampledata/WideWorldImportersDW/tables/dimension_city.parquet'
->
-> WITH (FILE_TYPE = 'PARQUET');
->
-> --Copy data from the public Azure storage account to the dbo.fact_sale
-> table.
->
-> COPY INTO \[dbo\].\[fact_sale\]
->
-> FROM
-> 'https://fabrictutorialdata.blob.core.windows.net/sampledata/WideWorldImportersDW/tables/fact_sale.parquet'
->
-> WITH (FILE_TYPE = 'PARQUET');
->
+    ```
+    --Copy data from the public Azure storage account to the dbo.dimension_city table.
+    COPY INTO [dbo].[dimension_city]
+    FROM 'https://fabrictutorialdata.blob.core.windows.net/sampledata/WideWorldImportersDW/tables/dimension_city.parquet'
+    WITH (FILE_TYPE = 'PARQUET');
+    
+    --Copy data from the public Azure storage account to the dbo.fact_sale table.
+    COPY INTO [dbo].[fact_sale]
+    FROM 'https://fabrictutorialdata.blob.core.windows.net/sampledata/WideWorldImportersDW/tables/fact_sale.parquet'
+    WITH (FILE_TYPE = 'PARQUET');
+    ```
 > ![](./media/image41.png)
 
 3.  쿼리가 완료되면 **dimension_city** 및 **fact_sale** 테이블에 각각
@@ -508,17 +458,13 @@ clone](https://learn.microsoft.com/en-in/fabric/data-warehouse/clone-table)을
 3.  쿼리 편집기에서 다음 코드를 붙여넣어 **dbo.dimension_city** 및
     **dbo.fact_sale** 테이블의 복제본을 생성하세요.
 
-> SQLCopy
->
-> --Create a clone of the dbo.dimension_city table.
->
-> CREATE TABLE \[dbo\].\[dimension_city1\] AS CLONE OF
-> \[dbo\].\[dimension_city\];
->
-> --Create a clone of the dbo.fact_sale table.
->
-> CREATE TABLE \[dbo\].\[fact_sale1\] AS CLONE OF \[dbo\].\[fact_sale\];
->
+    ```
+    --Create a clone of the dbo.dimension_city table.
+    CREATE TABLE [dbo].[dimension_city1] AS CLONE OF [dbo].[dimension_city];
+    
+    --Create a clone of the dbo.fact_sale table.
+    CREATE TABLE [dbo].[fact_sale1] AS CLONE OF [dbo].[fact_sale];
+    ```
 > ![](./media/image48.png)
 
 4.  쿼리를 실행하려면 **Run**을 선택하세요. 쿼리를 실행하는 데 몇 초
@@ -562,9 +508,7 @@ clone](https://learn.microsoft.com/en-in/fabric/data-warehouse/clone-table)을
     생성하세요. 아래 이미지와 같이 다음 T-SQL 코드를 복사, paste **및**
     run하세요:
 
-> SQLCopy
->
-> CREATE SCHEMA dbo1;
+    +++CREATE SCHEMA dbo1+++
 
 ![](./media/image55.png)
 
@@ -574,17 +518,13 @@ clone](https://learn.microsoft.com/en-in/fabric/data-warehouse/clone-table)을
     스키마에 **dbo.dimension_city** 및 **dbo.fact_sale** **tables** 의
     복제본을 생성하세요.
 
-> **SQLCopy**
->
-> --Create a clone of the dbo.dimension_city table in the dbo1 schema.
->
-> CREATE TABLE \[dbo1\].\[dimension_city1\] AS CLONE OF
-> \[dbo\].\[dimension_city\];
->
-> --Create a clone of the dbo.fact_sale table in the dbo1 schema.
->
-> CREATE TABLE \[dbo1\].\[fact_sale1\] AS CLONE OF
-> \[dbo\].\[fact_sale\];
+    ```
+    --Create a clone of the dbo.dimension_city table in the dbo1 schema.
+    CREATE TABLE [dbo1].[dimension_city1] AS CLONE OF [dbo].[dimension_city];
+    
+    --Create a clone of the dbo.fact_sale table in the dbo1 schema.
+    CREATE TABLE [dbo1].[fact_sale1] AS CLONE OF [dbo].[fact_sale];
+    ```
 
 4.  쿼리를 실행하려면 **Run**을 선택하세요. 쿼리를 실행하는 데 몇 초
     정도 걸립니다.
@@ -635,97 +575,54 @@ clone](https://learn.microsoft.com/en-in/fabric/data-warehouse/clone-table)을
     프로시저는 이후 단계에서 **dbo.aggregate_sale_by_date_city**
     테이블을 생성하고 로드하세요.
 
-> SQLCopy
->
-> --Drop the stored procedure if it already exists.
->
-> DROP PROCEDURE IF EXISTS \[dbo\].\[populate_aggregate_sale_by_city\]
->
-> GO
->
-> --Create the populate_aggregate_sale_by_city stored procedure.
->
-> CREATE PROCEDURE \[dbo\].\[populate_aggregate_sale_by_city\]
->
-> AS
->
-> BEGIN
->
-> --If the aggregate table already exists, drop it. Then create the
-> table.
->
-> DROP TABLE IF EXISTS \[dbo\].\[aggregate_sale_by_date_city\];
->
-> CREATE TABLE \[dbo\].\[aggregate_sale_by_date_city\]
->
-> (
->
-> \[Date\] \[DATETIME2\](6),
->
-> \[City\] \[VARCHAR\](8000),
->
-> \[StateProvince\] \[VARCHAR\](8000),
->
-> \[SalesTerritory\] \[VARCHAR\](8000),
->
-> \[SumOfTotalExcludingTax\] \[DECIMAL\](38,2),
->
-> \[SumOfTaxAmount\] \[DECIMAL\](38,6),
->
-> \[SumOfTotalIncludingTax\] \[DECIMAL\](38,6),
->
-> \[SumOfProfit\] \[DECIMAL\](38,2)
->
-> );
->
-> --Reload the aggregated dataset to the table.
->
-> INSERT INTO \[dbo\].\[aggregate_sale_by_date_city\]
->
-> SELECT
->
-> FS.\[InvoiceDateKey\] AS \[Date\],
->
-> DC.\[City\],
->
-> DC.\[StateProvince\],
->
-> DC.\[SalesTerritory\],
->
-> SUM(FS.\[TotalExcludingTax\]) AS \[SumOfTotalExcludingTax\],
->
-> SUM(FS.\[TaxAmount\]) AS \[SumOfTaxAmount\],
->
-> SUM(FS.\[TotalIncludingTax\]) AS \[SumOfTotalIncludingTax\],
->
-> SUM(FS.\[Profit\]) AS \[SumOfProfit\]
->
-> FROM \[dbo\].\[fact_sale\] AS FS
->
-> INNER JOIN \[dbo\].\[dimension_city\] AS DC
->
-> ON FS.\[CityKey\] = DC.\[CityKey\]
->
-> GROUP BY
->
-> FS.\[InvoiceDateKey\],
->
-> DC.\[City\],
->
-> DC.\[StateProvince\],
->
-> DC.\[SalesTerritory\]
->
-> ORDER BY
->
-> FS.\[InvoiceDateKey\],
->
-> DC.\[StateProvince\],
->
-> DC.\[City\];
->
-> END
->
+    ```
+    --Drop the stored procedure if it already exists.
+    DROP PROCEDURE IF EXISTS [dbo].[populate_aggregate_sale_by_city]
+    GO
+    
+    --Create the populate_aggregate_sale_by_city stored procedure.
+    CREATE PROCEDURE [dbo].[populate_aggregate_sale_by_city]
+    AS
+    BEGIN
+        --If the aggregate table already exists, drop it. Then create the table.
+        DROP TABLE IF EXISTS [dbo].[aggregate_sale_by_date_city];
+        CREATE TABLE [dbo].[aggregate_sale_by_date_city]
+            (
+                [Date] [DATETIME2](6),
+                [City] [VARCHAR](8000),
+                [StateProvince] [VARCHAR](8000),
+                [SalesTerritory] [VARCHAR](8000),
+                [SumOfTotalExcludingTax] [DECIMAL](38,2),
+                [SumOfTaxAmount] [DECIMAL](38,6),
+                [SumOfTotalIncludingTax] [DECIMAL](38,6),
+                [SumOfProfit] [DECIMAL](38,2)
+            );
+    
+        --Reload the aggregated dataset to the table.
+        INSERT INTO [dbo].[aggregate_sale_by_date_city]
+        SELECT
+            FS.[InvoiceDateKey] AS [Date], 
+            DC.[City], 
+            DC.[StateProvince], 
+            DC.[SalesTerritory], 
+            SUM(FS.[TotalExcludingTax]) AS [SumOfTotalExcludingTax], 
+            SUM(FS.[TaxAmount]) AS [SumOfTaxAmount], 
+            SUM(FS.[TotalIncludingTax]) AS [SumOfTotalIncludingTax], 
+            SUM(FS.[Profit]) AS [SumOfProfit]
+        FROM [dbo].[fact_sale] AS FS
+        INNER JOIN [dbo].[dimension_city] AS DC
+            ON FS.[CityKey] = DC.[CityKey]
+        GROUP BY
+            FS.[InvoiceDateKey],
+            DC.[City], 
+            DC.[StateProvince], 
+            DC.[SalesTerritory]
+        ORDER BY 
+            FS.[InvoiceDateKey], 
+            DC.[StateProvince], 
+            DC.[City];
+    END
+    ```
 > ![](./media/image64.png)
 >
 > ![](./media/image65.png)
@@ -761,12 +658,10 @@ clone](https://learn.microsoft.com/en-in/fabric/data-warehouse/clone-table)을
     **dbo.populate_aggregate_sale_by_city**를 실행하여
     **dbo.aggregate_sale_by_date_city** 테이블을 생성합니다. 쿼리 실행
 
-SQLCopy
-
-> --Execute the stored procedure to create the aggregate table.
->
-> EXEC \[dbo\].\[populate_aggregate_sale_by_city\];
->
+    ```
+    --Execute the stored procedure to create the aggregate table.
+    EXEC [dbo].[populate_aggregate_sale_by_city];
+    ```
 > ![](./media/image71.png)
 
 9.  나중에 참조할 수 있도록 이 쿼리를 저장하려면 편집기 바로 위의 쿼리
@@ -803,37 +698,23 @@ incorrect.](./media/image75.png)
 2.  쿼리 편집기에서 다음 코드를 붙여넣어 Top10CustomerView 보기를
     만듭니다. **Run을** 선택하여 쿼리를 실행하세요.
 
-CREATE VIEW dbo.Top10CustomersView
-
-AS
-
-SELECT TOP (10)
-
-    FS.\[CustomerKey\],
-
-    DC.\[Customer\],
-
-    SUM(FS.TotalIncludingTax) AS TotalSalesAmount
-
-FROM
-
-    \[dbo\].\[dimension_customer\] AS DC
-
-INNER JOIN
-
-    \[dbo\].\[fact_sale\] AS FS ON DC.\[CustomerKey\] =
-FS.\[CustomerKey\]
-
-GROUP BY
-
-    FS.\[CustomerKey\],
-
-    DC.\[Customer\]
-
-ORDER BY
-
-    TotalSalesAmount DESC;
-
+    ```
+    CREATE VIEW dbo.Top10CustomersView
+    AS
+    SELECT TOP (10)
+        FS.[CustomerKey],
+        DC.[Customer],
+        SUM(FS.TotalIncludingTax) AS TotalSalesAmount
+    FROM
+        [dbo].[dimension_customer] AS DC
+    INNER JOIN
+        [dbo].[fact_sale] AS FS ON DC.[CustomerKey] = FS.[CustomerKey]
+    GROUP BY
+        FS.[CustomerKey],
+        DC.[Customer]
+    ORDER BY
+        TotalSalesAmount DESC;
+    ```
 ![](./media/image77.png)
 
 3.  **Explorer**에서 dbo 스키마 아래의 **View **노드를 확장하여 새로
@@ -863,16 +744,12 @@ incorrect.](./media/image81.png)
     **200000000**으로 업데이트됩니다**. Run** 을 선택하여 쿼리를
     실행하세요.
 
-SQLCopy
-
-/\*Update the TotalIncludingTax value of the record with SaleKey value
-of 22632918\*/
-
-UPDATE \[dbo\].\[fact_sale\]
-
-SET TotalIncludingTax = 200000000
-
-WHERE SaleKey = 22632918;
+    ```
+    /*Update the TotalIncludingTax value of the record with SaleKey value of 22632918*/
+    UPDATE [dbo].[fact_sale]
+    SET TotalIncludingTax = 200000000
+    WHERE SaleKey = 22632918;
+    ```
 
 ![](./media/image82.png)
 
@@ -880,9 +757,9 @@ WHERE SaleKey = 22632918;
     함수는 현재 UTC 타임스탬프를 **datetime**으로 반환하세요. **Run**을
     선택하여 쿼리를 실행하세요.
 
-SQLCopy
-
-SELECT CURRENT_TIMESTAMP;
+    ```
+    SELECT CURRENT_TIMESTAMP;
+    ```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image83.png)
@@ -903,15 +780,12 @@ incorrect.](./media/image84.png)
     기존 코드를 바꾸고 다음 코드를 붙여넣고 **Run**을 선택하여 쿼리를
     실행하세요.
 
-SQLCopy
-
-/\*View of Top10 Customers as of today after record updates\*/
-
-SELECT \*
-
-FROM \[WideWorldImporters\].\[dbo\].\[Top10CustomersView\]
-
-OPTION (FOR TIMESTAMP AS OF '2025-06-09T06:16:08.807');
+    ```
+    /*View of Top10 Customers as of today after record updates*/
+    SELECT *
+    FROM [WideWorldImporters].[dbo].[Top10CustomersView]
+    OPTION (FOR TIMESTAMP AS OF '2025-06-09T06:16:08.807');
+    ```
 
 ![](./media/image85.png)
 
@@ -921,15 +795,12 @@ OPTION (FOR TIMESTAMP AS OF '2025-06-09T06:16:08.807');
     22632918에 대해 업데이트되기 *전의* 상위 10개 고객 목록이
     반환됩니다. **Run**을 선택하여 쿼리를 실행하세요.
 
-SQLCopy
-
-/\*View of Top10 Customers as of today before record updates\*/
-
-SELECT \*
-
-FROM \[WideWorldImporters\].\[dbo\].\[Top10CustomersView\]
-
-OPTION (FOR TIMESTAMP AS OF '2024-04-24T20:49:06.097');
+    ```
+    /*View of Top10 Customers as of today before record updates*/
+    SELECT *
+    FROM [WideWorldImporters].[dbo].[Top10CustomersView]
+    OPTION (FOR TIMESTAMP AS OF '2024-04-24T20:49:06.097');
+    ```
 
 ![](./media/image86.png)
 
@@ -1218,23 +1089,16 @@ incorrect.](./media/image119.png)
     **Run **버튼을 선택하여 쿼리를 실행하세요. 쿼리가 완료되면 결과가
     표시됩니다.
 
-> SQLCopy
->
-> SELECT Sales.StockItemKey,
->
-> Sales.Description,
->
-> SUM(CAST(Sales.Quantity AS int)) AS SoldQuantity,
->
-> c.Customer
->
-> FROM \[dbo\].\[fact_sale\] AS Sales,
->
-> \[ShortcutExercise\].\[dbo\].\[dimension_customer\] AS c
->
-> WHERE Sales.CustomerKey = c.CustomerKey
->
-> GROUP BY Sales.StockItemKey, Sales.Description, c.Customer;
+    ```
+    SELECT Sales.StockItemKey, 
+    Sales.Description, 
+    SUM(CAST(Sales.Quantity AS int)) AS SoldQuantity, 
+    c.Customer
+    FROM [dbo].[fact_sale] AS Sales,
+    [ShortcutExercise].[dbo].[dimension_customer] AS c
+    WHERE Sales.CustomerKey = c.CustomerKey
+    GROUP BY Sales.StockItemKey, Sales.Description, c.Customer;
+    ```
 
 ![](./media/image126.png)
 
@@ -1465,3 +1329,4 @@ Fabric에서 데이터 원본의 다양성을 더욱 강조합니다. 마지막�
 유지하기 위한 정리 절차의 중요성을 강조합니다. 종합적으로 이러한 작업은
 Microsoft Fabric 내에서 데이터 설정, 관리 및 분석에 대한 포괄적인 이해를
 제공합니다.
+
