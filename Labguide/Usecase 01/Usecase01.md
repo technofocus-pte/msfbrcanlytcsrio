@@ -126,7 +126,7 @@ reports.
 
     >[!note]**Note**: To find your lab instant ID, select 'Help' and copy the instant ID.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image8.png)
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img2.png)
 
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image9.png)
@@ -135,7 +135,7 @@ reports.
     complete.
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image10.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img3.png)
 
 ### Task 2: Create a lakehouse
 
@@ -143,7 +143,7 @@ reports.
     the navigation bar.
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image11.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img4.png)
 
 2.  Filter by, and select, the **+++Lakehouse+++** tile.
 
@@ -159,7 +159,7 @@ reports.
     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image13.png)
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image14.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img5.png)
 
 4.  You will see a notification stating **Successfully created SQL
     endpoint**.
@@ -173,7 +173,7 @@ reports.
     below image.**
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image16.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img6.png)
 
 2.  On the Upload files tab, click on the folder under the Files
 
@@ -183,7 +183,7 @@ reports.
     select **dimension_customer.csv** file and click
     on **Open** button.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image18.png)
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img7.png)
 
 4.  Then, click on the **Upload** button and close the **Upload files** dialog by selecting the **X** icon for the dialog.
 
@@ -191,16 +191,16 @@ reports.
 
 5.  Click and select refresh on the **Files**. The file appear.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image20.png)
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img8.png)
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image21.png)
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img9.png)
 
 6.  In the **Lakehouse** page, Under the Explorer pane select **Files**.
     Now, hover your mouse over the **dimension_customer.csv** file. Click on
     the horizontal ellipses **(…)** beside **dimension_customer.csv**.
     Navigate and click on **Load Table**, then select **New table**.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image22.png)
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img10.png)
 
 7.  In the **Load file to new table** dialog box, click on
     the **Load** button.
@@ -209,32 +209,33 @@ reports.
 
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image24.png)
+8.	Now successfully created dimension_customer table
+       > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img11.png)
 
-8.  Select the **dimension_coustomer** table to preview the data.
+9.  Select the **dimension_coustomer** table to preview the data.
 
     >[!note]**Note**: You may need to select the **Refresh** button more than once to preview the data.
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image25.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img12.png)
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image26.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img13.png)
 
-9.  You can also use the SQL endpoint of the lakehouse to query the data
+10.  You can also use the SQL endpoint of the lakehouse to query the data
     with SQL statements. Select **SQL analytics endpoint** from
     the **Lakehouse** drop-down menu at the top right of the screen.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image27.png)
+> ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image27.png)
 
-10. In the wwilakehouse page, under Explorer select
+11. In the wwilakehouse page, under Explorer select
     the **dimension_customer** table to preview its data and then 
     select **New SQL query** to write your SQL statements.
 
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image28.png)
 
-11. The following sample query aggregates the row count based on
+12. The following sample query aggregates the row count based on
     the **BuyingGroup column** of the **dimension_customer** table. SQL
     query files are saved automatically for future reference, and you
     can rename or delete these files based on your need. Paste the code
@@ -248,25 +249,23 @@ reports.
     ```
 	
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image29.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img15.png)
 
     >[!note]**Note**: If you encounter an error during the execution of the script, then crosscheck the script syntax with the above image.
-
-    ![](./media/aaa1.png)
-
-    >[!note]**Note**: Previously all the lakehouse tables and views were automatically
+    
+13.  Previously all the lakehouse tables and views were automatically
     added to the semantic model. With the recent updates, for new
     lakehouses, you have to manually add your tables to the semantic
     model.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image31.png)
+ > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img16.png)
 
-12. From the lakehouse **Home** tab, select **New semantic model** and then select the tables that you want to add to the semantic model.
+14. From the lakehouse **Home** tab, select **New semantic model** and then select the tables that you want to add to the semantic model.
 
-    ![](./media/11a.png)
+    ![](./media/img17.png)
 	
-13. In the **New semantic model** dialog enter +++wwilakehouse+++ and then select the **dimension_customer** table from the list of tables and select **Confirm** to create the new model.
+15. In the **New semantic model** dialog enter +++wwilakehouse+++ and then select the **dimension_customer** table from the list of tables and select **Confirm** to create the new model.
 
       ![](./media/11b.png)
 	
@@ -276,44 +275,25 @@ reports.
 1.  Now, click on **Fabric Lakehouse** **Tutorial-@lab.LabInstance.Id** on the left-sided
     navigation pane.
 
-    ![](./media/aaa2.png)
+    ![](./media/img18.png)
 
-2.  Now, select **wwilakehouse** of type **SQL analytics **
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image35.png)
-
-3.  From the lakehouse **Home** tab, select **Settings**
-
-      ![](./media/aaa3.png)
-
-4.  To ensure that the tables in the semantic model are always in sync,
-    switch to the **SQL analytics endpoint** view and open the
-    lakehouse **settings** pane. Select **Default Power BI semantic
-    model** and turn on **Sync the default Power BI semantic model**
+2. In the **Fabric Lakehouse Tutorial-XX** view, select **wwilakehouse** of Type Semantic model. 
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image37.png)
--->
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img19.png)
 
-5.  Now, click on **Fabric Lakehouse** **Tutorial-@lab.LabInstance.Id** on the left-sided
-    navigation pane.
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image34.png)
-
-6.  In the **Fabric Lakehouse Tutorial-@lab.LabInstance.Id** view,
+3.  In the **Fabric Lakehouse Tutorial-@lab.LabInstance.Id** view,
     select **wwilakehouse** of Type **Semantic model**.
 
-       ![](./media/aaa4.png)
+       ![](./media/img20.png)
 
-7.  From the semantic model pane, you can view all the tables. You have
+4.  From the semantic model pane, you can view all the tables. You have
     options to create reports either from scratch, paginated report, or
     let Power BI automatically create a report based on your data. For
     this tutorial, under **Explore this data**, select **Auto-create a
     report** as shown in the below image.
 
-      ![](./media/aaa5.png)
+      ![](./media/img21.png)
 
     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image40.png)
 
@@ -324,16 +304,16 @@ reports.
     across different columns, and creates different charts as shown in
     the following image.
 
-9.  Save this report for the future by selecting **Save** from the top
+5.  Save this report for the future by selecting **Save** from the top
     ribbon.
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image42.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img22.png)
 
-10. In the **Save your replort** dialog box, enter a name for your
+6. In the **Save your replort** dialog box, enter a name for your
     report as +++dimension_customer-report+++ and select **Save.**
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image43.png)
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img23.png)
 
 11. You will see a notification stating **Report saved**.
 
@@ -350,13 +330,13 @@ the Wide World Importers (WWI) into the lakehouse.
     navigation pane.
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea1.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imag24.png)
 
 2.  In the **Fabric Lakehouse Tutorial-@lab.LabInstance.Id** workspace page, navigate and
-    click on **+New item** button, then select **Data pipeline**.
+    click on **+New item** button, then select **Pipeline**.
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea2.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img25.png)
 
 3.  In the New pipeline dialog box, specify the name
     as **+++IngestDataFromSourceToLakehouse+++** and
@@ -366,7 +346,7 @@ the Wide World Importers (WWI) into the lakehouse.
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea3.png)
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea4.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img26.png)
 
 4.  On newly created data factory pipeline
     i.e **IngestDataFromSourceToLakehouse**, select  **Copy data
@@ -396,7 +376,7 @@ the Wide World Importers (WWI) into the lakehouse.
 
     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea9.png)
 
-1.  Choose the **File format** should be empty for the destination.
+8.  Choose the **File format** should be empty for the destination.
     Click **Save + Run** to initiate the pipeline. You can schedule pipelines to
     refresh data periodically. In this tutorial, we only run the
     pipeline once.
@@ -406,39 +386,32 @@ the Wide World Importers (WWI) into the lakehouse.
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea11.png)
 
-2.  The data copy process takes approximately 1-3 minutes to complete.
+9.  The data copy process takes approximately 1-3 minutes to complete.
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea12.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img27.png)
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea13.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img28.png)
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea14.png)
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea15.png)
-
-3.  Under the Output tab, select **Copy_a1n** to look at the details of
+ 
+10.  Under the Output tab, select **Copy_a1n** to look at the details of
     the data transfer. After seeing the **Status** as **Succeeded**,
     click on the **Close** button.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea16.png)
+ >    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img29.png)
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea17.png)
+  >   [A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea17.png)
 
-4.  After the successful execution of the pipeline, go to your lakehouse
+11.  After the successful execution of the pipeline, go to your lakehouse
     (**wwilakehouse**) and open the explorer to see the imported data.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea18.png)
+>  ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img30.png)
 
-5.  Verify that the all the  **WideWorldImporters folders** is present
+12.  Verify that the all the  **WideWorldImporters folders** is present
     in the **Explorer** view and contains data for all tables.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea19.png)
+> ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img31.png)
 
 ## Exercise 4: Prepare and transform data in the lakehouse
 
@@ -447,13 +420,13 @@ the Wide World Importers (WWI) into the lakehouse.
 1.  In the **wwilakehouse** page, navigate and click on **Open
     notebook** drop in the command bar, then select **New notebook**.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea20.png)
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img32.png)
 
 2.  In the open notebook in **Lakehouse explorer**, you will see that the notebook
     is already linked to your opened lakehouse.
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea21.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img33.png)
 
     >[!note]**Note**: 
     >Fabric provides the [**V-order**](https://learn.microsoft.com/en-us/fabric/data-engineering/delta-optimization-and-v-order) capability
@@ -480,6 +453,9 @@ the Wide World Importers (WWI) into the lakehouse.
     spark.conf.set("spark.microsoft.delta.optimizeWrite.enabled", "true")
     spark.conf.set("spark.microsoft.delta.optimizeWrite.binSize", "1073741824")
     ```
+
+    > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img34.png)
 	[!note]**Note**: When running a cell, you didn't have to specify the underlying Spark
     > pool or cluster details because Fabric provides them through Live
     > Pool. Every Fabric workspace comes with a default Spark pool, called
@@ -488,7 +464,10 @@ the Wide World Importers (WWI) into the lakehouse.
     > When you execute the first notebook command, the live pool is up and
     > running in a few seconds. And the Spark session is established and it
     > starts executing the code. Subsequent code execution is almost
-    > instantaneous in this notebook while the Spark session is active. 
+    > instantaneous in this notebook while the Spark session is active.
+    
+    > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img35.png)
 
 4.  Next, you read raw data from the **Files** section of the lakehouse
     and add more columns for different date parts as part of the
@@ -516,7 +495,7 @@ the Wide World Importers (WWI) into the lakehouse.
     df.write.mode("overwrite").format("delta").partitionBy("Year","Quarter").save("Tables/" + table_name)
     ```
 
-    ![](./media/aaa11.png)
+    ![](./media/img36.png)
 
     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea25.png)
 
@@ -560,9 +539,9 @@ the Wide World Importers (WWI) into the lakehouse.
 6.  To validate the created tables, click and select refresh on
     the **Tables** in the **Explorer** panel until all the tables appear in the list. 
 
-  ![](./media/imagea381.png)
+  ![](./media/img37.png)
 
-![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea29.png)
+![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img38.png)
 
 ### Task 2: Transforming Business Data for Aggregation
 
@@ -703,9 +682,9 @@ to persist with the data.
 5. To validate the created tables, click and select refresh on
     the **Tables** until the aggregate tables appear.
 
- ![](./media/aaa10.png)
+ ![](./media/img39.png)
    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea39.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img40.png)
 
 Both the approaches produce a similar outcome. You can choose based on
 your background and preference, to minimize the need for you to learn a
@@ -757,23 +736,23 @@ frequent updates at the source.
 
 1. From the left menu select the **Fabric Lakehouse-@lab.LabInstance.Id** then select your Semantic model named **wwilakehouse**.
 
-      ![](./media/ab1.png)
+      ![](./media/img41.png)
 
 2. On the top menu bar select **Open semantic model** to open the data model designer.
 
-      ![](./media/ab2.png)
+      ![](./media/img42.png)
 
 3. At the top-right ensure that the data model designer is in the **Editing** mode. This should change the drop-down text to “Editing”.
 
-   ![](./media/ab3.png)
+   ![](./media/img43.png)
 
 4. In the menu ribbon select **Edit tables** to display the table synchronization dialog.
 
-   ![](./media/ab4.png)
+   ![](./media/img44.png)
 
 5. On the **Edit semantic model** dialog select all the tables and then select **Confirm** at the bottom of the dialog to synchronize the Semantic model.
 
-      ![](./media/ab5.png)
+      ![](./media/img45.png)
 
     >[!note]**Note**: Once the synchronization has been completed the Semantic model designer will display all the available tables.
 6.  From the **fact_sale** table, drag the **CityKey** field and drop it
@@ -785,7 +764,7 @@ frequent updates at the source.
     > each other. The same holds good for any two tables that you are trying
     > to create relationship. This is just to make the drag and drop of the
     > columns between the tables is easier.
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image97.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img46.png)
 
 7.  In the **Create Relationship** dialog box:
 
@@ -837,7 +816,7 @@ frequent updates at the source.
 
 1.  From the **File** menu, select **Create new report** to start creating reports/dashboards in Power BI.
 
-    ![](./media/aaa13.png)
+    ![](./media/img47.png)
 
 2.  On the Power BI report canvas, you can create reports to meet your
     business requirements by dragging required columns from
@@ -1004,6 +983,7 @@ The lab also covers tasks related to ingesting sample data, optimizing
 delta tables, and building reports in Power BI for effective data
 analysis. The objectives aim to provide hands-on experience in utilizing
 Microsoft Fabric and Power BI for data management and reporting purposes.
+
 
 
 
