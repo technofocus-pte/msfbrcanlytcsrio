@@ -443,6 +443,8 @@ the Wide World Importers (WWI) into the lakehouse.
     
     Update the code in the **cell** with the following code and click on **▷ Run
     cell** that appears to the left of the cell upon hover.
+    
+    [!alert]Alert: If you encounter a TooManyRequestsForCapacity issue you may need to wait for 5 minutes or more before retrying the cell. In rare circumstances you may need to increase the Fabric Capacity SKU size as well.
 	
     ```
     # Copyright (c) Microsoft Corporation.
@@ -467,7 +469,7 @@ the Wide World Importers (WWI) into the lakehouse.
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img35.png)
 
-4.  Next, you read raw data from the **Files** section of the lakehouse
+5.  Next, you read raw data from the **Files** section of the lakehouse
     and add more columns for different date parts as part of the
     transformation. You use partitionBy Spark API to partition the data
     before writing it as delta table based on the newly created data
@@ -497,7 +499,7 @@ the Wide World Importers (WWI) into the lakehouse.
 
     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea25.png)
 
-5.  After the tables load, you can move on to loading data for the
+6.  After the tables load, you can move on to loading data for the
     rest of the dimensions. The following cell creates a function to
     read raw data from the **Files** section of the lakehouse for each
     of the table names passed as a parameter. Next, it creates a list of
@@ -981,6 +983,7 @@ The lab also covers tasks related to ingesting sample data, optimizing
 delta tables, and building reports in Power BI for effective data
 analysis. The objectives aim to provide hands-on experience in utilizing
 Microsoft Fabric and Power BI for data management and reporting purposes.
+
 
 
 
