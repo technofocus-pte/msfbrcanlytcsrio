@@ -82,15 +82,14 @@ trial enabled.
 7.  Wait for the deployment to complete. It'll take approximately 2-3
     minutes.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image9.png)
+     ![](./media/img1.png)
 
 ### Task 2: Create a lakehouse
 
 1.  In the **Data-Factory@lab.LabInstance.Id** workspace page, navigate and click on
     **+New item** button
 	
-    > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image10.png)
+     ![](./media/img3.png)
 
 3.  Filter by, and select, the **+++Lakehouse+++** tile.
 
@@ -103,23 +102,21 @@ trial enabled.
 
     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image12.png)
 	
-    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image13.png)
+     ![](./media/img3.png)
 
 4.  Now, click on **Data-Factory@lab.LabInstance.Id** on the left-sided navigation pane.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image14.png)
+      ![](./media/img4.png)
 
 ### Task 3: Create a data pipeline
 
 1.  Select the **+ New item** option on the workspace page.
 
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image15.png)
+     ![](./media/img5.png)
 
-2.  Select **Data Pipeline** from the new item flyout menu.
+2.  Select **Pipeline** from the new item flyout menu.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image16.png)
+     ![](./media/img6.png)
 
 3.  Provide a Pipeline Name as **+++First_Pipeline1+++** and then select
     **Create**.
@@ -131,8 +128,7 @@ trial enabled.
 1.  In the **First_Pipeline1** home page, Select **Copy data assistant**
      to open the copy assistant tool.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image18.png)
+     ![](./media/img7.png) 
 
 2.  The **Copy data** dialog is displayed with the first step, **Choose
     data source**, highlighted. Select  **Sample data** section, and
@@ -157,7 +153,7 @@ trial enabled.
 
     > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image23.png)
 
-1.  Finally, on the **Review + save** page of the copy data assistant, review the
+6.  Finally, on the **Review + save** page of the copy data assistant, review the
     configuration. For this lab, uncheck the **Start data transfer
     immediately** checkbox, since we run the activity manually in the
     next step. Then select **OK**.
@@ -187,10 +183,9 @@ trial enabled.
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image27.png)
 
-4.  The run details show 76,513,115 rows read and written.
+4. The run details show rows Data read and Data written.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image28.png)
+    ![](./media/img8.png)
 
 5.  Expand the **Duration breakdown** section to see the duration of
     each stage of the Copy activity. After reviewing the copy details,
@@ -202,15 +197,13 @@ trial enabled.
 ### Exercise 2: Transform data with a dataflow in Data Factory
 
 ### Task 1: Get data from a Lakehouse table
+1.	After the successful execution of the pipeline Now, click on workspace Data Factory-@lab.LabInstance.Id on the left-sided navigation pane.
 
-1.  On the **First_Pipeline1** page, from the sidebar select **Create.**
+     ![](./media/img9.png)
 
-     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image30.png)
+2. Create a new **Dataflow Gen2** by clicking on the **+New item** button in the navigation bar. From the list of available items select the **Dataflow Gen2** item
 
-2.  On the **new item** page, to create a new dataflow gen2, click
-    on **Dataflow Gen2** under the **Data Factory.** 
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image31.png)
+     ![](./media/img10.png)
 
 3.  Provide a New Dataflow Gen2 Name as
     **+++nyc_taxi_data_with_discounts+++** and then select **Create**.
@@ -220,8 +213,7 @@ trial enabled.
 4.  From the new dataflow menu, under the **Power Query** pane click on
     **Get data drop down**, then select **More...**.
 
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image33.png)
+      ![](./media/img11.png)
 
 5.  In the **Choose data source** tab, search box search type
     **+++Lakehouse+++** and then click on the **Lakehouse** connector.
@@ -310,8 +302,7 @@ prepare the data before combining it with the trips data.
 1.  From the **Home** tab in the dataflow editor menu, select the **Get
     data** option, and then choose **Text/CSV**.
 
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image45.png)
+     ![](./media/img12.png)
 
 2.  In the **Connect to data source** pane, under **Connection
     settings**, select **Link to file** radio button, then enter
@@ -535,21 +526,16 @@ we can define the output destination for the query.
     as **Lakehouse**, and then select **Save and Run** option from the
     Home tab.
 
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image80.png)
+    ![](./media/img13.png)
+8.	Now, click on Data Factory-XXXX workspace on the left-sided navigation pane.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image81.png)
+    ![](./media/img13.png)
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image82.png)
-
-7.  In the **Data_Factory@lab.LabInstance.Id** pane, select **DataFactoryLakehouse** to
+9.  In the **Data_Factory@lab.LabInstance.Id** pane, select **DataFactoryLakehouse** to
     view the new table loaded there.
 
-    > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image83.png)
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image84.png)
+      ![](./media/img16.png)
+      ![](./media/img17.png)
 
 ## Exercise 3: Automate and send notifications with Data Factory
 
@@ -558,17 +544,16 @@ we can define the output destination for the query.
 1.  Navigate and click on **Data_Factory@lab.LabInstance.Id** Workspace on the left-sided
     navigation menu.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image85.png)
+      ![](./media/img15.png)
 
 2.  In the **Data_Factory@lab.LabInstance.Id** view, select the **First_Pipeline1**.
 
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image86.png)
+   ![](./media/img19.png)
 
 3.  Select the **Activities** tab in the pipeline editor and find the
     **Office Outlook** activity.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image87.png)
+     ![](./media/img20.png)
 
 4.  Select and drag the On success path (a green checkbox on the top
     right side of the activity in the pipeline canvas) from your Copy
@@ -713,3 +698,4 @@ the workspace you created for this tutorial.
 
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image64.png)
+
