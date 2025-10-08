@@ -325,14 +325,13 @@ reports.
 10. Wait for the deployment to complete. It takes 2-3 minutes to
     complete.
 
-    > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image43.png)
+     ![](./media/img1.png)
 
 ### Task 6: Create a lakehouse
 
 1.  In the Fabric Home page, select **+ New item** and filter by, and then select the **+++Lakehouse+++** tile.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image44.png)
+     ![](./media/img2.png)
 
 2.  In the **New lakehouse** dialog box, enter +++**data_lakehouse**+++
     in the **Name** field, click on the **Create** button and open the
@@ -340,8 +339,7 @@ reports.
 
     >[!note]**Note**: Ensure to remove space before **data_lakehouse**.
 
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image45.png)
+    ![](./media/img3.png)
 
 3.  You will see a notification stating **Successfully created SQL
     endpoint**.
@@ -600,8 +598,7 @@ data using hybrid and vector search.
     document, the text content of the document, and the vector embedding
     of the text content.
 
-    Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Update the **AI_SEARCH_API_KEY** with the value you saved in Notepad and click on **▷ Run cell** button and review the output.
+2.	Click the **➕ Code** icon below the cell output to insert a new code cell in the notebook. Replace the **AI Search API key** and the **AI Search service URL**, then paste the following code into the cell. Click the **▶ Run** cell button and review the output
 	
     ```
     import requests
@@ -658,7 +655,7 @@ data using hybrid and vector search.
         print(f"HTTP request failed with status code {response.status_code}")
         print(f"HTTP response body: {response.text}")
     ```
-
+     ![](./media/img4.png)
     > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image58.png)
     
     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image59.png)
@@ -1011,4 +1008,5 @@ portal](https://portal.azure.com/?azure-portal=true).
 
     > ![A screenshot of a computer Description automatically
     > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image80.png)
+
 
