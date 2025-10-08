@@ -108,8 +108,7 @@ reports.
 7.  Wait for the deployment to complete. It takes 2-3 minutes to
     complete.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image13.png)
+   ![](./media/img1.png)
 
 ### Task 2: Create a lakehouse
 
@@ -133,15 +132,13 @@ reports.
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image16.png)
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image17.png)
+    ![](./media/img2.png)
 
 4.  Next, create a new notebook to query the table. In
     the **Home** ribbon, select the drop down for **Open notebook** and
     choose **New notebook**.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image18.png)
+   ![](./media/img3.png)
 
 ### Task 3: Upload AdventureWorksDW data into lakehouse
 
@@ -188,21 +185,19 @@ After a few minutes, the lakehouse is populated with the necessary data.
 
 1.  Now, click on **AI-Fabric-@lab.LabInstance.Id** on the left-sided navigation pane.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image22.png)
+     ![](./media/img4.png)
 
-1.  In the **Fabric** home page, select **+New item.**
+2.  In the **Fabric** home page, select **+New item.**
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image23.png)
+     ![](./media/img5.png)
 
-2.  In the **Filter by item type** search box, enter **+++data
+3.  In the **Filter by item type** search box, enter **+++data
     agent+++** and select the **Data agent**
 
     > ![A screenshot of a computer
     AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image24.png)
 
-3.  Enter **+++AI-agent+++** as the Data agent name and
+4.  Enter **+++AI-agent+++** as the Data agent name and
     select **Create**.
 
     > ![A screenshot of a computer AI-generated content may be
@@ -211,12 +206,12 @@ After a few minutes, the lakehouse is populated with the necessary data.
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image26.png)
 
-4.  In AI-agent page, select **Add a data source**
+5.  In AI-agent page, select **Add a data source**
 
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image27.png)
 
-5.  In the **OneLake catalog** tab, select the **AI-Fabric_lakehouse
+6.  In the **OneLake catalog** tab, select the **AI-Fabric_lakehouse
     lakehouse** and select **Add**.
 
     > ![A screenshot of a computer AI-generated content may be
@@ -225,7 +220,7 @@ After a few minutes, the lakehouse is populated with the necessary data.
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image29.png)
 
-2.  You must then select the tables for which you want the AI skill to
+7.  You must then select the tables for which you want the AI skill to
     have available access.
 
     This lab uses these tables:
@@ -250,9 +245,7 @@ After a few minutes, the lakehouse is populated with the necessary data.
 
     - FactResellerSales
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image30.png)
-
+   ![](./media/img6.png)
 ### Task 5: Provide instructions
 
 1.  When you first ask the questions with the listed tables select
@@ -340,12 +333,12 @@ After a few minutes, the lakehouse is populated with the necessary data.
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image43.png)
 
-8.  In the Example SQL queries tab, select **+ Add example** text.
+9.  In the Example SQL queries tab, select **+ Add example** text.
 
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image44.png)
 
-9.  You can manually add examples, but you can also upload them from a
+10.  You can manually add examples, but you can also upload them from a
     JSON file. Providing examples from a file is helpful when you have
     many SQL queries that you want to upload all at once, instead of
     manually uploading the queries one by one.
@@ -359,7 +352,7 @@ After a few minutes, the lakehouse is populated with the necessary data.
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image47.png)
 
-10.  Add all the queries and SQL queries that you have saved in Notepad,
+11.  Add all the queries and SQL queries that you have saved in Notepad,
     and then click on 'Download all as .json'.
 
     > ![A screenshot of a computer AI-generated content may be
@@ -378,8 +371,7 @@ determine whether or not the AI skill has a published URL value.
 1.  In the Data agent Fabric page, in the **Home** ribbon select the
     **Settings**.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image49.png)
+    ![](./media/img7.png)
 
 2.  Before you publish the AI skill, it doesn't have a published URL
     value, as shown in this screenshot.
@@ -391,8 +383,7 @@ determine whether or not the AI skill has a published URL value.
 
 4.  In the **Home** ribbon, select the **Publish**.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image51.png)
+    ![](./media/img8.png)
 
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image52.png)
@@ -414,10 +405,9 @@ determine whether or not the AI skill has a published URL value.
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image54.png)
 
-8.  Select **Notebook1** in the left navigation pane.
+8.  Select **Notebook1** in the top navigation pane.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image55.png)
+      ![](./media/img9.png)
 
 9. Use the **+ Code** icon below the cell output to add a new code cell
     to the notebook, enter the following code in it and replace the
@@ -572,5 +562,6 @@ programmatically from a Fabric notebook, demonstrating end-to-end AI
 integration. This lab empowers you to make enterprise data more
 accessible, usable, and intelligent for business users through natural
 language and generative AI technologies.
+
 
 
