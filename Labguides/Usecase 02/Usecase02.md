@@ -81,14 +81,13 @@ Fabric에서 데이터를 사용하기 전에 Fabric 평가판을 사용하도�
 
 7.  배포가 완료될 때까지 기다리세요. 약 2-3분 정도 소요됩니다.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image9.png)
+   ![](./media/img1.png)
 
 ## 작업 2: lakehouse를 생성하기
 
 1.  **Data-FactoryXX** 작업 영역 페이지에서 이동하여 **+New item**
-    버튼을 클릭하세요![A screenshot of a computer AI-generated content
-    may be incorrect.](./media/image10.png)
+    버튼을 클릭하세요
+    ![](./media/img2.png)
 
 2.  "**Lakehouse**" 타일을 클릭하세요
 
@@ -104,17 +103,16 @@ generated](./media/image13.png)
 
 4.  왼쪽 탐색 창에서 **Data-FactoryXX**를 클릭하세요.
 
-## ![](./media/image14.png)작업3: 데이터 파이프라인을 생성하기
+   ![](./media/image14.png)
+
+## 작업3: 데이터 파이프라인을 생성하기
 
 1.  작업 영역 페이지에서 **+ New item** 옵션을 선택하세요.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image15.png)
+   ![](./media/img5.png)
+2.  새 플라이아웃 메뉴에서 **Pipeline**을 선택하세요.
 
-2.  새 플라이아웃 메뉴에서 **Data Pipeline**을 선택하세요.
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image16.png)
+  ![](./media/img6.png)
 
 3.  Pipeline Name을 +++**First_Pipeline1+++**로 입력하고 **Create**를
     선택하세요.
@@ -126,8 +124,7 @@ incorrect.](./media/image16.png)
 1.  **First_Pipeline1** 홈페이지에서copy assistant tool을 열려면 **Copy
     data assistant**를 선택하세요.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image18.png)
+     ![](./media/img7.png) 
 
 2.  **Copy data** 대화 상자가 첫 단계에 표시되고 **Choose data
     source**가 강조 표시됩니다. **Sample data** 섹션을 선택하고 **NYC
@@ -181,10 +178,9 @@ incorrect.](./media/image24.png)
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image27.png)
 
-4.  실행 세부 정보에는 읽고 쓴 76,513,115개의 행이 표시됩니다.
+4.  실행 세부 정보에는 읽고 쓴 개의 행이 표시됩니다.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image28.png)
+    ![](./media/img8.png)
 
 5.  확장 **Duration breakdown** 섹션을 클릭하여 복사 활동의 각 단계의
     기간을 확인하세요. 복사 세부 정보를 검토한 후 Close를 선택하세요.
@@ -214,8 +210,7 @@ incorrect.](./media/image32.png)
 4.  새 dataflow 메뉴의 **Power Query** 창에서 **Get data drop down**을
     클릭하고 **More...**를 선택하세요.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image33.png)
+    ![](./media/img11.png)
 
 5.  **Choose data source** 탭에서 검색 상자에 +++**Lakehouse+++**를
     입력하고 **Lakehouse** 커넥터를 클릭하세요.
@@ -249,7 +244,8 @@ generated](./media/image37.png)
     아이콘을 선택하여 드롭다운 메뉴를 표시하고 메뉴에서 데이터 형식을
     선택하여 열을 **Date/Time**에서 **Date** 형식으로 변환하세요.
 
-2.  ![](./media/image38.png)ribbon의 **Home** 탭에서 **Manage
+    ![](./media/img12.png)
+2.  ribbon의 **Home** 탭에서 **Manage
     columns** 그룹에서 **Choose columns** 옵션을 선택하세요.
 
 3.  **Choose columns** 대화 상자에서 여기에 나열된 일부 열을 **선택
@@ -531,26 +527,17 @@ generated](./media/image74.png)
 
 ![](./media/image76.png)
 
-6.  주 편집기 창으로 돌아가서 **Output **테이블의 **Query** 설정 창에
-    출력 대상이 **Lakehouse**로 표시되는지 확인한 후, 홈 탭에서 **Save
-    and Run** 옵션을 선택하세요.
+6.  메인 편집기 창으로 돌아가서 Query settings 창에서 Output 테이블의 출력 대상이 Lakehouse로 설정되어 있는지 확인한 후, Home 탭에서 Save and Run 옵션을 선택하세요.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image77.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image78.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image79.png)
+   ![](./media/img13.png)
 
 7.  **Data_FactoryXX** 창에서 거기 로드된 새 테이블을 보려면
     **DataFactoryLakehouse**를 선택하세요.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image80.png)
+   ![](./media/img15.png)
 
-![](./media/image81.png)
+  ![](./media/img16.png)
+      ![](./media/img17.png)
 
 # 연습 3: Data Factory를 사용하여 알림 자동화 및 보내기
 
@@ -693,4 +680,5 @@ generated](./media/image101.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image102.png)
+
 
