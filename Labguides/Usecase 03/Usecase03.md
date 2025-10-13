@@ -106,8 +106,7 @@ generated](./media/image5.png)
 
 7.  배포가 완료될 때까지 기다리세요. 완료하는 데 2-3분이 소요됩니다.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image13.png)
+   ![](./media/img1.png)
 
 ## **작업 2: lakehouse를 생성하기**
 
@@ -127,18 +126,13 @@ generated](./media/image5.png)
 
 3.  **Successfully created SQL endpoint**라는 알림이 표시됩니다.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image16.png)
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image17.png)
+    ![](./media/img2.png)
 
 4.  다음으로, 테이블을 쿼리할 새 Notebook을 생성하세요.
     **Home** ribbon에서, **Open notebook**에 대한 드롭다운을 선택하고
     **New notebook**을 선택하세요**.**
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image18.png)
+    ![](./media/img3.png)
 
 ## 작업 3: AdventureWorksDW 데이터를 lakehouse에 업로드
 
@@ -184,15 +178,13 @@ incorrect.](./media/image18.png)
 
 1.  이제 왼쪽 탐색 창에서 **AI-Fabric-XXXX**를 클릭하세요.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image22.png)
+     ![](./media/img4.png)
 
-1.  **Fabric** 홈페이지에서 **+New item**을 선택하세요**.**
+2.  **Fabric** 홈페이지에서 **+New item**을 선택하세요**.**
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image23.png)
+      ![](./media/img5.png)
 
-2.  **Filter by item type** 검색 상자에서 **+++data agent+++**를
+3.  **Filter by item type** 검색 상자에서 **+++data agent+++**를
     입력하고 **Data agent**를 선택하세요![A screenshot of a computer
     AI-generated content may be incorrect.](./media/image24.png)
 
@@ -244,8 +236,7 @@ incorrect.](./media/image29.png)
 
 - FactResellerSales
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image30.png)
+ ![](./media/img6.png)
 
 ## 작업 5: 지침 제공
 
@@ -367,8 +358,7 @@ AI 스킬에 게시된 URL 값이 있는지 여부를 확인합니다.
 1.  Data agent Fabric 페이지의 **Home** ribbon에서 **Settings**을
     선택하세요.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image49.png)
+     ![](./media/img7.png)
 
 2.  AI 기술을 게시하기 전에는 이 스크린샷과 같이 게시된 URL 값이
     없습니다.
@@ -380,9 +370,8 @@ incorrect.](./media/image50.png)
 
 4.  **Home** ribbon에서 **Publish**를 선택하세요.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image51.png)
->
+  ![](./media/img8.png)
+ 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image52.png)
 
@@ -404,8 +393,7 @@ incorrect.](./media/image54.png)
 
 7.  왼쪽 탐색 창에서 **Notebook1**을 선택하세요.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image55.png)
+     ![](./media/img9.png)
 
 10. U셀 출력 아래에 있는 + **Code** 아이콘을 사용하여 Notebook에 새 코드
     셀을 추가하고 다음 코드를 입력한 후 **URL**을 바꾸세요. ▷ **Run**
@@ -560,5 +548,6 @@ Fabric Notebook에서 프로그래밍 방식으로 에이전트를 호출하여 
 AI 통합을 시연했습니다. 이 실습에서는 자연어 및 GenAI 기술을 통해
 비즈니스 사용자가 엔터프라이즈 데이터에 더 쉽게 액세스하고, 유용하고,
 지능적으로 만들 수 있도록 지원합니다.
+
 
 
