@@ -130,8 +130,7 @@ trial enabled.
 7.  Wait for the deployment to complete. It takes 2-3 minutes to
     complete. When your new workspace opens, it should be empty.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image8.png)
+   ![](./media/img1.png)
 
 ### Task 2: Create a lakehouse and upload files
 
@@ -142,8 +141,7 @@ the data files you're going to analyze.
 1.  Create a new Eventhouse by clicking on the **+ New item** button in
     the navigation bar.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image9.png)
+      ![](./media/img2.png)
 
 2.  Filter by, and select, the **+++Lakehouse+++** tile.
 
@@ -160,7 +158,7 @@ the data files you're going to analyze.
     >[!note]**Note**: After a minute or so, a new empty lakehouse will be created. You
     need to ingest some data into the data lakehouse for analysis.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image12.png)
+       ![](./media/img3.png)
 
     > You will see a notification stating **Successfully created SQL endpoint**.
 
@@ -171,14 +169,14 @@ the data files you're going to analyze.
     ellipses **(…)** menu. Navigate and click on **Upload**, then click
     on the **Upload folder** as shown in the below image.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image14.png)
+     ![](./media/img4.png)
 
 7.  On the **Upload folder** pane that appears on the right side, select
     the **folder icon** under the **Files/** and then browse to
     **C:\LabFiles\LabFiles** and then select the **orders** folder and click on
     the **Upload** button.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image15.png)
+     ![](./media/img5.png)
 
 8.  In case, the **Upload 3 files to this site?** dialog box appears,
     then click on **Upload** button.
@@ -197,7 +195,7 @@ the data files you're going to analyze.
 11. Expand **Files** and select the **orders** folder and verify that
     the CSV files have been uploaded.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image19.png)
+    ![](./media/img6.png)
 
 ### Task 3: Create a notebook
 
@@ -209,8 +207,7 @@ run code (in multiple languages), and add notes to document it.
     the **orders** folder in your datalake, in the **Open
     notebook** menu, select **New notebook**.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image20.png)
+    ![](./media/img7.png)
 
     >[!note]**Note**: After a few seconds, a new notebook containing a single *cell* will
     open. Notebooks are made up of one or more cells that can
@@ -671,7 +668,7 @@ learn more about the methods of the Dataframe object.
     > ![A screenshot of a computer AI-generated content may be
     incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image58.png)
 
-## Exercise 3: Work with tables and SQL
+## Exercise 4: Work with tables and SQL
 
 As you've seen, the native methods of the dataframe object enable you to
 query and analyze data from a file quite effectively. However, many data
@@ -723,19 +720,18 @@ independently of the metastore).
 3.  In the **Lakehouse** **explorer** pane, in the **…** menu for
     the **Tables** folder, select **Refresh.**
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image60.png)
+     ![](./media/img8.png)
 
 4.  Then, expand the **Tables** node and verify that
     the **salesorders** table has been created.
 
-    > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image61.png)
+    ![](./media/img9.png)
 
 5.  Hover your mouse beside **salesorders** table, then click on the
     horizontal ellipses (…). Navigate and click on **Load data**, then
     select **Spark**.
 
-    > ![A screenshot of a computer Description automatically
-    generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image62.png)
+     ![](./media/img10.png)
 
 6.  Click on **▷ Run cell** button and which uses the Spark SQL library
     to embed a SQL query against the **salesorder** table in PySpark
@@ -772,7 +768,7 @@ stored in an external location.
     >
     >abfss://dp_Fabric29@onelake.dfs.fabric.microsoft.com/Fabric_lakehouse.Lakehouse/Files/external_salesorder
 
-    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image65.png)
+     ![](./media/img11.png)
 
 3.  Now, move into the code cell, replace <**abfs_path**\> with the
     **path** you copied to the notepad so that the code saves the
@@ -790,8 +786,7 @@ stored in an external location.
 5.  In the **Lakehouse explorer** pane, in the **…** menu for
     the **Tables** folder, select the **Refresh**.
 
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image67.png)
+     ![](./media/img12.png)
 
 6.  Then expand the **Tables** node and verify that
     the **external_salesorder** table has been created.
@@ -802,8 +797,7 @@ stored in an external location.
 7.  In the **Lakehouse explorer** pane, in the **…** menu for
     the **Files** folder, select **Refresh**.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image69.png)
+     ![](./media/img13.png)
 
 8.  Then expand the **Files** node and verify that
     the **external_salesorder** folder has been created for the table's
@@ -892,7 +886,7 @@ in SQL.
     >[!note]**Note**: For more information about Spark SQL and dataframes, see
     > the [Spark SQL documentation](https://spark.apache.org/docs/2.2.0/sql-programming-guide.html).
 
-## Exercise 4: Visualize data with Spark
+## Exercise 5: Visualize data with Spark
 
 A picture is proverbially worth a thousand words, and a chart is often
 better than a thousand rows of data. While notebooks in Fabric include a
@@ -1259,8 +1253,7 @@ streaming data in a simulated internet of things (IoT) scenario.
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image95.png)
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image96.png)
+    ![](./media/img14.png)
 
 5.  Click on **+ Code** and copy and paste the below code and then click
     on **Run cell** button.
@@ -1333,8 +1326,7 @@ notebook with a meaningful name and end the Spark session.
 1.  In the notebook menu bar, use the ⚙️ **Settings** icon to view the
     notebook settings.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image101.png)
+    ![](./media/img15.png)
 
 2.  Set the **Name** of the notebook to **+++Explore Sales Orders+++**,
     and then close the settings pane.
@@ -1345,13 +1337,12 @@ notebook with a meaningful name and end the Spark session.
 3.  On the notebook menu, select **Stop session** to end the Spark
     session.
 
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image103.png)
+    ![](./media/img16.png)
 
     > ![A screenshot of a computer Description automatically
     > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image104.png)
 
-## Exercise 5: Create a Dataflow (Gen2) in Microsoft Fabric
+## Exercise 6: Create a Dataflow (Gen2) in Microsoft Fabric
 
 In Microsoft Fabric, Dataflows (Gen2) connect to various data sources
 and perform transformations in Power Query Online. They can then be used
@@ -1371,30 +1362,27 @@ transform, and load* (ETL) process.
 1.  Now, click on **Fabric_lakehouse** on the left-sided navigation
     pane.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image105.png)
+     ![](./media/img17.png)
 
 2.  In the **Fabric_lakehouse** home page, click on the drop-down arrow
     in the **Get data** and select **New Dataflow Gen2.** The Power
     Query editor for your new dataflow opens.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image106.png)
+    ![](./media/img18.png)
 
-5.  In the **New Dataflow Gen2** dialog box,
+3.  In the **New Dataflow Gen2** dialog box,
     enter **+++Gen2_Dataflow+++** in the **Name** field, click on
     the **Create** button and open the new Dataflow Gen2.
 
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image107.png)
 
-3.  In the **Power Query** pane under the **Home tab**, click on
+4.  In the **Power Query** pane under the **Home tab**, click on
     **Import from a Text/CSV file**.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image108.png)
+     ![](./media/img19.png)
 
-4.  In the **Connect to data source** pane, under **Connection
+5.  In the **Connect to data source** pane, under **Connection
     settings**, select **Link to file** radio button
 
     - **Link to file**: *Selected*
@@ -1410,13 +1398,13 @@ transform, and load* (ETL) process.
 
     - **Connection**: Create new connection
     
-    - **Connection name**: +++ds-@lab.LabInstance.Id+++
+    - **Connection name**: +++Orders-@lab.LabInstance.Id+++
     
     - **data gateway**: (none)
     
     - **Authentication kind**: Anonymous
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image110.png)
+     ![](./media/img20.png)
 
 6.  In **Preview file data** pane, click on **Create** to create the
     data source.
@@ -1430,19 +1418,19 @@ transform, and load* (ETL) process.
 9.  On the toolbar ribbon, select the **Add column** tab. Then,
     select **Custom column.**
 
-    > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image113.png) 
+      ![](./media/img21.png)
 
 10.  Set the New column name to **+++MonthNo+++** , set the Data type to
     **Whole Number** and then add the following
     formula: **+++Date.Month(\[OrderDate\])+++** under **Custom column
     formula**. Select **OK**.
 
-    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image114.png)
+     > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image114.png)
 
-    >[!note]**Note**: Notice how the step to add the custom column is added to the query.
+     >[!note]**Note**: Notice how the step to add the custom column is added to the query.
     The resulting column is displayed in the data pane.
 
-    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image115.png)
+     > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image115.png)
 
     >[!knowledge]**Tip:** In the Query Settings pane on the right side, notice
     > the **Applied Steps** include each transformation step. At the bottom,
@@ -1461,7 +1449,7 @@ transform, and load* (ETL) process.
 
     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image116.png)
 
-    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image117.png)
+    ![](./media/img22.png)
 
     >[!note]**Note:** If this option is grayed out, you may already have a data
     > destination set. Check the data destination at the bottom of the Query
@@ -1475,13 +1463,13 @@ transform, and load* (ETL) process.
     
     > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image119.png)
 
-1.  On the **Home** tab select the down-arrow on the **Save** icon and then select **Save, run & close** to publish and close the query.
+2.  On the **Home** tab select the down-arrow on the **Save** icon and then select **Save, run & close** to publish and close the query.
 
     > !IMAGE[]([instructions303922](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media)/skillable_image1.png)
 
-1.  Select the **dp_fabric@lab.LabInstance.Id** workspace from the left ribbon and note that the **Gen2_Dataflow** of type **Dataflow Gen2 (CI/CD)** is now present in the list.
+3.  Select the **dp_fabric@lab.LabInstance.Id** workspace from the left ribbon and note that the **Gen2_Dataflow** of type **Dataflow Gen2 (CI/CD)** is now present in the list.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image121.png)
+   ![](./media/img23.png)
 
 ### Task 3: Add a dataflow to a pipeline
 
@@ -1491,10 +1479,10 @@ you to combine dataflows with other kinds of operation in a single,
 scheduled process. Pipelines can be created in a few different
 experiences, including Data Factory experience.
 
-1.  In the Synapse Data Engineering Home page , Under **dp_Fabric@lab.LabInstance.Id**
-    pane, select **+New item** -\> **Data pipeline**
+1.  In the Fabric Home page , Under **dp_Fabric@lab.LabInstance.Id**
+    pane, select **+New item** -\> **Pipeline**
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image122.png)
+    ![](./media/img24.png)
 
 2.  In the **New pipeline** dialog box, enter **Load data** in
     the **Name** field, click on the **Create** button to open the new
@@ -1522,13 +1510,12 @@ experiences, including Data Factory experience.
 6.  On the **Home** tab, save the pipeline using the **🖫 (*Save*)**
     icon.
 
-    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image127.png)
+     ![](./media/img25.png)
 
 7.  Use the **▷ Run** button to run the pipeline, and wait for it to
     complete. It may take a few minutes.
 
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image128.png)
+    ![](./media/img25.png)
 
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image129.png)
@@ -1546,13 +1533,9 @@ experiences, including Data Factory experience.
     > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image132.png)
 
 9.  In the **Fabric_lakehouse** pane, select the
-    **Gen2_FabricLakehouse** of type Lakehouse.
+    **Fabric_lakehouse** of type Lakehouse.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image133.png)
-
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image134.png)
+    ![](./media/img27.png)
 
 10. In **Explorer** pane, select the **…** menu for **Tables**,
     select **refresh**. Then expand **Tables** and select
@@ -1561,7 +1544,7 @@ experiences, including Data Factory experience.
     > ![A screenshot of a computer Description automatically
     > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image135.png)
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image136.png)
+    ![](./media/img28.png)
 
     >[!knowledge]**Tip**: Use the Power BI Desktop *Dataflows connector* to connect
     > directly to the data transformations done with your dataflow.
@@ -1636,3 +1619,4 @@ streamlining your workflow and enhancing productivity in real-world
 scenarios. The cleanup instructions ensure you leave no unnecessary
 resources, promoting an organized and efficient workspace management
 approach.
+
