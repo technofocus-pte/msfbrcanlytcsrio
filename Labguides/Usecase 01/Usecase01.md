@@ -37,8 +37,6 @@ Fabric에서 제공하는 유연성을 통해 Lakehouse 또는 데이터 웨어�
 
 2.  Power BI 내에서 Microsoft Fabric(미리 보기) 평가판을 시작하세요.
 
-3.  Microsoft 365 관리 센터 OneDrive 등록을 구성하세요.
-
 4.  Fabric 작업 영역 및 Lakehouse 생성하기를 포함하여 조직에 대한
     end-to-end Lakehouse를 빌드하고 구현하세요.
 
@@ -97,7 +95,7 @@ Fabric에서 제공하는 유연성을 통해 Lakehouse 또는 데이터 웨어�
 
 1.  Fabric 홈페이지에서 **+New workspace** 타일을 선택하세요.
 
-> ![](./media/image6.png)
+> ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img1.png)
 
 2.  오른쪽에 표시되는 **Create a workspace** 창에서 다음 세부 정보를
     입력하고 **Apply **버튼을 클릭하세요.
@@ -113,23 +111,23 @@ Fabric에서 제공하는 유연성을 통해 Lakehouse 또는 데이터 웨어�
 참고: 실습 인스턴트 ID를 찾으려면 ' Help'을 선택하고 인스턴트 ID를
 복사합니다.
 
-> ![](./media/image8.png)
+> ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img2.png)
 >
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image9.png)
 
 3.  배포가 완료될 때까지 기다리세요. 완료하는 데 2-3분이 소요됩니다.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image10.png)
+    > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img3.png)
 
 ### 작업 2: lakehouse를 생성하기
 
 1.  새 lakehouse를 생성하려면 탐색바에서 **+New item** 버튼을
     클릭하세요.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image11.png)
+    > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img4.png)
 
 2.  "**Lakehouse**" 타일을 클릭하세요.
 
@@ -144,8 +142,8 @@ Fabric에서 제공하는 유연성을 통해 Lakehouse 또는 데이터 웨어�
 >
 > ![](./media/image13.png)
 >
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image14.png)
+    > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img5.png)
 
 4.  **Successfully created SQL endpoint**라는 알림이 표시됩니다.
 
@@ -157,8 +155,8 @@ Fabric에서 제공하는 유연성을 통해 Lakehouse 또는 데이터 웨어�
     이동하고 **Upload files as shown in the below image**를
     클릭하세요**.**
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image16.png)
+    > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img6.png)
 
 2.  Upload files 탭에서 Files에서 폴더를 클릭하세요
 
@@ -167,7 +165,7 @@ Fabric에서 제공하는 유연성을 통해 Lakehouse 또는 데이터 웨어�
 3.  VM에 **C:\LabFiles** 로 이동하고 ***dimension_customer.csv*** 파일을
     선택하고 **Open** 버튼을 클릭하세요.
 
-> ![](./media/image18.png)
+ > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img7.png)
 
 4.  **Upload** 버튼을 클릭하고 닫으세요
 
@@ -175,9 +173,9 @@ Fabric에서 제공하는 유연성을 통해 Lakehouse 또는 데이터 웨어�
 
 5.  클릭하고 **Files**애서 새로고침을 선택하세요. 파일이 나타납니다.
 
-> ![](./media/image20.png)
->
-> ![](./media/image21.png)
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img8.png)
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img9.png)
 
 6.  **Lakehouse** 페이지에서 Under the Explorer 창에서 Files을
     선택하세요. 이제 마우스를 가져가서 **dimension_customer.csv** 파일을
@@ -185,7 +183,7 @@ Fabric에서 제공하는 유연성을 통해 Lakehouse 또는 데이터 웨어�
     클릭하세요. **Load Table**로 이동하고 클릭하여 **New table**을
     선택하세요.
 
-> ![](./media/image22.png)
+ > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img10.png)
 
 7.  **Load file to new table** 대화 상자에서 **Load** 버튼을 클릭하세요.
 
@@ -196,11 +194,11 @@ Fabric에서 제공하는 유연성을 통해 Lakehouse 또는 데이터 웨어�
 
 8.  **dimension_coustomer** 테이블을 선택하세요
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image25.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image26.png)
+    > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img12.png)
+
+    > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img13.png)
 
 9.  Lakehouse의 SQL 엔드포인트를 사용하여 SQL 문으로 데이터를 쿼리할
     수도 있습니다. 화면 오른쪽 위에 있는 **Lakehouse** 드롭다운 메뉴에서
@@ -227,8 +225,8 @@ Fabric에서 제공하는 유연성을 통해 Lakehouse 또는 데이터 웨어�
     FROM dimension_customer
     GROUP BY BuyingGroup
     ```
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image29.png)
+    > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img15.png)
 
 **참고**: 스크립트 실행 중에 오류가 발생하면 스크립트 구문을 위 이미지와
 교차 확인합니다.
@@ -242,83 +240,45 @@ Fabric에서 제공하는 유연성을 통해 Lakehouse 또는 데이터 웨어�
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image31.png)
 
-13. Lakehouse **Reporting** 탭에서 **Manage default semantic model**을
+13. Lakehouse **Home** 탭에서 **New semantic model**을
     선택하고 semantic model에 추가할 테이블을 선택하세요.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image32.png)
+  ![](./media/img17.png)
 
-14. **Manage default semantic model** 탭에서
-    **dimension_customer** 테이블을 선택하고 **Confirm**을 클릭하세요.
+14.New semantic model 대화 상자에서 **+++wwilakehouse+++**를 입력하고, tables 목록에서 **dimension_customer tables**을 선택한 다음 Confirm을 선택하여 새 모델을 생성하세요.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image33.png)
+ ![](./media/11b.png)
 
 ### 작업 4: 보고서 구축하기
 
 1.  왼쪽 탐색 페이지에서 **Fabric Lakehouse** **Tutorial-XX**를
     클릭하세요.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image34.png)
+   ![](./media/img18.png)
 
-2.  이제 **SQL 분석** 형식의 **wwilakehouse**를 선택하세요.
+2.  **Fabric Lakehouse Tutorial-XX** 보기에서 Type이 **Semantic model인 wwilakehouse**를 선택하세요.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image35.png)
+       > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img19.png)
+4.  **Semantic model** 창에서 모든 tables를 볼 수 있습니다.
+ 보고서를 새로 만들거나, 페이지 나누기 보고서를 생성하거나, 또는 **Power BI**가 데이터를 기반으로 자동으로 보고서를 생성하도록 선택할 수 있습니다.
+ 이 실습에서는 **Explore this data** 아래에서 **Auto-create a report**를 선택하세요. 아래 이미지와 같이 진행합니다.
 
-3.  Lakehouse **Home** 탭에서 **Settings**을 선택하세요
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image36.png)
-
-4.  Semantic model의 테이블이 항상 동기화되도록 하려면 **SQL 분석
-    엔드포인트** 보기로 전환하고 Lakehouse **Settings** 창을 여세요.
-    **Default Power BI semantic model**을 선택하고 **Sync the default
-    Power BI semantic model**를 켜세요.
-
+ ![](./media/img21.png)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image37.png)
 
-5.  왼쪽 탐색 창에서 **Fabric Lakehouse** **Tutorial-XX**를 클릭하세요.
+5.  위쪽 리본에서 **Save**를 선택하여 나중에 이 보고서를 저장하세요.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image34.png)
+    > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img22.png)
 
-6.  **Fabric Lakehouse Tutorial-XX** 뷰에서 유형 **Semantic model
-    (default)**의 **wwilakehouse**를 선택하세요. 이 데이터세트는
-    자동으로 생성해지며 Lakehouse와 이름이 같습니다.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image38.png)
-
-7.  시맨틱 모델 창에서 모든 테이블을 볼 수 있습니다. 처음부터 보고서를
-    생성하거나, 페이지를 매긴 보고서를 생성하거나, Power BI가 데이터를
-    기반으로 보고서를 자동으로 생성하도록 할 수 있는 옵션이 있습니다. 이
-    튜토리얼을 위해  **Explore this data**에서, 다음 이미지와 같이
-    **Auto-create a report**를 선택하세요.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image39.png)
->
-> ![](./media/image40.png)
->
-> ![](./media/image41.png)
-
-8.  테이블은 차원이고 측정값이 없으므로 Power BI는 행 수에 대한 측정값을
-    생성하고 여러 열에 집계하고 다음 이미지와 같이 다른 차트를
-    생성합니다.
-
-9.  위쪽 리본에서 **Save**를 선택하여 나중에 이 보고서를 저장하세요.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image42.png)
-
-10. **Save your report** 대화 상자에서 보고서 이름을
+6. **Save your report** 대화 상자에서 보고서 이름을
     +++dimension_customer-report+++로 입력하고 **Save**를
     선택하세요**.**
 
-> ![](./media/image43.png)
+ > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img23.png)
 
 11. **Report saved**라는 알림이 표시됩니다.
 
@@ -333,14 +293,14 @@ Fabric에서 제공하는 유연성을 통해 Lakehouse 또는 데이터 웨어�
 
 1.  왼쪽 탐색창에서 **Fabric Lakehouse** **Tutorial-XX**를 클릭하세요.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image34.png)
+    > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imag24.png)
 
 2.  **Fabric Lakehouse Tutorial-XX** 작업 영역 페이지에서 **+New
     item** 버튼으로 이동하고 클릭하여 **Data pipeline**를 선택하세요.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image45.png)
+    > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img25.png)
 
 3.  New pipeline 대화 상자에서 이름을
     **+++IngestDataFromSourceToLakehouse+++**로 지정하고 **Create**를
@@ -348,9 +308,9 @@ Fabric에서 제공하는 유연성을 통해 Lakehouse 또는 데이터 웨어�
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image46.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image47.png)
+
+   > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img26.png)
 
 4.  Newly created data factory pipeline
     즉 **IngestDataFromSourceToLakehouse**에서 **Copy data assistant**를
@@ -393,37 +353,30 @@ Fabric에서 제공하는 유연성을 통해 Lakehouse 또는 데이터 웨어�
 
 9.  데이터 복사 프로세스를 완료하는 데 약 1-3분이 걸립니다.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image55.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image56.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image57.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image58.png)
+    > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img27.png)
+
+    > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img28.png)
 
 10. Output 탭에서 **Copy_a1n**을 선택하고 데이터 전송의 세부 정보를
     살펴보세요. **Status**를 **Succeeded**로 표시되면 **Close** 버튼을
     클릭하세요.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image59.png)
->
+ >    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img29.png)
+
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image60.png)
 
 11. 파이프라인이 성공적으로 실행되면 Lakehouse(**wwilakehouse**)로
     이동하여 탐색기를 열어 가져온 데이터를 확인하세요.
 
-> ![](./media/image61.png)
+>  ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img30.png)
 
 12. 모든 **WideWorldImporters 폴더**가 Explorer 보기에 있고 모든
     테이블에 대한 데이터가 포함되어 있는지 확인하세요.
 
-> ![](./media/image62.png)
+> ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img31.png)
 
 # 연습 3: lakehouse에서 데이터를 준비하고 변형하기
 
@@ -432,13 +385,13 @@ Fabric에서 제공하는 유연성을 통해 Lakehouse 또는 데이터 웨어�
 1.  **wwilakehouse** 페이지에서 **Open notebook**로 이동하고 클릭하여
     명령바에 드롭하고 **New notebook**을 선택하세요.
 
-> ![](./media/image63.png)
+ > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img32.png)
 
 2.  **Lakehouse explorer**의 open notebook에서, Notebook이 이미 열려
     있는 Lakehouse에 연결되어 있는 것을 볼 수 있습니다.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image64.png)
+    > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img33.png)
 
 \*\* 참고\*\*
 
@@ -469,11 +422,9 @@ Apache Spark 엔진은 기록된 파일 수를 줄이고 기록된 데이터의 
     spark.conf.set("spark.microsoft.delta.optimizeWrite.enabled", "true")
     spark.conf.set("spark.microsoft.delta.optimizeWrite.binSize", "1073741824")
     ```
-> ![](./media/image65.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image66.png)
->
+    > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img34.png)
+
 > 셀을 실행할 때 Fabric이 Live Pool을 통해 제공하므로 기본 Spark 풀 또는
 > 클러스터 세부 정보를 지정할 필요가 없습니다. 모든 Fabric 작업 영역에는
 > 라이브 풀이라는 기본 Spark 풀이 함께 제공됩니다. 즉, Notebook을 만들
@@ -481,7 +432,10 @@ Apache Spark 엔진은 기록된 파일 수를 줄이고 기록된 데이터의 
 > 필요가 없습니다. 첫 번째 Notebook 명령을 실행하면 라이브 풀이 몇 초
 > 안에 실행됩니다. 그리고 Spark 세션이 설정되고 코드 실행이 시작됩니다.
 > 후속 코드 실행은 Spark 세션이 활성 상태인 동안 이 Notebook에서 거의
-> 즉각적으로 수행됩니다. 
+> 즉각적으로 수행됩니다.
+
+   > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img35.png)
 
 5.  다음으로, Lakehouse의 **Files** 섹션에서 원시 데이터를 읽고 변환의
     일부로 다른 날짜 부분에 대한 열을 더 추가하세요. partitionBy Spark
@@ -705,7 +659,7 @@ Apache Spark 엔진은 기록된 파일 수를 줄이고 기록된 데이터의 
 함께 사용할 테이블을 만들기 위해 CREATE TABLE 문을 명시적으로 호출할
 필요가 없습니다.
 
-# 연습 4: Microsoft Fabric에서 보고서 작성
+# 연습 5: Microsoft Fabric에서 보고서 작성
 
 자습서의 이 섹션에서는 Power BI 데이터 모델을 만들고 처음부터 보고서를
 생성합니다.
@@ -739,26 +693,23 @@ DirectLake 모드는 이제 데이터 파일을 메모리에 직접 로드하여
 DirectLake 모드는 소스에서 자주 업데이트되는 매우 큰 데이터 세트 및
 데이터 세트를 분석하는 데 이상적인 선택입니다.
 
-1.  왼쪽 탐색 창에서 **Fabric_LakehouseXX**를 선택하고 **Type** **SQL
-    analytics endpoint**의 **wwilakehouse** 를 선택하세요.
+1.	왼쪽 메뉴에서  **Fabric Lakehouse-@lab.LabInstance.Id** 를 선택한 다음, **wwilakehouse**라는 이름의 **Semantic model**을 선택하세요.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image83.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image84.png)
+    ![](./media/img41.png)
 
-2.  SQL 엔드포인트 창에서 생성한 모든 테이블을 볼 수 있어야 합니다. 아직
-    표시되지 않으면 상단의 **Refresh ** 아이콘을 선택하세요. 다음으로,
-    아래쪽의 **Model layouts** 탭을 선택하여 기본 Power BI 데이터 세트를
-    여세요.
+2.	상단 메뉴 모음에서 **Open semantic model**을 선택하여 데이터 모델 디자이너를 여세요..
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image85.png)
->
-> ![](./media/image86.png)
+  ![](./media/img42.png)
 
-3.  **fact_sale** 테이블에서 **CityKey** 필드를 끌어서
+3.	오른쪽 상단에서 데이터 모델 디자이너가 Editing 모드인지 확인하세요.
+ 이때 드롭다운 텍스트가 **Editing**으로 변경되어야 합니다.
+   ![](./media/img43.png)
+
+4.	메뉴 리본에서 Edit tables를 선택하면 Table 동기화 대화 상자가 표시됩니다.
+     ![](./media/img44.png)
+5.	**Edit semantic model** 대화 상자에서 모든 **tables**를 선택한 후, 대화 상자 하단에 있는 Confirm을 선택하여 Semantic model을 동기화하세요.
+      ![](./media/img45.png)
+6.  **fact_sale** 테이블에서 **CityKey** 필드를 끌어서
     **dimension_city** 테이블의 **CityKey** 필드에 놓아 관계를
     생성합니다. **Create Relationship**대화 상자가 나타납니다.
 
@@ -766,7 +717,9 @@ DirectLake 모드는 소스에서 자주 업데이트되는 매우 큰 데이터
 > fact_sale 테이블을 나란히 배치하여 테이블을 재정렬합니다. 관계를
 > 생성하려고하는 두 테이블에 대해서도 마찬가지입니다. 이것은 테이블
 > 사이의 열을 끌어다 놓는 것을 더 쉽게 생성하기 위한
-> 것입니다. ![](./media/image87.png)
+> 것입니다.
+
+> ![](./media/image87.png)
 
 4.  **Create Relationship** 대화 상자에서:
 
@@ -980,5 +933,6 @@ Power BI 내에서 필수 구성 요소를 설정하고 구성하는 데 중점�
 위해 샘플 데이터 수집, 델타 테이블 최적화, Power BI에서 보고서 작성과
 관련된 작업도 다룹니다. 목표는 데이터 관리 및 보고 목적으로 Microsoft
 Fabric 및 Power BI를 활용하는 실습 경험을 제공하는 것을 목표로 합니다.
+
 
 
