@@ -142,8 +142,7 @@ Fabric에서 제공하는 유연성을 통해 Lakehouse 또는 데이터 웨어�
 >
 > ![](./media/image13.png)
 >
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img5.png)
+ > ![](./media/img5.png)
 
 4.  **Successfully created SQL endpoint**라는 알림이 표시됩니다.
 
@@ -933,6 +932,7 @@ Power BI 내에서 필수 구성 요소를 설정하고 구성하는 데 중점�
 위해 샘플 데이터 수집, 델타 테이블 최적화, Power BI에서 보고서 작성과
 관련된 작업도 다룹니다. 목표는 데이터 관리 및 보고 목적으로 Microsoft
 Fabric 및 Power BI를 활용하는 실습 경험을 제공하는 것을 목표로 합니다.
+
 
 
 
