@@ -123,8 +123,7 @@ Fabric에서 데이터로 작업하기 전에 Fabric 평가판을 사용하도�
 7.  배포가 완료될 때까지 기다리세요. 완료하는 데 2-3분이 소요됩니다. 새
     작업 영역이 열리면 비어 있어야 합니다.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image8.png)
+    ![](./media/img1.png)
 
 ## 작업 2: Lakehouse 생성하고 파일 업로드
 
@@ -134,8 +133,7 @@ Fabric에서 데이터로 작업하기 전에 Fabric 평가판을 사용하도�
 1.  탐색 모음에서 **+** **New item** 버튼을 클릭하여 새 Eventhouse를
     생성하세요.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image9.png)
+    ![](./media/img2.png)
 
 2.  "**Lakehouse**" 타일을 클릭하세요.
 
@@ -152,7 +150,7 @@ incorrect.](./media/image11.png)
 4.  1분 정도 후에 빈 새 lakehouse가 만들어집니다. 분석을 위해 일부
     데이터를 데이터 lakehouse로 수집해야 합니다.
 
-![](./media/image12.png)
+   ![](./media/img3.png)
 
 5.  **Successfully created SQL endpoint**라는 알림이 표시됩니다.
 
@@ -163,13 +161,13 @@ incorrect.](./media/image11.png)
     **Upload**를 탐색하여 클릭한 후 아래 이미지와 같이 **Upload folder**
     폴더를 클릭하세요.
 
-![](./media/image14.png)
+   ![](./media/img4.png)
 
 7.  오른쪽에 나타나는 **Upload folder** 창에서 **Files/** 아래의
     **folder icon**을 선택한 후 **C:\LabFiles**로 이동한 후 **orders**
     폴더를 선택하고 **Upload** 버튼을 클릭하세요.
 
-![](./media/image15.png)
+    ![](./media/img5.png)
 
 8.  **Upload 3 files to this site?** 대화 상자가 나타나면 **Upload**
     버튼을 클릭하세요.
@@ -187,7 +185,7 @@ incorrect.](./media/image11.png)
 11. **Files** 확장하고 **orders** 폴더를 선택하고 CSV 파일이
     업로드되었는지 확인하세요.
 
-> ![](./media/image19.png)
+   ![](./media/img6.png)
 
 ## 작업 3: notebook를 생성하기
 
@@ -198,8 +196,7 @@ Notebook은 코드를 작성 및 실행하고(여러 언어로) 메모를 추가
 1.  Datalake의 **orders** 폴더 내용을 보는 동안 **Home**  페이지의
     **Open notebook** 메뉴에서 **New notebook**을 선택하세요.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image20.png)
+     ![](./media/img7.png)
 
 2.  몇 초 후에 단일 *셀*이 포함된 새 노트북이 열립니다. 전자 필기장은
     *코드* 또는 *마크다운*(서식이 지정된 텍스트)을 포함할 수 있는 하나
@@ -1581,4 +1578,5 @@ PySpark를 사용하여 데이터를 조작 및 변환하고, 시각화를 생�
 자동화하고 작업 흐름을 간소화하며 실제 시나리오에서 생산성을 향상시키는
 방법을 배우게 됩니다. 정리 지침을 통해 불필요한 리소스를 남기지 않고
 체계적이고 효율적인 작업 공간 관리 접근 방식을 촉진할 수 있습니다.
+
 
