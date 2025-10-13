@@ -343,19 +343,19 @@ After a few minutes, the lakehouse is populated with the necessary data.
     many SQL queries that you want to upload all at once, instead of
     manually uploading the queries one by one.
 
-    > ![A screenshot of a computer AI-generated content may be
+   > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image45.png)
 
-    > ![A screenshot of a computer AI-generated content may be
+   > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image46.png)
 
-    > ![A screenshot of a computer AI-generated content may be
+   > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image47.png)
 
 11.  Add all the queries and SQL queries that you have saved in Notepad,
     and then click on 'Download all as .json'.
 
-    > ![A screenshot of a computer AI-generated content may be
+   > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image48.png)
 
 ## Task 6: Use the Data agent programmatically
@@ -562,6 +562,7 @@ programmatically from a Fabric notebook, demonstrating end-to-end AI
 integration. This lab empowers you to make enterprise data more
 accessible, usable, and intelligent for business users through natural
 language and generative AI technologies.
+
 
 
 
