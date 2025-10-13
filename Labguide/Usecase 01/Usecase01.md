@@ -1,1017 +1,701 @@
-# Use case 01: Creating a Lakehouse, ingesting sample data and building a report
+# Use Case 01: Data Factory solution for moving and transforming data with dataflows and data pipelines
 
 **Introduction**
 
-This usecase walks you through an end-to-end scenario from data acquisition
-to data consumption. It helps you build a basic understanding of Fabric,
-including the different experiences and how they integrate, as well as
-the professional and citizen developer experiences that come with
-working on this platform. This lab isn't intended to be a reference
-architecture, an exhaustive list of features and functionality, or a
-recommendation of specific best practices.
+This lab helps you accelerate the evaluation process for Data Factory in
+Microsoft Fabric by providing a step-by-step guidance for a full data
+integration scenario within one hour. By the end of this tutorial, you
+understand the value and key capabilities of Data Factory and know how
+to complete a common end-to-end data integration scenario.
 
-Traditionally, organizations have been building modern data warehouses
-for their transactional and structured data analytics needs. And data
-lakehouses for big data (semi/unstructured) data analytics needs. These
-two systems ran in parallel, creating silos, data duplicity, and
-increased total cost of ownership.
+**Objective**
 
-Fabric with its unification of data store and standardization on Delta
-Lake format allows you to eliminate silos, remove data duplicity, and
-drastically reduce total cost of ownership.
+The lab is divided into three exercises:
 
-With the flexibility offered by Fabric, you can implement either
-lakehouse or data warehouse architectures or combine them together to
-get the best of both with simple implementation. In this tutorial,
-you're going to take an example of a retail organization and build its
-lakehouse from start to finish. It uses the [medallion
-architecture](https://learn.microsoft.com/en-us/azure/databricks/lakehouse/medallion) where
-the bronze layer has the raw data, the silver layer has the validated
-and deduplicated data, and the gold layer has highly refined data. You
-can take the same approach to implement a lakehouse for any organization
-from any industry.
+- **Exercise 1:** Create a pipeline with Data Factory to ingest raw data
+  from a Blob storage to a bronze table in a data Lakehouse.
 
-This lab explains how a developer at the fictional Wide World Importers
-company from the retail domain completes the following steps.
+- **Exercise 2:** Transform data with a dataflow in Data Factory to
+  process the raw data from your bronze table and move it to a Gold
+  table in the data Lakehouse.
 
-**Objectives**:
+- **Exercise 3:** Automate and send notifications with Data Factory to
+  send an email to notify you once all the jobs are complete, and
+  finally, setup the entire flow to run on a scheduled basis.
 
-- Sign in to Power BI account and initiate a free Microsoft Fabric
-trial.
+## Exercise 1: Create a pipeline with Data Factory
 
-- Start the Microsoft Fabric (Preview) trial within Power BI.
+### Task 1: Create a workspace
 
-- Configure OneDrive sign-up for the Microsoft 365 admin center.
-
-- Build and implement an end-to-end lakehouse for the organization,
-including creating a Fabric workspace and a lakehouse.
-
-- Ingest sample data into the lakehouse and prepare it for further
-processing.
-
-- Transform and prepare the data using Python/PySpark and SQL
-notebooks.
-
-- Create business aggregate tables using different approaches.
-
-- Establish relationships between tables for seamless reporting.
-
-- Build a Power BI report with visualizations based on the prepared
-data.
-
-- Save and store the created report for future reference and
-analysis.
-
-## Exercise 1: Setup Lakehouse end-to-end scenario
-
-### Task 1: Sign in to Power BI account and sign up for the free Microsoft Fabric trial
+Before working with data in Fabric, create a workspace with the Fabric
+trial enabled.
 
 1.  Open your browser, navigate to the address bar, and type or paste
-    the following URL: +++https://app.fabric.microsoft.com/+++ then press
-    the **Enter** button.
+    the following URL: +++https://app.fabric.microsoft.com/+++ then
+    press the **Enter** button.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image1.png)
+    >[!note]**Note**: If you are directed to Microsoft Fabric Home page, then skip
+    > steps from \#2 to \#4.
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image1.png)
 
 2.  In the **Microsoft Fabric** window, enter your credentials, and
     click on the **Submit** button.
 
-    |   |   |
-    |---|---|
-    | Username | +++@lab.CloudPortalCredential(User1).Username+++ |
-    | Password | +++@lab.CloudPortalCredential(User1).Password+++ |
-
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image2.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image2.png)
 
 3.  Then, In the **Microsoft** window enter the password and click on
     the **Sign in** button.
 
     > ![A login screen with a red box and blue text AI-generated content may
-    > be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image3.png)
+    > be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image3.png)
 
 4.  In **Stay signed in?** window, click on the **Yes** button.
 
     > ![A screenshot of a computer error AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image4.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image4.png)
 
-5.  You'll be directed to Fabric Home page.
+    > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image5.png)
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image5.png)
+5.  On the Microsoft **Fabric Home Page**, select **New workspace**
+    option.
 
-## Exercise 2: Build and implement an end-to-end lakehouse for your organization
+    > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image6.png)
 
-### Task 1: Create a Fabric workspace
+6.  In the **Create a workspace** tab, enter the following details and
+    click on the **Apply** button.
 
-In this task, you create a Fabric workspace. The workspace contains all
-the items needed for this lakehouse tutorial, which includes lakehouse,
-dataflows, Data Factory pipelines, the notebooks, Power BI datasets, and
-reports.
-
-1.  Fabric home page, select **+New workspace** tile.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image6.png)
-
-2.  In the **Create a workspace** pane that appears on the right side,
-    enter the following details, and click on the **Apply** button.
-	
-    | Property  | Value  |
-    |-------|-----|
-    |Name|	+++Fabric Lakehouse Tutorial-@lab.LabInstance.Id+++ (must be a unique Id)|
+    |  |  |
+    |----|----|
+    |Name	| +++Data-Factory@lab.LabInstance.Id+++ (must be a unique id)| 
     |Advanced	|Under License mode, select Fabric capacity|
-    |Default	storage format| Small dataset storage format|
-    |Template apps	|Check the Develop template apps|
+    |Default storage format|	Small semantic model storage format|
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image7.png)
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image7.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image8.png)
 
-    >[!note]**Note**: To find your lab instant ID, select 'Help' and copy the instant ID.
+7.  Wait for the deployment to complete. It'll take approximately 2-3
+    minutes.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image8.png)
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image9.png)
-
-3.  Wait for the deployment to complete. It takes 2-3 minutes to
-    complete.
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image10.png)
+     ![](./media/img1.png)
 
 ### Task 2: Create a lakehouse
 
-1.  Create a new lakehouse by clicking on the **+New item** button in
-    the navigation bar.
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image11.png)
-
-2.  Filter by, and select, the **+++Lakehouse+++** tile.
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image12.png)
-
-3.  In the **New lakehouse** dialog box, enter **+++wwilakehouse+++** in
-    the **Name** field, click on the **Create** button and open the new
-    lakehouse.
-
-    >[!note]**Note**: Be sure to remove space before **wwilakehouse**.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image13.png)
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image14.png)
-
-4.  You will see a notification stating **Successfully created SQL
-    endpoint**.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image15.png)
-
-### Task 3: Ingest sample data
-
-1.  In the **wwilakehouse** page, navigate to **Get data in your
-    lakehouse** section, and click on **Upload files as shown in the
-    below image.**
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image16.png)
-
-2.  On the Upload files tab, click on the folder under the Files
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image17.png)
-
-3.  Browse to **C:\LabFiles\LabFiles** on your VM, then
-    select **dimension_customer.csv** file and click
-    on **Open** button.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image18.png)
-
-4.  Then, click on the **Upload** button and close the **Upload files** dialog by selecting the **X** icon for the dialog.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image19.png)
-
-5.  Click and select refresh on the **Files**. The file appear.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image20.png)
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image21.png)
-
-6.  In the **Lakehouse** page, Under the Explorer pane select **Files**.
-    Now, hover your mouse over the **dimension_customer.csv** file. Click on
-    the horizontal ellipses **(…)** beside **dimension_customer.csv**.
-    Navigate and click on **Load Table**, then select **New table**.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image22.png)
-
-7.  In the **Load file to new table** dialog box, click on
-    the **Load** button.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image23.png)
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image24.png)
-
-8.  Select the **dimension_coustomer** table to preview the data.
-
-    >[!note]**Note**: You may need to select the **Refresh** button more than once to preview the data.
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image25.png)
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image26.png)
-
-9.  You can also use the SQL endpoint of the lakehouse to query the data
-    with SQL statements. Select **SQL analytics endpoint** from
-    the **Lakehouse** drop-down menu at the top right of the screen.
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image27.png)
-
-10. In the wwilakehouse page, under Explorer select
-    the **dimension_customer** table to preview its data and then 
-    select **New SQL query** to write your SQL statements.
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image28.png)
-
-11. The following sample query aggregates the row count based on
-    the **BuyingGroup column** of the **dimension_customer** table. SQL
-    query files are saved automatically for future reference, and you
-    can rename or delete these files based on your need. Paste the code
-    as shown in the below image, then click on the play icon
-    to **Run** the script.
+1.  In the **Data-Factory@lab.LabInstance.Id** workspace page, navigate and click on
+    **+New item** button
 	
-    ```
-    SELECT BuyingGroup, Count(*) AS Total
-    FROM dimension_customer
-    GROUP BY BuyingGroup
-    ```
+     ![](./media/img3.png)
+
+3.  Filter by, and select, the **+++Lakehouse+++** tile.
+
+    > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image11.png)
+
+1.  In the **New lakehouse** dialog box, enter
+    **+++DataFactoryLakehouse+++** in the **Name** field, click on the
+    **Create** button to open the new lakehouse.
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image12.png)
 	
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image29.png)
+     ![](./media/img3.png)
 
-    >[!note]**Note**: If you encounter an error during the execution of the script, then crosscheck the script syntax with the above image.
+4.  Now, click on **Data-Factory@lab.LabInstance.Id** on the left-sided navigation pane.
 
-    ![](./media/aaa1.png)
+      ![](./media/img4.png)
 
-    >[!note]**Note**: Previously all the lakehouse tables and views were automatically
-    added to the semantic model. With the recent updates, for new
-    lakehouses, you have to manually add your tables to the semantic
-    model.
+### Task 3: Create a data pipeline
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image31.png)
+1.  Select the **+ New item** option on the workspace page.
 
-12. From the lakehouse **Home** tab, select **New semantic model** and then select the tables that you want to add to the semantic model.
+     ![](./media/img5.png)
 
-    ![](./media/11a.png)
-	
-13. In the **New semantic model** dialog enter +++wwilakehouse+++ and then select the **dimension_customer** table from the list of tables and select **Confirm** to create the new model.
+2.  Select **Pipeline** from the new item flyout menu.
 
-      ![](./media/11b.png)
-	
+     ![](./media/img6.png)
 
-### Task 4: Build a report
+3.  Provide a Pipeline Name as **+++First_Pipeline1+++** and then select
+    **Create**.
 
-1.  Now, click on **Fabric Lakehouse** **Tutorial-@lab.LabInstance.Id** on the left-sided
-    navigation pane.
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image17.png)
 
-    ![](./media/aaa2.png)
+### Task 4: Use a Copy activity in the pipeline to load sample data to a data Lakehouse
 
-2.  Now, select **wwilakehouse** of type **SQL analytics **
+1.  In the **First_Pipeline1** home page, Select **Copy data assistant**
+     to open the copy assistant tool.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image35.png)
+     ![](./media/img7.png) 
 
-3.  From the lakehouse **Home** tab, select **Settings**
+2.  The **Copy data** dialog is displayed with the first step, **Choose
+    data source**, highlighted. Select  **Sample data** section, and
+    select the **NYC Taxi-Green** data source type. Then
+    select **Next**.
 
-      ![](./media/aaa3.png)
+    > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image19.png)
 
-4.  To ensure that the tables in the semantic model are always in sync,
-    switch to the **SQL analytics endpoint** view and open the
-    lakehouse **settings** pane. Select **Default Power BI semantic
-    model** and turn on **Sync the default Power BI semantic model**
+3.  In the **Connect to data source**, click on **Next** button.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image37.png)
--->
+    > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image20.png)
 
-5.  Now, click on **Fabric Lakehouse** **Tutorial-@lab.LabInstance.Id** on the left-sided
-    navigation pane.
+4.  Select **OneLake catalog** and select **Existing Lakehouse** on the
+    data destination configuration page that appears.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image34.png)
+    > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image21.png)
 
-6.  In the **Fabric Lakehouse Tutorial-@lab.LabInstance.Id** view,
-    select **wwilakehouse** of Type **Semantic model**.
+5.  Now configure the details of your Lakehouse destination on
+    the **Select and map to folder path or table.** page.
+    Select **Tables** for the **Root folder**, provide a table name
+    **+++Bronze+++**, and select the **Next**.
 
-       ![](./media/aaa4.png)
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image23.png)
 
-7.  From the semantic model pane, you can view all the tables. You have
-    options to create reports either from scratch, paginated report, or
-    let Power BI automatically create a report based on your data. For
-    this tutorial, under **Explore this data**, select **Auto-create a
-    report** as shown in the below image.
+6.  Finally, on the **Review + save** page of the copy data assistant, review the
+    configuration. For this lab, uncheck the **Start data transfer
+    immediately** checkbox, since we run the activity manually in the
+    next step. Then select **OK**.
 
-      ![](./media/aaa5.png)
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image40.png)
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image41.png)
-
-    >[!note]**Note**: Since the table is a dimension and there are no measures in it,
-    Power BI creates a measure for the row count and aggregates it
-    across different columns, and creates different charts as shown in
-    the following image.
-
-9.  Save this report for the future by selecting **Save** from the top
-    ribbon.
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image42.png)
-
-10. In the **Save your replort** dialog box, enter a name for your
-    report as +++dimension_customer-report+++ and select **Save.**
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image43.png)
-
-11. You will see a notification stating **Report saved**.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image44.png)
-
-## Exercise 3: Ingest data into the lakehouse
-
-In this exercise, you ingest additional dimensional and fact tables from
-the Wide World Importers (WWI) into the lakehouse.
-
-### Task 1: Ingest data
-
-1.  Now, click on **Fabric Lakehouse** **Tutorial-@lab.LabInstance.Id** on the left-sided
-    navigation pane.
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea1.png)
-
-2.  In the **Fabric Lakehouse Tutorial-@lab.LabInstance.Id** workspace page, navigate and
-    click on **+New item** button, then select **Data pipeline**.
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea2.png)
-
-3.  In the New pipeline dialog box, specify the name
-    as **+++IngestDataFromSourceToLakehouse+++** and
-    select **Create.** A new data factory pipeline is created and opened
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea3.png)
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea4.png)
-
-4.  On newly created data factory pipeline
-    i.e **IngestDataFromSourceToLakehouse**, select  **Copy data
-    assistant** .
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea5.png)
-
-5.  Next, set up a **Sample data** connection to import the sample
-    World Wide Importers data into the Lakehouse. From the list of **New
-    sources**, select **Retail Data Model from Wide World Importers**.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea6.png)
-
-6.  In the **Connect to data source** window, Select **Retail Data Model
-    from Wide World Importers** data and select **Next**.
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea7.png)
-
-7.  In the **Connect to data destination** window, select **OneLake
-    catalog** and select **wwilakehouse.** Now specify the **Root
-    folder** as **Files** and click **Next**. This will write the data
-    to the **Files** section of the lakehouse.
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea8.png)
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea9.png)
-
-1.  Choose the **File format** should be empty for the destination.
-    Click **Save + Run** to initiate the pipeline. You can schedule pipelines to
-    refresh data periodically. In this tutorial, we only run the
-    pipeline once.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea10.png)
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea11.png)
-
-2.  The data copy process takes approximately 1-3 minutes to complete.
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea12.png)
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea13.png)
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea14.png)
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea15.png)
-
-3.  Under the Output tab, select **Copy_a1n** to look at the details of
-    the data transfer. After seeing the **Status** as **Succeeded**,
-    click on the **Close** button.
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea16.png)
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea17.png)
-
-4.  After the successful execution of the pipeline, go to your lakehouse
-    (**wwilakehouse**) and open the explorer to see the imported data.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea18.png)
-
-5.  Verify that the all the  **WideWorldImporters folders** is present
-    in the **Explorer** view and contains data for all tables.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea19.png)
-
-## Exercise 4: Prepare and transform data in the lakehouse
-
-### Task 1: Transform data and load to silver Delta table
-
-1.  In the **wwilakehouse** page, navigate and click on **Open
-    notebook** drop in the command bar, then select **New notebook**.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea20.png)
-
-2.  In the open notebook in **Lakehouse explorer**, you will see that the notebook
-    is already linked to your opened lakehouse.
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea21.png)
-
-    >[!note]**Note**: 
-    >Fabric provides the [**V-order**](https://learn.microsoft.com/en-us/fabric/data-engineering/delta-optimization-and-v-order) capability
-    >to write optimized delta lake files. V-order often improves compression by three to four times and up to 10 times performance acceleration over
-    >the Delta Lake files that aren't optimized. Spark in Fabric dynamically optimizes partitions while generating files with a default 128 MB size.
-    >The target file size may be changed per workload requirements using configurations. With the [**optimize
-    >write**](https://learn.microsoft.com/en-us/fabric/data-engineering/delta-optimization-and-v-order#what-is-optimized-write) capability, 
-	>the Apache Spark engine that reduces the number of files written and aims to increase individual file size of the written data.
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image22.png)
     
-3.  Before you write data as delta lake tables in the **Tables** section
-    of the lakehouse, you use two Fabric features
-    (**V-order** and **Optimize Write**) for optimized data writing and
-    for improved reading performance. To enable these features in your
-    session, set these configurations in the first cell of your
-    notebook.
-    
-    Update the code in the **cell** with the following code and click on **▷ Run
-    cell** that appears to the left of the cell upon hover.
-	
-    ```
-    # Copyright (c) Microsoft Corporation.
-    # Licensed under the MIT License.
-    spark.conf.set("spark.sql.parquet.vorder.enabled", "true")
-    spark.conf.set("spark.microsoft.delta.optimizeWrite.enabled", "true")
-    spark.conf.set("spark.microsoft.delta.optimizeWrite.binSize", "1073741824")
-    ```
-	[!note]**Note**: When running a cell, you didn't have to specify the underlying Spark
-    > pool or cluster details because Fabric provides them through Live
-    > Pool. Every Fabric workspace comes with a default Spark pool, called
-    > Live Pool. This means when you create notebooks, you don't have to
-    > worry about specifying any Spark configurations or cluster details.
-    > When you execute the first notebook command, the live pool is up and
-    > running in a few seconds. And the Spark session is established and it
-    > starts executing the code. Subsequent code execution is almost
-    > instantaneous in this notebook while the Spark session is active. 
+### Task 5: Run and view the results of your Copy activity.
 
-4.  Next, you read raw data from the **Files** section of the lakehouse
-    and add more columns for different date parts as part of the
-    transformation. You use partitionBy Spark API to partition the data
-    before writing it as delta table based on the newly created data
-    part columns (Year and Quarter).
-    
-    Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
+1.  On the **Home** tab of the pipeline editor window, then select
+    the **Run** button to manually trigger the run of the pipeline.
 
-    **Note**: In case, you are unable to see the output, then click on the
-    horizontal lines on the left side of **Spark jobs**.
-	
-    ```
-    from pyspark.sql.functions import col, year, month, quarter
-    
-    table_name = 'fact_sale'
-    
-    df = spark.read.format("parquet").load('Files/fact_sale_1y_full')
-    df = df.withColumn('Year', year(col("InvoiceDateKey")))
-    df = df.withColumn('Quarter', quarter(col("InvoiceDateKey")))
-    df = df.withColumn('Month', month(col("InvoiceDateKey")))
-    
-    df.write.mode("overwrite").format("delta").partitionBy("Year","Quarter").save("Tables/" + table_name)
-    ```
+    > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image24.png)
 
-    ![](./media/aaa11.png)
+2.  In the **Save and run?** dialog box, click on **Save and run**
+    button to execute these activities. This activity will take around
+    12-13 min.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea25.png)
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image25.png)
 
-5.  After the tables load, you can move on to loading data for the
-    rest of the dimensions. The following cell creates a function to
-    read raw data from the **Files** section of the lakehouse for each
-    of the table names passed as a parameter. Next, it creates a list of
-    dimension tables. Finally, it loops through the list of tables and
-    creates a delta table for each table name that's read from the input
-    parameter.
+    > ![A screenshot of a computer Description automatically
+    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image26.png)
 
-    Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output.
-	
-    ```
-    from pyspark.sql.types import *
-    
-    def loadFullDataFromSource(table_name):
-        df = spark.read.format("parquet").load('Files/' + table_name)
-        df = df.drop("Photo")
-        df.write.mode("overwrite").format("delta").save("Tables/" + table_name)
-    
-    full_tables = [
-        'dimension_city',
-        'dimension_customer',
-        'dimension_date',
-        'dimension_employee',
-        'dimension_stock_item'
-    ]
-    
-    for table in full_tables:
-        loadFullDataFromSource(table)
-    ```
-	
-  ![](./media/imagea261.png)
+3.  You can monitor the run and check the results on the **Output** tab
+    below the pipeline canvas. Select the **activity name** to view the
+    run details.
 
-> ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea27.png)
-
-6.  To validate the created tables, click and select refresh on
-    the **Tables** in the **Explorer** panel until all the tables appear in the list. 
-
-  ![](./media/imagea381.png)
-
-![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea29.png)
-
-### Task 2: Transforming Business Data for Aggregation
-
-An organization might have data engineers working with Scala/Python
-and other data engineers working with SQL (Spark SQL or T-SQL), all
-working on the same copy of the data. Fabric makes it possible for
-these different groups, with varied experience and preference, to
-work and collaborate. The two different approaches transform and
-generate business aggregates. You can pick the one suitable for you
-or mix and match these approaches based on your preference without
-compromising on the performance:
-
-- **Approach \#1** - Use PySpark to join and aggregates data for
-    generating business aggregates. This approach is preferable to
-    someone with a programming (Python or PySpark) background.
-
-- **Approach \#2** - Use Spark SQL to join and aggregates data for
-    generating business aggregates. This approach is preferable to
-    someone with SQL background, transitioning to Spark.
-
-<u>**Approach \#1 (sale_by_date_city)**</u>
-
-Use PySpark to join and
-aggregate data for generating business aggregates. With the
-following code, you create three different Spark dataframes, each
-referencing an existing delta table. Then you join these tables
-using the dataframes, do group by to generate aggregation, rename a
-few of the columns, and finally write it as a delta table in
-the **Tables** section of the lakehouse to persist with the data.
-
-1.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
-
-    In this cell, you create three different Spark dataframes, each
-    referencing an existing delta table.
-	
-    ```
-    df_fact_sale = spark.read.table("wwilakehouse.fact_sale") 
-    df_dimension_date = spark.read.table("wwilakehouse.dimension_date")
-    df_dimension_city = spark.read.table("wwilakehouse.dimension_city")
-    ```
-	
-  ![](./media/aaa6.png)
-
-> ![A screen shot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea31.png)
-
-2.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
-
-    In this cell, you join these tables using the dataframes created
-    earlier, do group by to generate aggregation, rename a few of the
-    columns, and finally write it as a delta table in
-    the **Tables** section of the lakehouse.
-	
-    ```
-    sale_by_date_city = df_fact_sale.alias("sale") \
-    .join(df_dimension_date.alias("date"), df_fact_sale.InvoiceDateKey == df_dimension_date.Date, "inner") \
-    .join(df_dimension_city.alias("city"), df_fact_sale.CityKey == df_dimension_city.CityKey, "inner") \
-    .select("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", 
-     "city.SalesTerritory", "sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")\
-    .groupBy("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", 
-     "city.SalesTerritory")\
-    .sum("sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")\
-    .withColumnRenamed("sum(TotalExcludingTax)", "SumOfTotalExcludingTax")\
-    .withColumnRenamed("sum(TaxAmount)", "SumOfTaxAmount")\
-    .withColumnRenamed("sum(TotalIncludingTax)", "SumOfTotalIncludingTax")\
-    .withColumnRenamed("sum(Profit)", "SumOfProfit")\
-    .orderBy("date.Date", "city.StateProvince", "city.City")
-    
-    sale_by_date_city.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_city")
-    ```
-	
-   ![](./media/aaa7.png)
-
- ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea33.png)
-
-<u>**Approach \#2 (sale_by_date_employee)** </u>
-
-Use Spark SQL to join and
-aggregate data for generating business aggregates. With the
-following code, you create a temporary Spark view by joining three
-tables, do group by to generate aggregation, and rename a few of the
-columns. Finally, you read from the temporary Spark view and finally
-write it as a delta table in the **Tables** section of the lakehouse
-to persist with the data.
-
-3.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
-
-    In this cell, you create a temporary Spark view by joining three
-    tables, do group by to generate aggregation, and rename a few of the
-    columns.
-	
-    ```
-    %%sql
-    CREATE OR REPLACE TEMPORARY VIEW sale_by_date_employee
-    AS
-    SELECT
-           DD.Date, DD.CalendarMonthLabel
-     , DD.Day, DD.ShortMonth Month, CalendarYear Year
-          ,DE.PreferredName, DE.Employee
-          ,SUM(FS.TotalExcludingTax) SumOfTotalExcludingTax
-          ,SUM(FS.TaxAmount) SumOfTaxAmount
-          ,SUM(FS.TotalIncludingTax) SumOfTotalIncludingTax
-          ,SUM(Profit) SumOfProfit 
-    FROM wwilakehouse.fact_sale FS
-    INNER JOIN wwilakehouse.dimension_date DD ON FS.InvoiceDateKey = DD.Date
-    INNER JOIN wwilakehouse.dimension_Employee DE ON FS.SalespersonKey = DE.EmployeeKey
-    GROUP BY DD.Date, DD.CalendarMonthLabel, DD.Day, DD.ShortMonth, DD.CalendarYear, DE.PreferredName, DE.Employee
-    ORDER BY DD.Date ASC, DE.PreferredName ASC, DE.Employee ASC
-    ```
-
-   ![](./media/aaa8.png)
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea35.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image27.png)
 
-4. Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
+4. The run details show rows Data read and Data written.
 
-    In this cell, you read from the temporary Spark view created in the
-    previous cell and finally write it as a delta table in
-    the **Tables** section of the lakehouse.
-	
-    ```
-    sale_by_date_employee = spark.sql("SELECT * FROM sale_by_date_employee")
-    sale_by_date_employee.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_employee")
-    ```
+    ![](./media/img8.png)
 
- ![](./media/aaa9.png)
+5.  Expand the **Duration breakdown** section to see the duration of
+    each stage of the Copy activity. After reviewing the copy details,
+    select Close.
+
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea37.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image29.png)
 
-5. To validate the created tables, click and select refresh on
-    the **Tables** until the aggregate tables appear.
+### Exercise 2: Transform data with a dataflow in Data Factory
 
- ![](./media/aaa10.png)
-   > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea39.png)
+### Task 1: Get data from a Lakehouse table
+1.	After the successful execution of the pipeline Now, click on workspace Data Factory-@lab.LabInstance.Id on the left-sided navigation pane.
 
-Both the approaches produce a similar outcome. You can choose based on
-your background and preference, to minimize the need for you to learn a
-new technology or compromise on the performance.
+     ![](./media/img9.png)
 
-Also you may notice that you're writing data as delta lake files. The
-automatic table discovery and registration feature of Fabric picks up
-and registers them in the metastore. You don't need to explicitly
-call CREATE TABLE statements to create tables to use with SQL.
+2. Create a new **Dataflow Gen2** by clicking on the **+New item** button in the navigation bar. From the list of available items select the **Dataflow Gen2** item
 
+     ![](./media/img10.png)
 
-## Exercise 5: Building reports in Microsoft Fabric
+3.  Provide a New Dataflow Gen2 Name as
+    **+++nyc_taxi_data_with_discounts+++** and then select **Create**.
 
-In this section of the tutorial, you create a Power BI data model and
-create a report from scratch.
+    > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image32.png)
 
-### Task 1: Explore data in the silver layer using the SQL endpoint
+4.  From the new dataflow menu, under the **Power Query** pane click on
+    **Get data drop down**, then select **More...**.
 
-Power BI is natively integrated in the whole Fabric experience. This
-native integration brings a unique mode, called DirectLake, of accessing
-the data from the lakehouse to provide the most performant query and
-reporting experience. DirectLake mode is a groundbreaking new engine
-capability to analyze very large datasets in Power BI. The technology is
-based on the idea of loading parquet-formatted files directly from a
-data lake without having to query a data warehouse or lakehouse
-endpoint, and without having to import or duplicate data into a Power BI
-dataset. DirectLake is a fast path to load the data from the data lake
-straight into the Power BI engine, ready for analysis.
+      ![](./media/img11.png)
 
-In traditional DirectQuery mode, the Power BI engine directly queries
-the data from the source to execute each query, and the query
-performance depends on data retrieval speed. DirectQuery eliminates the
-need to copy data, ensuring that any changes in the source are
-immediately reflected in the query results during the import. On the
-other hand, in Import mode performance is better because the data is
-readily available in the memory without querying data from the source
-for each query execution. However, the Power BI engine must first copy
-the data into memory during data refresh. Only changes to the underlying
-data source are picked up during the next data refresh(in scheduled as
-well as on-demand refresh).
+5.  In the **Choose data source** tab, search box search type
+    **+++Lakehouse+++** and then click on the **Lakehouse** connector.
 
-DirectLake mode now eliminates this import requirement by loading the
-data files directly into memory. Because there's no explicit import
-process, it's possible to pick up any changes at the source as they
-occur, thus combining the advantages of DirectQuery and import mode
-while avoiding their disadvantages. DirectLake mode is therefore the
-ideal choice for analyzing very large datasets and datasets with
-frequent updates at the source.
+    > ![A screenshot of a computer Description automatically
+    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image34.png)
 
-1. From the left menu select the **Fabric Lakehouse-@lab.LabInstance.Id** then select your Semantic model named **wwilakehouse**.
+6.  The **Connect to data source** dialog appears, and a new connection
+    is automatically created for you based on the currently signed in
+    user. Select **Next**.
 
-      ![](./media/ab1.png)
+    > ![A screenshot of a computer Description automatically
+    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image35.png)
 
-2. On the top menu bar select **Open semantic model** to open the data model designer.
+7.  The **Choose data** dialog is displayed. Use the navigation pane to
+    find the **workspace- Data-Factory@lab.LabInstance.Id** and expand it. Then, expand
+    **Lakehouse** - **DataFactoryLakehouse**  you created for the
+    destination in the prior module, and select the **Bronze** table
+    from the list then click on **Create** button.
 
-      ![](./media/ab2.png)
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image36.png)
 
-3. At the top-right ensure that the data model designer is in the **Editing** mode. This should change the drop-down text to “Editing”.
+    >[!note]**Note**: The canvas is now populated with the data.
 
-   ![](./media/ab3.png)
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image37.png)
 
-4. In the menu ribbon select **Edit tables** to display the table synchronization dialog.
+### Task 2: Transform the data imported from the Lakehouse
 
-   ![](./media/ab4.png)
-
-5. On the **Edit semantic model** dialog select all the tables and then select **Confirm** at the bottom of the dialog to synchronize the Semantic model.
-
-      ![](./media/ab5.png)
-
-    >[!note]**Note**: Once the synchronization has been completed the Semantic model designer will display all the available tables.
-6.  From the **fact_sale** table, drag the **CityKey** field and drop it
-    on the **CityKey** field in the **dimension_city** table to create a
-    relationship. The **Create Relationship** dialog box appears.
-
-    >[!note]**Note**: Rearrange the tables by clicking on the table, dragging and
-    > dropping to have the dimension_city and the fact_sale tables next to
-    > each other. The same holds good for any two tables that you are trying
-    > to create relationship. This is just to make the drag and drop of the
-    > columns between the tables is easier.
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image97.png)
-
-7.  In the **Create Relationship** dialog box:
-
-    - **Table 1** is populated with **fact_sale** and the column
-      of **CityKey**.
-
-    - **Table 2** is populated with **dimension_city** and the column
-      of **CityKey**.
-
-    - Cardinality: **Many to one (\*:1)**
-
-    - Cross filter direction: **Single**
-
-    - Leave the box next to **Make this relationship active** selected.
-
-    - Select the box next to **Assume referential integrity.**
-
-    - Select **Save.**
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image98.png)
-
-8.  Next, add these relationships with the same **Create
-    Relationship** settings as shown above but with the following tables
-    and columns:
-
-    - **StockItemKey(fact_sale)** - **StockItemKey(dimension_stock_item)**
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image99.png)
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image100.png)
-
-    - **Salespersonkey(fact_sale)** - **EmployeeKey(dimension_employee)**
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image101.png)
-
-9.  Ensure to create the relationships between the below two sets using
-    the same steps as above.
-
-    - **CustomerKey(fact_sale)** - **CustomerKey(dimension_customer)**
-
-    - **InvoiceDateKey(fact_sale)** - **Date(dimension_date)**
-
-10.  After you add these relationships, your data model should be as
-    shown in the below image and is ready for reporting.
-
-      ![](./media/aaa12.png)
-
-### Task 2: Build a Report
-
-1.  From the **File** menu, select **Create new report** to start creating reports/dashboards in Power BI.
-
-    ![](./media/aaa13.png)
-
-2.  On the Power BI report canvas, you can create reports to meet your
-    business requirements by dragging required columns from
-    the **Data** pane to the canvas and using one or more of available
-    visualizations.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image105.png)
-
-    <u>**Add a title:**</u>
-
-3.  In the Ribbon, select **Text box**. Type in **+++WW Importers Profit
-    Reporting+++**. Highlight the **text** and increase size to **20**.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image106.png)
-
-4.  Resize the text box and place it in the **upper left** of the report
-    page and click outside the textbox.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image107.png)
-
-    <u>**Add a Card:**</u>
-
-1.  On the **Data** pane, expand **fact_sales** and check the box next
-    to **Profit**. This selection creates a column chart and adds the
-    field to the Y-axis.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image108.png)
-
-5.  With the bar chart selected, select the **Card** visual in the
-    visualization pane.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image109.png)
-
-6.  This selection converts the visual to a card. Place the card under
-    the title.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image110.png)
-
-7.  Click anywhere on the blank canvas (or press the Esc key) so the
-    Card that we just placed is no longer selected.
-
-    <u>**Add a Bar chart:**</u>
-
-8.  On the **Data** pane, expand **fact_sales** and check the box next
-    to **Profit**. This selection creates a column chart and adds the
-    field to the Y-axis. 
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image111.png)
-
-9.  On the **Data** pane, expand **dimension_city** and check the box
-    for **SalesTerritory**. This selection adds the field to the
-    Y-axis. 
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image112.png)
-
-10. With the bar chart selected, select the **Clustered bar
-    chart** visual in the visualization pane. This selection converts
-    the column chart into a bar chart.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image113.png)
-
-11. Resize the Bar chart to fill in the area under the title and Card.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image114.png)
-
-12. Click anywhere on the blank canvas (or press the Esc key) so the bar
-    chart is no longer selected.
-
-    <u>**Build a stacked area chart visual:**</u>
-
-13. On the **Visualizations** pane, select the **Stacked area
-    chart** visual.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image115.png)
-
-14. Reposition and resize the stacked area chart to the right of the
-    card and bar chart visuals created in the previous steps.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image116.png)
-
-15. On the **Data** pane, expand **fact_sales** and check the box next
-    to **Profit**. Expand **dimension_date** and check the box next
-    to **FiscalMonthNumber**. This selection creates a filled line chart
-    showing profit by fiscal month.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image117.png)
-
-16. On the **Data** pane, expand **dimension_stock_item** and
-    drag **BuyingPackage** into the Legend field well. This selection
-    adds a line for each of the Buying Packages.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image118.png)
+1. Select the data type icon in the
+    column header of the second column, **IpepPickupDatetime**, to
+    display a dropdown menu and select the data type from the menu to
+    convert the column from the **Date/Time** to **Date** type.
 	
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image119.png)
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image38.png)
 
-17. Click anywhere on the blank canvas (or press the Esc key) so the
-    stacked area chart is no longer selected.
+2.  On the **Home** tab of the ribbon, select
+    the **Choose columns** option from the **Manage columns** group.
+	
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image39.png)
 
-    <u>**Build a column chart:**</u>
+3.  On the **Choose columns** dialog, **deselect** the columns listed
+    here, then select **OK**.
 
-18. On the **Visualizations** pane, select the **Stacked column
-    chart** visual.
+    - lpepDropoffDatetime
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image120.png)
+    - puLocationId
 
-19. On the **Data** pane, expand **fact_sales** and check the box next
-    to **Profit**. This selection adds the field to the Y-axis.
+    - doLocationId
 
-20. On the **Data** pane, expand **dimension_employee** and check the
-    box next to **Employee**. This selection adds the field to the
-    X-axis.
+    - pickupLatitude
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image121.png)
+    - dropoffLongitude
 
-21. Click anywhere on the blank canvas (or press the Esc key) so the
-    chart is no longer selected.
+    - rateCodeID
 
-22. From the ribbon, select **File** \> **Save**.
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image40.png)
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image122.png)
+4.  Select the **storeAndFwdFlag** column's filter and sort dropdown
+    menu. (If you see a warning **List may be incomplete**,
+    select **Load more** to see all the data.)
 
-23. Enter the name of your report as **+++Profit Reporting+++**.
-    Select **Save**.
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image41.png)
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image123.png)
+5.  Select '**Y'** to show only rows where a discount was applied, and
+    then select **OK**.
 
-24. You will get a notification stating that the report has been
-    saved. ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image124.png)
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image42.png)
 
-## Exercise 6: Clean up resources
+6.  Select the **Ipep_Pickup_Datetime** column sort and filter dropdown
+    menu, then select **Date filters**, and choose
+    the **Between...** filter provided for Date and Date/Time types.
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image43.png)
+
+7.  In the **Filter rows** dialog, select dates between **January 1,
+    2019**, and **January 31, 2019**, then select **OK**.
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image44.png)
+
+### Task 3: Connect to a CSV file containing discount data
+
+Now, with the data from the trips in place, we want to load the data
+that contains the respective discounts for each day and VendorID, and
+prepare the data before combining it with the trips data.
+
+1.  From the **Home** tab in the dataflow editor menu, select the **Get
+    data** option, and then choose **Text/CSV**.
+
+     ![](./media/img12.png)
+
+2.  In the **Connect to data source** pane, under **Connection
+    settings**, select **Link to file** radio button, then enter
+    +++https://raw.githubusercontent.com/ekote/azure-architect/master/Generated-NYC-Taxi-Green-Discounts.csv+++. set the **Connection name** to **+++dfconnection+++**, and 
+    make sure **authentication  kind** is set to **Anonymous**. click
+    on the **Next** button.
+
+    > ![](https://raw.githubusercontent.com/LODSContent/DPAI-120-msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/skillable_image1.png)
+
+3.  On the **Preview file data** dialog, select **Create**.
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image47.png)
+
+### Task 4: Transform the discount data
+
+1.  Reviewing the data, we see the headers appear to be in the first
+    row. Promote them to headers by selecting the table's context menu
+    at the top left of the preview grid area to select **Use first row
+    as headers**.
+
+    > ![A screenshot of a computer Description automatically
+    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image48.png)
+
+    >[!note]**Note:** After promoting the headers, you can see a new step added
+    > to the **Applied steps** pane at the top of the dataflow editor to the
+    > data types of your columns.*
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image49.png)
+
+2.  Right-click the **VendorID** column, and from the context menu
+    displayed, select the option **Unpivot other columns**. This allows
+    you to transform columns into attribute-value pairs, where columns
+    become rows.
+
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image50.png)
+
+3.  With the table unpivoted, rename
+    the **Attribute** and **Value** columns by double-clicking them and
+    changing **Attribute** to **+++Date+++** and **Value** to **+++Discount+++**.
+
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image51.png)
+
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image52.png)
+
+4.  Change the data type of the **Date** column by selecting the data
+    type menu to the left of the column name and choosing **Date**.
+
+    > ![A screenshot of a computer Description automatically
+    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image53.png)
+
+5.  Select the **Discount** column and then select the **Transform** tab
+    on the menu. Select **Number column**, and then
+    select **Standard** numeric transformations from the submenu, and
+    choose **Divide**.
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image54.png)
+
+6.  On the **Divide** dialog, enter the value +++100+++, then click on
+    **OK** button.
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image55.png)
+
+### Task 7: Combine trips and discounts data
+
+The next step is to combine both tables into a single table that has the
+discount that should be applied to the trip, and the adjusted total.
+
+1.  First, toggle the **Diagram view** button so you can see both of
+    your queries.
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image56.png)
+
+2.  Select the **Bronze** query, and on the **Home** tab, Select
+    the **Combine** menu and choose **Merge queries**, then **Merge
+    queries as new**.
+
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image57.png)
+
+3.  On the **Merge** dialog,
+    select **Generated-NYC-Taxi-Green-Discounts** from the **Right table
+    for merge** drop down, and then select the "**light bulb**" icon on
+    the top right of the dialog to see the suggested mapping of columns
+    between the three tables.
+
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image58.png)
+
+4.  Choose each of the two suggested column mappings, one at a time,
+    mapping the VendorID and date columns from both tables. When both
+    mappings are added, the matched column headers are highlighted in
+    each table.
+
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image59.png)
+
+5.  A message is shown asking you to allow combining data from multiple
+    data sources to view the results. Select **OK** 
+
+    > ![A screenshot of a computer Description automatically
+    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image60.png)
+
+6.  In the table area, you'll initially see a warning that "The
+    evaluation was canceled because combining data from multiple sources
+    may reveal data from one source to another. Select continue if the
+    possibility of revealing data is okay." Select **Continue** to
+    display the combined data.
+
+    > ![A screenshot of a computer Description automatically
+    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image61.png)
+
+7.  In Privacy Levels dialog box, select the check box **Ignore Privacy
+    Levels checks for this document. Ignoring privacy Levels could
+    expose sensitive or confidential data to an unauthorized person**
+    and click on the **Save** button.
+
+    > ![A screenshot of a computer Description automatically
+    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image62.png)
+
+    > ![A screenshot of a computer Description automatically
+    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image63.png)
+
+8.  Notice how a new query was created in Diagram view showing the
+    relationship of the new Merge query with the two queries you
+    previously created. Looking at the table pane of the editor, scroll
+    to the right of the Merge query column list to see a new column with
+    table values is present. This is the "Generated NYC
+    Taxi-Green-Discounts" column, and its type is **\[Table\]**.
+
+    In the column header there's an icon with two arrows going in opposite
+    directions, allowing you to select columns from the table. Deselect all
+    of the columns except **Discount**, and then select **OK**.
+
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image64.png)
+
+9.  With the discount value now at the row level, we can create a new
+    column to calculate the total amount after discount. To do so,
+    select the **Add column** tab at the top of the editor, and
+    choose **Custom column** from the **General** group.
+
+    > ![A screenshot of a computer Description automatically
+    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image65.png)
+
+10. On the **Custom column** dialog, you can use the [Power Query
+    formula language (also known as
+    M)](https://learn.microsoft.com/en-us/powerquery-m) to define how
+    your new column should be calculated.
+    Enter +++**TotalAfterDiscount+++** for the **New column name**,
+    select **Currency** for the **Data type**, and provide the following
+    M expression for the **Custom column formula**:
+    
+	+++if [totalAmount] > 0 then [totalAmount] * ( 1 -[Discount] ) else [totalAmount]+++
+
+    Then select **OK**.
+    
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image66.png)
+      
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image67.png)
+
+12. Select the newly create **TotalAfterDiscount** column and then
+    select the **Transform** tab at the top of the editor window. On
+    the **Number column** group, select the **Rounding** drop down and
+    then choose **Round...**.
+
+    >[!note]**Note**: If you can't find the **rounding** option, expand the menu to see **Number column**.
+
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image68.png)
+
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image69.png)
+
+13. On the **Round** dialog, enter **2** for the
+    number of decimal places and then select **OK**.
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image70.png)
+
+14.  Change the data type of the **IpepPickupDatetime** from **Date** to **Date/Time**.
+
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image71.png)
+	
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image72.png)
+
+15. Finally, expand the **Query settings** pane from the right side of
+    the editor if it isn't already expanded, and rename the query
+    from **Merge** to **+++Output+++**.
+
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image73.png)
+
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image74.png)
+
+### Task 8: Load the output query to a table in the Lakehouse
+
+With the output query now fully prepared and with data ready to output,
+we can define the output destination for the query.
+
+1.  Select the **Output** merge query created previously. Then select
+    the **+ icon** to add **data destination** to this Dataflow.
+
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image75.png)
+
+2.  From data destination list, select **Lakehouse** option under the
+    New destination.
+
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image76.png)
+
+3.  On the **Connect to data destination** dialog, your connection
+    should already be selected. Select **Next** to continue.
+
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image77.png)
+
+5.  On the **Choose destination target** dialog,
+    browse to the Lakehouse where you wish to load the data and name the
+    new table **+++nyc_taxi_with_discounts+++**, then select **Next** again.
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image78.png)
+
+6.  On the **Choose destination settings** dialog, leave the
+    default **Replace** update method, double check that your columns
+    are mapped correctly, and select **Save settings**.
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image79.png)
+
+7.  Back in the main editor window, confirm that you see your output
+    destination on the **Query settings** pane for the **Output** table
+    as **Lakehouse**, and then select **Save and Run** option from the
+    Home tab.
+
+    ![](./media/img13.png)
+8.	Now, click on Data Factory-XXXX workspace on the left-sided navigation pane.
+
+    ![](./media/img13.png)
+
+9.  In the **Data_Factory@lab.LabInstance.Id** pane, select **DataFactoryLakehouse** to
+    view the new table loaded there.
+
+      ![](./media/img16.png)
+      ![](./media/img17.png)
+
+## Exercise 3: Automate and send notifications with Data Factory
+
+### Task 1: Add an Office 365 Outlook activity to your pipeline
+
+1.  Navigate and click on **Data_Factory@lab.LabInstance.Id** Workspace on the left-sided
+    navigation menu.
+
+      ![](./media/img15.png)
+
+2.  In the **Data_Factory@lab.LabInstance.Id** view, select the **First_Pipeline1**.
+
+   ![](./media/img19.png)
+
+3.  Select the **Activities** tab in the pipeline editor and find the
+    **Office Outlook** activity.
+
+     ![](./media/img20.png)
+
+4.  Select and drag the On success path (a green checkbox on the top
+    right side of the activity in the pipeline canvas) from your Copy
+    activity to your new Office 365 Outlook activity.
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image88.png)
+	
+5.  Select the Office 365 Outlook activity from
+    the pipeline canvas, then select the **Settings** tab of the
+    property area below the canvas to configure the email. Click on
+    **Sign in** button.
+
+6. Select your Power BI organizational account
+    and then select **Allow access** to confirm.
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image89.png)
+	
+7.  Select the Office 365 Outlook activity from the pipeline canvas, on
+    the **Settings** tab of the property area below the canvas to
+    configure the email.
+
+    - Enter your email address in the **To** section. If you want to use
+      several addresses, use **;** to separate them.
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image90.png)
+
+    - For the **Subject**, select the field so
+      that the **Add dynamic content** option appears, and then select
+      it to display the pipeline expression builder canvas.
+
+8.  The **Pipeline expression builder** dialog appears. Enter the
+    following expression, then select **OK**:
+
+    +++@concat('DI in an Hour Pipeline Succeeded with Pipeline Run Id', pipeline().RunId)+++
+ 
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image91.png)
+
+9.  For the **Body**, select the field again and choose the **View in
+    expression builder** option when it appears below the text area. Add
+    the following expression again in the **Pipeline expression
+    builder** dialog that appears, then select **OK**:
+
+    +++@concat('RunID = ', pipeline().RunId, ' ; ', 'Copied rows ', activity('Copy data1').output.rowsCopied, ' ; ','Throughput ', activity('Copy data1').output.throughput)+++
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image92.png)
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image93.png)
+
+    >[!note]**Note**: Replace **Copy data1** with the name of your own pipeline copy activity.
+
+10. Finally select the **Home** tab at the top of the pipeline editor,
+    and choose **Run**. Then select **Save and run** again on the
+    confirmation dialog to execute these activities.
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image94.png)
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image95.png)
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image96.png)
+
+11. After the pipeline runs successfully, check your email to find the
+    confirmation email sent from the pipeline.
+
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image97.png)
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image98.png)
+
+### Task 2: Schedule pipeline execution
+
+Once you finish developing and testing your pipeline, you can schedule
+it to execute automatically.
+
+1.  On the **Home** tab of the pipeline editor window,
+    select **Schedule**.
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image99.png)
+
+2.  Configure the schedule as required. The example here schedules the
+    pipeline to execute daily at 8:00 PM until the end of the year.
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image100.png)
+
+### Task 3: Add a Dataflow activity to the pipeline
+
+1.  Hover over the green line connecting the **Copy activity** and the
+    **Office 365 Outlook** activity on your pipeline canvas, and select
+    the **+** button to insert a new activity.
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image101.png)
+
+2.  Choose **Dataflow** from the menu that
+    appears.
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image102.png)
+
+3.  The newly created Dataflow activity is inserted between the Copy
+    activity and the Office 365 Outlook activity, and selected
+    automatically, showing its properties in the area below the canvas.
+    Select the **Settings** tab on the properties area, and then select
+    your dataflow created in **Exercise 2: Transform data with a
+    dataflow in Data Factory**.
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image103.png)
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image104.png)
+	
+4.  Select the **Home** tab at the top of the
+    pipeline editor, and choose **Run**. Then select **Save and
+    run** again on the confirmation dialog to execute these activities.
+
+     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image105.png)
+
+     > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image106.png)
+
+### Task 4: Clean up resources
 
 You can delete individual reports, pipelines, warehouses, and other
 items or remove the entire workspace. Use the following steps to delete
 the workspace you created for this tutorial.
 
-1.  Select your workspace, the **Fabric Lakehouse Tutorial-@lab.LabInstance.Id** from the
-    left-hand navigation menu. It opens the workspace item view.
+1.  Select your workspace, the **Data-Factory@lab.LabInstance.Id** from the left-hand
+    navigation menu. It opens the workspace item view.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image125.png)
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image107.png)
 
-2.  Select the **...** option under the workspace name and
-    select **Workspace settings**.
+2.  Select the  **Workspace settings** option on the workspace page
+    located at the top right corner.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image126.png)
+    > ![A screenshot of a computer Description automatically
+    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image108.png)
 
 3.  Navigate to the bottom of the **General** tab and select **Remove this workspace**.
 
-    ![](./media/aaa14.png)
+    > ![A screenshot of a computer Description automatically
+    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2002/media/image109.png)
+
 
 4.  Click on **Delete** in the warning that pops up.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image128.png)
+    > ![A white background with black text AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image63.png)
 
-5.  Wait for a notification that the Workspace has been deleted, before
-    proceeding to the next lab.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image129.png)
-
-**Summary**: This practical lab focuses on setting up and configuring
-essential components within Microsoft Fabric and Power BI for data
-management and reporting. It includes tasks like activating trials,
-configuring OneDrive, creating workspaces, and setting up lakehouses.
-The lab also covers tasks related to ingesting sample data, optimizing
-delta tables, and building reports in Power BI for effective data
-analysis. The objectives aim to provide hands-on experience in utilizing
-Microsoft Fabric and Power BI for data management and reporting purposes.
-
-
-
-
-
-
-
-
-
-
+    > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image64.png)
 
