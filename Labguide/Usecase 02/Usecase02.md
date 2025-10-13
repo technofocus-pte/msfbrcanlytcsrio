@@ -89,7 +89,7 @@ trial enabled.
 1.  In the **Data-Factory@lab.LabInstance.Id** workspace page, navigate and click on
     **+New item** button
 	
-     ![](./media/img3.png)
+     ![](./media/img2.png)
 
 3.  Filter by, and select, the **+++Lakehouse+++** tile.
 
@@ -529,7 +529,7 @@ we can define the output destination for the query.
     ![](./media/img13.png)
 8.	Now, click on Data Factory-XXXX workspace on the left-sided navigation pane.
 
-    ![](./media/img13.png)
+    ![](./media/img15.png)
 
 9.  In the **Data_Factory@lab.LabInstance.Id** pane, select **DataFactoryLakehouse** to
     view the new table loaded there.
@@ -698,4 +698,5 @@ the workspace you created for this tutorial.
 
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image64.png)
+
 
