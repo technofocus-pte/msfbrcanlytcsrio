@@ -147,8 +147,7 @@ trial enabled.
     >[!note]**Note**: When provisioning is complete, the **WideWorldImporters**
     warehouse landing page appears.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image12.png)
+    ![](./media/img1.png)
 
 ## Exercise 2: Ingest data into a Warehouse in Microsoft Fabric
 
@@ -158,15 +157,13 @@ trial enabled.
     select **Warehouse_Fabric@lab.LabInstance.Id** in the left-sided navigation menu to
     return to the workspace item list.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image13.png)
+     ![](./media/img2.png)
 
 2.  In the **Warehouse_Fabric@lab.LabInstance.Id** page, select +**New item**. Then,
-    click **Data pipeline** to view the full list of available items
+    click **Pipeline** to view the full list of available items
     under Get data.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image14.png)
+     ![](./media/img3.png)
 
 3.  On the **New** **pipeline** dialog box, in the **Name** field, enter
     **+++Load Customer Data+++** and click on the **Create** button.
@@ -176,8 +173,7 @@ trial enabled.
 4.  In the **Load Customer Data** page, navigate to **Start building
     your data pipeline** section and click on **Pipeline activity**.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image16.png)
+     ![](./media/img4.png)
 
 5.  Navigate and select **Copy data** under **Move
     & transform** section.
@@ -191,8 +187,7 @@ trial enabled.
     >[!note]**Note**: Drag the horizonal line in the design canvas to have a
     > complete view of various features.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image18.png)
+     ![](./media/img5.png)
 
 7.  On the **General** tab, in the **Name** field, enter **+++CD Load dimension_customer+++** .
 
@@ -202,7 +197,7 @@ trial enabled.
     Select **Browse all** to see all of the data sources you can choose from,
     including data sources in your local OneLake data hub.
 
-    > !IMAGE[]([instructions303922](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media)/skillable_image2.png)
+      ![](./media/img6.png)
 
 9.  On the **Get data** window, search **+++Azure Blobs+++** in, then
     click on the **Azure Blobs** storage button.
@@ -246,7 +241,7 @@ trial enabled.
 13. Click on **Preview data** on the right side of **File path** setting
     to ensure that there are no errors and then click on **close.**
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image24.png)
+     ![](./media/img7.png)
 
     > ![A screenshot of a computer Description automatically
     > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image25.png)
@@ -264,7 +259,7 @@ trial enabled.
 
 15. From the ribbon, select **Run**.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image27.png)
+     ![](./media/img8.png)
 
 16. In the **Save and run?** dialog box, click on **Save and run**
     button.
@@ -286,21 +281,18 @@ trial enabled.
 1.  On **Load Customer Data** page, click on **Warehouse_Fabric@lab.LabInstance.Id**
     workspace in the left-sided navigation bar.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image31.png)
+     ![](./media/img9.png)
 
-2.  In the **Syanapse Data Engineering** **Warehouse_Fabric@lab.LabInstance.Id** page,
+2.  In the **Fabric** **Warehouse_Fabric@lab.LabInstance.Id** page,
     carefully navigate and click on **WideWorldImporters** having
     **Warehouse** type as shown in the below image.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image32.png)
+     ![](./media/img10.png)
 
 3.  On the **WideWorldImporters** page, go to the **Home** tab, select **New SQL query** from the drop
     down, and click on **New SQL query**.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image33.png)
+     ![](./media/img11.png)
 
 4.  In the query editor, paste the following code and select **Run** to
     execute the query
@@ -390,8 +382,7 @@ trial enabled.
 8.  In the **Explorer** pane, you'll see the **fact_sale** table
     and **dimension_city** table.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image39.png)
+     ![](./media/img12.png)
 
 ### Task 2: Load data using T-SQL
 
@@ -435,18 +426,17 @@ methods for loading data.
 5.  Rename the query by right-clicking on **SQL query 1** in
     the **Explorer**, then select **Rename**.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image44.png)
+     ![](./media/img13.png)
 
 6.  In the **Rename** dialog box, under the **Name** field, enter
     +++**Load Tables+++**. Then, click on **Rename** button.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image45.png)
+     ![](./media/img14.png)
 
 7.  Click on the **Refresh** icon in the command bar below the **Home**
     tab.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image46.png)
+    ![](./media/img15.png)
 
 ## Exercise 4: Clone a table using T-SQL in Microsoft Fabric
 
@@ -570,8 +560,6 @@ syntax.
 ## Exercise 5: Transform data using a stored procedure
 
 Learn how to create and save a new stored procedure to transform data.
-
-### Task 1:
 
 1.  On the **WideWorldImporters** page, go to the **Home** tab, select **New SQL query** from the dropdown, and click on **New SQL query**.
 
@@ -697,8 +685,6 @@ Learn how to create and save a new stored procedure to transform data.
     > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image75.png)
 
 ## Exercise 6: Time travel using T-SQL at statement level
-
-### Task 1:
 
 1.  On the **WideWorldImporters** page, go to the **Home** tab, select **New SQL query** from the dropdown, and click on **New SQL query**.
 
@@ -957,8 +943,7 @@ Microsoft Fabric workspace:
 1.  On the **WideWorldImportes** page, click on **Warehouse_Fabric@lab.LabInstance.Id**
     Workspace on the left-sided navigation menu.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image106.png)
+      ![](./media/img16.png)
 
 2. On the **Synapse Data Engineering Warehouse_Fabric@lab.LabInstance.Id** home page, under the **Warehouse_Fabric@lab.LabInstance.Id** pane, click **+New item**, and then Filter by, and select **+++Lakehouse+++** under **Stored data**
 
@@ -1046,14 +1031,12 @@ Fabric.
 1.  From **Notebook1** page, navigate and click on
     **Warehouse_Fabric@lab.LabInstance.Id** Workspace on the left-sided navigation menu.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image120.png)
+      ![](./media/img17.png)
 
 2.  In the **Warehouse_Fabric@lab.LabInstance.Id** view, select
     the **WideWorldImporters** warehouse.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image121.png)
+     ![](./media/img18.png)
 
 3.  In the **WideWorldImporters** page, under **Explorer** tab, select
     the **+ Warehouses** button.
@@ -1135,26 +1118,27 @@ reports.
 
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image131.png)
+    
+4.	From the left navigation select Warehouse_FabricXXXXX, as shown in the image below
+    ![](./media/img19.png)
 
-4.  To open the semantic model, return to the workspace landing page,
+5.  To open the semantic model, return to the workspace landing page,
     and then select the **Sales Model** semantic model.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image132.png)
+    ![](./media/img20.png)
 
-9.  To open the model designer, on the menu, select **Open data model** or **Open semantic model**.
+6.  To open the model designer, on the menu, select **Open data model** or **Open semantic model**.
 
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image133.png)
 
     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image134.png)
 
-10. On the **Sales Model** page, to edit **Manage Relationships**,
-    change the mode from **Viewing** to **Editing**    > ![A screenshot of a
-    computer AI-generated content may be
-    incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image135.png)
+7. On the **Sales Model** page, to edit **Manage Relationships**,
+    change the mode from **Viewing** to **Editing**
+   > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image135.png)
 
-11. To create a relationship, in the model designer, on
+9. To create a relationship, in the model designer, on
     the **Home** ribbon, select **Manage relationships**.
 
     > ![A screenshot of a computer AI-generated content may be
@@ -1281,17 +1265,18 @@ items you created as part of the lab.
 
 2.  In the menu of the workspace header, select **Workspace settings**.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image154.png)
+     ![](./media/img22.png)
 
 3.  In the **Workspace settings** dialog box, in the **General** tab navigate to the bottom and
     select the **Remove this workspace**.
 
-   ![](./media/aaa14.png)
+     ![](./media/img23.png)
 
 4.  In the **Delete workspace?** dialog box, click on the **Delete**
     button.
 
 	> ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image156.png)
+     ![](./media/img24.png)
 
 **Summary**
 
@@ -1331,6 +1316,7 @@ insights into resource management, emphasizing the importance of cleanup
 procedures to maintain an efficient workspace. Collectively, these tasks
 present a comprehensive understanding of setting up, managing, and
 analyzing data within Microsoft Fabric.
+
 
 
 
