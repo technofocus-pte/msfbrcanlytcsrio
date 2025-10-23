@@ -356,18 +356,14 @@ generated](./media/image49.png)
     between the three tables.
 
 4.  Choose each of the two suggested column mappings, one at a time,
-    mapping the VendorID and date columns from both tables. When both
+    mapping the VendorID and VendorID columns from both tables. When both
     mappings are added, the matched column headers are highlighted in
     each table.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image50.png)
-
 5.  A message is shown asking you to allow combining data from multiple
     data sources to view the results. Select **OK** 
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image51.png)
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image50.png)
 
 6.  In the table area, you'll initially see a warning that "The
     evaluation was canceled because combining data from multiple sources
@@ -750,3 +746,4 @@ generated](./media/image107.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image108.png)
+
