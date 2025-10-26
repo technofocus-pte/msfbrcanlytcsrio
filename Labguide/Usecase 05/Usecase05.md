@@ -195,7 +195,7 @@ trial enabled.
     Select **Browse all** to see all of the data sources you can choose from,
     including data sources in your local OneLake data hub.
 
-      ![](./media/img6.png)
+      ![](./media/img61.png)
 
 9.  On the **Get data** window, search **+++Azure Blobs+++** in, then
     click on the **Azure Blobs** storage button.
@@ -239,7 +239,7 @@ trial enabled.
 13. Click on **Preview data** on the right side of **File path** setting
     to ensure that there are no errors and then click on **close.**
 
-     ![](./media/img7.png)
+     ![](./media/img71.png)
 
     > ![A screenshot of a computer Description automatically
     > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image25.png)
@@ -257,7 +257,7 @@ trial enabled.
 
 15. From the ribbon, select **Run**.
 
-     ![](./media/img8.png)
+     ![](./media/img81.png)
 
 16. In the **Save and run?** dialog box, click on **Save and run**
     button.
@@ -279,18 +279,18 @@ trial enabled.
 1.  On **Load Customer Data** page, click on **Warehouse_Fabric@lab.LabInstance.Id**
     workspace in the left-sided navigation bar.
 
-     ![](./media/img9.png)
+     ![](./media/img91.png)
 
 2.  In the **Fabric** **Warehouse_Fabric@lab.LabInstance.Id** page,
     carefully navigate and click on **WideWorldImporters** having
     **Warehouse** type as shown in the below image.
 
-     ![](./media/img10.png)
+     ![](./media/img101.png)
 
 3.  On the **WideWorldImporters** page, go to the **Home** tab, select **New SQL query** from the drop
     down, and click on **New SQL query**.
 
-     ![](./media/img11.png)
+     ![](./media/img111.png)
 
 4.  In the query editor, paste the following code and select **Run** to
     execute the query
@@ -380,7 +380,7 @@ trial enabled.
 8.  In the **Explorer** pane, you'll see the **fact_sale** table
     and **dimension_city** table.
 
-     ![](./media/img12.png)
+     ![](./media/img121.png)
 
 ### Task 2: Load data using T-SQL
 
@@ -424,17 +424,17 @@ methods for loading data.
 5.  Rename the query by right-clicking on **SQL query 1** in
     the **Explorer**, then select **Rename**.
 
-     ![](./media/img13.png)
+     ![](./media/img131.png)
 
 6.  In the **Rename** dialog box, under the **Name** field, enter
     +++**Load Tables+++**. Then, click on **Rename** button.
 
-     ![](./media/img14.png)
+     ![](./media/img141.png)
 
 7.  Click on the **Refresh** icon in the command bar below the **Home**
     tab.
 
-    ![](./media/img15.png)
+    ![](./media/img151.png)
 
 ## Exercise 4: Clone a table using T-SQL in Microsoft Fabric
 
@@ -941,7 +941,7 @@ Microsoft Fabric workspace:
 1.  On the **WideWorldImportes** page, click on **Warehouse_Fabric@lab.LabInstance.Id**
     Workspace on the left-sided navigation menu.
 
-      ![](./media/img16.png)
+      ![](./media/img161.png)
 
 2. On the **Synapse Data Engineering Warehouse_Fabric@lab.LabInstance.Id** home page, under the **Warehouse_Fabric@lab.LabInstance.Id** pane, click **+New item**, and then Filter by, and select **+++Lakehouse+++** under **Stored data**
 
@@ -1029,12 +1029,12 @@ Fabric.
 1.  From **Notebook1** page, navigate and click on
     **Warehouse_Fabric@lab.LabInstance.Id** Workspace on the left-sided navigation menu.
 
-      ![](./media/img17.png)
+      ![](./media/img171.png)
 
 2.  In the **Warehouse_Fabric@lab.LabInstance.Id** view, select
     the **WideWorldImporters** warehouse.
 
-     ![](./media/img18.png)
+     ![](./media/img181.png)
 
 3.  In the **WideWorldImporters** page, under **Explorer** tab, select
     the **+ Warehouses** button.
@@ -1118,12 +1118,12 @@ reports.
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image131.png)
     
 4.	From the left navigation select Warehouse_FabricXXXXX, as shown in the image below
-    ![](./media/img19.png)
+    ![](./media/img191.png)
 
 5.  To open the semantic model, return to the workspace landing page,
     and then select the **Sales Model** semantic model.
 
-    ![](./media/img20.png)
+    ![](./media/img201.png)
 
 6.  To open the model designer, on the menu, select **Open data model** or **Open semantic model**.
 
@@ -1263,18 +1263,18 @@ items you created as part of the lab.
 
 2.  In the menu of the workspace header, select **Workspace settings**.
 
-     ![](./media/img22.png)
+     ![](./media/img221.png)
 
 3.  In the **Workspace settings** dialog box, in the **General** tab navigate to the bottom and
     select the **Remove this workspace**.
 
-     ![](./media/img23.png)
+     ![](./media/img231.png)
 
 4.  In the **Delete workspace?** dialog box, click on the **Delete**
     button.
 
 	> ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image156.png)
-     ![](./media/img24.png)
+     ![](./media/img241.png)
 
 **Summary**
 
@@ -1314,6 +1314,7 @@ insights into resource management, emphasizing the importance of cleanup
 procedures to maintain an efficient workspace. Collectively, these tasks
 present a comprehensive understanding of setting up, managing, and
 analyzing data within Microsoft Fabric.
+
 
 
 
