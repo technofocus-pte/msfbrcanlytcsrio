@@ -162,26 +162,24 @@ trial enabled.
 2.  In the **Warehouse_Fabric@lab.LabInstance.Id** page, select +**New item**. Then,
     click **Pipeline** to view the full list of available items
     under Get data.
+    ![](./media/rio1.png)
 
-     ![](./media/img3.png)
-
-3.  On the **New** **pipeline** dialog box, in the **Name** field, enter
+   
+4.  On the **New** **pipeline** dialog box, in the **Name** field, enter
     **+++Load Customer Data+++** and click on the **Create** button.
 
     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image15.png)
 
-4.  In the **Load Customer Data** page, navigate to **Start building
+5.  In the **Load Customer Data** page, navigate to **Start building
     your data pipeline** section and click on **Pipeline activity**.
 
-     ![](./media/img4.png)
-
-5.  Navigate and select **Copy data** under **Move
+6.  Navigate and select **Copy data** under **Move
     & transform** section.
 
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image17.png)
 
-6.  Select the newly created **Copy data** **1** activity from the
+7.  Select the newly created **Copy data** **1** activity from the
     design canvas to configure it.
 
     >[!note]**Note**: Drag the horizonal line in the design canvas to have a
@@ -189,22 +187,22 @@ trial enabled.
 
      ![](./media/img5.png)
 
-7.  On the **General** tab, in the **Name** field, enter **+++CD Load dimension_customer+++** .
+8.  On the **General** tab, in the **Name** field, enter **+++CD Load dimension_customer+++** .
 
     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image19.png)
 
-8.  On the **Source** page, select the **Connection** dropdown.
+9.  On the **Source** page, select the **Connection** dropdown.
     Select **Browse all** to see all of the data sources you can choose from,
     including data sources in your local OneLake data hub.
 
       ![](./media/img6.png)
 
-9.  On the **Get data** window, search **+++Azure Blobs+++** in, then
+10.  On the **Get data** window, search **+++Azure Blobs+++** in, then
     click on the **Azure Blobs** storage button.
 
     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image21.png)
 
-10. On the **Connection settings** pane that appears on the right side,
+11. On the **Connection settings** pane that appears on the right side,
     configure the following settings and click on the **Connect**
     button.
 
@@ -220,7 +218,7 @@ trial enabled.
     
     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image22.png)
 
-11. Change the remaining settings on the **Source** page of the copy
+12. Change the remaining settings on the **Source** page of the copy
     activity as follows to reach the .parquet files
     in **https://fabrictutorialdata.blob.core.windows.net/sampledata/WideWorldImportersDW/parquet/full/dimension_customer/\*.parquet**
 
@@ -1316,6 +1314,7 @@ insights into resource management, emphasizing the importance of cleanup
 procedures to maintain an efficient workspace. Collectively, these tasks
 present a comprehensive understanding of setting up, managing, and
 analyzing data within Microsoft Fabric.
+
 
 
 
