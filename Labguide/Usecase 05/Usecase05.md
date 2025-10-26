@@ -147,7 +147,7 @@ trial enabled.
     >[!note]**Note**: When provisioning is complete, the **WideWorldImporters**
     warehouse landing page appears.
 
-    ![](./media/img1.png)
+    ![](./media/img119.png)
 
 ## Exercise 2: Ingest data into a Warehouse in Microsoft Fabric
 
@@ -157,7 +157,7 @@ trial enabled.
     select **Warehouse_Fabric@lab.LabInstance.Id** in the left-sided navigation menu to
     return to the workspace item list.
 
-     ![](./media/img2.png)
+     ![](./media/img21.png)
 
 2.  In the **Warehouse_Fabric@lab.LabInstance.Id** page, select +**New item**. Then,
     click **Pipeline** to view the full list of available items
@@ -1314,6 +1314,7 @@ insights into resource management, emphasizing the importance of cleanup
 procedures to maintain an efficient workspace. Collectively, these tasks
 present a comprehensive understanding of setting up, managing, and
 analyzing data within Microsoft Fabric.
+
 
 
 
