@@ -185,7 +185,7 @@ trial enabled.
     >[!note]**Note**: Drag the horizonal line in the design canvas to have a
     > complete view of various features.
 
-     ![](./media/img5.png)
+     ![](./media/img51.png)
 
 7.  On the **General** tab, in the **Name** field, enter **+++CD Load dimension_customer+++** .
 
@@ -1314,6 +1314,7 @@ insights into resource management, emphasizing the importance of cleanup
 procedures to maintain an efficient workspace. Collectively, these tasks
 present a comprehensive understanding of setting up, managing, and
 analyzing data within Microsoft Fabric.
+
 
 
 
