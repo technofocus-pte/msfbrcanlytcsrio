@@ -163,7 +163,7 @@ trial enabled.
     click **Pipeline** to view the full list of available items
     under Get data.
 
-     ![](./media/img3.png)
+     ![](./media/rio1.png)
 
 3.  On the **New** **pipeline** dialog box, in the **Name** field, enter
     **+++Load Customer Data+++** and click on the **Create** button.
@@ -172,8 +172,6 @@ trial enabled.
 
 4.  In the **Load Customer Data** page, navigate to **Start building
     your data pipeline** section and click on **Pipeline activity**.
-
-     ![](./media/img4.png)
 
 5.  Navigate and select **Copy data** under **Move
     & transform** section.
@@ -1316,6 +1314,7 @@ insights into resource management, emphasizing the importance of cleanup
 procedures to maintain an efficient workspace. Collectively, these tasks
 present a comprehensive understanding of setting up, managing, and
 analyzing data within Microsoft Fabric.
+
 
 
 
