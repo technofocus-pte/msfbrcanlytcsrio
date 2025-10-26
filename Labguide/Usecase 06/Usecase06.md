@@ -331,7 +331,7 @@ reports.
 
 1.  In the Fabric Home page, select **+ New item** and filter by, and then select the **+++Lakehouse+++** tile.
 
-     ![](./media/img2.png)
+     ![](./media/rio2.png)
 
 2.  In the **New lakehouse** dialog box, enter +++**data_lakehouse**+++
     in the **Name** field, click on the **Create** button and open the
@@ -339,16 +339,13 @@ reports.
 
     >[!note]**Note**: Ensure to remove space before **data_lakehouse**.
 
-    ![](./media/img3.png)
+    ![](./media/rio3.png)
 
 3.  You will see a notification stating **Successfully created SQL
     endpoint**.
 
     > ![A screenshot of a computer Description automatically
     > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image46.png)
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image47.png)
 
 ## Exercise 2: Loading and Pre-processing PDF Documents
 
@@ -1008,5 +1005,6 @@ portal](https://portal.azure.com/?azure-portal=true).
 
     > ![A screenshot of a computer Description automatically
     > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image80.png)
+
 
 
