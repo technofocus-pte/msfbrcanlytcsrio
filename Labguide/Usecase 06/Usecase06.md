@@ -930,14 +930,22 @@ conversation.
 3.  Use the **+ Code** icon below the cell output to add a new code cell
     to the notebook, and enter the following code in it. Click on **▷
     Run cell** button and review the output.
+	```	
+	# Define a simple get_response function
+	def get_response(user_question):
+	    # You can expand this as needed for more complex logic
+	    if "booking" in user_question.lower():
+	        return "To make a booking, please visit our website or contact our reservations team."
+	    else:
+	        return "I'm sorry, I can only help with bookings at the moment."
 	
-    ```
-    user_question = "how do i make a booking?"
-    response = get_response(user_question)
-    print(response)
-    ```
+	# Example usage
+	user_question = "how do i make a booking?"
+	response = get_response(user_question)
+	print(response)
+	```
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image68.png)
+     ![](./media/rio5.png)
 
 ### Task 4: Delete the resources
 
@@ -1005,6 +1013,7 @@ portal](https://portal.azure.com/?azure-portal=true).
 
     > ![A screenshot of a computer Description automatically
     > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image80.png)
+
 
 
 
