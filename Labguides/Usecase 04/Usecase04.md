@@ -256,7 +256,7 @@ Notebook의 기본 언어입니다.
     **Spark**를 선택하세요. 다음 코드가 포함된 새 코드 셀이 노트북에
     추가됩니다:
 
-    ```nocopy
+    ```
     df = spark.read.format("csv").option("header","true").load("Files/orders/2019.csv")
     # df now is a Spark DataFrame containing CSV data from "Files/orders/2019.csv".
     display(df)
@@ -312,7 +312,7 @@ incorrect.](./media/image32.png)
 8.  **Cell**의 모든 코드를 다음 코드로 바꾸고 **▷ Run cell** 버튼을
     클릭하고 출력을 검토하세요.
 
-    ```
+   	```
     from pyspark.sql.types import *
     
     orderSchema = StructType([
@@ -329,7 +329,8 @@ incorrect.](./media/image32.png)
     
     df = spark.read.format("csv").schema(orderSchema).load("Files/orders/2019.csv")
     display(df)
-    ```
+	```
+
 > ![](./media/image33.png)
 >
 > ![A screenshot of a computer AI-generated content may be
@@ -1578,5 +1579,6 @@ PySpark를 사용하여 데이터를 조작 및 변환하고, 시각화를 생�
 자동화하고 작업 흐름을 간소화하며 실제 시나리오에서 생산성을 향상시키는
 방법을 배우게 됩니다. 정리 지침을 통해 불필요한 리소스를 남기지 않고
 체계적이고 효율적인 작업 공간 관리 접근 방식을 촉진할 수 있습니다.
+
 
 
