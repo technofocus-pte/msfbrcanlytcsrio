@@ -279,12 +279,12 @@ generated](./media/image25.png)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image31.png)
 
-2.  **Syanapse Data Engineering** **Warehouse_FabricXX** 페이지에서 아래
+2.  **Fabric** **Warehouse_FabricXX** 페이지에서 아래
     이미지와 같이 **Warehouse** 유형이 있는 **WideWorldImporters** 를
     주의 깊게 탐색하고 클릭하세요.
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image32.png)
+> incorrect.](./media/img181.png)
 
 3.  **WideWorldImporters** 페이지에서 **Home **탭으로 이동하고
     드롭다운에서 **SQL**을 선택하고 **New SQL query**를 클릭하세요.
@@ -1328,5 +1328,6 @@ Fabric에서 데이터 원본의 다양성을 더욱 강조합니다. 마지막�
 유지하기 위한 정리 절차의 중요성을 강조합니다. 종합적으로 이러한 작업은
 Microsoft Fabric 내에서 데이터 설정, 관리 및 분석에 대한 포괄적인 이해를
 제공합니다.
+
 
 
