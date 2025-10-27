@@ -156,11 +156,10 @@ Fabric에서 데이터로 작업하기 전에 Fabric 평가판을 사용하도�
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image13.png)
 
-2.  **Warehouse_FabricXX** 페이지에서 +**New item**을 선택하세요. **Data
-    pipeline**을 클릭하여 Get data.에서 사용 가능한 항목의 전체 목록을
+2.  **Warehouse_FabricXX** 페이지에서 +**New item**을 선택하세요. **pipeline**을 클릭하여 Get data.에서 사용 가능한 항목의 전체 목록을
     보세요.
 
-> ![](./media/image14.png)
+> ![](./media/img3.png)
 
 3.  **New** **pipeline** 대화 상자에 **Name** 필드에서 +++**Load
     Customer Data+++**를 입력하고 **Create** 버튼을 클릭하세요.
@@ -1329,4 +1328,5 @@ Fabric에서 데이터 원본의 다양성을 더욱 강조합니다. 마지막�
 유지하기 위한 정리 절차의 중요성을 강조합니다. 종합적으로 이러한 작업은
 Microsoft Fabric 내에서 데이터 설정, 관리 및 분석에 대한 포괄적인 이해를
 제공합니다.
+
 
