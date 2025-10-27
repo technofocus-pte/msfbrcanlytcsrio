@@ -457,6 +457,8 @@ dataframe 개체에는 포함된 데이터를 필터링, 그룹화 및 조작하
     display(productSales)
     ```
 > ![](./media/image41.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image42.png)
 
 2.  결과에는 제품별로 그룹화된 주문 수량의 합계가 표시됩니다.
     **groupBy** 메서드 는 *Item*별로 행을 그룹화하고 후속 **합계** 집계
@@ -464,16 +466,12 @@ dataframe 개체에는 포함된 데이터를 필터링, 그룹화 및 조작하
 
 3.  \+ **Code**를 클릭하고 아래 코드를 복사하여 붙여넣은 후 **Run cell**
     버튼을 클릭하세요.
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image42.png)
-
-    ```
-    from pyspark.sql.functions import *
-    
-    yearlySales = df.select(year("OrderDate").alias("Year")).groupBy("Year").count().orderBy("Year")
-    display(yearlySales)
-    ```
+	```   
+	from pyspark.sql.functions import *
+	
+	yearlySales = df.select(year("OrderDate").alias("Year")).groupBy("Year").count().orderBy("Year")
+	display(yearlySales)
+	```    
 > ![](./media/image43.png)
 
 4.  결과에는 연간 판매 주문 수가 표시됩니다. **select** 메서드 에는
@@ -1579,6 +1577,7 @@ PySpark를 사용하여 데이터를 조작 및 변환하고, 시각화를 생�
 자동화하고 작업 흐름을 간소화하며 실제 시나리오에서 생산성을 향상시키는
 방법을 배우게 됩니다. 정리 지침을 통해 불필요한 리소스를 남기지 않고
 체계적이고 효율적인 작업 공간 관리 접근 방식을 촉진할 수 있습니다.
+
 
 
 
