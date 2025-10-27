@@ -1414,9 +1414,8 @@ generated](./media/image118.png)
 ![A screenshot of a computer Description automatically
 generated](./media/image119.png)
 
-3.  dataflow를 게시하려면 **Publish**를 선택하세요. 작업 영역에서
-    **Dataflow** 1 Dataflow이 만들어질 때까지 기다리세요.
-
+3.  Home 탭에서 Save 아이콘의 아래쪽 화살표를 선택한 다음 Save, run & close를 선택하여 쿼리를 게시하고 닫으세요.
+   
 ![A screenshot of a computer Description automatically
 generated](./media/skillable_image1.png)
 
@@ -1570,6 +1569,7 @@ PySpark를 사용하여 데이터를 조작 및 변환하고, 시각화를 생�
 자동화하고 작업 흐름을 간소화하며 실제 시나리오에서 생산성을 향상시키는
 방법을 배우게 됩니다. 정리 지침을 통해 불필요한 리소스를 남기지 않고
 체계적이고 효율적인 작업 공간 관리 접근 방식을 촉진할 수 있습니다.
+
 
 
 
