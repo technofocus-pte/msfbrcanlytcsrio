@@ -62,7 +62,10 @@ Fabric에서 제공하는 유연성을 통해 Lakehouse 또는 데이터 웨어�
 1.  브라우저를 열고 주소 표시줄로 이동한 후 URL:
     +++https://app.fabric.microsoft.com/+++를 입력하거나
     붙여넣고 **Enter** 버튼을 누르세요.
-
+    |   |   |
+    |---|---|
+    | Username | +++@lab.CloudPortalCredential(User1).Username+++ |
+    | Password | +++@lab.CloudPortalCredential(User1).Password+++ |
 > ![](./media/image1.png)
 
 2.  **Microsoft Fabric** 창에서 자격 증명을 입력하고 **Submit** 버튼을
@@ -99,11 +102,6 @@ Fabric에서 제공하는 유연성을 통해 Lakehouse 또는 데이터 웨어�
 
 2.  오른쪽에 표시되는 **Create a workspace** 창에서 다음 세부 정보를
     입력하고 **Apply **버튼을 클릭하세요.
-
-    |   |   |
-    |---|---|
-    | Username | +++@lab.CloudPortalCredential(User1).Username+++ |
-    | Password | +++@lab.CloudPortalCredential(User1).Password+++ |
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image7.png)
@@ -930,6 +928,7 @@ Power BI 내에서 필수 구성 요소를 설정하고 구성하는 데 중점�
 위해 샘플 데이터 수집, 델타 테이블 최적화, Power BI에서 보고서 작성과
 관련된 작업도 다룹니다. 목표는 데이터 관리 및 보고 목적으로 Microsoft
 Fabric 및 Power BI를 활용하는 실습 경험을 제공하는 것을 목표로 합니다.
+
 
 
 
