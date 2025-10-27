@@ -651,7 +651,7 @@ incorrect.](./media/image83.png)
 17. 파이프라인이 정상적으로 실행되면, 파이프라인에서 발송한 확인
     이메일을 확인하세요.
 
-![](./media/image94.png)
+![](./media/rio6.png)
 
 **작업 2: 파이프라인 실행 예약**
 
@@ -735,5 +735,6 @@ generated](./media/image107.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image108.png)
+
 
 
