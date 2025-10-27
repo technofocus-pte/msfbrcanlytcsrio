@@ -288,9 +288,6 @@ Fabric에서 제공하는 유연성을 통해 Lakehouse 또는 데이터 웨어�
 
 1.  왼쪽 탐색창에서 **Fabric Lakehouse** **Tutorial-XX**를 클릭하세요.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imag24.png)
-
 2.  **Fabric Lakehouse Tutorial-XX** 작업 영역 페이지에서 **+New
     item** 버튼으로 이동하고 클릭하여 **Data pipeline**를 선택하세요.
 
@@ -928,6 +925,7 @@ Power BI 내에서 필수 구성 요소를 설정하고 구성하는 데 중점�
 위해 샘플 데이터 수집, 델타 테이블 최적화, Power BI에서 보고서 작성과
 관련된 작업도 다룹니다. 목표는 데이터 관리 및 보고 목적으로 Microsoft
 Fabric 및 Power BI를 활용하는 실습 경험을 제공하는 것을 목표로 합니다.
+
 
 
 
