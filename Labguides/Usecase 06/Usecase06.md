@@ -945,14 +945,21 @@ gpt-35-turbo-16k를 사용합니다.
     출력을 검토하세요.
 
 **Copy**
+```
+# Define a simple get_response function
+def get_response(user_question):
+    # You can expand this as needed for more complex logic
+    if "booking" in user_question.lower():
+        return "To make a booking, please visit our website or contact our reservations team."
+    else:
+        return "I'm sorry, I can only help with bookings at the moment."
 
-    ```
-    user_question = "how do i make a booking?"
-    response = get_response(user_question)
-    print(response)
-    ```
-
-![](./media/image68.png)
+# Example usage
+user_question = "how do i make a booking?"
+response = get_response(user_question)
+print(response)
+```
+ ![](./media/rio5.png)
 
 ## 작업 4: 리소스 정리하기
 
@@ -1019,4 +1026,5 @@ generated](./media/image79.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image80.png)
+
 
