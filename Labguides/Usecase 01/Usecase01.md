@@ -264,8 +264,6 @@ Fabric에서 제공하는 유연성을 통해 Lakehouse 또는 데이터 웨어�
  이 실습에서는 **Explore this data** 아래에서 **Auto-create a report**를 선택하세요. 아래 이미지와 같이 진행합니다.
 
  ![](./media/img21.png)
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image37.png)
 
 5.  위쪽 리본에서 **Save**를 선택하여 나중에 이 보고서를 저장하세요.
 
@@ -932,6 +930,7 @@ Power BI 내에서 필수 구성 요소를 설정하고 구성하는 데 중점�
 위해 샘플 데이터 수집, 델타 테이블 최적화, Power BI에서 보고서 작성과
 관련된 작업도 다룹니다. 목표는 데이터 관리 및 보고 목적으로 Microsoft
 Fabric 및 Power BI를 활용하는 실습 경험을 제공하는 것을 목표로 합니다.
+
 
 
 
