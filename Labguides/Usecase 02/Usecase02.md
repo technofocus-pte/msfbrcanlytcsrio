@@ -557,7 +557,7 @@ incorrect.](./media/image72.png)
     |Connection|	Lakehouse|
     |Lakehouse|DataFactoryLakehouse 선택|
     |Root Folder|	Table 라디오 버튼 선택|
-    |Table|	• New 선택하고, +++ Generated-NYC-Taxi-Green-Discounts+++ 입력 후, Create 버튼 클릭|
+    |Table|	• New 선택하고, +++Generated-NYC-Taxi-Green-Discounts+++ 입력 후, Create 버튼 클릭|
 
 
 > ![](./media/image78.png)
@@ -735,4 +735,5 @@ generated](./media/image107.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image108.png)
+
 
