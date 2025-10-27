@@ -211,11 +211,9 @@ Fabric에서 제공하는 유연성을 통해 Lakehouse 또는 데이터 웨어�
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image28.png)
 
-11. 다음 샘플 쿼리는 **dimension_customer** 테이블의 **BuyingGroup
-    열**을 기반으로 행 수를 집계합니다. SQL 쿼리 파일은 나중에 참조할 수
-    있도록 자동으로 저장되며 필요에 따라 이러한 파일의 이름을 바꾸거나
-    삭제할 수 있습니다. 아래 이미지와 같이 코드를 붙여넣은 후 재생
-    아이콘을 클릭하여 스크립트를 **실행하세요.**
+11. 다음 샘플 쿼리는 **dimension_customer** 테이블의 **BuyingGroup column**을 기준으로 행 수를 집계합니다.
+SQL 쿼리 파일은 추후 참조를 위해 자동으로 저장되며, 필요에 따라 이름을 변경하거나 삭제할 수 있습니다.
+아래 이미지에 표시된 것처럼 코드를 붙여넣은 후, **Run** 아이콘을 클릭하여 스크립트를 실행하세요
 
     ```
     SELECT BuyingGroup, Count(*) AS Total
@@ -925,6 +923,7 @@ Power BI 내에서 필수 구성 요소를 설정하고 구성하는 데 중점�
 위해 샘플 데이터 수집, 델타 테이블 최적화, Power BI에서 보고서 작성과
 관련된 작업도 다룹니다. 목표는 데이터 관리 및 보고 목적으로 Microsoft
 Fabric 및 Power BI를 활용하는 실습 경험을 제공하는 것을 목표로 합니다.
+
 
 
 
