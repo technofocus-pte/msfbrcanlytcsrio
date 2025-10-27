@@ -542,12 +542,10 @@ documentation*](https://spark.apache.org/docs/latest/api/python/reference/pyspar
     형식으로 저장하세요 (이미 있는 경우 데이터 덮어쓰기). 셀을 실행하고
     데이터가 저장되었다는 메시지를 기다리세요.
 
-> CodeCopy
->
-> transformed_df.write.mode("overwrite").parquet('Files/transformed_data/orders')
->
-> print ("Transformed data saved!")
->
+	```
+	transformed_df.write.mode("overwrite").parquet('Files/transformed_data/orders')
+	print ("Transformed data saved!")
+	```
 > **참고**: 일반적으로 *Parquet* 형식은 추가 분석 또는 분석 저장소로의
 > 수집에 사용할 데이터 파일에 선호됩니다. Parquet은 대부분의 대규모
 > 데이터 분석 시스템에서 지원되는 매우 효율적인 형식입니다. 실제로
@@ -631,7 +629,6 @@ incorrect.](./media/image57.png)
     orders_2021_df = spark.read.format("parquet").load("Files/partitioned_data/Year=2021/Month=*")
     display(orders_2021_df)
     ```
-> display(orders_2021_df)
 
 5.  셀을 실행하고 결과에 2021년 판매에 대한 주문 데이터가 표시되는지
     확인하세요. 경로 (**Year** 및 **Month**)에 지정된 분할 열은 데이터
@@ -1365,7 +1362,7 @@ Power BI 보고서에 대한 데이터 세트를 정의하는 데 사용할 수 
     초기 쿼리 단계 집합이 표시됩니다.
 
 ![A screenshot of a computer Description automatically
-generated](./media/image112.png)
+generated](./media/img21.png)
 
 8.  toolbar ribbon에서, select the **Add column** 탭을 선택하세요.
     **Custom column**을 선택하세요.
@@ -1373,9 +1370,9 @@ generated](./media/image112.png)
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image113.png) 
 
-9.  새 열 이름을 +++ **MonthNo** +++로 설정하고, 데이터 형식을 **Whole
+9.  새 열 이름을 +++**MonthNo**+++로 설정하고, 데이터 형식을 **Whole
     Number**로 설정한 후, **Custom column formula** 수식에 다음 수식을
-    추가하세요:+++ **Date.Month(\[OrderDate\])+++** 확인을 선택하세요.
+    추가하세요:**+++Date.Month(\[OrderDate\])+++** 확인을 선택하세요.
     **OK**를 선택하세요.
 
 ![A screenshot of a computer Description automatically
@@ -1395,16 +1392,13 @@ generated](./media/image115.png)
 있으며, 각 단계를 선택하여 미리보기 창에서 변환이 적용되는 것을 볼 수
 있습니다.
 
-작업 2: Dataflow에 대한 데이터 대상 추가
+## 작업 2: Dataflow에 대한 데이터 대상 추가
 
 1.  **Power Query** toolbar ribbon에서 **Home** 탭을 선택하세요. D**ata
     destination** 드롭다운 메뉴에서 **Lakehouse**를 선택하세요 (선택되지
     않는 경우).
 
-![](./media/image116.png)
-
-![A screenshot of a computer Description automatically
-generated](./media/image117.png)
+![](./media/img22.png)
 
 **참고:** 이 옵션이 회색으로 표시되면 이미 데이터 대상이 설정되어 있을
 수 있습니다. Power Query 편집기의 오른쪽에 있는 쿼리 설정 창 아래쪽에서
@@ -1424,9 +1418,8 @@ generated](./media/image119.png)
     **Dataflow** 1 Dataflow이 만들어질 때까지 기다리세요.
 
 ![A screenshot of a computer Description automatically
-generated](./media/image120.png)
+generated](./media/skillable_image1.png)
 
-![](./media/image121.png)
 
 ## 작업 3: 파이프라인에 Dataflow 추가
 
@@ -1437,9 +1430,9 @@ Dataflow을 파이프라인의 활동으로 포함할 수 있습니다. 파이�
 있습니다.
 
 1.  Synapse Data Engineering 홈페이지의 **dp_FabricXX** 창에서 **+New
-    item** -\> **Data pipeline**를 선택하세요
+    item** -\> **Pipeline**를 선택하세요
 
-![](./media/image122.png)
+![](./media/img24.png)
 
 2.  **New pipeline** 대화 상자에서 **Name** 필드에 **Load data**를
     입력하고 새 파이프라인을 열려면 **Create** 버튼을 클릭하세요.
@@ -1577,6 +1570,7 @@ PySpark를 사용하여 데이터를 조작 및 변환하고, 시각화를 생�
 자동화하고 작업 흐름을 간소화하며 실제 시나리오에서 생산성을 향상시키는
 방법을 배우게 됩니다. 정리 지침을 통해 불필요한 리소스를 남기지 않고
 체계적이고 효율적인 작업 공간 관리 접근 방식을 촉진할 수 있습니다.
+
 
 
 
