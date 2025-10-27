@@ -1464,10 +1464,9 @@ transform, and load* (ETL) process.
     > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image119.png)
 
 2.  On the **Home** tab select the down-arrow on the **Save** icon and then select **Save, run & close** to publish and close the query.
+   ![](./media/skillable_image1.png)
 
-    > !IMAGE[]([instructions303922](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media)/skillable_image1.png)
-
-3.  Select the **dp_fabric@lab.LabInstance.Id** workspace from the left ribbon and note that the **Gen2_Dataflow** of type **Dataflow Gen2 (CI/CD)** is now present in the list.
+4.  Select the **dp_fabric@lab.LabInstance.Id** workspace from the left ribbon and note that the **Gen2_Dataflow** of type **Dataflow Gen2 (CI/CD)** is now present in the list.
 
    ![](./media/img23.png)
 
@@ -1619,4 +1618,5 @@ streamlining your workflow and enhancing productivity in real-world
 scenarios. The cleanup instructions ensure you leave no unnecessary
 resources, promoting an organized and efficient workspace management
 approach.
+
 
