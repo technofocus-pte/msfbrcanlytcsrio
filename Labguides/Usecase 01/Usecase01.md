@@ -440,8 +440,7 @@ Apache Spark 엔진은 기록된 파일 수를 줄이고 기록된 데이터의 
 
 **참고**: 출력을 볼 수 없는 경우 **Spark jobs**의 왼쪽에 있는 수평선을
 클릭합니다 .
-
-    ```
+```
     from pyspark.sql.functions import col, year, month, quarter
     
     table_name = 'fact_sale'
@@ -452,7 +451,8 @@ Apache Spark 엔진은 기록된 파일 수를 줄이고 기록된 데이터의 
     df = df.withColumn('Month', month(col("InvoiceDateKey")))
     
     df.write.mode("overwrite").format("delta").partitionBy("Year","Quarter").save("Tables/" + table_name)
-    ```
+```
+
 
 >  ![](./media/image67.png)
 >
@@ -925,6 +925,7 @@ Power BI 내에서 필수 구성 요소를 설정하고 구성하는 데 중점�
 위해 샘플 데이터 수집, 델타 테이블 최적화, Power BI에서 보고서 작성과
 관련된 작업도 다룹니다. 목표는 데이터 관리 및 보고 목적으로 Microsoft
 Fabric 및 Power BI를 활용하는 실습 경험을 제공하는 것을 목표로 합니다.
+
 
 
 
