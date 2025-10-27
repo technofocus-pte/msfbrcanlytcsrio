@@ -66,7 +66,12 @@ Fabric에서 데이터 작업을 시작하기 전에, Fabric 평가판이 활성
 6.  **Create a workspace** 탭에서 다음 정보를 입력한 후 **Apply** 을
     클릭하세요.
 
-[TABLE]
+    |   |   |
+    |-----|----|
+    |Name	| Data-FactoryXXXX (XXXX는 고유 번호로 지정 가능) |
+    |Advanced|	License mode에서Fabric capacity 선택|
+    |Default storage format|	Small semantic model storage format|
+
 
 > ![](./media/image7.png)
 >
@@ -151,14 +156,14 @@ incorrect.](./media/image21.png)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image22.png)
 
-3.  New Dataflow Gen2 Name으로 +++**nyc_taxi_data_with_discounts+++**를
+3.  New Dataflow Gen2 Name으로 **+++nyc_taxi_data_with_discounts+++**를
     입력한 후 **Create**을 선택하세요.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image23.png)
 
 4.  새로운 dataflow 메뉴에서 **Power Query** 창의 **Get data 드롭다운**
-    메뉴를 클릭한 후, **More...**을 선택하세요.
+    메뉴를 클릭한 후, More...을 선택하세요.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image24.png)
@@ -346,7 +351,7 @@ generated](./media/image49.png)
     매핑을 확인하세요.
 
 4.  권장된 두 개의 열 매핑을 하나씩 선택하여, 두
-    테이블의 **VendorID**와 **Date** 열을 각각 매핑합니다. 두 매핑이
+    테이블의 **VendorID**와 **VendorID** 열을 각각 매핑합니다. 두 매핑이
     모두 추가되면, 각 테이블에서 일치하는 열 제목이 강조 표시됩니다.
 
 > ![A screenshot of a computer AI-generated content may be
@@ -406,8 +411,7 @@ incorrect.](./media/image55.png)
     입력하세요. **Data type**은 **Currency**를 선택하세요. **Custom
     column formula**에는 M 수식을 입력하세요 :
 
-> +++if \[total_amount\] \> 0 then \[total_amount\] \* ( 1 -\[Discount\]
-> ) else \[total_amount\]+++
++++if [total_amount] > 0 then [total_amount] * ( 1 -[Discount] ) else [total_amount]+++
 
 그 후, **OK**를 클릭하세요.
 
@@ -428,8 +432,9 @@ incorrect.](./media/image58.png)
 
 ![](./media/image59.png)
 
-12. ![](./media/image60.png) **Round** 대화 상자에서 소수 자릿수를
+12.  **Round** 대화 상자에서 소수 자릿수를
     **2**로 입력한 후**OK**를 클릭하세요.
+      ![](./media/image60.png)
 
 13. **IpepPickupDatetime** 열의 데이터 유형을**Date**에서
     **Date/Time**으로 변경하세요.
@@ -438,7 +443,7 @@ incorrect.](./media/image58.png)
 incorrect.](./media/image61.png)
 
 14. 마지막으로, 편집기 오른쪽에 있는 **Query settings** 창이 펼쳐져 있지
-    않다면 확장한 후, 쿼리 이름을 **Merge**에서 +++**Output+++**로
+    않다면 확장한 후, 쿼리 이름을 **Merge**에서 **+++Output+++**로
     변경하세요.
 
 ![A screenshot of a computer Description automatically
@@ -535,14 +540,25 @@ incorrect.](./media/image72.png)
 5.  **Source** 탭에서 다음 설정을 입력한 후 **Test connection**을
     클릭하세요.
 
-[TABLE]
+    |   |   |
+    |-----|-----|
+    |Connection	|dfconnection User-XXXX|
+    |Connection Type|	HTTP 선택|
+    |File format	|Delimited Text|
+
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image77.png)
 
 6.  Destination 탭에 다음 설정을 입력하세요.
 
-[TABLE]
+    |   |  |
+    |----|----|
+    |Connection|	Lakehouse|
+    |Lakehouse|DataFactoryLakehouse 선택|
+    |Root Folder|	Table 라디오 버튼 선택|
+    |Table|	• New 선택하고, +++ Generated-NYC-Taxi-Green-Discounts+++ 입력 후, Create 버튼 클릭|
+
 
 > ![](./media/image78.png)
 
@@ -592,16 +608,16 @@ incorrect.](./media/image83.png)
 
     &nbsp;
 
-    - ![](./media/image86.png) **Subject** 필드를 선택하면 **Add dynamic
+    -  **Subject** 필드를 선택하면 **Add dynamic
       content** 옵션이 표시됩니다. 이를 선택하면 파이프라인
       식(Expression) 빌더 캔버스가 표시됩니다.
+     ![](./media/image86.png)
 
 14. **Pipeline expression builder** 대화 상자가 표시됩니다. 다음
     식(expression)을 입력한 후 **OK**를 선택하세요:
 
-> *+++@concat('DI in an Hour Pipeline Succeeded with Pipeline Run Id',
-> pipeline().RunId)+++*
->
+   +++@concat('DI in an Hour Pipeline Succeeded with Pipeline Run Id', pipeline().RunId)+++
+ 
 > ![](./media/image87.png)
 
 15. **Body** 항목을 다시 선택한 후, 텍스트 영역 아래에 표시되는 **View
@@ -609,10 +625,8 @@ incorrect.](./media/image83.png)
     expression builder** 대화 상자에 다음 식(expression)을 입력한 후,
     **OK**를 선택하세요:
 
-> *+++@concat('RunID = ', pipeline().RunId, ' ; ', 'Copied rows ',
-> activity('Copy data1').output.rowsCopied, ' ; ','Throughput ',
-> activity('Copy data1').output.throughput)+++*
->
++++@concat('RunID = ', pipeline().RunId, ' ; ', 'Copied rows ', activity('Copy data1').output.rowsCopied, ' ; ','Throughput ', activity('Copy data1').output.throughput)+++
+
 > ![](./media/image88.png)
 >
 > ![](./media/image89.png)
@@ -721,3 +735,4 @@ generated](./media/image107.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image108.png)
+
