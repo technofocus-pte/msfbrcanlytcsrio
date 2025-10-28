@@ -94,131 +94,7 @@ To create a multi-service resource follow these instructions:
 
     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image6.png)
 
-### Task 2: Create a key vault using the Azure portal
-
-1.  In Azure portal home page, click on **+ Create Resource**.
-
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image7.png)
-
-2.  In the **Create a resource** page search bar, type **+++Key vault+++** and
-    click on the appeared **Key vault**.
-	
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image8.png)
-
-3.  Click on **Key Vault** section.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image9.png)
-
-4.  On the **Create a key Vault** page, provide the following
-    information and click on **Review+create** button.
-	
-    | Field | Description |
-    |-----|---|
-    |Subscription|	@lab.CloudSubscription.Name |
-    |Resource group	| @lab.CloudResourceGroup(ResourceGroup1).Name |
-    |Region| East US 2 |
-    |Name	|+++fabrickeyvault@lab.LabInstance.Id+++ (must be a unique Id)|
-    |Pricing Tier|	Click on change Price Tier > select Standard |
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image10.png)
-
-5.  Once the Validation is passed, click on the **Create** button.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image11.png)
-
-6.  After the deployment is completed, click on the **Go to resource**
-    button.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image12.png)
-
-5.  In your **fabrickeyvault@lab.LabInstance.Id** window, from the left menu, click on
-    the **Access control (IAM).**
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image13.png)
-
-6.  On the **Access control (IAM)** page, Click +**Add** and select **Add
-    role assignment**.
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image14.png)
-
-5.  In **Job function roles,** type **+++Key vault administrator+++** in the search box and select it. Click **Next**
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image15.png)
-
-6.  In the **Add role assignment** -> **Members** tab, select Assign access to **User
-    group or service principal**. Under Members, click **+Select members**
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image16.png)
-
-7.  On the Select members tab, search your Azure OpenAI subscription, **+++@lab.CloudPortalCredential(User1).Username+++** and
-    click **Select.**
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image17.png)
-
-8.  In the **Add role assignment** -> **Members** tab, Click **Review + assign**.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image18.png)
-
-1.  On the **Add role assignment** -> **Review + assign** tab, click **Review + assign**.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image19.png)
-
-9.  You will see a notification - added as Azure AI Developer for
-    fabrickeyvault@lab.LabInstance.Id
-
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image20.png)
-
-### Task 3: Create a secret using Azure Key vault
-
-1.  On the Key Vault left-hand sidebar, select **Objects** then
-    select **Secrets**.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image21.png)
-
-2.  Select **+ Generate/Import**.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image22.png)
-
-3.  On the **Create a secret** page, provide the following information
-    and click on **Create** button .
-
-    |   |   |
-    |---|---|
-    |Upload options | Manual|
-    |Name|	+++aisearchkey+++|
-    |Secret Value|	+++password321+++|
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image23.png)
-
-4.  Select **+ Generate/Import**.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image24.png)
-
-5.  On the **Create a secret** page, provide the following information
-    and click on **Create** button.
-	
-    |    |   |
-    |----|----|
-    |Upload options | Manual|
-    |Name|	+++aiservicekey+++|
-    |Secret Value|	+++password321+++|
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image25.png)
-    
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image26.png)
-
-6.  In **Key vault** page, copy **Key vault** name, and **Secrets**
-    values and paste them in a notepad as shown in the below image, then
-    **Save** the notepad to use the information in the upcoming tasks.
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image27.png)
-
-### Task 4: Create an Azure AI Search service in the portal
+### Task 2: Create an Azure AI Search service in the portal
 
 1.  In Azure portal home page, click on **+ Create Resource**.
 
@@ -1013,6 +889,7 @@ portal](https://portal.azure.com/?azure-portal=true).
 
     > ![A screenshot of a computer Description automatically
     > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image80.png)
+
 
 
 
