@@ -90,129 +90,7 @@ multi-service account ** 아래에 나열됩니다. 다중 서비스 리소스�
 
 ![](./media/image6.png)
 
-## **작업 2: Azure Portal을 사용하여 키 자격 증명 모음 생성하기**
-
-1.  Azure portal 홈페이지에서 **+ Create Resource**를 클릭하세요.
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image7.png)
-
-2.  **Create a resource** 페이지 검색 바에서 **Key vault**을 입력하고
-    표시된 **Key vault**를 클릭하세요.![](./media/image8.png)
-
-3.  **Key Vault** 섹션을 클릭하세요.
-
-> ![](./media/image9.png)
-
-4.  **Create a key Vault** 페이지에서, 다음 정보를 제공하고
-    **Review+create** 버튼을 클릭하세요.
-
-    | Field | Description |
-    |-----|---|
-    |Subscription|	@lab.CloudSubscription.Name |
-    |Resource group	| @lab.CloudResourceGroup(ResourceGroup1).Name |
-    |Region| East US 2 |
-    |Name	|+++fabrickeyvault@lab.LabInstance.Id+++ (must be a unique Id)|
-    |Pricing Tier|	Click on change Price Tier > select Standard |
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image10.png)
-
-5.  유효성 검사가 통과되면 **Create**버튼을 클릭하세요.
-
-> ![](./media/image11.png)
-
-6.  배포가 완료되면 **Go to resource** 버튼을 클릭하세요.
-
-> ![](./media/image12.png)
-
-5.  왼쪽 메뉴 **fabrickeyvaultXX** 창에서 **Access control(IAM)**를
-    클릭하세요.
-
-![](./media/image13.png)
-
-6.  Access control(IAM) 페이지에서 +**Add**를 클릭하고 **Add role
-    assignments**를 선택하세요.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image14.png)
-
-5.  In **Job function roles**에서 검색 상자에 +++**Key vault
-    administrator+++**를 입력하고 선택하세요. **Next**를 클릭하세요
-
-> ![](./media/image15.png)
-
-6.  **Add role assignment** 탭에서 Assign access to User group or
-    service principal를 선택하세요. Members에서 **+Select members**를
-    클릭하세요
-
-> ![](./media/image16.png)
-
-7.  Select members 탭에서Azure OpenAI subscription을 검색하고
-    **Select**를 클릭하세요.
-
-> ![](./media/image17.png)
-
-8.  **Add role assignment** 페이지에서 **Review + Assign**을 클릭하면
-    역할 할당이 완료되면 알림을 받게 됩니다.
-
-> ![](./media/image18.png)
->
-> ![](./media/image19.png)
-
-9.  added as Azure AI Developer for Azure-openai-testXX라는 알림이
-    표시됩니다
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image20.png)
-
-## 작업 3: Azure Key 자격 증명 모음을 사용하여 비밀 생성하기
-
-1.  Key Vault의 왼쪽 사이드바에서 **Objects**을 선택하고 **Secrets**를
-    선택하세요.
-
-> ![](./media/image21.png)
-
-2.  **+ Generate/Import**를 선택하세요.
-
-> ![](./media/image22.png)
-
-3.  **Create a secret** 페이지에서 다음 정보를 제공하고 **Create**
-    버튼을 클릭하세요.
-
-    |   |   |
-    |---|---|
-    |Upload options | Manual|
-    |Name|	+++aisearchkey+++|
-    |Secret Value|	+++password321+++|
-
-> ![](./media/image23.png)
-
-4.  **+ Generate/Import**를 선택하세요.
-
-> ![](./media/image24.png)
-
-5.  **Create a secret** 페이지에서 다음 정보를 제공하고 **Create**
-    버튼을 클릭하세요.
-
-    |    |   |
-    |----|----|
-    |Upload options | Manual|
-    |Name|	+++aiservicekey+++|
-    |Secret Value|	+++password321+++|
-
-![](./media/image25.png)
-
-![](./media/image26.png)
-
-6.  In **Key vault** 페이지에서, **Key vault** 이름 및 **Secrets** 값을
-    복사하여 아래 이미지와 같이 메모장에 붙여넣은 후 메모장을
-    **저장**하여 향후 작업에서 정보를 사용하세요.
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image27.png)
-
-## **작업 4: 포털에서 Azure AI Search 서비스 생성하기**
+## **작업 2: 포털에서 Azure AI Search 서비스 생성하기**
 
 1.  Azure portal 홈페이지에서 **+ Create Resource**를 클릭하세요.
 
@@ -1026,5 +904,6 @@ generated](./media/image79.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image80.png)
+
 
 
