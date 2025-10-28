@@ -804,24 +804,44 @@ conversation.
     > Now, we can call that function with an example question to see the response:
 
 3.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output.
-	```	
-	# Define a simple get_response function
-	def get_response(user_question):
-	    # You can expand this as needed for more complex logic
-	    if "booking" in user_question.lower():
-	        return "To make a booking, please visit our website or contact our reservations team."
-	    else:
-	        return "I'm sorry, I can only help with bookings at the moment."
-	
-	# Example usage
-	user_question = "how do i make a booking?"
-	response = get_response(user_question)
-	print(response)
-	```
+    to the notebook, and enter the following code in it. Replace the placeholders YOUR_ADMIN_API_KEY, YOUR_INDEX_NAME and search_service_name with your values and click on **▷Run cell** button and review the output.
 
-     ![](./media/rio5.png)
+```
+import requests
+
+# Azure Search configuration
+search_service_name = ''
+index_name = 'rag-demo-index'
+api_key = ''
+endpoint = f'https://{search_service_name}.search.windows.net'
+api_version = '2023-07-01-Preview'
+search_url = f"{endpoint}/indexes/{index_name}/docs/search?api-version={api_version}"
+
+headers = {
+    "Content-Type": "application/json",
+    "api-key": api_key
+}
+
+def get_response(user_question, top_k=1):
+    payload = {
+        "search": user_question,
+        "queryType": "simple",   # Can be "semantic" if enabled in your Azure Search
+        "top": top_k
+    }
+    response = requests.post(search_url, headers=headers, json=payload)
+    response.raise_for_status()
+    results = response.json().get('value', [])
+    if not results:
+        return "No answer found in the knowledge base."
+    return results[0].get('content', '').strip()
+
+# Example usage
+user_question = "how do i make a booking?"
+response = get_response(user_question)
+print(response)
+```
+![](./media/labimg3.png)
+![](./media/labimg4.png)
 
 ### Task 4: Delete the resources
 
@@ -889,6 +909,7 @@ portal](https://portal.azure.com/?azure-portal=true).
 
     > ![A screenshot of a computer Description automatically
     > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image80.png)
+
 
 
 
