@@ -823,21 +823,44 @@ gpt-35-turbo-16k를 사용합니다.
     출력을 검토하세요.
 
 **Copy**
+
 ```
-# Define a simple get_response function
-def get_response(user_question):
-    # You can expand this as needed for more complex logic
-    if "booking" in user_question.lower():
-        return "To make a booking, please visit our website or contact our reservations team."
-    else:
-        return "I'm sorry, I can only help with bookings at the moment."
+import requests
+
+# Azure Search configuration
+search_service_name = ''
+index_name = 'rag-demo-index'
+api_key = ''
+endpoint = f'https://{search_service_name}.search.windows.net'
+api_version = '2023-07-01-Preview'
+search_url = f"{endpoint}/indexes/{index_name}/docs/search?api-version={api_version}"
+
+headers = {
+    "Content-Type": "application/json",
+    "api-key": api_key
+}
+
+def get_response(user_question, top_k=1):
+    payload = {
+        "search": user_question,
+        "queryType": "simple",   # Can be "semantic" if enabled in your Azure Search
+        "top": top_k
+    }
+    response = requests.post(search_url, headers=headers, json=payload)
+    response.raise_for_status()
+    results = response.json().get('value', [])
+    if not results:
+        return "No answer found in the knowledge base."
+    return results[0].get('content', '').strip()
 
 # Example usage
 user_question = "how do i make a booking?"
 response = get_response(user_question)
 print(response)
+
 ```
- ![](./media/rio5.png)
+ ![](./media/labimg3.png)
+ ![](./media/labimg4.png)
 
 ## 작업 4: 리소스 정리하기
 
@@ -904,6 +927,7 @@ generated](./media/image79.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image80.png)
+
 
 
 
