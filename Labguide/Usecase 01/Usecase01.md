@@ -356,7 +356,7 @@ generated](./media/image49.png)
     between the three tables.
 
 4.  Choose each of the two suggested column mappings, one at a time,
-    mapping the VendorID and date columns from both tables. When both
+    mapping the VendorID and VendorID columns from both tables. When both
     mappings are added, the matched column headers are highlighted in
     each table.
 
@@ -750,4 +750,5 @@ generated](./media/image107.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image108.png)
+
 
