@@ -1490,7 +1490,7 @@ experiences, including Data Factory experience.
 
 3.  The pipeline editor opens.
 
-    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image124.png)
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/labimg12.png)
 
     >[!knowledge]**Tip**: If the Copy Data wizard opens automatically, close it!
 
@@ -1516,19 +1516,16 @@ experiences, including Data Factory experience.
     ![](./media/img25.png)
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image129.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/labimg13.png)
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image130.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/labimg14.png)
 
 8.  In the menu bar on the left edge, select your workspace i.e
     **dp_Fabric@lab.LabInstance.Id**.
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image131.png)
-
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image132.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/labimg15.png)
 
 9.  In the **Fabric_lakehouse** pane, select the
     **Fabric_lakehouse** of type Lakehouse.
@@ -1617,6 +1614,7 @@ streamlining your workflow and enhancing productivity in real-world
 scenarios. The cleanup instructions ensure you leave no unnecessary
 resources, promoting an organized and efficient workspace management
 approach.
+
 
 
 
