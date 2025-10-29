@@ -921,9 +921,9 @@ create charts from data in dataframes.
 
     - **Chart type**: Bar chart
 
-    - **Key**: Item
+    - **X-axis**: Item
 
-    - **Values**: Quantity
+    - **Y-axis**: Quantity
 
     - **Series Group**: *leave blank*
 
@@ -932,14 +932,14 @@ create charts from data in dataframes.
     - **Stacked**: *Unselected*
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image77.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/labimg6.png)
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image78.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/labimg7.png)
 
 4.  Verify that the chart looks similar to this
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image79.png)
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/labimg9.png)
 
 ### Task 2: Get started with matplotlib
 
@@ -1413,12 +1413,12 @@ transform, and load* (ETL) process.
     >[!note]**Note**: The **Power Query** editor shows the data source and an initial set
     of query steps to format the data.
 
-    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image112.png)
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/img21.png)
 
 9.  On the toolbar ribbon, select the **Add column** tab. Then,
     select **Custom column.**
 
-      ![](./media/img21.png)
+      ![](./media/labimg8.png)
 
 10.  Set the New column name to **+++MonthNo+++** , set the Data type to
     **Whole Number** and then add the following
@@ -1447,9 +1447,9 @@ transform, and load* (ETL) process.
     in the **Data destination** drop-down menu, select **Lakehouse** (if
     not selected already).
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image116.png)
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/labimg10.png)
 
-    ![](./media/img22.png)
+    
 
     >[!note]**Note:** If this option is grayed out, you may already have a data
     > destination set. Check the data destination at the bottom of the Query
@@ -1461,7 +1461,7 @@ transform, and load* (ETL) process.
 
     > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image118.png)
     
-    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image119.png)
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/labimg11.png)
 
 2.  On the **Home** tab select the down-arrow on the **Save** icon and then select **Save, run & close** to publish and close the query.
    ![](./media/skillable_image1.png)
@@ -1483,7 +1483,7 @@ experiences, including Data Factory experience.
 
     ![](./media/img24.png)
 
-2.  In the **New pipeline** dialog box, enter **Load data** in
+2.  In the **New pipeline** dialog box, enter **+++Load data+++** in
     the **Name** field, click on the **Create** button to open the new
     pipeline.
 
@@ -1491,7 +1491,7 @@ experiences, including Data Factory experience.
 
 3.  The pipeline editor opens.
 
-    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image124.png)
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/labimg12.png)
 
     >[!knowledge]**Tip**: If the Copy Data wizard opens automatically, close it!
 
@@ -1517,19 +1517,16 @@ experiences, including Data Factory experience.
     ![](./media/img25.png)
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image129.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/labimg13.png)
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image130.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/labimg14.png)
 
 8.  In the menu bar on the left edge, select your workspace i.e
     **dp_Fabric@lab.LabInstance.Id**.
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image131.png)
-
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image132.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/labimg15.png)
 
 9.  In the **Fabric_lakehouse** pane, select the
     **Fabric_lakehouse** of type Lakehouse.
@@ -1618,5 +1615,6 @@ streamlining your workflow and enhancing productivity in real-world
 scenarios. The cleanup instructions ensure you leave no unnecessary
 resources, promoting an organized and efficient workspace management
 approach.
+
 
 
