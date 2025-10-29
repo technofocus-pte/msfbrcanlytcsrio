@@ -1413,12 +1413,12 @@ transform, and load* (ETL) process.
     >[!note]**Note**: The **Power Query** editor shows the data source and an initial set
     of query steps to format the data.
 
-    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image112.png)
+    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/img21.png)
 
 9.  On the toolbar ribbon, select the **Add column** tab. Then,
     select **Custom column.**
 
-      ![](./media/img21.png)
+      ![](./media/labimg8.png)
 
 10.  Set the New column name to **+++MonthNo+++** , set the Data type to
     **Whole Number** and then add the following
@@ -1447,9 +1447,7 @@ transform, and load* (ETL) process.
     in the **Data destination** drop-down menu, select **Lakehouse** (if
     not selected already).
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image116.png)
-
-    ![](./media/img22.png)
+    ![](./media/labimg10.png)
 
     >[!note]**Note:** If this option is grayed out, you may already have a data
     > destination set. Check the data destination at the bottom of the Query
@@ -1619,5 +1617,6 @@ streamlining your workflow and enhancing productivity in real-world
 scenarios. The cleanup instructions ensure you leave no unnecessary
 resources, promoting an organized and efficient workspace management
 approach.
+
 
 
