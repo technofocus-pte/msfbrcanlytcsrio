@@ -98,7 +98,7 @@ trial enabled.
 > incorrect.](./media/image11.png)
 
 3.  In the **New lakehouse** dialog box, enter
-    +++**DataFactoryLakehouse+++** in the **Name** field, click on the
+    +++**DataFactoryLakehouse+++** in the **Name** field and unselect the lakehouses schemas, click on the
     **Create** button and open the new lakehouse.
 
 > ![A screenshot of a computer AI-generated content may be
@@ -750,3 +750,4 @@ generated](./media/image107.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image108.png)
+
