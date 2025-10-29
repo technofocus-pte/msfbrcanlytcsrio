@@ -102,7 +102,7 @@ trial enabled.
     **Create** button and open the new lakehouse.
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image12.png)
+> incorrect.](./media/labimg17.png)
 >
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image13.png)
@@ -750,5 +750,6 @@ generated](./media/image107.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image108.png)
+
 
 
