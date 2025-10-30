@@ -1,4 +1,4 @@
-# Use case 03: Chat with your data using Fabric Data Agent
+<img width="321" height="173" alt="image" src="https://github.com/user-attachments/assets/7b9b386b-7c6e-4a42-9581-c041189908b8" /># Use case 03: Chat with your data using Fabric Data Agent
 
 **Introduction:**
 
@@ -119,12 +119,12 @@ reports.
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image14.png)
 
 2.  In the **New lakehouse** dialog box, enter
-    +++**AI_Fabric_lakehouse@lab.LabInstance.Id**+++ in the **Name** field, click on the
+    +++**AI_Fabric_lakehouse@lab.LabInstance.Id**+++ in the **Name** field and **unselect** the lakehouses schemas. Click on the
     **Create** button and open the new lakehouse.
 
     >[!note]**Note**: Ensure to remove space before **AI_Fabric_lakehouse@lab.LabInstance.Id**.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/image15.png)
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/labimg20.png)
 
 3.  You will see a notification stating **Successfully created SQL
     endpoint**.
@@ -562,6 +562,7 @@ programmatically from a Fabric notebook, demonstrating end-to-end AI
 integration. This lab empowers you to make enterprise data more
 accessible, usable, and intelligent for business users through natural
 language and generative AI technologies.
+
 
 
 
