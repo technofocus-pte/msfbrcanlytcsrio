@@ -1,4 +1,4 @@
-<img width="321" height="173" alt="image" src="https://github.com/user-attachments/assets/7b9b386b-7c6e-4a42-9581-c041189908b8" /># Use case 03: Chat with your data using Fabric Data Agent
+## Use case 03: Chat with your data using Fabric Data Agent
 
 **Introduction:**
 
