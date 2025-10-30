@@ -124,7 +124,7 @@ reports.
 
     >[!note]**Note**: Ensure to remove space before **AI_Fabric_lakehouse@lab.LabInstance.Id**.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/labimg20.png)
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2003/media/labimg21.png)
 
 3.  You will see a notification stating **Successfully created SQL
     endpoint**.
@@ -562,6 +562,7 @@ programmatically from a Fabric notebook, demonstrating end-to-end AI
 integration. This lab empowers you to make enterprise data more
 accessible, usable, and intelligent for business users through natural
 language and generative AI technologies.
+
 
 
 
