@@ -151,12 +151,12 @@ reports.
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image12.png)
 
 3.  In the **New lakehouse** dialog box, enter **+++wwilakehouse+++** in
-    the **Name** field, click on the **Create** button and open the new
+    the **Name** field and **unselect** the lakehouses schemas, click on the **Create** button and open the new
     lakehouse.
 
     >[!note]**Note**: Be sure to remove space before **wwilakehouse**.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/image13.png)
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/labimg19.png)
 
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img5.png)
@@ -983,6 +983,7 @@ The lab also covers tasks related to ingesting sample data, optimizing
 delta tables, and building reports in Power BI for effective data
 analysis. The objectives aim to provide hands-on experience in utilizing
 Microsoft Fabric and Power BI for data management and reporting purposes.
+
 
 
 
