@@ -149,11 +149,11 @@ the data files you're going to analyze.
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image10.png)
 
 3.  In the **New lakehouse** dialog box,
-    enter **+++Fabric_lakehouse+++** in the **Name** field, click on
+    enter **+++Fabric_lakehouse+++** in the **Name** field and **unselect** the lakehouses schemas, click on
     the **Create** button and open the new lakehouse.
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image11.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/labimg18.png)
 
     >[!note]**Note**: After a minute or so, a new empty lakehouse will be created. You
     need to ingest some data into the data lakehouse for analysis.
@@ -1614,6 +1614,7 @@ streamlining your workflow and enhancing productivity in real-world
 scenarios. The cleanup instructions ensure you leave no unnecessary
 resources, promoting an organized and efficient workspace management
 approach.
+
 
 
 
