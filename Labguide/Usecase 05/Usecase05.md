@@ -947,10 +947,10 @@ Microsoft Fabric workspace:
 
     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image107.png)
 
-3.  In the **Name** field, enter **+++ShortcutExercise+++** and click on
+3.  In the **Name** field, enter **+++ShortcutExercise+++** and **unselect** the lakehouses schemas. Click on
     the **Create** button.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/image108.png)
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2005/media/labimg23.png)
 
 4.  The new lakehouse loads and the **Explorer** view opens up, with
     the **Get data in your lakehouse** menu. Under **Load data in your
@@ -1314,6 +1314,7 @@ insights into resource management, emphasizing the importance of cleanup
 procedures to maintain an efficient workspace. Collectively, these tasks
 present a comprehensive understanding of setting up, managing, and
 analyzing data within Microsoft Fabric.
+
 
 
 
