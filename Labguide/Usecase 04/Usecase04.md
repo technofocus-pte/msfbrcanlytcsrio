@@ -153,7 +153,7 @@ the data files you're going to analyze.
     the **Create** button and open the new lakehouse.
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/image11.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2004/media/labimg22.png)
 
     >[!note]**Note**: After a minute or so, a new empty lakehouse will be created. You
     need to ingest some data into the data lakehouse for analysis.
@@ -1615,6 +1615,7 @@ streamlining your workflow and enhancing productivity in real-world
 scenarios. The cleanup instructions ensure you leave no unnecessary
 resources, promoting an organized and efficient workspace management
 approach.
+
 
 
 
