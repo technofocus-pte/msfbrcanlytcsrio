@@ -106,7 +106,12 @@ Fabric でデータを操作する前に、Fabric
 6.  **「Create a workspace」**タブで、次の詳細を入力し、
     **「Apply」**ボタンをクリックします。
 
-[TABLE]
+    |  |  |
+    |-----|----|
+    |Name|	+++dp_Fabric@lab.LabInstance.Id+++ (must be a unique Id)| 
+    |Description|	This workspace contains Analyze data with Apache Spark|
+    |Advanced|	Under License mode, select Fabric capacity|
+    |Default storage format	|Small dataset storage format|
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image6.png)
@@ -115,8 +120,7 @@ Fabric でデータを操作する前に、Fabric
 
 7.  デプロイが完了するまでお待ちください。完了まで2～3分かかります。新しいワークスペースが開いたら、中身は空になっているはずです。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image8.png)
+ ![](./media/img1.png)
 
 ## タスク2:Lakehouseを作成し、ファイルをアップロードする
 
@@ -127,8 +131,7 @@ Fabric でデータを操作する前に、Fabric
 1.  ナビゲーション バーの**+ New
     item** ボタンをクリックして、新しいEventhouseを作成します。
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image9.png)
+      ![](./media/img2.png)
 
 2.  「**Lakehouse**」タイルをクリックします。
 
@@ -144,7 +147,7 @@ incorrect.](./media/image11.png)
 
 4.  1分ほど経つと、新しい空のLakehouseが作成されます。分析のために、データLakehouseにデータをインジェストする必要があります。
 
-![](./media/image12.png)
+     ![](./media/img3.png)
 
 5.  **「Successfully created SQL endpoint」**という通知が表示されます。
 
@@ -153,14 +156,14 @@ incorrect.](./media/image11.png)
 6.  **Explorer**セクションの**fabric_lakehouse**の下で、**Files**フォルダ**の**横にマウスを移動し、水平の省略記号**(…)**メニューをクリックします。移動して**Upload**をクリックします。
     クリック 下の画像に示すように、**Upload**フォルダーにあります。
 
-![](./media/image14.png)
+     ![](./media/img4.png)
 
 7.  右側に表示される**Upload**フォルダペインで、
     **Files/の**下のフォルダアイコンを選択し、
     **C:\LabFiles**を参照して注文を選択します。
     フォルダーに移動し、\[**Upload\]**ボタンをクリックします。
 
-![](./media/image15.png)
+    ![](./media/img5.png)
 
 8.  **「Upload 3 files to this site?」という**ダイアログ
     ボックスが表示された場合は、 **「Upload」**ボタンをクリックします。
@@ -1640,3 +1643,4 @@ IoTコンテキストでストリーミングデータに差分テーブルを�
 
 このラボでは、Fabric
 を使用するために必要なスキルを習得し、ワークスペースの作成と管理、データLakehouseの構築、そして効率的なデータ変換を行えるようになります。データフローをパイプラインに組み込むことで、データ処理タスクを自動化し、ワークフローを効率化し、実際のシナリオにおける生産性を向上させる方法を習得できます。クリーンアップ手順に従うことで、不要なリソースを残さず、整理された効率的なワークスペース管理アプローチを実現できます。
+
