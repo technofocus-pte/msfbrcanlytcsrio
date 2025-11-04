@@ -99,7 +99,11 @@ Factory パイプライン、ノートブック、Power BI
     workspace」ペイン**で、次の詳細を入力し、
     **「Apply」**ボタンをクリックします。
 
-[TABLE]
+    |    |   |
+    |----|----|
+    |Name	|+++AI-Fabric-@lab.LabInstance.Id+++ (must be a unique Id) |
+    |Advanced	|Under License mode, select Fabric capacity|
+    |Default storage format	|Small dataset storage format|
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image11.png)
@@ -109,8 +113,7 @@ Factory パイプライン、ノートブック、Power BI
 
 7.  デプロイが完了するまでお待ちください。完了まで2～3分かかります。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image13.png)
+   ![](./media/img1.png)
 
 ## **タスク2: Lakehouseを作る**
 
@@ -135,16 +138,14 @@ Factory パイプライン、ノートブック、Power BI
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image16.png)
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image17.png)
+   ![](./media/img2.png)
 
 4.  次に、テーブルをクエリするための新しいノートブックを作成します。
     **「Home」**リボンで、 **「Open
     notebook」**のドロップダウンを選択し、 **「New
     notebook」**を選択します**。**
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image18.png)
+  ![](./media/img3.png)
 
 ## タスク3: AdventureWorksDWデータをLakehouseにアップロードする
 
@@ -155,30 +156,24 @@ incorrect.](./media/image18.png)
 1.  クエリエディタに以下のコードをコピーして貼り付けます。「**Run
     all」**ボタンを選択してクエリを実行します。クエリが完了すると、結果が表示されます。
 
-> import pandas as pd
->
-> from tqdm.auto import tqdm
->
-> base =
-> "https://synapseaisolutionsa.z13.web.core.windows.net/data/AdventureWorks"
->
-> \# load list of tables
->
-> df_tables = pd.read_csv(f"{base}/adventureworks.csv",
-> names=\["table"\])
->
-> for table in (pbar := tqdm(df_tables\['table'\].values)):
->
-> pbar.set_description(f"Uploading {table} to lakehouse")
->
-> \# download
->
-> df = pd.read_parquet(f"{base}/{table}.parquet")
->
-> \# save as lakehouse table
->
-> spark.createDataFrame(df).write.mode('overwrite').saveAsTable(table)
->
+    ```
+    import pandas as pd
+    from tqdm.auto import tqdm
+    base = "https://synapseaisolutionsa.z13.web.core.windows.net/data/AdventureWorks"
+    
+    # load list of tables
+    df_tables = pd.read_csv(f"{base}/adventureworks.csv", names=["table"])
+    
+    for table in (pbar := tqdm(df_tables['table'].values)):
+        pbar.set_description(f"Uploading {table} to lakehouse")
+    
+        # download
+        df = pd.read_parquet(f"{base}/{table}.parquet")
+    
+        # save as lakehouse table
+        spark.createDataFrame(df).write.mode('overwrite').saveAsTable(table)
+    ```
+
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image19.png)
 >
@@ -195,20 +190,18 @@ incorrect.](./media/image18.png)
 1.  次に、左側のナビゲーション
     ペインで**AI-Fabric-XXXX**をクリックします**。**
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image22.png)
+     ![](./media/img4.png)
 
-1.  **Fabric**ホームページで、 **+ New item**を選択します**。**
+2.  **Fabric**ホームページで、 **+ New item**を選択します**。**
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image23.png)
+     ![](./media/img5.png)
 
-2.  **Filter by item type** 検索ボックスに**「+++data
+3.  **Filter by item type** 検索ボックスに**「+++data
     agent+++」と入力し**、**Data agentを選択します。**![A screenshot of
     a computer AI-generated content may be
     incorrect.](./media/image24.png)
 
-3.  データ エージェント名として**+++AI-agent+++**と入力し、
+4.  データ エージェント名として**+++AI-agent+++**と入力し、
     **\[Create\]を選択します**。
 
 ![A screenshot of a computer AI-generated content may be
@@ -256,8 +249,7 @@ incorrect.](./media/image29.png)
 
 - FactResellerSales
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image30.png)
+   ![](./media/img6.png)
 
 ## タスク5: 指示を与える
 
@@ -368,9 +360,7 @@ AIスキルはFabricノートブック内でプログラム的に使用できま
 1.  Data agent Fabric
     ページの**\[Home\]**リボンで**\[Settings\]**を選択します。
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image49.png)
-
+    ![](./media/img7.png)
 2.  AI
     スキルを公開する前は、このスクリーンショットに示すように、公開された
     URL 値はありません。
@@ -382,9 +372,8 @@ incorrect.](./media/image50.png)
 
 4.  **\[Home\]**リボンで、\[**Publish\]**を選択します。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image51.png)
->
+    ![](./media/img8.png)
+
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image52.png)
 
@@ -406,10 +395,9 @@ incorrect.](./media/image54.png)
 
 7.  左側のナビゲーション ペインで**Notebook1**を選択します。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image55.png)
+      ![](./media/img9.png)
 
-10. **「+Code」アイコン**を使用してノートブックに新しいコードセルを追加し、次のコードを入力して**URLを置き換えます**。
+8. **「+Code」アイコン**を使用してノートブックに新しいコードセルを追加し、次のコードを入力して**URLを置き換えます**。
     **▷実行**ボタンをクリックして出力を確認します。
 
 +++%pip install "openai==1.70.0"+++
@@ -420,7 +408,7 @@ incorrect.](./media/image54.png)
 11. **「+Code」アイコン**を使用してノートブックに新しいコードセルを追加し、次のコードを入力して**URLを置き換えます**。
     **▷実行**ボタンをクリックして出力を確認します。
 
-> +++%pip install httpx==0.27.2+++
+   +++%pip install "openai==1.70.0"+++
 >
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image57.png)
@@ -428,155 +416,91 @@ incorrect.](./media/image54.png)
 8.  **「+Code」アイコン**を使用してノートブックに新しいコードセルを追加し、次のコードを入力して**URLを置き換えます**。
     **▷実行**ボタンをクリックして出力を確認します。
 
-> import requests
->
-> import json
->
-> import pprint
->
-> import typing as t
->
-> import time
->
-> import uuid
->
-> from openai import OpenAI
->
-> from openai.\_exceptions import APIStatusError
->
-> from openai.\_models import FinalRequestOptions
->
-> from openai.\_types import Omit
->
-> from openai.\_utils import is_given
->
-> from synapse.ml.mlflow import get_mlflow_env_config
->
-> from sempy.fabric.\_token_provider import SynapseTokenProvider
->
-> base_url = "https://\<generic published base URL value\>"
->
-> question = "What datasources do you have access to?"
->
-> configs = get_mlflow_env_config()
->
-> \# Create OpenAI Client
->
-> class FabricOpenAI(OpenAI):
->
-> def \_\_init\_\_(
->
-> self,
->
-> api_version: str ="2024-05-01-preview",
->
-> \*\*kwargs: t.Any,
->
-> ) -\> None:
->
-> self.api_version = api_version
->
-> default_query = kwargs.pop("default_query", {})
->
-> default_query\["api-version"\] = self.api_version
->
-> super().\_\_init\_\_(
->
-> api_key="",
->
-> base_url=base_url,
->
-> default_query=default_query,
->
-> \*\*kwargs,
->
-> )
->
-> def \_prepare_options(self, options: FinalRequestOptions) -\> None:
->
-> headers: dict\[str, str | Omit\] = (
->
-> {\*\*options.headers} if is_given(options.headers) else {}
->
-> )
->
-> options.headers = headers
->
-> headers\["Authorization"\] = f"Bearer {configs.driver_aad_token}"
->
-> if "Accept" not in headers:
->
-> headers\["Accept"\] = "application/json"
->
-> if "ActivityId" not in headers:
->
-> correlation_id = str(uuid.uuid4())
->
-> headers\["ActivityId"\] = correlation_id
->
-> return super().\_prepare_options(options)
->
-> \# Pretty printing helper
->
-> def pretty_print(messages):
->
-> print("---Conversation---")
->
-> for m in messages:
->
-> print(f"{m.role}: {m.content\[0\].text.value}")
->
-> print()
->
-> fabric_client = FabricOpenAI()
->
-> \# Create assistant
->
-> assistant = fabric_client.beta.assistants.create(model="not used")
->
-> \# Create thread
->
-> thread = fabric_client.beta.threads.create()
->
-> \# Create message on thread
->
-> message =
-> fabric_client.beta.threads.messages.create(thread_id=thread.id,
-> role="user", content=question)
->
-> \# Create run
->
-> run = fabric_client.beta.threads.runs.create(thread_id=thread.id,
-> assistant_id=assistant.id)
->
-> \# Wait for run to complete
->
-> while run.status == "queued" or run.status == "in_progress":
->
-> run = fabric_client.beta.threads.runs.retrieve(
->
-> thread_id=thread.id,
->
-> run_id=run.id,
->
-> )
->
-> print(run.status)
->
-> time.sleep(2)
->
-> \# Print messages
->
-> response =
-> fabric_client.beta.threads.messages.list(thread_id=thread.id,
-> order="asc")
->
-> pretty_print(response)
->
-> \# Delete thread
->
-> fabric_client.beta.threads.delete(thread_id=thread.id)
->
+    ```
+    import requests
+    import json
+    import pprint
+    import typing as t
+    import time
+    import uuid
+    
+    from openai import OpenAI
+    from openai._exceptions import APIStatusError
+    from openai._models import FinalRequestOptions
+    from openai._types import Omit
+    from openai._utils import is_given
+    from synapse.ml.mlflow import get_mlflow_env_config
+    from sempy.fabric._token_provider import SynapseTokenProvider
+     
+    base_url = "https://<generic published base URL value>"
+    question = "What datasources do you have access to?"
+    
+    configs = get_mlflow_env_config()
+    
+    # Create OpenAI Client
+    class FabricOpenAI(OpenAI):
+        def __init__(
+            self,
+            api_version: str ="2024-05-01-preview",
+            **kwargs: t.Any,
+        ) -> None:
+            self.api_version = api_version
+            default_query = kwargs.pop("default_query", {})
+            default_query["api-version"] = self.api_version
+            super().__init__(
+                api_key="",
+                base_url=base_url,
+                default_query=default_query,
+                **kwargs,
+            )
+        
+        def _prepare_options(self, options: FinalRequestOptions) -> None:
+            headers: dict[str, str | Omit] = (
+                {**options.headers} if is_given(options.headers) else {}
+            )
+            options.headers = headers
+            headers["Authorization"] = f"Bearer {configs.driver_aad_token}"
+            if "Accept" not in headers:
+                headers["Accept"] = "application/json"
+            if "ActivityId" not in headers:
+                correlation_id = str(uuid.uuid4())
+                headers["ActivityId"] = correlation_id
+    
+            return super()._prepare_options(options)
+    
+    # Pretty printing helper
+    def pretty_print(messages):
+        print("---Conversation---")
+        for m in messages:
+            print(f"{m.role}: {m.content[0].text.value}")
+        print()
+    
+    fabric_client = FabricOpenAI()
+    # Create assistant
+    assistant = fabric_client.beta.assistants.create(model="not used")
+    # Create thread
+    thread = fabric_client.beta.threads.create()
+    # Create message on thread
+    message = fabric_client.beta.threads.messages.create(thread_id=thread.id, role="user", content=question)
+    # Create run
+    run = fabric_client.beta.threads.runs.create(thread_id=thread.id, assistant_id=assistant.id)
+    
+    # Wait for run to complete
+    while run.status == "queued" or run.status == "in_progress":
+        run = fabric_client.beta.threads.runs.retrieve(
+            thread_id=thread.id,
+            run_id=run.id,
+        )
+        print(run.status)
+        time.sleep(2)
+    
+    # Print messages
+    response = fabric_client.beta.threads.messages.list(thread_id=thread.id, order="asc")
+    pretty_print(response)
+    
+    # Delete thread
+    fabric_client.beta.threads.delete(thread_id=thread.id)
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image58.png)
 >
@@ -622,3 +546,4 @@ SQL クエリに変換する AI
 AI 統合を実証しました。このラボでは、自然言語と生成 AI
 テクノロジを通じて、ビジネスユーザーがエンタープライズ
 データにアクセスしやすく、使いやすく、インテリジェントに活用できるようにします。
+
