@@ -562,7 +562,7 @@ incorrect.](./media/image72.png)
 	|Connection	|**Lakehouse**|
 	|Lakehouse|	Select **DataFactoryLakehouse**|
 	|Root Folder	|select the **Table** radio button.|
-	|Table|	• Select New, enter +++ Generated-NYC-Taxi-Green-Discounts+++ and click on Create button|
+	|Table|	• Select New, enter +++Generated-NYC-Taxi-Green-Discounts+++ and click on Create button|
 
 
 > ![](./media/image78.png)
@@ -622,9 +622,8 @@ incorrect.](./media/image83.png)
 14. The **Pipeline expression builder** dialog appears. Enter the
     following expression, then select **OK**:
 
-> *+++@concat('DI in an Hour Pipeline Succeeded with Pipeline Run Id',
-> pipeline().RunId)+++*
->
++++@concat('DI in an Hour Pipeline Succeeded with Pipeline Run Id', pipeline().RunId)+++
+
 > ![](./media/image87.png)
 
 15. For the **Body**, select the field again and choose the **View in
@@ -632,10 +631,7 @@ incorrect.](./media/image83.png)
     the following expression again in the **Pipeline expression
     builder** dialog that appears, then select **OK**:
 
-> *+++@concat('RunID = ', pipeline().RunId, ' ; ', 'Copied rows ',
-> activity('Copy data1').output.rowsCopied, ' ; ','Throughput ',
-> activity('Copy data1').output.throughput)+++*
->
++++@concat('RunID = ', pipeline().RunId, ' ; ', 'Copied rows ', activity('Copy data1').output.rowsCopied, ' ; ','Throughput ', activity('Copy data1').output.throughput)+++
 > ![](./media/image88.png)
 >
 > ![](./media/image89.png)
@@ -746,5 +742,6 @@ generated](./media/image107.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image108.png)
+
 
 
