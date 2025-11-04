@@ -69,7 +69,11 @@ Fabric でデータを操作する前に、Fabric
 6.  **「Create a workspace」タブ**で、次の詳細を入力し、
     **「Apply」**ボタンをクリックします。
 
-[TABLE]
+  	|   |   |
+  	|----|----|
+  	|Name	| Data-FactoryXXXX (XXXX can be a unique number) |
+  	|Advanced|	Under License mode, select Fabric capacity|
+  	|Default storage format|	Small semantic model storage format|
 
 > ![](./media/image7.png)
 >
@@ -153,8 +157,7 @@ incorrect.](./media/image21.png)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image22.png)
 
-3.  新しいデータフロー Gen2 名を **+++ nyc_taxi_data_with_discounts
-    +++として指定し**、 **\[Create\]**を選択します。
+3.  新しいデータフロー Gen2 名を **+++ nyc_taxi_data_with_discounts+++として指定し**、 **\[Create\]**を選択します。
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image23.png)
@@ -293,8 +296,7 @@ incorrect.](./media/image37.png)
 ![A screenshot of a computer Description automatically
 generated](./media/image41.png)
 
-3.  テーブルのピボットを解除した状態で、**Attribute列**と**Value**列をダブルクリックし、**属性を**+++
-    **Date+++に**、**値を**+++
+3.  テーブルのピボットを解除した状態で、**Attribute列**と**Value**列をダブルクリックし、**属性を**+++**Date+++に**、**値を**+++
     **Discount+++に変更して名前を変更します**。
 
 ![A screenshot of a computer Description automatically
@@ -395,8 +397,7 @@ incorrect.](./media/image55.png)
     +++」と入力し、「Data type」**で**「Currency」**を選択し、
     **「Custom column formula」に次の M 式を入力します**。
 
-> +++if \[total_amount\] \> 0 then \[total_amount\] \* ( 1 -\[Discount\]
-> ) else \[total_amount\]+++
+ +++if [total_amount] > 0 then [total_amount] * ( 1 -[Discount] ) else [total_amount]+++
 
 次に**［OK］を選択します**。
 
@@ -416,8 +417,9 @@ column**を表示します**。
 
 ![](./media/image59.png)
 
-12. ![](./media/image60.png)**\[Round\]ダイアログ**で、小数点以下の桁数として**2
+12.**\[Round\]ダイアログ**で、小数点以下の桁数として**2
     を入力し、 \[OK\]を選択します**。
+     ![](./media/image60.png)
 
 13. **IpepPickupDatetime**のデータ型を**Date**から**Date/Time**に変更します。
 
@@ -526,14 +528,23 @@ incorrect.](./media/image72.png)
 5.  **Sourceタブ**で、以下の設定を入力し、**Test
     connectionをクリックします。**
 
-[TABLE]
+	|     |    |
+	|------|------|
+	|Connection|	dfconnection User-XXXX|
+	|Connection Type|	select HTTP.|
+	|File format	|Delimited Text|
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image77.png)
 
 6.  \[Destination\] タブで、次の設定を入力します。
 
-[TABLE]
+	|    |    |
+	|-----|----|
+	|Connection	|**Lakehouse**|
+	|Lakehouse|	Select **DataFactoryLakehouse**|
+	|Root Folder	|select the **Table** radio button.|
+	|Table|	• Select New, enter +++ Generated-NYC-Taxi-Green-Discounts+++ and click on Create button|
 
 > ![](./media/image78.png)
 
@@ -585,7 +596,8 @@ incorrect.](./media/image83.png)
 
     &nbsp;
 
-    - ![](./media/image86.png)**\[Subject\]**で、フィールドを選択して**\[Add
+    - ![](./media/image86.png)
+    - **\[Subject\]**で、フィールドを選択して**\[Add
       dynamic
       content\]**オプションを表示し、それを選択してパイプライン式ビルダー
       キャンバスを表示します。
@@ -594,9 +606,8 @@ incorrect.](./media/image83.png)
     builder** ダイアログが表示されます。次の式を入力し、
     **「OK」を選択します**。
 
-> *+++@concat('DI in an Hour Pipeline Succeeded with Pipeline Run Id',
-> pipeline().RunId)+++*
->
+    +++@concat('DI in an Hour Pipeline Succeeded with Pipeline Run Id', pipeline().RunId)+++
+
 > ![](./media/image87.png)
 
 15. **Body**については、フィールドを再度選択し、テキストエリアの下に表示される**「View
@@ -712,3 +723,4 @@ generated](./media/image107.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image108.png)
+
