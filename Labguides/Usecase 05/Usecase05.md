@@ -125,8 +125,7 @@ Fabric でデータを操作する前に、Fabric
 
 ## タスク 4: Microsoft Fabric でWarehouseを作成する
 
-1.  **Fabricページ**で、 **+ New
-    item** を選択してレイクハウスを作成し、**Warehouse**を選択します。
+1.  **Fabricページ**で、 **+ New item** を選択してレイクハウスを作成し、**Warehouse**を選択します。
 
 > ![](./media/image10.png)
 
@@ -150,8 +149,7 @@ Fabric でデータを操作する前に、Fabric
 
      ![](./media/img21.png)
 
-2.  **Warehouse_FabricXXページ**で、「+**New
-    item」**を選択します。次に、 **「
+2.  **Warehouse_FabricXXページ**で、「+**New item**を選択します。次に、 **「
     pipeline」**をクリックして、「Get
     data」で利用可能なアイテムの完全なリストを表示します。
 
@@ -182,7 +180,7 @@ Fabric でデータを操作する前に、Fabric
 >
   ![](./media/img51.png)
 
-7.  **\[General\]**タブの **\[Name\]**フィールドに**、** 「 +++**CD Load dimension_customer ++ + 」と入力します**。
+7.  **\[General\]**タブの **\[Name\]**フィールドに**、** 「 +++**CD Load dimension_customer+++ 」と入力します**。
 
 > ![](./media/image19.png)
 
@@ -200,8 +198,7 @@ Fabric でデータを操作する前に、Fabric
 10. 右側に表示される**Connection settings** ペインで、次の設定を構成し、
     **\[接続\]**ボタンをクリックします。
 
-- **Account name or URL**に、 +++
-  **https://fabrictutorialdata.blob.core.windows.net/sampledata/+++**と入力します。
+- **Account name or URL**に、 +++**https://fabrictutorialdata.blob.core.windows.net/sampledata/+++**と入力します。
 
 - **\[Connection credentials** **\]**セクションで、
   **\[Connection\]**の下のドロップダウンをクリックし、 **\[Create new
@@ -1335,6 +1332,7 @@ BIにおける地理データ表示を強化します。さらに、棒グラフ
 BIレポートを作成し、詳細な売上データ分析を可能にします。最後のタスクでは、
 OneLakeデータハブからのレポート生成に焦点を当て、Fabricのデータソースの汎用性をさらに強調します。最後に、リソース管理に関する洞察を提供し、効率的なワークスペースを維持するためのクリーンアップ手順の重要性を強調します。これらのタスクを総合的に理解することで、Microsoft
 Fabric内でのデータの設定、管理、分析に関する包括的な理解が得られます。
+
 
 
 
