@@ -182,7 +182,7 @@ incorrect.](./media/image11.png)
 11. **\[Files\]**を展開し、**orders** フォルダを選択して、CSV
     ファイルがアップロードされていることを確認します。
 
-> ![](./media/image19.png)
+![](./media/img6.png)
 
 ## タスク3: ノートブックを作成する
 
@@ -191,8 +191,7 @@ incorrect.](./media/image11.png)
 1.  **Home**ページで、データレイクの**orders**フォルダの内容を表示しているときに、
     **\[Open notebook\]**メニューで**\[New notebook\]**を選択します。
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image20.png)
+ ![](./media/img7.png)
 
 2.  数秒後、1つの*セルを含む新しいノートブックが開きます。ノートブックは、コード*または*マークダウン*（フォーマットされたテキスト）を含む1つ以上のセルで構成されています。
 
@@ -213,11 +212,11 @@ incorrect.](./media/image22.png)
 5.  **🖉**
     (編集)ボタンを使用してセルを編集モードに切り替え、すべてのテキストを置き換えてから、次のようにマークダウンを変更します。
 
-> CodeCopy
->
-> \# Sales order data exploration
->
-> Use the code in this notebook to explore sales order data.
+    ```
+    # Sales order data exploration
+    
+    Use the code in this notebook to explore sales order data.
+    ```
 
 ![](./media/image24.png)
 
@@ -247,18 +246,13 @@ Spark向けに最適化されたPythonである*PySparkを使用します。PySp
     **「Load data」**に移動し、
     **「Spark」**を選択します。以下のコードを含む新しいコードセルがノートブックに追加されます。
 
-> CodeCopy
->
-> df =
-> spark.read.format("csv").option("header","true").load("Files/orders/2019.csv")
->
-> \# df now is a Spark DataFrame containing CSV data from
-> "Files/orders/2019.csv".
->
-> display(df)
->
-> ![](./media/image28.png)
->
+    ```nocopy
+    df = spark.read.format("csv").option("header","true").load("Files/orders/2019.csv")
+    # df now is a Spark DataFrame containing CSV data from "Files/orders/2019.csv".
+    display(df)
+    ```
+   ![](./media/image28.png)
+ 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image29.png)
 
@@ -285,15 +279,11 @@ incorrect.](./media/image31.png)
 6.  コードを修正して、**ヘッダーオプションをfalse**に設定します。**セル**内のすべてのコードを次のコードに置き換え、
     **▷セル実行**ボタンをクリックして出力を確認します。
 
-> CodeCopy
->
-> df =
-> spark.read.format("csv").option("header","false").load("Files/orders/2019.csv")
->
-> \# df now is a Spark DataFrame containing CSV data from
-> "Files/orders/2019.csv".
->
-> display(df)
+    ```
+    df = spark.read.format("csv").option("header","false").load("Files/orders/2019.csv")
+    # df now is a Spark DataFrame containing CSV data from "Files/orders/2019.csv".
+    display(df)
+    ```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image32.png)
@@ -303,35 +293,24 @@ incorrect.](./media/image32.png)
 8.  **セル**内のすべてのコードを次のコードに置き換え、
     **▷セル実行**ボタンをクリックして出力を確認します。
 
-> from pyspark.sql.types import \*
->
-> orderSchema = StructType(\[
->
-> StructField("SalesOrderNumber", StringType()),
->
-> StructField("SalesOrderLineNumber", IntegerType()),
->
-> StructField("OrderDate", DateType()),
->
-> StructField("CustomerName", StringType()),
->
-> StructField("Email", StringType()),
->
-> StructField("Item", StringType()),
->
-> StructField("Quantity", IntegerType()),
->
-> StructField("UnitPrice", FloatType()),
->
-> StructField("Tax", FloatType())
->
-> \])
->
-> df =
-> spark.read.format("csv").schema(orderSchema).load("Files/orders/2019.csv")
->
-> display(df)
->
+    ```
+    from pyspark.sql.types import *
+    
+    orderSchema = StructType([
+        StructField("SalesOrderNumber", StringType()),
+        StructField("SalesOrderLineNumber", IntegerType()),
+        StructField("OrderDate", DateType()),
+        StructField("CustomerName", StringType()),
+        StructField("Email", StringType()),
+        StructField("Item", StringType()),
+        StructField("Quantity", IntegerType()),
+        StructField("UnitPrice", FloatType()),
+        StructField("Tax", FloatType())
+        ])
+    
+    df = spark.read.format("csv").schema(orderSchema).load("Files/orders/2019.csv")
+    display(df)
+    ```
 > ![](./media/image33.png)
 >
 > ![A screenshot of a computer AI-generated content may be
@@ -346,10 +325,9 @@ incorrect.](./media/image32.png)
 11. セル出力の下にある**「+Code」**アイコンを使用してノートブックに新しいコードセルを追加し、次のコードを入力します。
     **▷ 「セルを実行」**ボタンをクリックして出力を確認します。
 
-> CodeCopy
->
-> display(df)
->
+    ```
+    display(df)
+    ```
 > ![](./media/image35.png)
 
 12. データフレームには**2019.csv**ファイルのデータのみが含まれています。コードを修正し、ファイルパスにワイルドカード「\*」を使用して、
@@ -359,37 +337,24 @@ incorrect.](./media/image32.png)
     Code**アイコンを使用してノートブックに新しいコード
     セルを追加し、そこに次のコードを入力します。
 
-CodeCopy
-
-> from pyspark.sql.types import \*
->
-> orderSchema = StructType(\[
->
->     StructField("SalesOrderNumber", StringType()),
->
->     StructField("SalesOrderLineNumber", IntegerType()),
->
->     StructField("OrderDate", DateType()),
->
->     StructField("CustomerName", StringType()),
->
->     StructField("Email", StringType()),
->
->     StructField("Item", StringType()),
->
->     StructField("Quantity", IntegerType()),
->
->     StructField("UnitPrice", FloatType()),
->
->     StructField("Tax", FloatType())
->
->     \])
->
-> df =
-> spark.read.format("csv").schema(orderSchema).load("Files/orders/\*.csv")
->
-> display(df)
->
+    ```
+    from pyspark.sql.types import *
+    
+    orderSchema = StructType([
+        StructField("SalesOrderNumber", StringType()),
+        StructField("SalesOrderLineNumber", IntegerType()),
+        StructField("OrderDate", DateType()),
+        StructField("CustomerName", StringType()),
+        StructField("Email", StringType()),
+        StructField("Item", StringType()),
+        StructField("Quantity", IntegerType()),
+        StructField("UnitPrice", FloatType()),
+        StructField("Tax", FloatType())
+        ])
+    
+    df = spark.read.format("csv").schema(orderSchema).load("Files/orders/*.csv")
+    display(df)
+    ```
 > ![](./media/image36.png)
 
 14. 変更したコード セルを実行し、出力を確認します。出力には 2019
@@ -410,15 +375,13 @@ CodeCopy
 1.  セル出力の下にある**+Code**アイコンを使用してノートブックに新しいコード
     セルを追加し、そこに次のコードを入力します。
 
-> customers = df\['CustomerName', 'Email'\]
->
-> print(customers.count())
->
-> print(customers.distinct().count())
->
-> display(customers.distinct())
->
-> ![](./media/image38.png)
+    ```
+    customers = df['CustomerName', 'Email']
+    print(customers.count())
+    print(customers.distinct().count())
+    display(customers.distinct())
+    ```
+    ![](./media/image38.png)
 
 2.  新しいコードセルを実行し、結果を確認します。以下の点に注意してください。
 
@@ -436,16 +399,12 @@ CodeCopy
 
 3.  コードを変更し、**セル内のすべてのコードを**次のコードに置き換えて、次のように**▷セル実行**ボタンをクリックします。
 
-> CodeCopy
->
-> customers = df.select("CustomerName",
-> "Email").where(df\['Item'\]=='Road-250 Red, 52 ')
->
-> print(customers.count())
->
-> print(customers.distinct().count())
->
-> display(customers.distinct())
+    ```
+    customers = df.select("CustomerName", "Email").where(df['Item']=='Road-250 Red, 52')
+    print(customers.count())
+    print(customers.distinct().count())
+    display(customers.distinct())
+    ```
 
 4.  修正したコードを**実行**して、**Road-250 Red**,
     52を購入した顧客を表示します。複数の関数を「**連鎖**」して、ある関数の出力を次の関数の入力として使用できることに注意してください。この場合、**select**メソッドによって作成されたデータフレームが、フィルタリング条件を適用する**where**メソッドのソースデータフレームとなります。
@@ -458,12 +417,10 @@ CodeCopy
 1.  **「+Code」**をクリックし、以下のコードをコピーして貼り付け、
     **「Run cell」**ボタンをクリックします。
 
-> CodeCopy
->
-> productSales = df.select("Item", "Quantity").groupBy("Item").sum()
->
-> display(productSales)
->
+    ```
+    productSales = df.select("Item", "Quantity").groupBy("Item").sum()
+    display(productSales)
+    ```
 > ![](./media/image41.png)
 
 2.  結果には、商品ごとにグループ化された注文数量の合計が表示されています。**groupBy**メソッドは行を*Itemでグループ化し*、その後に続く**sum**集計関数は残りの数値列（この場合はQuantity）に適用され*ます*。
@@ -474,15 +431,12 @@ CodeCopy
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image42.png)
 
-> **CodeCopy**
->
-> from pyspark.sql.functions import \*
->
-> yearlySales =
-> df.select(year("OrderDate").alias("Year")).groupBy("Year").count().orderBy("Year")
->
-> display(yearlySales)
->
+    ```
+    from pyspark.sql.functions import *
+    
+    yearlySales = df.select(year("OrderDate").alias("Year")).groupBy("Year").count().orderBy("Year")
+    display(yearlySales)
+    ```
 > ![](./media/image43.png)
 
 4.  結果には年間の販売注文数が表示されています。**select**メソッドには、OrderDateフィールドの年要素を抽出するSQL
@@ -499,32 +453,22 @@ incorrect.](./media/image42.png)
 
 1.  +Codeをクリックし、以下のコードをコピーして貼り付けます。
 
-**CodeCopy**
-
-> from pyspark.sql.functions import \*
->
-> \## Create Year and Month columns
->
-> transformed_df = df.withColumn("Year",
-> year(col("OrderDate"))).withColumn("Month", month(col("OrderDate")))
->
-> \# Create the new FirstName and LastName fields
->
-> transformed_df = transformed_df.withColumn("FirstName",
-> split(col("CustomerName"), " ").getItem(0)).withColumn("LastName",
-> split(col("CustomerName"), " ").getItem(1))
->
-> \# Filter and reorder columns
->
-> transformed_df = transformed_df\["SalesOrderNumber",
-> "SalesOrderLineNumber", "OrderDate", "Year", "Month", "FirstName",
-> "LastName", "Email", "Item", "Quantity", "UnitPrice", "Tax"\]
->
-> \# Display the first five orders
->
-> display(transformed_df.limit(5))
->
-> ![](./media/image44.png)
+    ```
+    from pyspark.sql.functions import *
+    
+    ## Create Year and Month columns
+    transformed_df = df.withColumn("Year", year(col("OrderDate"))).withColumn("Month", month(col("OrderDate")))
+    
+    # Create the new FirstName and LastName fields
+    transformed_df = transformed_df.withColumn("FirstName", split(col("CustomerName"), " ").getItem(0)).withColumn("LastName", split(col("CustomerName"), " ").getItem(1))
+    
+    # Filter and reorder columns
+    transformed_df = transformed_df["SalesOrderNumber", "SalesOrderLineNumber", "OrderDate", "Year", "Month", "FirstName", "LastName", "Email", "Item", "Quantity", "UnitPrice", "Tax"]
+    
+    # Display the first five orders
+    display(transformed_df.limit(5))
+    ```
+    ![](./media/image44.png)
 
 2.  コード**を実行して、**次の変換を含む元の注文データから新しいデータフレームを作成します。
 
@@ -534,7 +478,7 @@ incorrect.](./media/image42.png)
 
     - 列をフィルターして並べ替え、 **CustomerName**列を削除します。
 
-> ![](./media/image45.png)
+     ![](./media/image45.png)
 
 3.  出力を確認し、データに変換が行われたことを確認します。
 
@@ -551,12 +495,10 @@ Spark SQL
 
 1.  以下のコードを含む新しいセルを追加し、変換されたデータフレームをParquet形式で保存します（既にデータが存在する場合は上書きします）。セル**を実行し**、データが保存されたことを示すメッセージが表示されるまで待ちます。
 
-> CodeCopy
->
-> transformed_df.write.mode("overwrite").parquet('Files/transformed_data/orders')
->
-> print ("Transformed data saved!")
->
+    ```
+    transformed_df.write.mode("overwrite").parquet('Files/transformed_data/orders')
+    print ("Transformed data saved!")
+    ```
 > **注**：一般的に、さらなる分析や分析ストアへの取り込みに使用するデータファイルには、
 > *Parquet形式が好まれます。Parquetは非常に効率的な形式で、ほとんどの*大規模データ分析システムでサポートされています。実際、データ変換の要件が、別の形式（CSVなど）からParquet形式へのデータ変換だけである場合もあります。
 >
@@ -581,13 +523,10 @@ Spark SQL
     orders**フォルダー内の parquet
     ファイルから新しいデータフレームを読み込みます。
 
-> **CodeCopy**
->
-> orders_df =
-> spark.read.format("parquet").load("Files/transformed_data/orders")
->
-> display(orders_df)
->
+    ```
+    orders_df = spark.read.format("parquet").load("Files/transformed_data/orders")
+    display(orders_df)
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image51.png)
 
@@ -602,12 +541,10 @@ Spark SQL
 1.  新しいセルを追加し、
     **「+Code」**をクリックして以下のコードを入力します。これにより、データフレームが保存され、データが**年**と**月**で分割されます。セルを**実行し**、データが保存されたことを示すメッセージが表示されるまで待ちます。
 
-> CodeCopy
->
-> orders_df.write.partitionBy("Year","Month").mode("overwrite").parquet("Files/partitioned_data")
->
-> print ("Transformed data saved!")
->
+    ```
+    orders_df.write.partitionBy("Year","Month").mode("overwrite").parquet("Files/partitioned_data")
+    print ("Transformed data saved!")
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image53.png)
 >
@@ -635,12 +572,10 @@ incorrect.](./media/image57.png)
 4.  新しいセルを追加し、次のコードを含む**+Code**をクリックして、
     **orders.parquetファイル**から新しいデータフレームを読み込みます。
 
-> CodeCopy
->
-> orders_2021_df =
-> spark.read.format("parquet").load("Files/partitioned_data/Year=2021/Month=\*")
->
-> display(orders_2021_df)
+    ```
+    orders_2021_df = spark.read.format("parquet").load("Files/partitioned_data/Year=2021/Month=*")
+    display(orders_2021_df)
+    ```
 
 5.  セルを**実行**し、結果に 2021
     年の売上の注文データが表示されることを確認します。パスで指定されたパーティション列
@@ -667,15 +602,13 @@ Sparkメタストア内のテーブルは、データ
 1.  新しいコードを追加し、
     ノートブックの**+Code**セルをクリックし、次のコードを入力します。これにより、販売注文データのデータフレームが**salesorders**という名前のテーブルとして保存されます。
 
-> CodeCopy
->
-> \# Create a new table
->
-> df.write.format("delta").saveAsTable("salesorders")
->
-> \# Get the table description
->
-> spark.sql("DESCRIBE EXTENDED salesorders").show(truncate=False)
+    ```
+    # Create a new table
+    df.write.format("delta").saveAsTable("salesorders")
+    
+    # Get the table description
+    spark.sql("DESCRIBE EXTENDED salesorders").show(truncate=False)
+    ```
 
 **注**：この例にはいくつか注目すべき点があります。まず、明示的なパスが指定されていないため、テーブルのファイルはメタストアによって管理されます。次に、テーブルは**デルタ**形式で保存されます。テーブルは複数のファイル形式（CSV、Parquet、Avroなど）に基づいて作成できますが、*デルタレイクは、トランザクションのサポート、行のバージョン管理、その他の便利な機能を含む*リレーショナルデータベース機能をテーブルに追加するSparkテクノロジーです。FabricのデータLakehouseでは、デルタ形式でのテーブル作成が推奨されます。
 
@@ -706,12 +639,10 @@ generated](./media/image62.png)
     ライブラリを使用して、 **salesorderテーブルに対する
     SQLクエリを**PySparkコードに埋め込み、クエリの結果をデータフレームに読み込みます。
 
-> CodeCopy
->
-> df = spark.sql("SELECT \* FROM \[your_lakehouse\].salesorders LIMIT
-> 1000")
->
-> display(df)
+    ```
+    df = spark.sql("SELECT * FROM [your_lakehouse].salesorders LIMIT 1000")
+    display(df)
+    ```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image63.png)
@@ -723,10 +654,9 @@ Lakehouseのメタストアでスキーマ メタデータが定義され、デ�
 
 1.  最初のコードセルから返された結果の下にある**「+Code」**ボタンを使用して、新しいコードセルを追加します（まだコードセルが存在しない場合）。新しいセルに次のコードを入力します。
 
-CodeCopy
-
-> df.write.format("delta").saveAsTable("external_salesorder",
-> path="\<abfs_path\>/external_salesorder")
+    ```
+    df.write.format("delta").saveAsTable("external_salesorder", path="<abfs_path>/external_salesorder")
+    ```
 
 ![A screenshot of a computer Description automatically
 generated](./media/image64.png)
@@ -738,8 +668,7 @@ generated](./media/image64.png)
 
 abfss://dp_Fabric29@onelake.dfs.fabric.microsoft.com/Fabric_lakehouse.Lakehouse/Files/external_salesorder
 
-![A screenshot of a computer Description automatically
-generated](./media/image65.png)
+ ![](./media/img11.png)
 
 3.  コードセルに移動し、
     **\<abfs_path\>を**メモ帳にコピーした**パス**に置き換えます**。これにより、データ**フレームが外部テーブルとして保存され、
@@ -783,12 +712,11 @@ incorrect.](./media/image70.png)
 1.  コードセルから返された結果の下にある**「+Code」**ボタンを使用して、新しいコードセルを追加します。以下のコードをコードセルにコピーし、セルの左側にある**「▷」
     (*Run cell*)**ボタンを使用して実行します。
 
-> SqlCopy
->
-> %%sql
->
-> DESCRIBE FORMATTED salesorders;
->
+    ```
+    %%sql
+    
+    DESCRIBE FORMATTED salesorders;
+    ```
 > ![](./media/image71.png)
 
 2.  結果で、テーブルの**Location**プロパティを確認します**。これは、
@@ -805,11 +733,11 @@ incorrect.](./media/image72.png)
 4.  コードセルから返された結果の下にある**「+Code」**ボタンを使用して、新しいコードセルを追加します。以下のコードをコピーし、セルの左側にある**「▷
     （*Run cell*）」**ボタンを使用して実行します。
 
-> SqlCopy
->
-> %%sql
->
-> DESCRIBE FORMATTED external_salesorder ;
+    ```
+    %%sql
+    
+    DESCRIBE FORMATTED external_salesorder;
+    ```
 
 5.  結果で、テーブルの**Location**プロパティを確認します。これは、
     **/Files/external_saleorder**で終わるLakehouseの **OneLake**
@@ -838,19 +766,14 @@ SQL で直接作業したい場合がよくあります。
 
     - SQLクエリの出力は、セルの下に結果として自動的に表示されます。
 
-> SqlCopy
->
-> %%sql
->
-> SELECT YEAR(OrderDate) AS OrderYear,
->
-> SUM((UnitPrice \* Quantity) + Tax) AS GrossRevenue
->
-> FROM salesorders
->
-> GROUP BY YEAR(OrderDate)
->
-> ORDER BY OrderYear;
+      ```
+      %%sql
+      SELECT YEAR(OrderDate) AS OrderYear,
+             SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue
+      FROM salesorders
+      GROUP BY YEAR(OrderDate)
+      ORDER BY OrderYear;
+      ```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image74.png)
@@ -869,11 +792,10 @@ SQLクエリから表示されるデータ用のグラフビューが組み込�
 1.  **「+ Code**」セルをクリックし、以下のコードを入力します。 **「▷Run
     cell」**ボタンをクリックし、先ほど作成した**salesorders**ビューからデータが返されることを確認します。
 
-> SqlCopy
->
-> %%sql
->
-> SELECT \* FROM salesorders
+    ```
+    %%sql
+    SELECT * FROM salesorders
+    ```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image75.png)
@@ -889,9 +811,9 @@ incorrect.](./media/image75.png)
 
     - **Chart type**: Bar chart
 
-    - **Key**: Item
+    - **X-axis**: Item
 
-    - **Values**: Quantity
+    - **Y-axis**: Quantity
 
     - **Series Group**: *leave blank*
 
@@ -900,35 +822,28 @@ incorrect.](./media/image75.png)
     - **Stacked**: *Unselected*
 
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image77.png)
+incorrect.](./media/labimg6.png)
 
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image78.png)
+incorrect.](./media/labimg7.png)
 
 4.  チャートが次のようになっていることを確認します
 
-> ![](./media/image79.png)
+> ![](./media/labimg9.png)
 
 ## タスク2: matplotlibを使い始める
 
 1.  **「+Code」**をクリックし、以下のコードをコピーして貼り付けます。コードを**実行**すると、年間収益を含むSparkデータフレームが返されることがわかります。
 
-> CodeCopy
->
-> sqlQuery = "SELECT CAST(YEAR(OrderDate) AS CHAR(4)) AS OrderYear, \\
->
-> SUM((UnitPrice \* Quantity) + Tax) AS GrossRevenue \\
->
-> FROM salesorders \\
->
-> GROUP BY CAST(YEAR(OrderDate) AS CHAR(4)) \\
->
-> ORDER BY OrderYear"
->
-> df_spark = spark.sql(sqlQuery)
->
-> df_spark.show()
->
+    ```
+    sqlQuery = "SELECT CAST(YEAR(OrderDate) AS CHAR(4)) AS OrderYear, \
+                    SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue \
+                FROM salesorders \
+                GROUP BY CAST(YEAR(OrderDate) AS CHAR(4)) \
+                ORDER BY OrderYear"
+    df_spark = spark.sql(sqlQuery)
+    df_spark.show()
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image80.png)
 
@@ -939,19 +854,18 @@ incorrect.](./media/image78.png)
 
 **CodeCopy**
 
-> from matplotlib import pyplot as plt
->
-> \# matplotlib requires a Pandas dataframe, not a Spark one
->
-> df_sales = df_spark.toPandas()
->
-> \# Create a bar plot of revenue by year
->
-> plt.bar(x=df_sales\['OrderYear'\], height=df_sales\['GrossRevenue'\])
->
-> \# Display the plot
->
-> plt.show()
+    ```
+    from matplotlib import pyplot as plt
+    
+    # matplotlib requires a Pandas dataframe, not a Spark one
+    df_sales = df_spark.toPandas()
+    
+    # Create a bar plot of revenue by year
+    plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'])
+    
+    # Display the plot
+    plt.show()
+    ```
 
 ![A screenshot of a computer Description automatically
 generated](./media/image81.png)
@@ -973,36 +887,25 @@ generated](./media/image81.png)
 6.  次のようにコードを変更してチャートをプロットし、**セル**内のすべてのコードを次のコードに置き換えて、
     **▷Run cell**ボタンをクリックして出力を確認します。
 
-> CodeCopy
->
-> from matplotlib import pyplot as plt
->
-> \# Clear the plot area
->
-> plt.clf()
->
-> \# Create a bar plot of revenue by year
->
-> plt.bar(x=df_sales\['OrderYear'\], height=df_sales\['GrossRevenue'\],
-> color='orange')
->
-> \# Customize the chart
->
-> plt.title('Revenue by Year')
->
-> plt.xlabel('Year')
->
-> plt.ylabel('Revenue')
->
-> plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y',
-> alpha=0.7)
->
-> plt.xticks(rotation=45)
->
-> \# Show the figure
->
-> plt.show()
->
+    ```
+    from matplotlib import pyplot as plt
+    
+    # Clear the plot area
+    plt.clf()
+    
+    # Create a bar plot of revenue by year
+    plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
+    
+    # Customize the chart
+    plt.title('Revenue by Year')
+    plt.xlabel('Year')
+    plt.ylabel('Revenue')
+    plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)
+    plt.xticks(rotation=45)
+    
+    # Show the figure
+    plt.show()
+    ```
 > ![A screenshot of a computer program AI-generated content may be
 > incorrect.](./media/image83.png)
 >
@@ -1015,39 +918,28 @@ generated](./media/image81.png)
 
 8.  次のようにグラフをプロットするコードを変更し、**セル**内のすべてのコードを次のコードに置き換えます。
 
-> CodeCopy
->
-> from matplotlib import pyplot as plt
->
-> \# Clear the plot area
->
-> plt.clf()
->
-> \# Create a Figure
->
-> fig = plt.figure(figsize=(8,3))
->
-> \# Create a bar plot of revenue by year
->
-> plt.bar(x=df_sales\['OrderYear'\], height=df_sales\['GrossRevenue'\],
-> color='orange')
->
-> \# Customize the chart
->
-> plt.title('Revenue by Year')
->
-> plt.xlabel('Year')
->
-> plt.ylabel('Revenue')
->
-> plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y',
-> alpha=0.7)
->
-> plt.xticks(rotation=45)
->
-> \# Show the figure
->
-> plt.show()
+    ```
+    from matplotlib import pyplot as plt
+    
+    # Clear the plot area
+    plt.clf()
+    
+    # Create a Figure
+    fig = plt.figure(figsize=(8,3))
+    
+    # Create a bar plot of revenue by year
+    plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
+    
+    # Customize the chart
+    plt.title('Revenue by Year')
+    plt.xlabel('Year')
+    plt.ylabel('Revenue')
+    plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)
+    plt.xticks(rotation=45)
+    
+    # Show the figure
+    plt.show()
+    ```
 
 9.  コードセルを**再実行**し、結果を確認します。図はプロットの形状とサイズを決定します。
 
@@ -1061,43 +953,31 @@ generated](./media/image81.png)
 
 10. コードを以下のように修正してグラフをプロットします。コードセルを**再実行**し、結果を確認します。図には、コードで指定したサブプロットが含まれています。
 
-> CodeCopy
->
-> from matplotlib import pyplot as plt
->
-> \# Clear the plot area
->
-> plt.clf()
->
-> \# Create a figure for 2 subplots (1 row, 2 columns)
->
-> fig, ax = plt.subplots(1, 2, figsize = (10,4))
->
-> \# Create a bar plot of revenue by year on the first axis
->
-> ax\[0\].bar(x=df_sales\['OrderYear'\],
-> height=df_sales\['GrossRevenue'\], color='orange')
->
-> ax\[0\].set_title('Revenue by Year')
->
-> \# Create a pie chart of yearly order counts on the second axis
->
-> yearly_counts = df_sales\['OrderYear'\].value_counts()
->
-> ax\[1\].pie(yearly_counts)
->
-> ax\[1\].set_title('Orders per Year')
->
-> ax\[1\].legend(yearly_counts.keys().tolist())
->
-> \# Add a title to the Figure
->
-> fig.suptitle('Sales Data')
->
-> \# Show the figure
->
-> plt.show()
->
+    ```
+    from matplotlib import pyplot as plt
+    
+    # Clear the plot area
+    plt.clf()
+    
+    # Create a figure for 2 subplots (1 row, 2 columns)
+    fig, ax = plt.subplots(1, 2, figsize = (10,4))
+    
+    # Create a bar plot of revenue by year on the first axis
+    ax[0].bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
+    ax[0].set_title('Revenue by Year')
+    
+    # Create a pie chart of yearly order counts on the second axis
+    yearly_counts = df_sales['OrderYear'].value_counts()
+    ax[1].pie(yearly_counts)
+    ax[1].set_title('Orders per Year')
+    ax[1].legend(yearly_counts.keys().tolist())
+    
+    # Add a title to the Figure
+    fig.suptitle('Sales Data')
+    
+    # Show the figure
+    plt.show()
+    ```
 > ![A screenshot of a computer program AI-generated content may be
 > incorrect.](./media/image87.png)
 >
@@ -1117,17 +997,16 @@ generated](./media/image81.png)
 
 CodeCopy
 
-> import seaborn as sns
->
-> \# Clear the plot area
->
-> plt.clf()
->
-> \# Create a bar chart
->
-> ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
->
-> plt.show()
+    ```
+    import seaborn as sns
+    
+    # Clear the plot area
+    plt.clf()
+    
+    # Create a bar chart
+    ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+    plt.show()
+    ```
 
 2.  コードを**実行**し、seaborn
     ライブラリを使用して棒グラフが表示されることを確認します。
@@ -1138,43 +1017,34 @@ incorrect.](./media/image89.png)
 3.  コードを以下のように**変更**してください**。**変更したコードを**実行**すると、seaborn
     によってプロットに一貫したカラーテーマを設定できることがわかります。
 
-> CodeCopy
->
-> import seaborn as sns
->
-> \# Clear the plot area
->
-> plt.clf()
->
-> \# Set the visual theme for seaborn
->
-> sns.set_theme(style="whitegrid")
->
-> \# Create a bar chart
->
-> ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
->
-> plt.show()
->
+    ```
+    import seaborn as sns
+    
+    # Clear the plot area
+    plt.clf()
+    
+    # Set the visual theme for seaborn
+    sns.set_theme(style="whitegrid")
+    
+    # Create a bar chart
+    ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+    plt.show()
+    ```
 > ![A screenshot of a graph AI-generated content may be
 > incorrect.](./media/image90.png)
 
 4.  コードを以下のように**修正**してください**。**修正したコードを**実行**すると、年間収益が折れ線グラフで表示されます。
 
-> CodeCopy
->
-> import seaborn as sns
->
-> \# Clear the plot area
->
-> plt.clf()
->
-> \# Create a bar chart
->
-> ax = sns.lineplot(x="OrderYear", y="GrossRevenue", data=df_sales)
->
-> plt.show()
->
+    ```
+    import seaborn as sns
+    
+    # Clear the plot area
+    plt.clf()
+    
+    # Create a bar chart
+    ax = sns.lineplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+    plt.show()
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image91.png)
 
@@ -1190,59 +1060,35 @@ APIを使用して作成されたデータストリームの*シンク*または
 1.  **「+Code」**をクリックし、以下のコードをコピーして貼り付け、
     **「Run cell」**ボタンをクリックします。
 
-CodeCopy
-
-> from notebookutils import mssparkutils
->
-> from pyspark.sql.types import \*
->
-> from pyspark.sql.functions import \*
->
-> \# Create a folder
->
-> inputPath = 'Files/data/'
->
-> mssparkutils.fs.mkdirs(inputPath)
->
-> \# Create a stream that reads data from the folder, using a JSON
-> schema
->
-> jsonSchema = StructType(\[
->
-> StructField("device", StringType(), False),
->
-> StructField("status", StringType(), False)
->
-> \])
->
-> iotstream =
-> spark.readStream.schema(jsonSchema).option("maxFilesPerTrigger",
-> 1).json(inputPath)
->
-> \# Write some event data to the folder
->
-> device_data = '''{"device":"Dev1","status":"ok"}
->
-> {"device":"Dev1","status":"ok"}
->
-> {"device":"Dev1","status":"ok"}
->
-> {"device":"Dev2","status":"error"}
->
-> {"device":"Dev1","status":"ok"}
->
-> {"device":"Dev1","status":"error"}
->
-> {"device":"Dev2","status":"ok"}
->
-> {"device":"Dev2","status":"error"}
->
-> {"device":"Dev1","status":"ok"}'''
->
-> mssparkutils.fs.put(inputPath + "data.txt", device_data, True)
->
-> print("Source stream created...")
->
+    ```
+    from notebookutils import mssparkutils
+    from pyspark.sql.types import *
+    from pyspark.sql.functions import *
+    
+    # Create a folder
+    inputPath = 'Files/data/'
+    mssparkutils.fs.mkdirs(inputPath)
+    
+    # Create a stream that reads data from the folder, using a JSON schema
+    jsonSchema = StructType([
+    StructField("device", StringType(), False),
+    StructField("status", StringType(), False)
+    ])
+    iotstream = spark.readStream.schema(jsonSchema).option("maxFilesPerTrigger", 1).json(inputPath)
+    
+    # Write some event data to the folder
+    device_data = '''{"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev2","status":"error"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"error"}
+    {"device":"Dev2","status":"ok"}
+    {"device":"Dev2","status":"error"}
+    {"device":"Dev1","status":"ok"}'''
+    mssparkutils.fs.put(inputPath + "data.txt", device_data, True)
+    print("Source stream created...")
+    ```
 > ![A screenshot of a computer program AI-generated content may be
 > incorrect.](./media/image92.png)
 >
@@ -1254,20 +1100,13 @@ CodeCopy
 3.  **「+Code」**をクリックし、以下のコードをコピーして貼り付け、
     **「Run cell」**ボタンをクリックします。
 
-CodeCopy
-
-> \# Write the stream to a delta table
->
-> delta_stream_table_path = 'Tables/iotdevicedata'
->
-> checkpointpath = 'Files/delta/checkpoint'
->
-> deltastream =
-> iotstream.writeStream.format("delta").option("checkpointLocation",
-> checkpointpath).start(delta_stream_table_path)
->
-> print("Streaming to delta sink...")
->
+    ```
+    # Write the stream to a delta table
+    delta_stream_table_path = 'Tables/iotdevicedata'
+    checkpointpath = 'Files/delta/checkpoint'
+    deltastream = iotstream.writeStream.format("delta").option("checkpointLocation", checkpointpath).start(delta_stream_table_path)
+    print("Streaming to delta sink...")
+    ```
 > ![](./media/image94.png)
 
 4.  このコードは、ストリーミングデバイスのデータをデルタ形式で**iotdevicedata**というフォルダに書き込みます。フォルダのパスは**Tables**フォルダ内にあるため、自動的にテーブルが作成されます。テーブルの横にある水平の省略記号をクリックし、
@@ -1282,12 +1121,11 @@ incorrect.](./media/image96.png)
 5.  **「+Code」**をクリックし、以下のコードをコピーして貼り付け、
     **「Run cell」**ボタンをクリックします。
 
-> SqlCopy
->
-> %%sql
->
-> SELECT \* FROM IotDeviceData;
->
+    ```
+    %%sql
+    
+    SELECT * FROM IotDeviceData;
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image97.png)
 
@@ -1297,26 +1135,18 @@ incorrect.](./media/image96.png)
 7.  **「+Code」**をクリックし、以下のコードをコピーして貼り付け、
     **「Run cell」**ボタンをクリックします。
 
-> CodeCopy
->
-> \# Add more data to the source stream
->
-> more_data = '''{"device":"Dev1","status":"ok"}
->
-> {"device":"Dev1","status":"ok"}
->
-> {"device":"Dev1","status":"ok"}
->
-> {"device":"Dev1","status":"ok"}
->
-> {"device":"Dev1","status":"error"}
->
-> {"device":"Dev2","status":"error"}
->
-> {"device":"Dev1","status":"ok"}'''
->
-> mssparkutils.fs.put(inputPath + "more-data.txt", more_data, True)
->
+    ```
+    # Add more data to the source stream
+    more_data = '''{"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"error"}
+    {"device":"Dev2","status":"error"}
+    {"device":"Dev1","status":"ok"}'''
+    
+    mssparkutils.fs.put(inputPath + "more-data.txt", more_data, True)
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image98.png)
 
@@ -1326,12 +1156,11 @@ incorrect.](./media/image96.png)
 9.  **「+Code」**をクリックし、以下のコードをコピーして貼り付け、
     **「Run cell」**ボタンをクリックします。
 
-> SqlCopy
->
-> %%sql
->
-> SELECT \* FROM IotDeviceData;
->
+    ```
+    %%sql
+    
+    SELECT * FROM IotDeviceData;
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image99.png)
 
@@ -1341,10 +1170,9 @@ incorrect.](./media/image96.png)
 11. **「+Code」**をクリックし、以下のコードをコピーして貼り付け、
     **「Run cell」**ボタンをクリックします。
 
-> CodeCopy
->
-> deltastream.stop()
->
+    ```
+    deltastream.stop()
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image100.png)
 
@@ -1358,11 +1186,9 @@ incorrect.](./media/image96.png)
 1.  ノートブックのメニューバーで、⚙️
     設定アイコンを使用してノートブックの設定を表示します。
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image101.png)
+   ![](./media/img15.png)
 
-2.  ノートブックの**Nameを +++ Explore Sales Orders++
-    +**に設定し、設定ペインを閉じます。
+2.  ノートブックの**Nameを +++ Explore Sales Orders+++**に設定し、設定ペインを閉じます。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image102.png)
@@ -1370,8 +1196,7 @@ generated](./media/image102.png)
 3.  ノートブック メニューで**\[Stop session\]**を選択して、Spark
     セッションを終了します。
 
-![A screenshot of a computer Description automatically
-generated](./media/image103.png)
+   ![](./media/img16.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image104.png)
@@ -1393,16 +1218,14 @@ Lakehouseが完成したら、そこにデータを取り込む必要があり�
 1.  次に、左側のナビゲーション
     ペインで**Fabric_lakehouseをクリックします。**
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image105.png)
+    ![](./media/img17.png)
 
 2.  **Fabric_lakehouse の**ホームページで、 **「Get
     data」**のドロップダウン矢印をクリックし、 **「New Dataflow
     Gen2」**を選択します**。**新しいデータフロー用の Power Query
     エディターが開きます。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image106.png)
+     ![](./media/img18.png)
 
 5.  **\[New Dataflow Gen2\]**ダイアログ ボックスで、
     \[**Name\]フィールド**に**「+++Gen2_Dataflow+++」**と入力し、
@@ -1415,13 +1238,12 @@ Lakehouseが完成したら、そこにデータを取り込む必要があり�
 3.  **\[Home\] タブの\[Power Query\]**ペインで、 **\[Import from a
     Text/CSV file\]**をクリックします。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image108.png)
+     ![](./media/img19.png)
 
 4.  **Connect to data source**ペインの**Connection settings**で、**Link
     to file (Preview)**ラジオボタンを選択します。
 
-- **Link to file**: *Selected*
+- **Link to file**: **Selected**
 
 - **File path or
   URL**: +++https://raw.githubusercontent.com/MicrosoftLearning/dp-data/main/orders.csv+++
@@ -1432,29 +1254,30 @@ Lakehouseが完成したら、そこにデータを取り込む必要があり�
     で、**次の詳細を入力し、 **\[Next\]**ボタンをクリックします。
 
 - **Connection**: Create new connection
+  
+- **Connection name**: +++Orders-@lab.LabInstance.Id+++
 
 - **data gateway**: (none)
 
 - **Authentication kind**: Anonymous
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image110.png)
+ ![](./media/img20.png)
 
 6.  **Preview file data**ペインで、 **\[Create\]**をクリックしてデータ
-    ソースを作成します。![A screenshot of a computer Description
+    ソースを作成します。
+    ![A screenshot of a computer Description
     automatically generated](./media/image111.png)
 
-7.  **Power Query**エディターには、データ
+8.  **Power Query**エディターには、データ
     ソースと、データをフォーマットするためのクエリ手順の初期セットが表示されます。
 
 ![A screenshot of a computer Description automatically
-generated](./media/image112.png)
+generated](./media/img21.png)
 
 8.  ツールバーのリボンで**「Add column」**タブを選択します。次に、
     **「Custom column」**を選択します。
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image113.png) 
+    ![](./media/labimg8.png)
 
 9.  新しい列名を +++ **MonthNo++ +に設定し**、データ型を**Whole
     Number**に設定して、次の数式を追加します**:** +++ **Date.Month
@@ -1485,7 +1308,7 @@ flow」**ボタンを切り替えて、ステップのビジュアルダイア�
 ![](./media/image116.png)
 
 ![A screenshot of a computer Description automatically
-generated](./media/image117.png)
+generated](./media/labimg10.png)
 
 **注:**このオプションがグレー表示になっている場合は、既にデータの保存先が設定されている可能性があります。Power
 Query
@@ -1498,15 +1321,15 @@ Query
 generated](./media/image118.png)
 
 ![A screenshot of a computer Description automatically
-generated](./media/image119.png)
+generated](./media/labimg11.png)
 
 3.  **「Publish」**を選択してデータフローを公開します。ワークスペースに**「Dataflow
     1」**データフローが作成されるのを待ちます。
 
 ![A screenshot of a computer Description automatically
-generated](./media/image120.png)
+generated](./media/labimg26.png)
 
-![](./media/image121.png)
+
 
 ## タスク 3: パイプラインにデータフローを追加する
 
@@ -1515,10 +1338,9 @@ Factory
 エクスペリエンスを含むいくつかの異なるエクスペリエンスで作成できます。
 
 1.  Synapse Data Engineeringのホームページでは、 下
-    **dp_FabricXX**ペインで、 **+ New item** -\> **Data
-    pipeline**を選択します。
+    **dp_FabricXX**ペインで、 **+ New item** -\> **pipeline**を選択します。
 
-![](./media/image122.png)
+    ![](./media/img24.png)
 
 2.  **\[New pipeline\]ダイアログ ボックス**で、
     **\[Name\]フィールド**に**「Load data」と入力し**、
@@ -1530,7 +1352,7 @@ generated](./media/image123.png)
 3.  パイプライン エディターが開きます。
 
 ![A screenshot of a computer Description automatically
-generated](./media/image124.png)
+generated](./media/labimg12.png)
 
 > **ヒント**: データのコピー
 > ウィザードが自動的に開いた場合は、閉じてください。
@@ -1549,37 +1371,29 @@ generated](./media/image124.png)
 6.  **\[Home\]タブ**で、 **🖫
     (*保存*)アイコン**を使用してパイプラインを保存します。
 
-![A screenshot of a computer Description automatically
-generated](./media/image127.png)
+ ![](./media/img25.png)
 
 7.  **▷「Run」**ボタンを使用してパイプラインを実行し、完了するまでお待ちください。完了まで数分かかる場合があります。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image128.png)
+     ![](./media/img26.png)
 >
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image129.png)
+> incorrect.](./media/labimg13.png)
 
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image130.png)
+incorrect.](./media/labimg14.png)
 
 8.  左端のメニュー バーで、ワークスペース
     (つまり**dp_FabricXX)を**選択します。
 
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image131.png)
+incorrect.](./media/labimg15.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image132.png)
 
 9.  **Fabric_lakehouseペイン**で、 Lakehouse
     タイプの**Gen2_FabricLakehouse**を選択します。
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image133.png)
-
-![A screenshot of a computer Description automatically
-generated](./media/image134.png)
+ ![](./media/img27.png)
 
 10. **Explorer**ペインで、 **「Tables」**の**「…」メニューを選択し**、
     **「Refresh」**を選択します。次に、
@@ -1588,7 +1402,7 @@ generated](./media/image134.png)
 ![A screenshot of a computer Description automatically
 generated](./media/image135.png)
 
-![](./media/image136.png)
+ ![](./media/img28.png)
 
 **ヒント**: Power BI Desktop*データフロー
 コネクタを使用して*、データフローで実行されたデータ変換に直接接続します。
@@ -1643,4 +1457,5 @@ IoTコンテキストでストリーミングデータに差分テーブルを�
 
 このラボでは、Fabric
 を使用するために必要なスキルを習得し、ワークスペースの作成と管理、データLakehouseの構築、そして効率的なデータ変換を行えるようになります。データフローをパイプラインに組み込むことで、データ処理タスクを自動化し、ワークフローを効率化し、実際のシナリオにおける生産性を向上させる方法を習得できます。クリーンアップ手順に従うことで、不要なリソースを残さず、整理された効率的なワークスペース管理アプローチを実現できます。
+
 
