@@ -1323,13 +1323,14 @@ generated](./media/image118.png)
 ![A screenshot of a computer Description automatically
 generated](./media/labimg11.png)
 
-3.  **「Publish」**を選択してデータフローを公開します。ワークスペースに**「Dataflow
-    1」**データフローが作成されるのを待ちます。
+3. [Home]タブで、「Save」アイコンのドロップダウン矢印をクリックし、「Save, run & close」を選択して、クエリを公開して閉じます。
 
 ![A screenshot of a computer Description automatically
 generated](./media/labimg26.png)
 
+4. [Home]タブで、「Save」アイコンのドロップダウン矢印をクリックし、「Save, run & close」を選択して、クエリを公開して閉じます。
 
+   ![](./media/img23.png)
 
 ## タスク 3: パイプラインにデータフローを追加する
 
@@ -1337,7 +1338,7 @@ generated](./media/labimg26.png)
 Factory
 エクスペリエンスを含むいくつかの異なるエクスペリエンスで作成できます。
 
-1.  Synapse Data Engineeringのホームページでは、 下
+1.  Fabricのホームページでは、 下
     **dp_FabricXX**ペインで、 **+ New item** -\> **pipeline**を選択します。
 
     ![](./media/img24.png)
@@ -1457,5 +1458,6 @@ IoTコンテキストでストリーミングデータに差分テーブルを�
 
 このラボでは、Fabric
 を使用するために必要なスキルを習得し、ワークスペースの作成と管理、データLakehouseの構築、そして効率的なデータ変換を行えるようになります。データフローをパイプラインに組み込むことで、データ処理タスクを自動化し、ワークフローを効率化し、実際のシナリオにおける生産性を向上させる方法を習得できます。クリーンアップ手順に従うことで、不要なリソースを残さず、整理された効率的なワークスペース管理アプローチを実現できます。
+
 
 
