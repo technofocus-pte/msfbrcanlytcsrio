@@ -1,3 +1,5 @@
+## ユースケース 05 - Microsoft Fabric で Contoso の売上と地理データ Warehouseを構築する
+
 **導入**
 
 多国籍小売企業であるContoso社は、売上と地域分析の効率化を目指し、データインフラストラクチャの近代化を検討しています。現在、売上データと顧客データは複数のシステムに分散しており、ビジネスアナリストやシチズンデベロッパーが分析結果を導き出すことが困難になっています。同社は、Microsoft
@@ -104,7 +106,12 @@ Fabric でデータを操作する前に、Fabric
 2.  **「Create a workspace tab」**タブで、次の詳細を入力し、
     **「Apply」**ボタンをクリックします。
 
-[TABLE]
+    |  |  |
+    |----|---|
+    |Name	|+++Warehouse_Fabric@lab.LabInstance.Id+++ (must be a unique Id) |
+    |Description	|+++This workspace contains all the artifacts for the data warehouse+++|
+    |Advanced	Under License mode| select Fabric capacity|
+    |Default storage format	|Small dataset storage format|
 
 > ![](./media/image7.png)
 >
@@ -131,8 +138,7 @@ Fabric でデータを操作する前に、Fabric
 3.  プロビジョニングが完了すると、 **WideWorldImporters**
     倉庫のランディングページが表示されます。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image12.png)
+   ![](./media/img119.png)
 
 # 練習2: Microsoft Fabric のWarehouseにデータを取り込む
 
@@ -142,15 +148,14 @@ Fabric でデータを操作する前に、Fabric
     ページで、左側のナビゲーション メニューで**Warehouse_FabricXX**
     を選択して、ワークスペース アイテム リストに戻ります。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image13.png)
+     ![](./media/img21.png)
 
 2.  **Warehouse_FabricXXページ**で、「+**New
     item」**を選択します。次に、 **「Data
     pipeline」**をクリックして、「Get
     data」で利用可能なアイテムの完全なリストを表示します。
 
-> ![](./media/image14.png)
+     ![](./media/rio1.png)
 
 3.  **New pipeline**ダイアログ ボックスで、\[**Name\]**フィールドに「+++
     **Load Customer Data+++」と入力し**、
@@ -176,11 +181,9 @@ Fabric でデータを操作する前に、Fabric
 > **注**: さまざまな機能を完全に表示するには、デザイン
 > キャンバス内の水平線をドラッグします。
 >
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image18.png)
+  ![](./media/img51.png)
 
-7.  **\[General\]**タブの **\[Name\]**フィールドに**、** 「 +++ **CD
-    Load dimension_customer ++ + 」と入力します**。
+7.  **\[General\]**タブの **\[Name\]**フィールドに**、** 「 +++**CD Load dimension_customer ++ + 」と入力します**。
 
 > ![](./media/image19.png)
 
@@ -188,7 +191,7 @@ Fabric でデータを操作する前に、Fabric
     **「Connection」**ドロップダウンを選択します。
     **「More」**を選択すると、ローカルのOneLakeデータハブ内のデータソースを含む、選択可能なすべてのデータソースが表示されます。
 
-> ![](./media/image20.png)
+     ![](./media/img61.png)
 
 9.  **\[Get data\] ウィンドウ**で、 **+++ Azure Blobs+++**を検索し、
     **\[Azure Blob Storage\]**ボタンをクリックします。
@@ -205,8 +208,7 @@ Fabric でデータを操作する前に、Fabric
   **\[Connection\]**の下のドロップダウンをクリックし、 **\[Create new
   connection\]**を選択します。
 
-- **「Connection name」**フィールドに**、** 「 +++ **Wide World
-  Importers Public Sample+++ 」**と入力します。
+- **「Connection name」**フィールドに**、** 「 **+++Wide World Importers Public Sample+++** 」と入力します。
 
 - **Authentication kind** を**Anonymous**に設定します。
 
@@ -222,7 +224,7 @@ Fabric でデータを操作する前に、Fabric
 
 - **File path - Directory:** +++ **WideWorldImportersDW /tables+++**
 
-- **File path - File name:** +++ **dimension\_ customer.parquet +++**
+- **File path - File name:** **+++dimension\_ customer.parquet+++**
 
 - **File formatの**ドロップダウンで、 **Parquet**を選択します**（
   Parquet**が表示されない場合は、検索ボックスに入力して選択します）。
@@ -233,20 +235,23 @@ Fabric でデータを操作する前に、Fabric
     data\]**をクリックして、エラーがないことを確認し、 **\[Close\]**
     をクリックします**。**
 
-> ![](./media/image24.png)
+     ![](./media/img71.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image25.png)
 
 14. **\[Destination\]**タブで、次の設定を入力します。
 
-[TABLE]
-
+    |  |  |
+    |---|---|
+    |Connection	|WideWorldImporters|
+    |Table option	|select the Auto create table radio button.|
+    |Table	|•	In the first box enter +++dbo+++<br>•	In the second box enter +++dimension_customer+++|
 > ![](./media/image26.png)
 
 15. リボンから**\[Run\]**を選択します。
 
-> ![](./media/image27.png)
+     ![](./media/img81.png)
 
 16. **\[Save and run?\]**ダイアログ ボックスで、 **\[Save and
     run\]**ボタンをクリックします。
@@ -269,135 +274,83 @@ generated](./media/image25.png)
     **Warehouse_FabricXX**をクリックします。 左側のナビゲーション
     バーのワークスペース。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image31.png)
+     ![](./media/img91.png)
 
-2.  **Syanapse Data Engineering**
+2.  **Fabric**
     **Warehouse_FabricXX**ページで、下の画像に示すように、
     **Warehouse**タイプを持つ**WideWorldImporters
     を**慎重に移動してクリックします。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image32.png)
+     ![](./media/img101.png)
 
 3.  **WideWorldImporters**ページで、**\[Home\]**タブに移動し、ドロップダウンから**\[SQL\]**を選択して、
     **\[New SQL query\]**をクリックします。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image33.png)
+     ![](./media/img111.png)
 
 4.  クエリエディタで次のコードを貼り付けて**「Run」を選択し、**クエリを実行します。
 
-> SQLCopy
->
-> /\*
->
-> 1\. Drop the dimension_city table if it already exists.
->
-> 2\. Create the dimension_city table.
->
-> 3\. Drop the fact_sale table if it already exists.
->
-> 4\. Create the fact_sale table.
->
-> \*/
->
-> --dimension_city
->
-> DROP TABLE IF EXISTS \[dbo\].\[dimension_city\];
->
-> CREATE TABLE \[dbo\].\[dimension_city\]
->
-> (
->
-> \[CityKey\] \[int\] NULL,
->
-> \[WWICityID\] \[int\] NULL,
->
-> \[City\] \[varchar\](8000) NULL,
->
-> \[StateProvince\] \[varchar\](8000) NULL,
->
-> \[Country\] \[varchar\](8000) NULL,
->
-> \[Continent\] \[varchar\](8000) NULL,
->
-> \[SalesTerritory\] \[varchar\](8000) NULL,
->
-> \[Region\] \[varchar\](8000) NULL,
->
-> \[Subregion\] \[varchar\](8000) NULL,
->
-> \[Location\] \[varchar\](8000) NULL,
->
-> \[LatestRecordedPopulation\] \[bigint\] NULL,
->
-> \[ValidFrom\] \[datetime2\](6) NULL,
->
-> \[ValidTo\] \[datetime2\](6) NULL,
->
-> \[LineageKey\] \[int\] NULL
->
-> );
->
-> --fact_sale
->
-> DROP TABLE IF EXISTS \[dbo\].\[fact_sale\];
->
-> CREATE TABLE \[dbo\].\[fact_sale\]
->
-> (
->
-> \[SaleKey\] \[bigint\] NULL,
->
-> \[CityKey\] \[int\] NULL,
->
-> \[CustomerKey\] \[int\] NULL,
->
-> \[BillToCustomerKey\] \[int\] NULL,
->
-> \[StockItemKey\] \[int\] NULL,
->
-> \[InvoiceDateKey\] \[datetime2\](6) NULL,
->
-> \[DeliveryDateKey\] \[datetime2\](6) NULL,
->
-> \[SalespersonKey\] \[int\] NULL,
->
-> \[WWIInvoiceID\] \[int\] NULL,
->
-> \[Description\] \[varchar\](8000) NULL,
->
-> \[Package\] \[varchar\](8000) NULL,
->
-> \[Quantity\] \[int\] NULL,
->
-> \[UnitPrice\] \[decimal\](18, 2) NULL,
->
-> \[TaxRate\] \[decimal\](18, 3) NULL,
->
-> \[TotalExcludingTax\] \[decimal\](29, 2) NULL,
->
-> \[TaxAmount\] \[decimal\](38, 6) NULL,
->
-> \[Profit\] \[decimal\](18, 2) NULL,
->
-> \[TotalIncludingTax\] \[decimal\](38, 6) NULL,
->
-> \[TotalDryItems\] \[int\] NULL,
->
-> \[TotalChillerItems\] \[int\] NULL,
->
-> \[LineageKey\] \[int\] NULL,
->
-> \[Month\] \[int\] NULL,
->
-> \[Year\] \[int\] NULL,
->
-> \[Quarter\] \[int\] NULL
->
-> );
->
+    ```
+    /*
+    1. Drop the dimension_city table if it already exists.
+    2. Create the dimension_city table.
+    3. Drop the fact_sale table if it already exists.
+    4. Create the fact_sale table.
+    */
+    
+    --dimension_city
+    DROP TABLE IF EXISTS [dbo].[dimension_city];
+    CREATE TABLE [dbo].[dimension_city]
+        (
+            [CityKey] [int] NULL,
+            [WWICityID] [int] NULL,
+            [City] [varchar](8000) NULL,
+            [StateProvince] [varchar](8000) NULL,
+            [Country] [varchar](8000) NULL,
+            [Continent] [varchar](8000) NULL,
+            [SalesTerritory] [varchar](8000) NULL,
+            [Region] [varchar](8000) NULL,
+            [Subregion] [varchar](8000) NULL,
+            [Location] [varchar](8000) NULL,
+            [LatestRecordedPopulation] [bigint] NULL,
+            [ValidFrom] [datetime2](6) NULL,
+            [ValidTo] [datetime2](6) NULL,
+            [LineageKey] [int] NULL
+        );
+    
+    --fact_sale
+    
+    DROP TABLE IF EXISTS [dbo].[fact_sale];
+    
+    CREATE TABLE [dbo].[fact_sale]
+    
+        (
+            [SaleKey] [bigint] NULL,
+            [CityKey] [int] NULL,
+            [CustomerKey] [int] NULL,
+            [BillToCustomerKey] [int] NULL,
+            [StockItemKey] [int] NULL,
+            [InvoiceDateKey] [datetime2](6) NULL,
+            [DeliveryDateKey] [datetime2](6) NULL,
+            [SalespersonKey] [int] NULL,
+            [WWIInvoiceID] [int] NULL,
+            [Description] [varchar](8000) NULL,
+            [Package] [varchar](8000) NULL,
+            [Quantity] [int] NULL,
+            [UnitPrice] [decimal](18, 2) NULL,
+            [TaxRate] [decimal](18, 3) NULL,
+            [TotalExcludingTax] [decimal](29, 2) NULL,
+            [TaxAmount] [decimal](38, 6) NULL,
+            [Profit] [decimal](18, 2) NULL,
+            [TotalIncludingTax] [decimal](38, 6) NULL,
+            [TotalDryItems] [int] NULL,
+            [TotalChillerItems] [int] NULL,
+            [LineageKey] [int] NULL,
+            [Month] [int] NULL,
+            [Year] [int] NULL,
+            [Quarter] [int] NULL
+        );
+    ```
 > ![](./media/image34.png)
 >
 > ![](./media/image35.png)
@@ -436,28 +389,17 @@ Warehouseを構築し、テーブルをロードしてレポートを生成す�
 2.  クエリ エディターに次のコード**を貼り付け、
     \[Run\]**をクリックしてクエリを実行します。
 
-> SQLCopy
->
-> --Copy data from the public Azure storage account to the
-> dbo.dimension_city table.
->
-> COPY INTO \[dbo\].\[dimension_city\]
->
-> FROM
-> 'https://fabrictutorialdata.blob.core.windows.net/sampledata/WideWorldImportersDW/tables/dimension_city.parquet'
->
-> WITH (FILE_TYPE = 'PARQUET');
->
-> --Copy data from the public Azure storage account to the dbo.fact_sale
-> table.
->
-> COPY INTO \[dbo\].\[fact_sale\]
->
-> FROM
-> 'https://fabrictutorialdata.blob.core.windows.net/sampledata/WideWorldImportersDW/tables/fact_sale.parquet'
->
-> WITH (FILE_TYPE = 'PARQUET');
->
+    ```
+    --Copy data from the public Azure storage account to the dbo.dimension_city table.
+    COPY INTO [dbo].[dimension_city]
+    FROM 'https://fabrictutorialdata.blob.core.windows.net/sampledata/WideWorldImportersDW/tables/dimension_city.parquet'
+    WITH (FILE_TYPE = 'PARQUET');
+    
+    --Copy data from the public Azure storage account to the dbo.fact_sale table.
+    COPY INTO [dbo].[fact_sale]
+    FROM 'https://fabrictutorialdata.blob.core.windows.net/sampledata/WideWorldImportersDW/tables/fact_sale.parquet'
+    WITH (FILE_TYPE = 'PARQUET');
+    ```
 > ![](./media/image41.png)
 
 3.  **dimension_city**テーブルと**fact_sale**テーブルにそれぞれロードされた行数を示すメッセージを確認します。
@@ -473,8 +415,7 @@ Warehouseを構築し、テーブルをロードしてレポートを生成す�
 
 > ![](./media/image44.png)
 
-6.  **Rename**ダイアログボックスの**「Name」**フィールドに「 +++ **Load
-    Tables+++ 」と**入力します。次に、
+6.  **Rename**ダイアログボックスの**Name」**フィールドに「 +++Load Tables+++ 」と**入力します。次に、
     **「Rename」**ボタンをクリックします。
 
 > ![](./media/image45.png)
@@ -505,17 +446,13 @@ Fabric の Warehouse に[テーブル
 3.  クエリ エディターで次のコードを貼り付けて、 **dbo.dimension \_city**
     テーブルと**dbo.fact \_sale**テーブルのクローンを作成します。
 
-> SQLCopy
->
-> --Create a clone of the dbo.dimension_city table.
->
-> CREATE TABLE \[dbo\].\[dimension_city1\] AS CLONE OF
-> \[dbo\].\[dimension_city\];
->
-> --Create a clone of the dbo.fact_sale table.
->
-> CREATE TABLE \[dbo\].\[fact_sale1\] AS CLONE OF \[dbo\].\[fact_sale\];
->
+    ```
+    --Create a clone of the dbo.dimension_city table.
+    CREATE TABLE [dbo].[dimension_city1] AS CLONE OF [dbo].[dimension_city];
+    
+    --Create a clone of the dbo.fact_sale table.
+    CREATE TABLE [dbo].[fact_sale1] AS CLONE OF [dbo].[fact_sale];
+    ```
 > ![](./media/image48.png)
 
 4.  **「Run」**を選択してください。クエリの実行には数秒かかります。
@@ -558,9 +495,7 @@ Fabric の Warehouse に[テーブル
 
 2.  **WideWorldImporterWarehouse内にdbo1**という新しいスキーマを作成します。以下の画像に示すように、以下のT-SQLコードを**コピーして貼り付け**、**実行します。**
 
-> SQLCopy
->
-> CREATE SCHEMA dbo1;
+    +++CREATE SCHEMA dbo1+++
 
 ![](./media/image55.png)
 
@@ -571,17 +506,13 @@ Fabric の Warehouse に[テーブル
     スキーマに **dbo.dimension_city** テーブルと **dbo.fact_sale
     テーブル**のクローンを作成します。
 
-> **SQLCopy**
->
-> --Create a clone of the dbo.dimension_city table in the dbo1 schema.
->
-> CREATE TABLE \[dbo1\].\[dimension_city1\] AS CLONE OF
-> \[dbo\].\[dimension_city\];
->
-> --Create a clone of the dbo.fact_sale table in the dbo1 schema.
->
-> CREATE TABLE \[dbo1\].\[fact_sale1\] AS CLONE OF
-> \[dbo\].\[fact_sale\];
+    ```
+    --Create a clone of the dbo.dimension_city table in the dbo1 schema.
+    CREATE TABLE [dbo1].[dimension_city1] AS CLONE OF [dbo].[dimension_city];
+    
+    --Create a clone of the dbo.fact_sale table in the dbo1 schema.
+    CREATE TABLE [dbo1].[fact_sale1] AS CLONE OF [dbo].[fact_sale];
+    ```
 
 4.  **「Run」**を選択してください。クエリの実行には数秒かかります。
 
@@ -600,8 +531,7 @@ Fabric の Warehouse に[テーブル
     screenshot of a computer AI-generated content may be
     incorrect.](./media/image60.png)
 
-8.  **Rename**ダイアログボックスの**「Name」**フィールドに「 +++ **Clone
-    Table in another schema+++ 」**と入力します。次に、
+8.  **Rename**ダイアログボックスの**「Name」**フィールドに「 +++Clone Table in another schema+++ 」**と入力します。次に、
     **「Rename」**ボタンをクリックします。
 
 > ![](./media/image61.png)
@@ -628,97 +558,54 @@ Fabric の Warehouse に[テーブル
     **dbo.aggregate \_sale_by_date_city
     を**作成し、読み込みます。 後のステップでテーブルを作成します。
 
-> SQLCopy
->
-> --Drop the stored procedure if it already exists.
->
-> DROP PROCEDURE IF EXISTS \[dbo\].\[populate_aggregate_sale_by_city\]
->
-> GO
->
-> --Create the populate_aggregate_sale_by_city stored procedure.
->
-> CREATE PROCEDURE \[dbo\].\[populate_aggregate_sale_by_city\]
->
-> AS
->
-> BEGIN
->
-> --If the aggregate table already exists, drop it. Then create the
-> table.
->
-> DROP TABLE IF EXISTS \[dbo\].\[aggregate_sale_by_date_city\];
->
-> CREATE TABLE \[dbo\].\[aggregate_sale_by_date_city\]
->
-> (
->
-> \[Date\] \[DATETIME2\](6),
->
-> \[City\] \[VARCHAR\](8000),
->
-> \[StateProvince\] \[VARCHAR\](8000),
->
-> \[SalesTerritory\] \[VARCHAR\](8000),
->
-> \[SumOfTotalExcludingTax\] \[DECIMAL\](38,2),
->
-> \[SumOfTaxAmount\] \[DECIMAL\](38,6),
->
-> \[SumOfTotalIncludingTax\] \[DECIMAL\](38,6),
->
-> \[SumOfProfit\] \[DECIMAL\](38,2)
->
-> );
->
-> --Reload the aggregated dataset to the table.
->
-> INSERT INTO \[dbo\].\[aggregate_sale_by_date_city\]
->
-> SELECT
->
-> FS.\[InvoiceDateKey\] AS \[Date\],
->
-> DC.\[City\],
->
-> DC.\[StateProvince\],
->
-> DC.\[SalesTerritory\],
->
-> SUM(FS.\[TotalExcludingTax\]) AS \[SumOfTotalExcludingTax\],
->
-> SUM(FS.\[TaxAmount\]) AS \[SumOfTaxAmount\],
->
-> SUM(FS.\[TotalIncludingTax\]) AS \[SumOfTotalIncludingTax\],
->
-> SUM(FS.\[Profit\]) AS \[SumOfProfit\]
->
-> FROM \[dbo\].\[fact_sale\] AS FS
->
-> INNER JOIN \[dbo\].\[dimension_city\] AS DC
->
-> ON FS.\[CityKey\] = DC.\[CityKey\]
->
-> GROUP BY
->
-> FS.\[InvoiceDateKey\],
->
-> DC.\[City\],
->
-> DC.\[StateProvince\],
->
-> DC.\[SalesTerritory\]
->
-> ORDER BY
->
-> FS.\[InvoiceDateKey\],
->
-> DC.\[StateProvince\],
->
-> DC.\[City\];
->
-> END
->
+    ```
+    --Drop the stored procedure if it already exists.
+    DROP PROCEDURE IF EXISTS [dbo].[populate_aggregate_sale_by_city]
+    GO
+    
+    --Create the populate_aggregate_sale_by_city stored procedure.
+    CREATE PROCEDURE [dbo].[populate_aggregate_sale_by_city]
+    AS
+    BEGIN
+        --If the aggregate table already exists, drop it. Then create the table.
+        DROP TABLE IF EXISTS [dbo].[aggregate_sale_by_date_city];
+        CREATE TABLE [dbo].[aggregate_sale_by_date_city]
+            (
+                [Date] [DATETIME2](6),
+                [City] [VARCHAR](8000),
+                [StateProvince] [VARCHAR](8000),
+                [SalesTerritory] [VARCHAR](8000),
+                [SumOfTotalExcludingTax] [DECIMAL](38,2),
+                [SumOfTaxAmount] [DECIMAL](38,6),
+                [SumOfTotalIncludingTax] [DECIMAL](38,6),
+                [SumOfProfit] [DECIMAL](38,2)
+            );
+    
+        --Reload the aggregated dataset to the table.
+        INSERT INTO [dbo].[aggregate_sale_by_date_city]
+        SELECT
+            FS.[InvoiceDateKey] AS [Date], 
+            DC.[City], 
+            DC.[StateProvince], 
+            DC.[SalesTerritory], 
+            SUM(FS.[TotalExcludingTax]) AS [SumOfTotalExcludingTax], 
+            SUM(FS.[TaxAmount]) AS [SumOfTaxAmount], 
+            SUM(FS.[TotalIncludingTax]) AS [SumOfTotalIncludingTax], 
+            SUM(FS.[Profit]) AS [SumOfProfit]
+        FROM [dbo].[fact_sale] AS FS
+        INNER JOIN [dbo].[dimension_city] AS DC
+            ON FS.[CityKey] = DC.[CityKey]
+        GROUP BY
+            FS.[InvoiceDateKey],
+            DC.[City], 
+            DC.[StateProvince], 
+            DC.[SalesTerritory]
+        ORDER BY 
+            FS.[InvoiceDateKey], 
+            DC.[StateProvince], 
+            DC.[City];
+    END
+    ```
 > ![](./media/image64.png)
 >
 > ![](./media/image65.png)
@@ -729,8 +616,7 @@ Fabric の Warehouse に[テーブル
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image66.png)
 
-4.  **Rename**ダイアログ ボックスの**「Name」**フィールドに**「 +++
-    Create Aggregate Procedure+++ 」**と入力し、
+4.  **Rename**ダイアログ ボックスの**「Name」**フィールドに**「 +++Create Aggregate Procedure+++ 」**と入力し、
     「**Rename」**ボタンをクリックします。
 
 > ![](./media/image67.png)
@@ -756,25 +642,22 @@ Fabric の Warehouse に[テーブル
     **dbo.aggregate_sale_by_date_city**を作成します**。**
     テーブル。クエリを実行する
 
-SQLCopy
-
-> --Execute the stored procedure to create the aggregate table.
->
-> EXEC \[dbo\].\[populate_aggregate_sale_by_city\];
->
+    ```
+    --Execute the stored procedure to create the aggregate table.
+    EXEC [dbo].[populate_aggregate_sale_by_city];
+    ```
 > ![](./media/image71.png)
 
 9.  このクエリを後で参照できるように保存するには、エディターのすぐ上にあるクエリ
-    タブを右クリックし、 **\[Rename\]** を選択します**。**
+    タブを右クリックし、 **\[Rename\]** を選択します。
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image72.png)
 
 10. \[**Rename**\] ダイアログ ボックスの \[**Name**\]
-    フィールドに「+++**Run Create Aggregate
-    Procedure**+++」と入力し、**\[Rename**\] ボタンをクリックします。
+    フィールドに「+++**Run Create Aggregate Procedure**+++」と入力し、**\[Rename**\] ボタンをクリックします。
 
-![](./media/image73.png)
+    ![](./media/image73.png)
 
 11. リボンの**\[Refresh\]**アイコンを選択します。
 
@@ -799,38 +682,24 @@ incorrect.](./media/image75.png)
 2.  クエリエディターに次のコードを貼り付けて、Top10CustomerViewビューを作成します。
     **「Run」を選択して**クエリを実行します。
 
-CREATE VIEW dbo.Top10CustomersView
-
-AS
-
-SELECT TOP (10)
-
-    FS.\[CustomerKey\],
-
-    DC.\[Customer\],
-
-    SUM(FS.TotalIncludingTax) AS TotalSalesAmount
-
-FROM
-
-    \[dbo\].\[dimension_customer\] AS DC
-
-INNER JOIN
-
-    \[dbo\].\[fact_sale\] AS FS ON DC.\[CustomerKey\] =
-FS.\[CustomerKey\]
-
-GROUP BY
-
-    FS.\[CustomerKey\],
-
-    DC.\[Customer\]
-
-ORDER BY
-
-    TotalSalesAmount DESC;
-
-![](./media/image77.png)
+    ```
+    CREATE VIEW dbo.Top10CustomersView
+    AS
+    SELECT TOP (10)
+        FS.[CustomerKey],
+        DC.[Customer],
+        SUM(FS.TotalIncludingTax) AS TotalSalesAmount
+    FROM
+        [dbo].[dimension_customer] AS DC
+    INNER JOIN
+        [dbo].[fact_sale] AS FS ON DC.[CustomerKey] = FS.[CustomerKey]
+    GROUP BY
+        FS.[CustomerKey],
+        DC.[Customer]
+    ORDER BY
+        TotalSalesAmount DESC;
+    ```
+   ![](./media/image77.png)
 
 3.  **Explorer**で、
     dboスキーマの下の**View**ノードを展開して、新しく作成されたビュー**Top10CustomersView**
@@ -860,16 +729,12 @@ incorrect.](./media/image81.png)
     **SaleKey**を持つレコードの**TotalIncludingTax列の値が200000000**に更新されます。** **値は**22632918です。**クエリを実行するには、
     **\[Run\]**を選択します。
 
-SQLCopy
-
-/\*Update the TotalIncludingTax value of the record with SaleKey value
-of 22632918\*/
-
-UPDATE \[dbo\].\[fact_sale\]
-
-SET TotalIncludingTax = 200000000
-
-WHERE SaleKey = 22632918;
+    ```
+    /*Update the TotalIncludingTax value of the record with SaleKey value of 22632918*/
+    UPDATE [dbo].[fact_sale]
+    SET TotalIncludingTax = 200000000
+    WHERE SaleKey = 22632918;
+    ```
 
 ![A screenshot of a computer screen AI-generated content may be
 incorrect.](./media/image82.png)
@@ -878,9 +743,9 @@ incorrect.](./media/image82.png)
     T-SQL関数は、現在のUTCタイムスタンプを**datetimeとして返します**。
     \[**Run\]**を選択してクエリを実行します。
 
-SQLCopy
-
-SELECT CURRENT_TIMESTAMP;
+    ```
+    SELECT CURRENT_TIMESTAMP;
+    ```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image83.png)
@@ -900,15 +765,12 @@ incorrect.](./media/image84.png)
     人の顧客のリストが返されます。既存のコードを置き換えて次のコードを貼り付け、\[**Run**\]
     を選択して**クエリを**実行します。
 
-SQLCopy
-
-/\*View of Top10 Customers as of today after record updates\*/
-
-SELECT \*
-
-FROM \[WideWorldImporters\].\[dbo\].\[Top10CustomersView\]
-
-OPTION (FOR TIMESTAMP AS OF '2025-06-09T06:16:08.807');
+    ```
+    /*View of Top10 Customers as of today after record updates*/
+    SELECT *
+    FROM [WideWorldImporters].[dbo].[Top10CustomersView]
+    OPTION (FOR TIMESTAMP AS OF '2025-06-09T06:16:08.807');
+    ```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image85.png)
@@ -918,15 +780,12 @@ incorrect.](./media/image85.png)
     22632918のTotalIncludingTaxが更新される前の上位10人の顧客リストが返されます。\[実行\]
     を選択してクエリ*を*実行します。
 
-SQLCopy
-
-/\*View of Top10 Customers as of today before record updates\*/
-
-SELECT \*
-
-FROM \[WideWorldImporters\].\[dbo\].\[Top10CustomersView\]
-
-OPTION (FOR TIMESTAMP AS OF '2024-04-24T20:49:06.097');
+    ```
+    /*View of Top10 Customers as of today before record updates*/
+    SELECT *
+    FROM [WideWorldImporters].[dbo].[Top10CustomersView]
+    OPTION (FOR TIMESTAMP AS OF '2024-04-24T20:49:06.097');
+    ```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image86.png)
@@ -1068,8 +927,7 @@ incorrect.](./media/image102.png)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image103.png)
 
-12. クエリ名を変更するには、「**+++Sales
-    Summary+++**」と入力します。キーボードの**Enter**キーを押すか、タブ以外の場所を選択して変更を保存します。
+12. クエリ名を変更するには、「**+++Sales Summary+++**」と入力します。キーボードの**Enter**キーを押すか、タブ以外の場所を選択して変更を保存します。
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image104.png)
@@ -1104,11 +962,11 @@ Data Lake Storage と S3
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image107.png)
 
-3.  **Nameフィールド**に「+++ **ShortcutExercise +++」と入力し**、
+3.  **Nameフィールド**に「+++ShortcutExercise+++」と入力し**、
     **「Create」**ボタンをクリックします**。**
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image108.png)
+> incorrect.](./media/labimg23.png)
 
 4.  新しいLakehouseが読み込まれ、**Explorer**ビューが開き、「**Get data
     in your lakehouse」**メニューが表示されます。 **「Load data in your
@@ -1192,15 +1050,12 @@ T-SQL クエリを簡単に作成および実行する方法について学習�
 1.  **Notebook1**ページから、左側のナビゲーション
     メニューの**Warehouse_FabricXX**ワークスペースに移動してクリックします。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image120.png)
+   ![](./media/img171.png)
 
 2.  **Warehouse_FabricXX**ビューで、
     **WideWorldImporters**Warehouseを選択します。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image121.png)
-
+     ![](./media/img181.png)
 3.  **WideWorldImporters**ページの**Explorer** タブで**、** **+
     Warehouses**ボタンを選択します。
 
@@ -1233,25 +1088,16 @@ T-SQL クエリを簡単に実行できることがおわかりいただけま�
 2.  クエリエディターに以下のT-SQLコードをコピーして貼り付けます。
     **「Run」**ボタンを選択してクエリを実行します。クエリが完了すると、結果が表示されます。
 
-> SQLCopy
->
-> SELECT Sales.StockItemKey,
->
-> Sales.Description,
->
-> SUM(CAST(Sales.Quantity AS int)) AS SoldQuantity,
->
-> c.Customer
->
-> FROM \[dbo\].\[fact_sale\] AS Sales,
->
-> \[ShortcutExercise\].\[dbo\].\[dimension_customer\] AS c
->
-> WHERE Sales.CustomerKey = c.CustomerKey
->
-> GROUP BY Sales.StockItemKey, Sales.Description, c.Customer;
->
-> ;
+    ```
+    SELECT Sales.StockItemKey, 
+    Sales.Description, 
+    SUM(CAST(Sales.Quantity AS int)) AS SoldQuantity, 
+    c.Customer
+    FROM [dbo].[fact_sale] AS Sales,
+    [ShortcutExercise].[dbo].[dimension_customer] AS c
+    WHERE Sales.CustomerKey = c.CustomerKey
+    GROUP BY Sales.StockItemKey, Sales.Description, c.Customer;
+    ```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image126.png)
@@ -1262,9 +1108,7 @@ incorrect.](./media/image126.png)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image127.png)
 
-4.  **Rename**ダイアログ ボックスの**「Name」**フィールドに +++
-    **Cross-warehouse
-    query+++と入力し**、**「Rename」**ボタンをクリックします。 
+4.  **Rename**ダイアログ ボックスの**「Name」**フィールドに +++**Cross-warehouse query+++**と入力し**、**「Rename」**ボタンをクリックします。 
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image128.png)
@@ -1283,7 +1127,7 @@ incorrect.](./media/image126.png)
 > incorrect.](./media/image129.png)
 
 2.  **New semantic model**ウィンドウの**Direct Lake semantic model
-    name** ボックスに、 +++ **Sales Model+++**と入力します**。**
+    name** ボックスに、 +++**Sales Model+++**と入力します**。**
 
 3.  dboスキーマを展開し、 **「Tables」**フォルダを展開して、
     **dimension_city**テーブルと**fact_sale**テーブルを確認します。
@@ -1321,8 +1165,7 @@ incorrect.](./media/image126.png)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image136.png)
 
-12. **「New
-    relationship」**ウィンドウで、次の手順を実行して関係を作成します。
+12. **「New relationship」**ウィンドウで、次の手順を実行して関係を作成します。
 
 &nbsp;
 
@@ -1493,3 +1336,4 @@ BIにおける地理データ表示を強化します。さらに、棒グラフ
 BIレポートを作成し、詳細な売上データ分析を可能にします。最後のタスクでは、
 OneLakeデータハブからのレポート生成に焦点を当て、Fabricのデータソースの汎用性をさらに強調します。最後に、リソース管理に関する洞察を提供し、効率的なワークスペースを維持するためのクリーンアップ手順の重要性を強調します。これらのタスクを総合的に理解することで、Microsoft
 Fabric内でのデータの設定、管理、分析に関する包括的な理解が得られます。
+
