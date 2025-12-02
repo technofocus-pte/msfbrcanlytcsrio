@@ -347,50 +347,44 @@ the Wide World Importers (WWI) into the lakehouse.
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img26.png)
 
 4.  On newly created data factory pipeline
-    i.e **IngestDataFromSourceToLakehouse**, select  **Copy data
-    assistant** .
+    i.e **IngestDataFromSourceToLakehouse**, select  **Copy data** .
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea5.png)
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imga1.png)
 
-5.  Next, set up a **Sample data** connection to import the sample
+5.  In the **Copy data** activity selected and the **Source tab** displayed, select the **Browse all**
+
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imga2.png)
+
+6.  Next, set up a **Sample data** connection to import the sample
     World Wide Importers data into the Lakehouse. From the list of **New
     sources**, select **Retail Data Model from Wide World Importers**.
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea6.png)
+    > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imga3.png)
 
-6.  In the **Connect to data source** window, Select **Retail Data Model
-    from Wide World Importers** data and select **Next**.
+7.  In the **Connect to data destination** window, select **Retail Data Model from Wide World Importers** database and click on **OK**
 
     > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea7.png)
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imga4.png)
 
-7.  In the **Connect to data destination** window, select **OneLake
-    catalog** and select **wwilakehouse.** Now specify the **Root
-    folder** as **Files** and click **Next**. This will write the data
-    to the **Files** section of the lakehouse.
+8.  In the **Copy data** activity selected and the **Deatination tab**
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea8.png)
+    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imga5.png)
+9. Select the connection type as **Lakehouse**, choose **wwilakehouse**, and set the **Root folder** to **File**. Select the Validation
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea9.png)
+      > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imga6.png)
+      > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imga7.png)
 
-8.  Choose the **File format** should be empty for the destination.
-    Click **Save + Run** to initiate the pipeline. You can schedule pipelines to
-    refresh data periodically. In this tutorial, we only run the
-    pipeline once.
+10. Once validated, select the Save option and then Run to start the ingestion from the data pipeline. Running the pipeline initiates the data transfer, allowing you to see the results of your configuration in action within the output window.
+     > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imga8.png) 
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea10.png)
+12.  The data copy process takes approximately 1-3 minutes to complete.
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imagea11.png)
-
-9.  The data copy process takes approximately 1-3 minutes to complete.
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img27.png)
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/img28.png)
+   > ![A screenshot of a computer AI-generated content may be
+    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imga9.png)
 
  
 10.  Under the Output tab, select **Copy_a1n** to look at the details of
@@ -983,6 +977,7 @@ The lab also covers tasks related to ingesting sample data, optimizing
 delta tables, and building reports in Power BI for effective data
 analysis. The objectives aim to provide hands-on experience in utilizing
 Microsoft Fabric and Power BI for data management and reporting purposes.
+
 
 
 
