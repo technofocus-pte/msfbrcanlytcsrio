@@ -272,11 +272,9 @@ reports.
 
 ### Task 4: Build a report
 
-1.  Now, click on **Fabric Lakehouse** **Tutorial-@lab.LabInstance.Id** on the left-sided
+1.  Now, click on **Fabric Lakehouse** **Tutorial-@lab.LabInstance.Id** on the top
     navigation pane.
-
-    ![](./media/img18.png)
-
+    
 2. In the **Fabric Lakehouse Tutorial-XX** view, select **wwilakehouse** of Type Semantic model. 
 
     > ![A screenshot of a computer AI-generated content may be
@@ -367,7 +365,7 @@ the Wide World Importers (WWI) into the lakehouse.
     > ![A screenshot of a computer AI-generated content may be
     > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imga4.png)
 
-8.  In the **Copy data** activity selected and the **Deatination tab**
+8.  In the **Copy data** activity selected and the **Destination tab**
 
     > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2001/media/imga5.png)
 9. Select the connection type as **Lakehouse**, choose **wwilakehouse**, and set the **Root folder** to **File**. Select the Validation
@@ -977,6 +975,7 @@ The lab also covers tasks related to ingesting sample data, optimizing
 delta tables, and building reports in Power BI for effective data
 analysis. The objectives aim to provide hands-on experience in utilizing
 Microsoft Fabric and Power BI for data management and reporting purposes.
+
 
 
 
