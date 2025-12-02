@@ -785,8 +785,7 @@ def get_response(user_question):
 
 2.  ここで、サンプルの質問でその関数を呼び出して、応答を確認します。
 
-3.  セル出力の下にある「**+Code**」アイコンを使用してノートブックに新しいコードセルを追加し、次のコードを入力します。
-    **▷ 「Run cell」**ボタンをクリックして出力を確認します。
+3.  セル出力の下にある「+Code」アイコンを使用してノートブックに新しいコードセルを追加し、以下のコードを入力します。YOUR_ADMIN_API_KEY、YOUR_INDEX_NAME、search_service_nameのプレースホルダーを実際の値に置き換え、「セル実行」ボタンをクリックして出力を確認します
 
 **Copy**
 ```
@@ -894,4 +893,5 @@ generated](./media/image79.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image80.png)
+
 
