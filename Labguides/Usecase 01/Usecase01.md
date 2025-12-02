@@ -1,73 +1,64 @@
-# ユースケース 1: Lakehouseを作成し、サンプルデータを取り込み、レポートを作成する
+# ユース ケース 1: lakehouseの作成、サンプル データの取り込み、とレポートの作成
 
-**導入**
+**紹介**
 
-このラボでは、データの取得から利用までのエンドツーエンドのシナリオを段階的に学習します。Fabric
-の基本的な理解を深めるのに役立ちます。これには、様々なエクスペリエンスとその統合方法、そしてこのプラットフォームで作業する際に得られるプロフェッショナル開発者とシチズンデベロッパーのエクスペリエンスが含まれます。このラボは、リファレンスアーキテクチャ、機能の網羅的なリスト、または特定のベストプラクティスの推奨を目的としたものではありません。
+このラボでは、データ取得からデータ使用までのエンドツーエンドのシナリオについて説明します。これは、さまざまなエクスペリエンスとその統合方法、およびこのプラットフォームでの作業に伴うプロフェッショナルおよびシチズン開発者のエクスペリエンスなど、Fabric
+の基本的な理解を構築するのに役立ちます。このラボは、リファレンスアーキテクチャ、機能の網羅的な一覧、または特定のベスト
+プラクティスの推奨事項を意図したものではありません。
 
-従来、組織はトランザクションデータや構造化データの分析ニーズに対応するために最新のデータウェアハウスを構築してきました。そして、ビッグデータ（半構造化/非構造化）データ分析のニーズに対応するために、データLakehouseを構築してきました。これら2つのシステムが並行して稼働していたため、サイロ化、データの重複、そして総所有コストの増加が生じていました。
-
+従来、組織はトランザクションデータや構造化データの分析ニーズに対応するために最新のdata
+warehouseを構築してきました。そして、ビッグデータ（半構造化/非構造化）データ分析のニーズに対応するために、データlakehouseを構築してきました。これら2つのシステムが並行して稼働していたため、サイロ化、データの重複、そして総所有コストの増加が生じていました。  
 Fabric はデータ ストアを統合し、Delta Lake
-形式で標準化することで、サイロを排除し、データの重複を排除し、総所有コストを大幅に削減します。
-
-Fabricが提供する柔軟性により、Lakehouseまたはデータウェアハウスのいずれかのアーキテクチャを実装することも、両方を組み合わせてシンプルな実装で両方のメリットを享受することもできます。このチュートリアルでは、小売組織を例に、Lakehouseを最初から最後まで構築します。[メダリオン・アーキテクチャを採用して](https://learn.microsoft.com/en-us/azure/databricks/lakehouse/medallion)おり、ブロンズレイヤーには生データ、シルバーレイヤーには検証済み・重複排除済みのデータ、ゴールドレイヤーには高度に精製されたデータが格納されます。あらゆる業界のあらゆる組織に、同じアプローチでLakehouseを実装できます。
+形式で標準化することで、サイロを排除し、データの重複を排除し、総所有コストを大幅に削減します。  
+Fabricが提供する柔軟性により、lakehouseまたはdata
+warehouseのいずれかのアーキテクチャを実装することも、両方を組み合わせてシンプルな実装で両方のメリットを享受することもできます。このチュートリアルでは、小売組織を例に、lakehouseを最初から最後まで構築します。このアーキテクチャでは、ブロンズレイヤーに生データ、シルバーレイヤーに検証済み・重複排除済みのデータ、ゴールドレイヤーに高度に精製されたデータを格納する[メダリオンアーキテクチャ](https://learn.microsoft.com/en-us/azure/databricks/lakehouse/medallion)を採用しています。あらゆる業界のあらゆる組織に、同じアプローチでlakehouseを実装できます。
 
 このラボでは、小売分野の架空の Wide World Importers
 社の開発者が次の手順を実行する方法について説明します。
 
 **目的**:
 
-1\. Power BI アカウントにサインインし、Microsoft Fabric
-の無料試用版を開始します。
+1.  Power BI アカウントにサインインし、無料の Microsoft Fabric
+    試用版を開始します。
 
-2\. Power BI 内で Microsoft Fabric (プレビュー) の試用版を開始します。
+2.  Power BI 内で Microsoft Fabric (Preview) 試用版を開始します。
 
-3\. Microsoft 365 管理センターの OneDrive サインアップを構成します。
+3.  Microsoft 365 管理センターの OneDrive サインアップを構成します。
 
-4\.
-組織向けのエンドツーエンドのレイクハウスを構築および実装します。これには、Fabric
-ワークスペースとレイクハウスの作成が含まれます。
+4.  Fabricワークスペースとlakehouseの作成など、組織のエンドツーエンドのlakehouseを構築して実装します。
 
-5\.
-レイクハウスにサンプルデータを取り込み、さらに処理できるように準備します。
+5.  サンプル データをlakehouseに取り込み、さらなる処理の準備をします。
 
-6\. Python/PySpark と SQL
-ノートブックを使用してデータを変換および準備します。
+6.  Python/PySparkとSQL notebooksを使用してデータを変換し、準備します。
 
-7\. さまざまなアプローチを使用して、ビジネス集計テーブルを作成します。
+7.  さまざまなアプローチを使用してビジネス集計テーブルを作成します。
 
-8\.
-シームレスなレポート作成のために、テーブル間のリレーションシップを確立します。
+8.  シームレスなレポート作成のためにテーブル間の関係を確立します。
 
-9\. 準備されたデータに基づいて、視覚エフェクトを備えた Power BI
-レポートを作成します。
+9.  準備されたデータに基づいて視覚化した Power BI レポートを作成します。
 
-10\. 作成したレポートを保存し、将来の参照と分析に使用します。
+10. 作成したレポートを保存して保存し、将来の参照と分析のために保存します。
 
-## 演習 1: Lakehouse エンドツーエンドシナリオのセットアップ
+## 演習 1: lakehouseのエンドツーエンド シナリオを設定する
 
-### タスク 1: Power BI アカウントにサインインし、無料の Microsoft Fabric 試用版にサインアップします。
+### タスク 1: Power BI アカウントにサインインし、無料の Microsoft Fabric 試用版にサインアップする
 
-1.  ブラウザを開き、アドレス バーに移動して、次のURL
-    を入力または貼り付けます:+ ++https://app.fabric.microsoft.com/+++
-    次に、 **Enter**ボタンを押します。
+1.  ブラウザを開き、アドレスバーに移動して、次のURLを入力または貼り付けます+++https://app.fabric.microsoft.com/+++ 、そして**Enter**キーを押します。  
+    ![](./media/image1.png)
 
-> ![](./media/image1.png)
+2.  **Microsoft
+    Fabric**ウィンドウで、資格情報を入力し、**Submit**ボタンをクリックします。  
+    ![コンピューターのスクリーンショット AI
+    が生成したコンテンツは間違っている可能性があります。](./media/image2.png)
 
-2.  **Microsoft Fabric**ウィンドウで資格情報を入力し、
-    **\[Submit\]**ボタンをクリックします。
+3.  次に、**Microsoft**ウィンドウでパスワードを入力し、\[**Sign in\]**
+    ボタンをクリックします。  
+      
+    ![赤いボックスと青いテキストのログイン画面 AI
+    が生成したコンテンツは間違っている可能性があります。](./media/image3.png)
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image2.png)
-
-3.  次に、 **Microsoft**ウィンドウでパスワードを入力し、「**Sign
-    in」**ボタンをクリックします。
-
-> ![A login screen with a red box and blue text AI-generated content may
-> be incorrect.](./media/image3.png)
-
-4.  **「Stay signed in?** **」**ウィンドウで、
-    **「Yes」**ボタンをクリックします。
+4.  **サインインしたままですか?**
+    ウィンドウで、\[**はい\]**ボタンをクリックします。
 
 > ![](./media/image4.png)
 
@@ -75,937 +66,900 @@ Fabricが提供する柔軟性により、Lakehouseまたはデータウェア�
 
 > ![](./media/image5.png)
 
-## 組織向けのエンドツーエンドのLakehouseを構築して実装する
+## 演習 2: 組織のエンドツーエンドのlakehouseを構築して実装する
 
-### タスク1: Fabricワークスペースを作成する
+### タスク 1: Fabric ワークスペースの作成
 
 このタスクでは、Fabric
-ワークスペースを作成します。ワークスペースには、Lakehouse、データフロー、Data
+ワークスペースを作成します。ワークスペースには、lakehouse、データフロー、Data
 Factory パイプライン、ノートブック、Power BI
-データセット、レポートなど、このLakehouseチュートリアルに必要なすべてのアイテムが含まれています。
+データセット、レポートなど、このlakehouse
+チュートリアルに必要なすべての項目が含まれています。
 
-1.  Fabric ホームページで、 **+ New workspace**タイルを選択します。
+1.  Fabric ホーム ページで、**+New workspace** タイルを選択します。
 
-> ![](./media/image6.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image6.png)
 
-2.  右側に表示される**「Create a
-    workspace** **」**ペインで、次の詳細を入力し、
-    **「Apply」**ボタンをクリックします。
+2.  右側に表示される**ワークスペースの作成**ウィンドウで、次の詳細を入力し、**Apply**ボタンをクリックします。
 
-[TABLE]
+|   |  |
+|----|---|
+|名前	|+++Fabric Lakehouse Tutorial-XXXXX+++(XXXXX はラボのインスタント ID にすることができます)|
+|アドバンスド	|ライセンス モードで、ファブリック容量を選択します|
+|デフォルト	|ストレージ形式 小さなデータセットのストレージ形式|
+|テンプレート アプリ|	開発テンプレートアプリを確認します|
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image7.png)
 
-注: ラボのインスタント ID を見つけるには、「Help」を選択してインスタント
-ID をコピーします。
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image7.png)
 
-> ![](./media/image8.png)
+注: ラボのインスタント ID を確認するには、\[ヘルプ\]
+を選択し、インスタント ID をコピーします。
+
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image8.png)
 >
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image9.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image9.png)
 
-3.  デプロイが完了するまでお待ちください。完了まで2～3分かかります。
+3.  デプロイが完了するまで待ちます。完了するまでに2〜3分かかります。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image10.png)
+### ![コンピューターのスクリーンショット AI が生成したコンテンツは間違っている可能性があります。](./media/image10.png)  タスク 2: lakehouseを作成する
 
-### タスク2:Lakehouseを作る
+1.  ナビゲーション バーの **\[+New item**\]
+    ボタンをクリックして、新しいlakehouseを作成します。
 
-1.  ナビゲーション バーの**\[+ New
-    item\]**ボタンをクリックして、新しいLakehouseを作成します。
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image11.png)
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image11.png)
+2.  **Lakehouse**タイルをクリックします。
 
-2.  「 **Lakehouse** 」タイルをクリックします。
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image12.png)
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image12.png)
+3.  **新しいlakehouse**ダイアログ ボックスで、**名前**フィールドに
+    「**+++wwilakehouse+++**」と入力し、\[**作成**\]ボタンをクリックして、新しいlakehouseを開きます。
 
-3.  **\[New Lakehouse\]**ダイアログ ボックスで、
-    **\[Name\]**フィールドに「 +++ **wwilakehouse +++ 」と入力し、
-    \[Create\]ボタン**をクリックして新しいLakehouseを開きます。
-
-> **注意: wwilakehouse の**前のスペースを必ず削除してください。
+> **注: wwilakehouse** の前にスペースを削除してください。
 >
 > ![](./media/image13.png)
 >
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image14.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image14.png)
 
-4.  **「Successfully created SQL endpoint」**という通知が表示されます。
+4.  「**SQL
+    エンドポイントが正常に作成されました**」という通知が表示されます。
 
 > ![](./media/image15.png)
 
-### タスク3: サンプルデータを取り込む
+### タスク3: サンプル・データの取り込み
 
-1.  **wwilakehouseページ**で、\[**Get data in your
-    lakehouse\]** **セクションのに移動し**、\[**Upload files as shown in
-    the below image\]をクリックします。**
+1.  **wwilakehouse** ページで、 \[**lakehouse内のデータの取得\]**
+    セクションに移動し、**「Upload files as shown in the below
+    image」**をクリックします**。**
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image16.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image16.png)
 
-2.  「Upload files」タブで、「Files」の下のフォルダをクリックします。
+2.  ファイルのアップロードタブで、ファイルの下にあるフォルダーをクリックします。
 
 > ![](./media/image17.png)
 
-3.  VM 上の**C:\LabFiles**を参照し、
-    ***dimension_customer.csv***ファイルを選択して、
-    **\[Open\]**ボタンをクリックします。
+3.  VM 上の **C:\LabFiles** を参照し、**dimension_customer.csv**
+    ファイルを選択して、\[**Open**\]ボタンをクリックします。  
+      
+    ![コンピューターのスクリーンショット AI
+    が生成したコンテンツは間違っている可能性があります。](./media/image18.png)
 
-> ![](./media/image18.png)
-
-4.  次に**\[Upload\]**ボタンをクリックして閉じます
+4.  次に、「**Upload」**ボタンをクリックして閉じます
 
 > ![](./media/image19.png)
 
-5.  **Files**をクリックしてRefreshを選択します。ファイルが表示されます。
+5.  、**ファイル**をクリックして更新します。ファイルが表示されます。
 
-> ![](./media/image20.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image20.png)
 >
-> ![](./media/image21.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image21.png)
 
-6.  **Lakehouseページ**の「Explorer」ペインで「Files」を選択します。マウスポインタを**dimension_customer.csv**ファイルに移動します。**dimension_customer.csvの**横にある水平の省略記号（…）をクリックします**。
-    「Load Table**」をクリックし、 **「New table」**を選択します。
+6.  \[**lakehouse\]**
+    ページのエクスプローラーウィンドウで、ファイルを選択します。なお、マウスを**dimension_customer.csv**ファイルに移動して**dimension_customer.csv**ファイルの横にある水平の省略記号（…）をクリックします。
+    \[**Load Table\]** に移動してクリックし、 \[**New Table\]**
+    を選択します。
 
 > ![](./media/image22.png)
 
-7.  **\[Load file to new table** **\]**ダイアログ ボックスで、
-    **\[Load\]**ボタンをクリックします。
+7.  \[**Load file to new table\]** ダイアログ ボックスで、\[**Load\]**
+    ボタンをクリックします。
 
 > ![](./media/image23.png)
+
+8.  これで、テーブル**dimension_customer**正常に作成されました
+
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image24.png)
+
+9.  テーブル**dimension_coustomer**選択します
+
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image25.png)
 >
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image24.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image26.png)
 
-8.  **dimension_coustomer**テーブルを選択
+10. lakehouseの SQL エンドポイントを使用して、SQL
+    ステートメントでデータをクエリすることもできます。 画面の右上にある
+    **\[lakehouse**\] ドロップダウン メニュー から \[**SQL analytics
+    endpoint**\] を選択します。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image25.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image26.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image27.png)
 
-9.  LakehouseのSQLエンドポイントを使用して、
-    SQLステートメントでデータをクエリすることもできます。画面右上の**Lakehouse**ドロップダウンメニューから**「SQL
-    analytics endpoint** **」**を選択してください**。**
+11. wwilakehouse ページのエクスプローラーで、**dimension_customer**
+    テーブルを選択してデータをプレビューし、 \[**New SQL query**\]
+    を選択して SQL ステートメントを記述します。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image27.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image28.png)
 
-10. wwilakehouseページの「エクスプローラー」で**dimension_customer**テーブルを選択してそのデータをプレビューし、「**New
-    SQL query** **」**を選択してSQL ステートメントを記述します。
+12. 次のサンプル クエリは、**dimension_customer**テーブルの**BuyingGroup
+    列**に基づいて行数を集計します。SQL クエリ
+    ファイルは、後で参照できるように自動的に保存され、必要に応じてこれらのファイルの名前を変更または削除できます。下の画像に示すようにコードを貼り付け、再生アイコンをクリックして
+    スクリプトを**実行します**。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image28.png)
-
-11. **dimension_customerテーブル**の**BuyingGroup列**に基づいて行数を集計します。SQLクエリファイルは将来の参照用に自動的に保存され、必要に応じて名前を変更したり削除したりできます。下の画像のようにコードを貼り付け、再生アイコンをクリックしてスクリプト**を実行してください。**
-
-> SELECT BuyingGroup, Count(\*) AS Total
->
-> FROM dimension_customer
->
-> GROUP BY BuyingGroup
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image29.png)
+```
+SELECT BuyingGroup, Count(*) AS Total
+FROM dimension_customer
+GROUP BY BuyingGroup
+```
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image29.png)
 
 **注**:
-スクリプトの実行中にエラーが発生した場合は、上記の画像とスクリプトの構文を照合してください。
+スクリプトの実行中にエラーが発生した場合は、スクリプト構文を上の画像と照合してください。
 
-> ![](./media/image30.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image30.png)
 
-12. 以前は、すべてのLakehouseのテーブルとビューはセマンティックモデルに自動的に追加されていました。最近のアップデートでは、新しいLakehouseについては、テーブルをセマンティックモデルに手動で追加する必要があります。
+13. 以前は、すべてのlakehouse テーブルとビューがセマンティック
+    モデルに自動的に追加されていました。最近の更新プログラムでは、新しいlakehouseの場合は、テーブルをセマンティック
+    モデルに手動で追加する必要があります。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image31.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image31.png)
 
-13. Lakehouseから **\[Reporting\]**タブで、 **\[Manage default semantic
-    model** **\]を選択し**、セマンティック
-    モデルに追加するテーブルを選択します。
+14. \[lakehouseの**ホーム\]** タブから \[**New semantic model**\]
+    を選択し、セマンティック モデルに追加するテーブルを選択します。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image32.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image32.png)
 
-14. **\[Manage default semantic model** **\]タブ**で、
-    **dimension_customer**テーブルを選択し、 **\[Confirm\]
-    をクリックします。**
+15. \[**新しいセマンティック モデル**\]
+    ダイアログで、「+++wwilakehouse+++」と入力し、テーブルの一覧から**dimension_customer**テーブルを選択し、
+    **\[Confirm**\]を選択して新しいモデルを作成します。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image33.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image33.png)
 
-### タスク4: レポートを作成する
+### タスク4: レポートの作成
 
-1.  左側のナビゲーションペインで**Fabric Lakehouse
-    Tutorial-XX**をクリックします。
+1.  次に、 左側のナビゲーション ウィンドウで \[**Fabric Lakehouse
+    Tutorial-XX**\] をクリックします。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image34.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image34.png)
 
-2.  次に、**SQL analytics**タイプの**wwilakehouse**を選択します。​
+2.  \[**Fabric Lakehouse Tutorial-XX**\]ビューで**、**\[**Semantic
+    model**タイプ**\]** の \[**wwilakehouse\]**を選択します。
+    ![コンピューターのスクリーンショット AI
+    が生成したコンテンツは間違っている可能性があります。](./media/image35.png)
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image35.png)
-
-3.  Lakehouseから **Home**タブで**Settings**を選択
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image36.png)
-
-4.  セマンティックモデル内のテーブルが常に同期されていることを確認するには、**SQL
-    analytics
-    endpoint** ビューに切り替えてLakehouseを開きます。 **Settings**パネルで、**Default
-    Power BI semantic model** を選択し、**Sync the default Power BI
-    semantic model**をオンにします**。**
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image37.png)
-
-5.  左側のナビゲーションペインで**Fabric Lakehouse
-    Tutorial-XX**をクリックします。
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image34.png)
-
-6.  **Fabric Lakehouse Tutorial-XX**ビューで、タイプが**Semantic
-    model(default)**の**wwilakehouseを選択します。このデータセットは自動的に作成され、**
-    lakehouseと同じ名前になります。
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image38.png)
-
-7.  セマンティックモデルペインから、すべてのテーブルを表示できます。レポートは、最初から作成するか、ページ分割されたレポートを作成するか、Power
+3.  セマンティック モデル
+    ウィンドウから、すべてのテーブルを表示できます。レポートを最初から作成するか、ページ分割されたレポートを作成するか、Power
     BI
-    にデータに基づいて自動作成させるかを選択できます。このチュートリアルでは、下の画像に示すように、
-    **「Explore this data」で「Auto-create a
-    report** **」**を選択してください。
+    でデータに基づいてレポートを自動的に作成させるかを選択できます。このチュートリアルでは、**このデータの探索**で、次の図に示すように
+    \[**Auto-create a report**\] を選択します。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image39.png)
->
-> ![](./media/image40.png)
->
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image36.png)
+
+4.  レポートの準備ができたので、**View report
+    now**をクリックして開いて確認します。![コンピューターのスクリーンショット
+    AI
+    が生成したコンテンツは間違っている可能性があります。](./media/image37.png)
+
+> ![](./media/image38.png)
+
+5.  テーブルはディメンションであり、メジャーがないため、Power BI
+    は行数のメジャーを作成し、それを異なる列に集計し、次の図に示すように異なるグラフを作成します。
+
+6.  上部のリボンから **\[Save\]**
+    を選択して、将来使用するためにこのレポートを保存します。
+
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image39.png)
+
+7.  **\[Save your replort\]**ダイアログ ボックスで、レポートの名前を
+    +++dimension_customer-report+++
+    として入力し、\[**Save**\]を選択します**。**
+
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image40.png)
+
+8.  **レポートが保存されました**という通知が表示されます。
+
 > ![](./media/image41.png)
 
-8.  テーブルはディメンションであり、メジャーが含まれていないため、Power
-    BI
-    は行数のメジャーを作成し、それをさまざまな列にわたって集計して、次の図に示すようにさまざまなグラフを作成します。
+# 演習 2: lakehouseにデータを取り込む
 
-9.  上部のリボンから**\[Save\]**を選択して、このレポートを将来保存します。
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image42.png)
-
-10. **\[Save your report** **\]**ダイアログ ボックスで、レポートの名前を
-    +++ dimension_customer -report+++ として入力し、 **\[Save\]**
-    を選択します**。**
-
-> ![](./media/image43.png)
-
-11. **「Report saved」**という通知が表示されます。
-
-> ![](./media/image44.png)
-
-# 演習2:Lakehouseにデータを取り込む
-
-この演習では、Wide World Importers (WWI)
-からLakehouseに追加のディメンション テーブルとファクト
-テーブルを取り込みます。
+この演習では、Wide World Importers (WWI)から追加のディメンション
+テーブルとファクト テーブルをlakehouseに取り込みます。
 
 ### タスク1: データの取り込み
 
-1.  左側のナビゲーションペインで**Fabric Lakehouse
-    Tutorial-XX**をクリックします。
+1.  次に、 左側のナビゲーション ウィンドウで \[**Fabric Lakehouse
+    Tutorial-XX**\] をクリックします。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image34.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image42.png)
 
-2.  **Fabric Lakehouse Tutorial-XXワークスペース ページ**で、 **\[+New
-    item\]**ボタンに移動してクリックし、 **\[Data
-    pipeline\]**を選択します。
+2.  **Fabric Lakehouse Tutorial-XX** ワークスペース ページで、 **\[+New
+    item**\] ボタンに移動してクリックし、 **\[パイプライン\]**
+    を選択します。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image45.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image43.png)
 
-3.  「New pipeline」ダイアログボックスで、名前を**「+++
-    IngestDataFromSourceToLakehouse +++」と指定し**、
-    **「Create」**を選択します**。**新しいデータファクトリーパイプラインが作成され、開きます。
+3.  \[新しいパイプライン\] ダイアログ ボックスで、名前を
+    **+++IngestDataFromSourceToLakehouse+++** として指定し、
+    **\[Create\]**を選択します。 新しいデータ ファクトリ
+    パイプラインが作成され、開かれます。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image46.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image44.png)
 >
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image47.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image45.png)
 
-4.  新しく作成されたデータファクトリーパイプライン、すなわち **IngestDataFromSourceToLakehouse
-    で**、**Copy data assistant** を選択します。
+4.  新しく作成されたデータ ファクトリ パイプライン
+    (**IngestDataFromSourceToLakehouse**)で、 \[**Copy data
+    assistant\]**を選択します。
 
-> ![](./media/image48.png)
+> ![](./media/image46.png)
 
-5.  次に、 **Sample data** 接続を使用して、 World Wide
-    ImportersのサンプルデータをLakehouseにインポートします。 **「New
-    sources」**リストから、 **「Wide World Importers」**の**「Retail
-    Data Model」**を選択します。
+5.  次に、**サンプル データ**接続を設定して、サンプルの World Wide
+    Importers
+    データをlakehouseにインポートします。**新しいソース**の一覧から、**Wide
+    World Importers の Retail Data Model** を選択します。
 
-> ![](./media/image49.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image47.png)
 
-6.  **Connect to data source** ウィンドウで、 **Wide World
-    Importers**データから**Retail Data
-    Model**を選択し、**Next**を選択します。
+6.  \[**データ ソースに接続\]** ウィンドウで、**Retail Data Model from
+    Wide World Importers** **data**\] を選択し、**\[Next\]**
+    を選択します。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image50.png)
+> ![コンピューター AI
+> が生成したコンテンツのスクリーンショットは正しくない可能性があります。](./media/image48.png)
 
-7.  **データ宛先への接続ウィンドウ**で、 **OneLakeを選択します。
-    カタログを**開き、
-    **wwilakehouseを選択します。ルートフォルダをFiles**として指定し、
-    **「Next」をクリックします**。これにより、データがlakehouseの**Filesセクションに書き込まれます**。
+7.  \[**データの宛先に接続\]** ウィンドウで、 \[**OneLake catalog**\]
+    を選択し、 \[**wwilakehouse**\] を選択します。 次に、ルート
+    フォルダーを \[**ファイル**\] として指定し、\[**Next**\]
+    をクリックします。これにより、lakehouseの \[**ファイル**\]
+    セクションにデータが書き込まれます。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image51.png)
+> ![コンピューター AI
+> が生成したコンテンツのスクリーンショットは正しくない可能性があります。](./media/image49.png)
 >
-> ![](./media/image52.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image50.png)
 
-1.  **File形式**を選択する すべき 出力先は空のままにしてください。
-    **「Next」をクリックし**、
-    **「Save+Run」を**クリックします。パイプラインをスケジュール設定して、定期的にデータを更新することもできます。このチュートリアルでは、パイプラインを1回だけ実行します。
+8.  \[**ファイル形式\]**
+    を保存先として空にする必要があります。**\[Save + Run\]**
+    をクリックして、パイプラインを開始します。データを定期的に更新するようにパイプラインをスケジュールできます。このチュートリアルでは、パイプラインを一度だけ実行します。
 
-> ![](./media/image53.png)
+> ![](./media/image51.png)
+
+9.  データコピープロセスが完了するまでに約1〜3分かかります。
+
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image52.png)
 >
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image54.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image53.png)
 
-2.  データのコピープロセスは完了するまでに約 1 ～ 3 分かかります。
+10. 出力タブで
+    \[**Copy_a1n**\]を選択して、データ転送の詳細を確認します。**\[Status\]**が
+    **\[Succeeded\]** になったら、\[**Close\]**ボタンをクリックします。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image55.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image54.png)
 >
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image56.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image57.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image58.png)
+> ![コンピューター AI
+> が生成したコンテンツのスクリーンショットは正しくない可能性があります。](./media/image55.png)
 
-3.  「Output」タブで「**Copy_a1n**」を選択し、データ転送の詳細を確認します。「ステータス」が「成功」と表示されたら、「**Close**」ボタンをクリックします。
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image59.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image60.png)
-
-4.  パイプラインの実行が正常に完了したら、Lakehouse( **wwilakehouse** )
+11. パイプラインが正常に実行されたら、lakehouse (**wwilakehouse**)
     に移動し、エクスプローラーを開いてインポートされたデータを確認します。
 
-> ![](./media/image61.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image56.png)
 
-5.  すべての**WideWorldImporters**ファイルが**Explorer**ビューに存在し、すべてのテーブルのデータが含まれていることを確認します。
+12. すべての **WideWorldImporters フォルダー**が**エクスプローラー**
+    ビュー に存在
+    し、すべてのテーブルのデータが含まれていることを確認します。
 
-> ![](./media/image62.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image57.png)
 
-# 演習3:Lakehouseでデータの準備と変換を行う
+# 演習 3: lakehouseでデータを準備して変換する
 
-### タスク 1: データを変換して Silver Delta テーブルにロードする
+### タスク1: データを変換し、シルバー・デルタ表にロードする
 
-1.  **wwilakehouseページ**で、コマンド バーの**\[Open
-    notebook** **\]ドロップに移動してクリックし、 \[New
-    notebook\]を選択します**。
+1.  **wwilakehouse** ページで、コマンド バーの **\[Open
+    notebook**\]ドロップに移動し、 \[**New notebook\]**を選択します。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image63.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image58.png)
 
-2.  **Lakehouse
-    explorer**で開いているノートブックを見ると、そのノートブックがすでに開いているLakehouseにリンクされていることが分かります。
+2.  **lakehouse
+    エクスプローラー**の開いているノートブックでは、ノートブックが開いているlakehouseに既にリンクされていることがわかります。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image64.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image59.png)
 
-\*\* 注記\*\*
+\[!注意\]**注**: Fabric には、最適化されたデルタ レイク
+ファイルを書き込むための [**V
+order**](https://learn.microsoft.com/en-us/fabric/data-engineering/delta-optimization-and-v-order)機能が用意されています。多くの場合、V-order
+は、最適化されていない Delta Lake ファイルに比べて圧縮率を 3 倍から 4
+倍、パフォーマンス アクセラレーションを最大 10 倍向上させます。Fabric の
+Spark は、既定の 128 MB
+サイズのファイルを生成しながら、パーティションを動的に最適化します。ターゲットファイルサイズは、構成を使用してワークロード要件ごとに変更できます。[**書き込みの最適化**](https://learn.microsoft.com/en-us/fabric/data-engineering/delta-optimization-and-v-order#what-is-optimized-write)機能により、書き込まれるファイルの数を減らし、書き込まれたデータの個々のファイルサイズを増やすことを目的としたApache
+Sparkエンジン。
 
-Fabricは、最適化されたDelta
-Lakeファイルを書き込むための[**Vオーダー**](https://learn.microsoft.com/en-us/fabric/data-engineering/delta-optimization-and-v-order)機能を提供します。Vオーダーにより、最適化されていないDelta
-Lakeファイルと比較して、圧縮率は3～4倍、パフォーマンスは最大10倍向上します。FabricのSparkは、デフォルトで128MBのサイズのファイルを生成する際に、パーティションを動的に最適化します。ターゲットファイルサイズは、設定を使用してワークロード要件に応じて変更できます。[**最適化書き込み**](https://learn.microsoft.com/en-us/fabric/data-engineering/delta-optimization-and-v-order#what-is-optimized-write)機能により、Apache
-Sparkエンジンは書き込まれるファイル数を減らし、書き込まれるデータの個々のファイルサイズを増やすことを目指します。
+3.  lakehouseの \[**テーブル**\] セクションにデータをデルタ レイク
+    テーブルとして書き込む前に、2つのFabric 機能 (**V
+    orderー**と**Optimize Write**)
+    を使用して、データ書き込みを最適化し、読み取りパフォーマンスを向上させます。セッションでこれらの機能を有効にするには、ノートブックの最初のセルでこれらの構成を設定します。
 
-3.  Lakehouseの**Tables**セクションでデルタレイクテーブルとしてデータを書き込む前に、データ書き込みの最適化と読み取りパフォーマンスの向上のために、2つのFabric機能（
-    **V-order**と**Optimize Write**
-    ）を使用します。セッションでこれらの機能を有効にするには、ノートブックの最初のセルでこれらの設定を行います。
+4.  **セル**内のコードを次のコードで更新し、セルをホバーすると左側に表示される▷**Run
+    cell**をクリックします。
 
-4.  **セル**に次のコードを入力し、マウスをセルの上に置くと左側に表示される▷**セル実行**をクリックします。
+```
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+spark.conf.set("spark.sql.parquet.vorder.enabled", "true")
+spark.conf.set("spark.microsoft.delta.optimizeWrite.enabled", "true")
+spark.conf.set("spark.microsoft.delta.optimizeWrite.binSize", "1073741824")
+```
 
-> \# Copyright (c) Microsoft Corporation.
->
-> \# Licensed under the MIT License.
->
-> spark.conf.set( " spark.sql.parquet.vorder.enabled " , "true" )
->
-> spark.conf.set( " spark.microsoft . delta.optimizeWrite.enabled ",
-> "true")
->
-> spark.conf.set( " spark.microsoft . delta.optimizeWrite.binSize ",
-> "1073741824")
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image65.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image66.png)
->
-> セルを実行する際に、基盤となるSparkプールやクラスターの詳細を指定する必要はありませんでした。FabricはLive
-> Poolを通じてそれらを提供するからです。すべてのFabricワークスペースには、Live
-> Poolと呼ばれるデフォルトのSparkプールが付属しています。つまり、ノートブックを作成する際に、Spark構成やクラスターの詳細を指定する必要はありません。最初のノートブックコマンドを実行すると、数秒でLive
-> Poolが起動し、Sparkセッションが確立され、コードの実行が開始されます。Sparkセッションがアクティブな間、このノートブックでは後続のコード実行はほぼ瞬時に行われます。
+\[!注意\]**注**:
+セルを実行する際に、基盤となるSparkプールやクラスターの詳細を指定する必要はありませんでした。
 
-5.  **Files**セクションから生データを読み取り、変換の一環として、異なる日付部分に対応する列を追加します。partitionBy
-    Spark
-    APIを使用してデータをパーティション化し、新しく作成されたデータ部分列（YearとQuarter）に基づいてデルタテーブルとして書き込みます。
+![コンピューターのスクリーンショット AI
+が生成したコンテンツは間違っている可能性があります。](./media/image60.png)
 
-6.  セル出力の下にある**「+Code」アイコン**を使用してノートブックに新しいコードセルを追加し、次のコードを入力します。
-    **▷ 「セルを実行」**ボタンをクリックして出力を確認します。
+![コンピューターのスクリーンショット AI
+が生成したコンテンツは間違っている可能性があります。](./media/image61.png)
 
-**注:** 出力が表示されない場合は、 **Spark**
-ジョブの左側にある水平線をクリックしてください。
+Fabric がLive Poolを介して提供するためです。すべての Fabric
+ワークスペースには、ライブ プールと呼ばれる既定の Spark
+プールが付属しています。つまり、ノートブックを作成するときに、Spark
+構成やクラスターの詳細の指定について心配する必要はありません。最初のnotebookコマンドを実行すると、ライブ
+プールは数秒で稼働します。そして、Spark
+セッションが確立され、コードの実行が開始されます。このノートブックでは、Spark
+セッションがアクティブである間、後続のコード実行はほぼ瞬時に行われます。
 
+5.  次に、lakehouseの
+    \[**ファイル**\]セクションから生データを読み取り、変換の一環としてさまざまな日付部分の列を追加します。partitionBy
+    Spark API を使用して、新しく作成されたデータ パーツ列 (年と四半期)
+    に基づいてデルタ
+    テーブルとして書き込む前に、データをパーティション分割します。
+
+6.  セル出力の下にある **\[+ Code\]**アイコンを使用して、新しいコード
+    セルをノートブックに追加し、次のコードを入力します。**▷ Run
+    cell**ボタンをクリックして、出力を確認します
+
+**注**: 出力が表示されない場合は、**Spark
+jobs**の左側にある水平線をクリックします。
+```
 from pyspark.sql.functions import col, year, month, quarter
 
 table_name = 'fact_sale'
 
 df = spark.read.format("parquet").load('Files/fact_sale_1y_full')
-
 df = df.withColumn('Year', year(col("InvoiceDateKey")))
-
 df = df.withColumn('Quarter', quarter(col("InvoiceDateKey")))
-
 df = df.withColumn('Month', month(col("InvoiceDateKey")))
 
-df.write.mode("overwrite").format("delta").partitionBy("Year","Quarter").save("Tables/" +
-table_name)
+df.write.mode("overwrite").format("delta").partitionBy("Year","Quarter").save("Tables/" + table_name)
+```
 
->  ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image67.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image62.png)
 >
-> ![A screenshot of a computer code AI-generated content may be
-> incorrect.](./media/image68.png)
+> ![コンピュータープログラムのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image63.png)
 
-7.  ファクトテーブルがロードされたら、残りのディメンションのデータのロードに進むことができます。次のセルは、パラメータとして渡されたテーブル名ごとに、Lakehouseの**Files**セクションから生データを読み取る関数を作成します。次に、ディメンションテーブルのリストを作成します。最後に、テーブルのリストをループ処理し、入力パラメータから読み取ったテーブル名ごとに差分テーブルを作成します。
+7.  テーブルが読み込まれたら、残りのディメンションのデータの読み込みに進むことができます。次のセルは、
+    パラメーターとして渡されたテーブル名ごとに、lakehouseの**ファイル**セクションから生データを読み取る関数を作成します。次に、ディメンション
+    テーブルのリストを作成します。最後に、テーブルのリストをループし、入力パラメーターから読み取られたテーブル名ごとにデルタ
+    テーブルを作成します。
 
-8.  セル出力の下にある**「+Code」アイコン**を使用してノートブックに新しいコードセルを追加し、以下のコードを入力します。
-    **▷ 「セル実行」**ボタンをクリックして、 pyspark.sql.types import
-    \*からの出力を確認します。
+8.  セル出力の下にある \[+**Code\]**アイコンを使用して、新しいコード
+    セルをノートブックに追加し、次のコードを入力します。**▷ Run
+    cell**ボタンをクリックして、出力を確認します。
 
-> def loadFullDataFromSource(table_name):
->
-> df = spark.read.format("parquet").load('Files/' + table_name)
->
-> df = df.drop("Photo")
->
-> df.write.mode("overwrite").format("delta").save("Tables/" +
-> table_name)
->
-> full_tables = \[
->
-> 'dimension_city',
->
-> 'dimension_customer',
->
-> 'dimension_date',
->
-> 'dimension_employee',
->
-> 'dimension_stock_item'
->
-> \]
->
-> for table in full_tables:
->
-> loadFullDataFromSource(table)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image69.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image70.png)
+```
+from pyspark.sql.types import *
 
-9.  作成したテーブルを検証するには、**Tables**をクリックして更新を選択します。テーブルが表示されます。
+def loadFullDataFromSource(table_name):
+    df = spark.read.format("parquet").load('Files/' + table_name)
+    df = df.drop("Photo")
+    df.write.mode("overwrite").format("delta").save("Tables/" + table_name)
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image71.png)
->
->  ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image72.png)
+full_tables = [
+    'dimension_city',
+    'dimension_customer',
+    'dimension_date',
+    'dimension_employee',
+    'dimension_stock_item'
+]
 
-### タスク2: 集約のためのビジネスデータの変換
+for table in full_tables:
+    loadFullDataFromSource(table)
+``` 
+  
+![コンピュータープログラムのスクリーンショット AI
+が生成したコンテンツは間違っている可能性があります。](./media/image64.png)
 
-1.  組織には、Scala/Python を扱うデータエンジニアと SQL (Spark SQL
-    または T-SQL)
-    を扱うデータエンジニアがいて、全員が同じデータコピーで作業している場合があります。Fabric
-    は、経験や好みの異なるこれらの異なるグループが連携して作業することを可能にします。2
-    つの異なるアプローチは、ビジネス集計を変換および生成します。パフォーマンスを損なうことなく、適切なアプローチを選択することも、好みに応じてこれらのアプローチを組み合わせることもできます。
+![コンピュータープログラムのスクリーンショット AI
+が生成したコンテンツは間違っている可能性があります。](./media/image65.png)
 
-    - **アプローチ1** -
-      PySparkを使用してデータを結合・集計し、ビジネス集計を生成します。このアプローチは、プログラミング（PythonまたはPySpark）の経験がある方に適しています。
+9.  作成したテーブルを検証するには、すべての**テーブル**がリストに表示されるまで、**エクスプローラ**パネルのテーブルをクリックして更新を選択します。
 
-    - **アプローチ2** - Spark
-      SQLを使用してデータを結合・集計し、ビジネス集計を生成します。このアプローチは、SQLの経験があり、Sparkに移行する方に適しています。
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image66.png)
 
-2.  **アプローチ \#1 (sale_by_date_city)** - PySpark
-    を使用してデータを結合・集計し、ビジネス集計を生成します。以下のコードでは、それぞれ既存の差分テーブルを参照する
-    3 つの異なる Spark
-    データフレームを作成します。次に、これらのテーブルをデータフレームを使用して結合し、group
-    by
-    を実行して集計を生成し、いくつかの列の名前を変更し、最後にLakehouseの**Tables**セクションに差分テーブルとして書き込み、データを永続化します。
+![コンピューターのスクリーンショット AI
+が生成したコンテンツは間違っている可能性があります。](./media/image67.png)
 
-3.  セル出力の下にある**「+Code」**アイコンを使用してノートブックに新しいコードセルを追加し、次のコードを入力します。
-    **▷ 「セルを実行」**ボタンをクリックして出力を確認します。
+### タスク2: 集計のためのビジネス・データの変換
 
-4.  このセルでは、それぞれ既存のデルタ テーブルを参照する 3 つの異なる
-    Spark データフレームを作成します。
+組織には、Scala/Pythonを扱うデータ エンジニアと、SQL (Spark SQL または
+T-SQL) を扱う他のデータ
+エンジニアがあり、全員がデータの同じコピーで作業している場合があります。ファブリックは、さまざまな経験や好みを持つこれらのさまざまなグループが働き、協力することを可能にします。2
+つの異なるアプローチは、ビジネス集計を変換して生成します。パフォーマンスを損なうことなく、自分に適したものを選択することも、好みに基づいてこれらのアプローチを組み合わせて組み合わせることもできます。
 
-> df_fact_sale = spark.read .table(" wwilakehouse.fact \_sale")
->
-> df_dimension_date = spark.read .table(" wwilakehouse.dimension
-> \_date")
->
-> df_dimension_city = spark.read .table(" wwilakehouse.dimension
-> \_city")
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image73.png)
->
-> ![A screen shot of a computer AI-generated content may be
-> incorrect.](./media/image74.png)
+- **アプローチ \#1** - PySpark
+  を使用してデータを結合して集計し、ビジネス集計を生成します。このアプローチは、プログラミング
+  (Python または PySpark) のバックグラウンドを持つ人に適しています。
 
-5.  セル出力の下にある**「+Code」**アイコンを使用してノートブックに新しいコードセルを追加し、次のコードを入力します。
-    **▷ 「セルを実行」**ボタンをクリックして出力を確認します。
+- **アプローチ \#2** - Spark SQL
+  を使用して、ビジネス集計を生成するためのデータを結合および集計します。このアプローチは、SQLのバックグラウンドを持ち、Sparkに移行する人に適しています。
 
-6.  このセルでは、先ほど作成したデータフレームを使用してこれらのテーブルを結合し、グループ化して集計を生成し、いくつかの列の名前を変更して、最後にレイクハウスの**Tables**
-    セクションにデルタ テーブルとして書き込みます。
+**アプローチ \#1 (sale_by_date_city)**
 
-> sale_by_date_city = df_fact_sale.alias("sale") \\
->
-> .join(df_dimension_date.alias("date"), df_fact_sale.InvoiceDateKey ==
-> df_dimension_date.Date, "inner") \\
->
-> .join(df_dimension_city.alias("city"), df_fact_sale.CityKey ==
-> df_dimension_city.CityKey, "inner") \\
->
-> .select("date.Date", "date.CalendarMonthLabel", "date.Day",
-> "date.ShortMonth", "date.CalendarYear", "city.City",
-> "city.StateProvince",
->
-> "city.SalesTerritory", "sale.TotalExcludingTax", "sale.TaxAmount",
-> "sale.TotalIncludingTax", "sale.Profit")\\
->
-> .groupBy("date.Date", "date.CalendarMonthLabel", "date.Day",
-> "date.ShortMonth", "date.CalendarYear", "city.City",
-> "city.StateProvince",
->
-> "city.SalesTerritory")\\
->
-> .sum("sale.TotalExcludingTax", "sale.TaxAmount",
-> "sale.TotalIncludingTax", "sale.Profit")\\
->
-> .withColumnRenamed("sum(TotalExcludingTax)",
-> "SumOfTotalExcludingTax")\\
->
-> .withColumnRenamed("sum(TaxAmount)", "SumOfTaxAmount")\\
->
-> .withColumnRenamed("sum(TotalIncludingTax)",
-> "SumOfTotalIncludingTax")\\
->
-> .withColumnRenamed("sum(Profit)", "SumOfProfit")\\
->
-> .orderBy("date.Date", "city.StateProvince", "city.City")
->
-> sale_by_date_city.write.mode("overwrite").format("delta").option("overwriteSchema",
-> "true").save("Tables/aggregate_sale_by_date_city")
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image75.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image76.png)
+PySpark
+を使用して、ビジネス集計を生成するためのデータを結合および集計します。次のコードでは、それぞれが既存のデルタテーブルを参照する
+3 つの異なる Spark
+データフレームを作成します。次に、データフレームを使用してこれらのテーブルを結合し、グループ化して集計を生成し、いくつかの列の名前を変更し、最後にlakehouseの
+\[**テーブル**\] セクションにデルタ
+テーブルとして記述してデータを保持します。
 
-7.  **アプローチ \#2 (sale_by_date_employee)** - Spark SQL
-    を使用してデータを結合・集計し、ビジネス集計を生成します。以下のコードでは、3つのテーブルを結合して一時的な
-    Spark ビューを作成し、group by
-    を実行して集計を生成し、いくつかの列の名前を変更します。最後に、一時的な
-    Spark ビューからデータを読み取り、それをLakehouse
-    の**Tables**セクションに差分テーブルとして書き込み、データを永続化します。
+1.  セル出力の下にある **\[+ コード\]**アイコンを使用して、新しいコード
+    セルをノートブックに追加し、次のコードを入力します。**▷ Run
+    cell**ボタンをクリックして、出力を確認します
 
-8.  セル出力の下にある**「+Code」**アイコンを使用してノートブックに新しいコードセルを追加し、次のコードを入力します。
-    **▷ 「セルを実行」**ボタンをクリックして出力を確認します。
+このセルでは、3 つの異なる Spark
+dataframesを作成し、それぞれが既存のデルタテーブルを参照します。
 
-9.  このセルでは、3 つのテーブルを結合して一時的な Spark
-    ビューを作成し、グループ化を実行して集計を生成し、いくつかの列の名前を変更します。
+```
+df_fact_sale = spark.read.table("wwilakehouse.fact_sale") 
+df_dimension_date = spark.read.table("wwilakehouse.dimension_date")
+df_dimension_city = spark.read.table("wwilakehouse.dimension_city")
+```
 
+![コンピューターのスクリーンショット AI
+が生成したコンテンツは間違っている可能性があります。](./media/image68.png)
+
+2.  セル出力の下にある **\[+ コード\]** アイコンを使用して、新しいコード
+    セルをノートブックに追加し、次のコードを入力します。**▷ Run
+    cell**ボタンをクリックして、出力を確認します
+
+このセルでは、前に作成したデータフレームを使用してこれらのテーブルを結合し、グループ化して集計を生成し、いくつかの列の名前を変更し、最後にlakehouseの
+\[**テーブル**\] セクションにデルタテーブルとして書き込みます。
+
+```
+sale_by_date_city = df_fact_sale.alias("sale") \
+.join(df_dimension_date.alias("date"), df_fact_sale.InvoiceDateKey == df_dimension_date.Date, "inner") \
+.join(df_dimension_city.alias("city"), df_fact_sale.CityKey == df_dimension_city.CityKey, "inner") \
+.select("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", 
+ "city.SalesTerritory", "sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")\
+.groupBy("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", 
+ "city.SalesTerritory")\
+.sum("sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")\
+.withColumnRenamed("sum(TotalExcludingTax)", "SumOfTotalExcludingTax")\
+.withColumnRenamed("sum(TaxAmount)", "SumOfTaxAmount")\
+.withColumnRenamed("sum(TotalIncludingTax)", "SumOfTotalIncludingTax")\
+.withColumnRenamed("sum(Profit)", "SumOfProfit")\
+.orderBy("date.Date", "city.StateProvince", "city.City")
+
+sale_by_date_city.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_city")
+
+```
+![コンピューターのスクリーンショット AI
+が生成したコンテンツは間違っている可能性があります。](./media/image69.png)
+
+**アプローチ \#2 (sale_by_date_employee)**
+
+Spark
+SQLを使用して、ビジネス集計を生成するためのデータを結合および集計します。次のコードでは、3
+つのテーブルを結合して一時的な Spark ビューを作成し、group by
+を実行して集計を生成し、いくつかの列の名前を変更します。最後に、一時的な
+Spark ビューから読み取り、最後にlakehouseの **\[テーブル**\]
+セクションにデルタ テーブルとして書き込み、データを保持します。
+
+3.  セル出力の下にある \[+ **コード\]** アイコンを使用して、新しいコード
+    セルをノートブックに追加し、次のコードを入力します。**▷ Run
+    cell**ボタンをクリックして、出力を確認します。
+
+このセルでは、3 つのテーブルを結合して一時的な Spark
+ビューを作成し、グループ化して集計を生成し、いくつかの列の名前を変更します。
+
+```
 %%sql
-
 CREATE OR REPLACE TEMPORARY VIEW sale_by_date_employee
-
 AS
-
 SELECT
-
-DD.Date, DD.CalendarMonthLabel
-
-, DD.Day, DD.ShortMonth Month, CalendarYear Year
-
-,DE.PreferredName, DE.Employee
-
-,SUM(FS.TotalExcludingTax) SumOfTotalExcludingTax
-
-,SUM(FS.TaxAmount) SumOfTaxAmount
-
-,SUM(FS.TotalIncludingTax) SumOfTotalIncludingTax
-
-,SUM(Profit) SumOfProfit
-
+       DD.Date, DD.CalendarMonthLabel
+ , DD.Day, DD.ShortMonth Month, CalendarYear Year
+      ,DE.PreferredName, DE.Employee
+      ,SUM(FS.TotalExcludingTax) SumOfTotalExcludingTax
+      ,SUM(FS.TaxAmount) SumOfTaxAmount
+      ,SUM(FS.TotalIncludingTax) SumOfTotalIncludingTax
+      ,SUM(Profit) SumOfProfit 
 FROM wwilakehouse.fact_sale FS
-
 INNER JOIN wwilakehouse.dimension_date DD ON FS.InvoiceDateKey = DD.Date
-
-INNER JOIN wwilakehouse.dimension_Employee DE ON FS.SalespersonKey =
-DE.EmployeeKey
-
-GROUP BY DD.Date, DD.CalendarMonthLabel, DD.Day, DD.ShortMonth,
-DD.CalendarYear, DE.PreferredName, DE.Employee
-
+INNER JOIN wwilakehouse.dimension_Employee DE ON FS.SalespersonKey = DE.EmployeeKey
+GROUP BY DD.Date, DD.CalendarMonthLabel, DD.Day, DD.ShortMonth, DD.CalendarYear, DE.PreferredName, DE.Employee
 ORDER BY DD.Date ASC, DE.PreferredName ASC, DE.Employee ASC
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image77.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image78.png)
+```
+ ![コンピューターのスクリーンショット AI
+が生成したコンテンツは間違っている可能性があります。](./media/image70.png)
 
-10. セル出力の下にある**「+Code」**アイコンを使用してノートブックに新しいコードセルを追加し、次のコードを入力します。
-    **▷ 「セルを実行」**ボタンをクリックして出力を確認します。
+8\. セル出力の下にある \[**+ コード\]** アイコンを使用して、新しいコード
+セルをノートブックに追加し、次のコードを入力します。**▷
+セルを実行**ボタンをクリックして、出力を確認します
 
-11. このセルでは、前のセルで作成された一時的な Spark
-    ビューから読み取り、最終的にそれをLakehouseの**Tables**セクションにデルタ
-    テーブルとして書き込みます。
+このセルでは、前のセルで作成された一時的な Spark
+ビューから読み取り、最後に lakehouseの \[**テーブル**\]
+セクションにデルタ テーブルとして書き込みます。
 
-> sale_by_date_employee = spark.sql("SELECT \* FROM
-> sale_by_date_employee")
->
-> sale_by_date_employee.write.mode("overwrite").format("delta").option("overwriteSchema",
-> "true").save("Tables/aggregate_sale_by_date_employee")
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image79.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image80.png)
+```
+sale_by_date_employee = spark.sql("SELECT * FROM sale_by_date_employee")
+sale_by_date_employee.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_employee")
+```
 
-12. 作成したテーブルを検証するには、**Tables**をクリックして**「Refresh」**を選択します。集計テーブルが表示されます。
+![コンピューターのスクリーンショット AI
+が生成したコンテンツは間違っている可能性があります。](./media/image71.png)
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image81.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image82.png)
+9\. 作成したテーブルを検証するには、集計テーブルが表示されるまで
+\[**テーブル\]** をクリックし、更新します。
 
-どちらのアプローチも結果は同様です。ご自身のバックグラウンドや好みに合わせて選択することで、新しい技術の習得やパフォーマンスの妥協を最小限に抑えることができます。
+![コンピューターのスクリーンショット AI
+が生成したコンテンツは間違っている可能性があります。](./media/image72.png)
 
-また、データがデルタレイクファイルとして書き込まれていることにお気づきかもしれません。Fabricの自動テーブル検出・登録機能により、これらのデータがメタストアに自動的に登録されます。SQLで使用するテーブルを作成するために、明示的にCREATE
-TABLEステートメントを呼び出す必要はありません。
+![コンピューターのスクリーンショット AI
+が生成したコンテンツは間違っている可能性があります。](./media/image73.png)
 
-# 演習 4: Microsoft Fabric でのレポートの作成
+どちらのアプローチも同様の結果をもたらします。自分の背景や好みに基づいて選択することで、新しい技術を学んだり、パフォーマンスを妥協したりする必要性を最小限に抑えることができます。
+
+また、データを delta lake
+ファイルとして書き込んでいることに気付く場合があります。Fabric
+の自動テーブル検出と登録機能は、それらを取得してメタストアに登録します。SQL
+で使用するテーブルを作成するために、CREATE TABLE
+ステートメントを明示的に呼び出す必要はありません。
+
+# 演習 4: Microsoft Fabric でレポートを作成する
 
 チュートリアルのこのセクションでは、Power BI データ
 モデルを作成し、レポートを最初から作成します。
 
-### タスク 1: SQL エンドポイントを使用してシルバー レイヤーのデータを探索する
+### タスク1: SQLエンドポイントを使用したシルバー・レイヤー内のデータの探索
 
-Power BI は Fabric
-エクスペリエンス全体にネイティブに統合されています。このネイティブ統合により、DirectLake
-と呼ばれる独自のモードが実現します。このモードでは、Lakehouseからデータにアクセスし、最高パフォーマンスのクエリとレポートエクスペリエンスを提供します。DirectLake
-モードは、Power BI
-で大規模なデータセットを分析するための画期的な新しいエンジン機能です。このテクノロジは、データ
-ウェアハウスやLakehouseのエンドポイントにクエリを実行したり、Power BI
-データセットにデータをインポートしたり複製したりすることなく、データ
-レイクから parquet
-形式のファイルを直接読み込むというアイデアに基づいています。DirectLake
+Power BI は、Fabric
+エクスペリエンス全体にネイティブに統合されています。このネイティブ統合により、lakehouseからデータにアクセスする
+DirectLake
+と呼ばれる独自のモードがもたらされ、最もパフォーマンスの高いクエリとレポート
+エクスペリエンスが提供されます。DirectLake モードは、Power BI
+で非常に大規模なデータセットを分析するための画期的な新しいエンジン機能です。このテクノロジは、data
+warehouseやlakehouse endpointにクエリを実行することなく、また Power BI
+データセットにデータをインポートまたは複製することなく、データ
+レイクから Parquet
+形式のファイルを直接読み込むという考え方に基づいています。DirectLake
 は、データ レイクから Power BI
-エンジンに直接データを読み込み、分析準備を整えるための高速パスです。
+engineにデータを直接読み込み、分析の準備を整えるための高速パスです。
 
 従来の DirectQuery モードでは、Power BI
-エンジンは各クエリを実行する際にソースから直接データをクエリするため、クエリのパフォーマンスはデータ取得速度に依存します。DirectQuery
-ではデータのコピーが不要になるため、インポート時にソースの変更がクエリ結果に即座に反映されます。一方、Import
-モードでは、クエリ実行ごとにソースからデータをクエリする必要がなく、メモリ内でデータがすぐに利用できるため、パフォーマンスが向上します。ただし、Power
+engineはソースからデータを直接クエリして各クエリを実行し、クエリのパフォーマンスはデータの取得速度に依存します。DirectQuery
+を使用すると、データをコピーする必要がなくなり、ソースの変更がインポート中にクエリ結果にすぐに反映されます。一方、インポートモードでは、クエリの実行ごとにソースからデータをクエリしなくても、メモリ内でデータをすぐに使用できるため、パフォーマンスが向上します。ただし、Power
 BI
-エンジンはデータ更新時にまずデータをメモリにコピーする必要があります。次回のデータ更新（スケジュール更新とオンデマンド更新の両方）では、基になるデータソースへの変更のみが反映されます。
+engineは、データの更新時に最初にデータをメモリにコピーする必要があります。基になるデータ
+ソースに対する変更のみが、次回のデータ更新時に取得されます
+(スケジュールされた更新とオンデマンドの更新)。
 
-DirectLakeモードでは、データファイルを直接メモリに読み込むことで、このインポート処理が不要になりました。明示的なインポートプロセスがないため、ソースでの変更を即座に取得でき、DirectQueryとインポートモードの利点を組み合わせながら、それぞれの欠点を回避できます。そのため、DirectLakeモードは、非常に大規模なデータセットやソースで頻繁に更新されるデータセットの分析に最適です。
+DirectLakeモードでは、データファイルをメモリに直接ロードすることで、このインポート要件が排除されるようになりました。明示的なインポート
+プロセスがないため、変更が発生したときにソースで取得できるため、DirectQuery
+とインポート
+モードの利点を組み合わせながら、欠点を回避できます。したがって、DirectLake
+モードは、非常に大規模なデータセットや、ソースで頻繁に更新されるデータセットを分析するのに理想的な選択肢です。
 
-1.  左側のナビゲーション ペインで、**Fabric_LakehouseXX
-    を選択し、タイプ**として **\[SQL analytics endpoint\] の
-    \[wwilakehouse\]** を選択します。
+1.  左側のメニューから**Fabric**
+    [**Lakehouse-@lab.LabInstance.Id**](mailto:%20Lakehouse-@lab.LabInstance.Id)
+    を選択し、**wwilakehouse**という名前のセマンティック
+    モデルを選択します。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image83.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image74.png)
+
+2.  上部のメニュー バーで **Open semantic model**を選択して、データ
+    モデル デザイナーを開きます。
+
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image75.png)
+
+3.  右上で、データ・モデル・デザイナーが**編集モード**であることを確認します。これにより、ドロップダウンテキストが「**Editing**」に変更されます。
+
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image76.png)
+
+4.  メニュー リボンで **\[Edit tables\]**
+    を選択して、テーブル同期ダイアログを表示します。
+
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image77.png)
+
+5.  \[**Edit semantic
+    model\]**ダイアログで、すべてのテーブルを選択し、ダイアログの下部にある
+    **\[Confirm\]** を選択して、セマンティック モデルを同期します。
+
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image78.png)
 >
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image84.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image79.png)
 
-2.  SQLエンドポイントペインには、作成したすべてのテーブルが表示されます。まだ表示されていない場合は、上部の**「Refresh」**アイコンを選択してください。次に、下部の**「Model
-    layouts」**タブを選択して、デフォルトのPower
-    BIデータセットを開きます。
+6.  **fact_sale** テーブルから **CityKey**
+    フィールドをドラッグして、**dimension_city**
+    テーブルの**CityKey**フィールドにドロップしてリレーションシップを作成します。**\[Create
+    Relationship**\]ダイアログ ボックスが表示されます。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image85.png)
+> 注: テーブルをクリックし、ドラッグ アンド ドロップして、dimension_city
+> テーブルとfact_sale
+> テーブルを隣り合わせにして、テーブルを再配置します。関係を作成しようとしている2つのテーブルについても同じことが当てはまります。これは、テーブル間の列のドラッグアンドドロップを容易にするためです。![](./media/image80.png)
+
+7.  \[**Create Relationship\]** ダイアログ
+    ボックスで、次の操作を行います。
+
+    - 表 1 には、**fact_saleとCityKey** の列が入力されています。
+
+    - 表2には、**dimension_cityと CityKey**の列が入力されています。
+
+    - カーディナリティ: **Many to one (\*:1)**
+
+    - クロスフィルター方向: **Single**
+
+    - \[**Make this relationship active\]**
+      の横にあるボックスを選択したままにします。
+
+    - \[**Assume referential integrity\]**
+      の横にあるボックスを選択します。
+
+    - \[**Save**\] を選択します**。**
+
+> ![](./media/image81.png)
+
+8.  次に、これらのリレーションシップを、上に示したのと同じ **\[Create
+    Relationship\]** 設定で、次のテーブルと列で追加します。
+
+    - **StockItemKey(fact_sale)** - **StockItemKey(dimension_stock_item)**
+
+> ![](./media/image82.png)
 >
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image86.png)
+> ![](./media/image83.png)
 
-3.  **fact_saleテーブル**から**CityKeyフィールド**をドラッグし、
-    **dimension_cityテーブル**の**CityKey**フィールドにドロップしてリレーションシップを作成します。
-    **「Create Relationship** **」**ダイアログボックスが表示されます。
+- **Salespersonkey(fact_sale)** - **EmployeeKey(dimension_employee)**
 
-> 注: テーブルをクリックし、ドラッグ＆ドロップして、dimension_city
-> テーブルと fact_sale
-> テーブルを隣り合わせに並べます。リレーションシップを作成しようとしている2つのテーブルでも同様です。これは、テーブル間での列のドラッグ＆ドロップを容易にするためです。![A
-> screenshot of a computer AI-generated content may be
-> incorrect.](./media/image87.png)
+> ![](./media/image84.png)
 
-4.  **\[Create Relationship** **\]**ダイアログ
-    ボックスで次の操作を行います。
-
-    - **テーブル 1** には **fact_sale** と **CityKey**
-      列が入力されています。
-
-    - **テーブル 2** には **dimension_city** と **CityKey**
-      列が入力されています。
-
-    - Cardinality: **Many to one (\*:1)**
-
-    - Cross filter direction: **Single**
-
-    - 「**Make this relationship
-      active** 」の横にあるボックスはオンのままにしておきます。
-
-    - 「**Assume referential
-      integrity**」の横にあるボックスをオンにします。
-
-    - 「**Save**」を選択します。
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image88.png)
-
-5.  上記と同じ**Create
-    Relationship** 設定で、次のテーブルと列を使用してこれらのリレーションシップを追加します。
-
-    - **StockItemKey(fact_sale)** -
-      **StockItemKey(dimension_stock_item)**
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image89.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image90.png)
-
-- **Salespersonkey(fact_sale)** - **EmployeeKey(dimension_employee)**
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image91.png)
-
-6.  上記と同じ手順を使用して、以下の 2
-    つのセット間のリレーションシップを必ず作成してください。
+9.  上記と同じ手順を使用して、以下の 2
+    つのセット間の関係を作成してください。
 
     - **CustomerKey(fact_sale)** - **CustomerKey(dimension_customer)**
 
     - **InvoiceDateKey(fact_sale)** - **Date(dimension_date)**
 
-7.  これらの関係を追加すると、データ
-    モデルは次の画像のようになり、レポートの準備が整います。
+10. これらのリレーションシップを追加すると、データ
+    モデルは次の図のようになり、レポート作成の準備が整います。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image92.png)
+> ![](./media/image85.png)
 
-### タスク2: レポートの作成
+### タスク2:レポートを作成する
 
-1.  上部のリボンから**\[Reporting\]を選択し、 \[New
-    report** **\]**を選択して、 Power BI
-    でレポート/ダッシュボードの作成を開始します。
+1.  上部のリボンから \[**ファイル**\]を選択し、\[**Create new
+    report**\]を選択して、Power BI
+    でのレポート/ダッシュボードの作成を開始します。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image93.png)
->
-> ![A screenshot of a data box AI-generated content may be
-> incorrect.](./media/image94.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image86.png)
 
-2.  Power BI レポート
-    キャンバスでは、**Data**ウィンドウからキャンバスに必要な列をドラッグし、利用可能な
-    1
+2.  Power BI レポート キャンバスでは、必要な列を
+    \[**データ**\]ウィンドウからキャンバスにドラッグし、使用可能な 1
     つ以上の視覚化を使用して、ビジネス要件を満たすレポートを作成できます。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image95.png)
+> ![](./media/image87.png)
 
-**タイトルを追加:**
+**タイトルを追加します。**
 
-3.  リボンで**「Text box」**を選択します。 **「WW Importers Profit
-    Reporting」**と入力します。テキスト**をハイライト表示し**、サイズを**20に拡大します**。
+3.  リボンで、\[**Text box\]** を選択します。**WW Importers Profit
+    Reporting**と入力します。 **テキスト**を**強調表示し、**サイズを
+    **20**に増やします。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image96.png)
+> ![](./media/image88.png)
 
 4.  テキスト ボックスのサイズを変更してレポート
-    ページの左上に配置し、テキスト ボックスの外側をクリックします。
+    ページの**左上**に配置し、テキスト ボックスの外側をクリックします。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image97.png)
+> ![](./media/image89.png)
 
-**カードを追加:**
+**カードを追加します。**
 
-- **Data**ペインで**fact_sales**を展開し、
-  **Profit**の横にあるチェックボックスをオンにします。これにより縦棒グラフが作成され、Y軸にフィールドが追加されます。
+- \[**データ\]** ウィンドウで **fact_sales** を展開し、\[**Profit**\]
+  の横にあるチェックボックスをオンにします。この選択により、縦棒グラフが作成され、フィールドが
+  Y 軸に追加されます。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image98.png)
+> ![](./media/image90.png)
 
-5.  棒グラフを選択した状態で、視覚化ペインで**カード**ビジュアルを選択します。
+5.  棒グラフを選択した状態で、
+    視覚化ウィンドウで**Card**ビジュアルを選択します。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image99.png)
+> ![](./media/image91.png)
 
-6.  この選択により、ビジュアルがカードに変換されます。カードをタイトルの下に配置します。
+6.  この選択により、ビジュアルがカードに変換されます。タイトルの下にカードを置きます。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image100.png)
+> ![](./media/image92.png)
 
-7.  空白のキャンバス上の任意の場所をクリックするか (または Esc
-    キーを押す)、配置したカードの選択を解除します。
+7.  空白のキャンバス上の任意の場所をクリック (または Esc キーを押す)
+    すると、先ほど配置したカードが選択されなくなります。
 
 **棒グラフを追加します。**
 
-8.  **Data**ペインで**fact_sales**を展開し、
-    **Profit**の横にあるチェックボックスをオンにします。これにより縦棒グラフが作成され、Y軸にフィールドが追加されます。
+8.  \[**データ\]** ウィンドウで **fact_sales** を展開し、**\[利益**\]
+    の横にあるチェックボックスをオンにします。この選択により、縦棒グラフが作成され、フィールドが
+    Y 軸に追加されます。
 
-> ![A screenshot of a search box AI-generated content may be
-> incorrect.](./media/image101.png)
+> ![](./media/image93.png)
 
-9.  **Data**ペインで、 **dimension_cityを展開し、
-    SalesTerritory**のチェックボックスをオンにします。これにより、Y軸にフィールドが追加されます。
+9.  \[**データ\]** ウィンドウで
+    **dimension_city**を展開し、**\[SalesTerritory\]** のチェック
+    ボックスをオンにします。この選択により、フィールドが Y
+    軸に追加されます。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image102.png)
+> ![](./media/image94.png)
 
-10. 棒グラフを選択した状態で、視覚化ペインから「**クラスター棒グラフ」**ビジュアルを選択します。これにより、縦棒グラフが棒グラフに変換されます。
+10. 棒グラフを選択した状態で、視覚化ウィンドウで **\[Clustered bar
+    chart\]**
+    ビジュアルを選択します。この選択により、縦棒グラフが棒グラフに変換されます。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image103.png)
+> ![](./media/image95.png)
 
-11. タイトルとカードの下の領域を埋めるために棒グラフのサイズを変更します。
+11. 棒グラフのサイズを変更して、タイトルとカードの下の領域を塗りつぶします。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image104.png)
+> ![](./media/image96.png)
 
-12. 空白のキャンバス上の任意の場所をクリックするか (または Esc
-    キーを押す)、棒グラフの選択を解除します。
+12. 空白のキャンバス上の任意の場所をクリック (または Esc キーを押す)
+    と、棒グラフが選択されなくなります。
 
-**積み上げ面グラフのビジュアルを作成します。**
+**積み上げ面グラフのビジュアルを作成します：**
 
-13. **\[Visualizations\]ペイン**で、**積み上げ面グラフの**ビジュアルを選択します。
+13. \[**視覚化\]** ウィンドウで、 \[**Stacked area chart\]**
+    ビジュアルを選択します。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image105.png)
+> ![](./media/image97.png)
 
 14. 前の手順で作成したカードと棒グラフのビジュアルの右側にある積み上げ面グラフの位置とサイズを変更します。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image106.png)
+> ![](./media/image98.png)
 
-15. **Dataペイン**で、 **fact_sales**を展開し、
-    **Profitの**横にあるチェックボックスをオンにします。dimension_dateを展開し**、
-    FiscalMonthNumberの**横にあるチェックボックスをオンにします。これにより、会計月ごとの利益を示す塗りつぶし折れ線グラフが作成されます。
+15. \[**データ\]**ウィンドウで
+    **fact_sales**を展開し、**\[利益\]**の横にあるチェックボックスをオンにします。**dimension_date**を展開し、**\[FiscalMonthNumber\]**
+    の横にあるチェックボックスをオンにします。この選択により、会計月ごとの利益を示す塗りつぶし折れ線グラフが作成されます。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image107.png)
+> ![](./media/image99.png)
 
-16. **Data**ペインで、 **dimension_stock_item**を展開し、
-    **「BuyingPackage」を**「凡例」フィールドウェルにドラッグします。これにより、各購入パッケージの行が追加されます。
+16. \[データ**\] ウィンドウで**、\[dimension_stock_item**\]
+    を展開**し、\[**BuyingPackage**\] を\[凡例\] フィールド
+    ウェルにドラッグします。この選択により、各購入パッケージに行が追加されます。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image108.png) ![A screenshot of a computer
-> AI-generated content may be incorrect.](./media/image109.png)
+> ![](./media/image100.png) ![](./media/image101.png)
 
-17. 空白のキャンバス上の任意の場所をクリックするか (または Esc
-    キーを押す)、積み上げ面グラフの選択を解除します。
+17. 空白のキャンバス上の任意の場所をクリック (または Esc キーを押す)
+    すると、積み上げ面グラフが選択されなくなります。
 
 **縦棒グラフを作成します。**
 
-18. **\[Visualizations\]**ペインで、**積み上げ縦棒グラフの**ビジュアルを選択します。
+18. \[**視覚化\]** ウィンドウで、 \[**Stacked column chart\]**
+    ビジュアルを選択します。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image110.png)
+> ![](./media/image102.png)
 
-19. **Dataペイン**で**fact_sales**を展開し、
-    **Profit**の横にあるチェックボックスをオンにします。これにより、フィールドがY軸に追加されます。
+19. \[**データ\]**ウィンドウで **fact_sales** を展開し、**\[利益\]**
+    の横にあるチェックボックスをオンにします。この選択により、フィールドが
+    Y 軸に追加されます。
 
-20. **Dataペイン**で、 **dimension_employeeを展開し、
-    Employee**の横にあるチェックボックスをオンにします。これにより、フィールドがX軸に追加されます。
+20. \[**データ\]** ウィンドウで**dimension_employee**
+    を展開し、**\[従業員\]**の横にあるチェックボックスをオンにします。この選択により、フィールドが
+    X 軸に追加されます。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image111.png)
+> ![](./media/image103.png)
 
-21. 空白のキャンバス上の任意の場所をクリックするか (または Esc
-    キーを押す)、チャートの選択を解除します。
+21. 空白のキャンバス上の任意の場所をクリック (または Esc キーを押す)
+    すると、グラフが選択されなくなります。
 
-22. リボンから、 **\[File** \> **Save\]**を選択します。bb
+22. リボンから、\[**File\]** \> **\[Save\]**を選択します。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image112.png)
+> ![](./media/image104.png)
 
-23. レポート名を**「Profit Reporting」と入力し**、
-    **「Save」**を選択します。
+23. レポートの名前を**「Profit
+    Reporting」**として入力します。\[**Save\]** を選択します。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image113.png)
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image105.png)
 
-24. レポートが保存されたことを通知するメッセージが表示されます。![A
-    screenshot of a computer AI-generated content may be
-    incorrect.](./media/image114.png)
+24. レポートが保存されたことを示す通知が届きます。
 
-# 演習5: リソースのクリーンアップ
+> ![](./media/image106.png)
 
-個々のレポート、パイプライン、ウェアハウス、その他のアイテムを削除したり、ワークスペース全体を削除したりできます。このチュートリアル用に作成したワークスペースを削除するには、以下の手順に従ってください。
+# 演習 5: リソースをクリーンアップする
 
-1.  左側のナビゲーションメニューからワークスペース「 **Fabric Lakehouse
-    Tutorial-XX」**を選択します。ワークスペースアイテムビューが開きます。
+個々のレポート、パイプライン、ウェアハウス、その他のアイテムを削除したり、ワークスペース全体を削除したりできます。このチュートリアル用に作成したワークスペースを削除するには、次の手順を使用します。
 
-> ![A screenshot of a computer screen AI-generated content may be
-> incorrect.](./media/image115.png)
+1.  左側のナビゲーション メニューからワークスペース (**Fabric Lakehouse
+    Tutorial-XX**)
+    を選択します。ワークスペースアイテムビューが開きます。
 
-2.  ワークスペース名の下の**\[...\]オプション**を選択し、 **\[Workspace
-    settings\]**を選択します。
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image107.png)
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image116.png)
+2.  ... \[ワークスペース名\] のオプションを選択し、\[**Workspace
+    settings\]** を選択します。
 
-3.  「**Other**」を選択し、「**Remove this workspace**」を選択します。
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image108.png)
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image117.png)
+3.  \[**General\]**を選択し、\[**Remove this workspace\]**
+    を選択します。
 
-4.  ポップアップ表示される警告で**「Delete」**をクリックします。
+> ![コンピューターのスクリーンショット AI
+> が生成したコンテンツは間違っている可能性があります。](./media/image109.png)
 
-> ![A white background with black text AI-generated content may be
-> incorrect.](./media/image118.png)
+4.  ポップアップする警告で **\[Delete\]** をクリックします。
 
-5.  次のラボに進む前に、ワークスペースが削除されたことを知らせる通知を待ちます。
+> ![](./media/image110.png)
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image119.png)
+5.  ワークスペースが削除されたという通知を待ってから、次のラボに進みます。
 
-**概要**：この実践的なラボでは、データ管理とレポート作成のためのMicrosoft
-FabricとPower
-BIの必須コンポーネントの設定と構成に焦点を当てています。トライアルの有効化、OneDriveの設定、ワークスペースの作成、Lakehouseの設定といったタスクが含まれます。また、サンプルデータの取り込み、差分テーブルの最適化、Power
-BIでの効果的なデータ分析のためのレポート作成といったタスクも扱います。このラボの目的は、データ管理とレポート作成のためのMicrosoft
-FabricとPower BIの活用方法を実践的に体験してもらうことです。
+> ![](./media/image111.png)
+
+**概要**: この実用的なラボでは、データ管理とレポート作成のために
+Microsoft Fabric と Power BI
+内の重要なコンポーネントをセットアップおよび構成することに焦点を当てます。これには、試用版のアクティブ化、OneDrive
+の構成、ワークスペースの作成、lakehouseのセットアップなどのタスクが含まれます。このラボでは、サンプル
+データの取り込み、デルタ テーブルの最適化、効果的なデータ分析のための
+Power BI
+でのレポートの作成に関連するタスクについても説明します。この目的は、データ管理とレポート作成の目的に
+Microsoft Fabric と Power BI
+を利用する実践的な経験を提供することを目的としています。
