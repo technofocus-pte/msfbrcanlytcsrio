@@ -1,4 +1,4 @@
-# Use case 02: Data Factory solution for moving and transforming data with dataflows and data pipelines
+# Use case 01: Data Factory solution for moving and transforming data with dataflows and data pipelines
 
 **Introduction**
 
@@ -65,7 +65,11 @@ trial enabled.
 6.  In the **Create a workspace** tab, enter the following details and
     click on the **Apply** button.
 
-[TABLE]
+	|   |   |
+	|----|----|
+	|Name	| Data-FactoryXXXX (XXXX can be a unique number) |
+	|Advanced|	Under License mode, select Fabric capacity|
+	|Default storage format|	Small semantic model storage format|
 
 > ![](./media/image7.png)
 >
@@ -162,7 +166,7 @@ incorrect.](./media/image23.png)
 > generated](./media/image24.png)
 
 5.  In the **Choose data source** tab, search box search type
-    +++**Lakehouse+++** and then click on the **Lakehouse** connector.
+    **+++Lakehouse+++** and then click on the **Lakehouse** connector.
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image25.png)
@@ -405,8 +409,7 @@ of the columns except **Discount**, and then select **OK**.
     select **Currency** for the **Data type**, and provide the following
     M expression for the **Custom column formula**:
 
-> +++if \[total_amount\] \> 0 then \[total_amount\] \* ( 1 -\[Discount\]
-> ) else \[total_amount\]+++
+> +++if [total_amount] > 0 then [total_amount] * ( 1 -[Discount] ) else [total_amount]+++
 
 Then select **OK**.
 
@@ -530,13 +533,22 @@ generated](./media/image65.png)
 5.  On the **Source** tab, enter the following settings and click on
     **Test connection**
 
-[TABLE]
+	|     |    |
+	|------|------|
+	|Connection|	dfconnection User-XXXX|
+	|Connection Type|	select HTTP.|
+	|File format	|Delimited Text|
 
 > ![](./media/image77.png)
 
 6.  On the **Destination** tab, enter the following settings.
 
-[TABLE]
+	|    |    |
+	|-----|----|
+	|Connection	|**Lakehouse**|
+	|Lakehouse|	Select **DataFactoryLakehouse**|
+	|Root Folder	|select the **Table** radio button.|
+	|Table|	• Select New, enter +++Generated-NYC-Taxi-Green-Discounts+++ and click on Create button|
 
 > ![](./media/image78.png)
 >
@@ -613,9 +625,8 @@ generated](./media/image84.png)
 16. The **Pipeline expression builder** dialog appears. Enter the
     following expression, then select **OK**:
 
-> *+++@concat('DI in an Hour Pipeline Succeeded with Pipeline Run Id',
-> pipeline().RunId)+++*
->
++++@concat('DI in an Hour Pipeline Succeeded with Pipeline Run Id', pipeline().RunId)+++
+
 > ![](./media/image91.png)
 
 17. For the **Body**, select the field again and choose the **View in
@@ -623,9 +634,7 @@ generated](./media/image84.png)
     the following expression again in the **Pipeline expression
     builder** dialog that appears, then select **OK**:
 
-> *+++@concat('RunID = ', pipeline().RunId, ' ; ', 'Copied rows ',
-> activity('Copy data1').output.rowsCopied, ' ; ','Throughput ',
-> activity('Copy data1').output.throughput)+++*
++++@concat('RunID = ', pipeline().RunId, ' ; ', 'Copied rows ', activity('Copy data1').output.rowsCopied, ' ; ','Throughput ', activity('Copy data1').output.throughput)+++
 >
 > ![](./media/image92.png)
 >
@@ -737,4 +746,5 @@ generated](./media/image110.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image111.png)
+
 
