@@ -57,7 +57,11 @@ Factory的评估流程。完成本教程后，你将理解数据工厂的价值�
 6.  在“**Create a workspace**”标签中，输入以下信息，点击 **“Apply应用**
     ”按钮。
 
-[TABLE]
+	|   |   |
+	|----|----|
+	|**Name**	| +++Data-FactoryXXXX+++ (XXXX can be a unique number) |
+	|**Advanced**|	Under License mode, select Fabric capacity|
+	|**Default storage format**|	Small semantic model storage format|
 
 > ![](./media/image7.png)
 >
@@ -353,8 +357,7 @@ generated](./media/image48.png)
     +++**TotalAfterDiscount+++** ，在数据类型中选择“**Currency**”，并在**Custom
     column formula**中提供以下 M 表达式。:
 
-> +++if \[total_amount\] \> 0 then \[total_amount\] \* ( 1 -\[Discount\]
-> ) else \[total_amount\]+++
++++if [total_amount] > 0 then [total_amount] * ( 1 -[Discount] ) else [total_amount]+++
 
 然后选择**OK**。
 
@@ -436,7 +439,7 @@ generated](./media/image65.png)
 
 ![](./media/image71.png)
 
-11. 确认**Output **表是否出现在 **dbo** 模式下。
+11. 确认**Output**表是否出现在 **dbo** 模式下。
 
 ![](./media/image72.png)
 
@@ -464,20 +467,29 @@ generated](./media/image65.png)
 
 5.  在“**Source**”标签页，输入以下设置，点击**Test connection**
 
-[TABLE]
+	|     |    |
+	|------|------|
+	|Connection|	dfconnection User-XXXX|
+	|Connection Type|	select HTTP.|
+	|File format	|Delimited Text|
 
 > ![](./media/image77.png)
 
-6.  在**“Destination**”标签页，输入以下设置。
+6.  在**Destination**标签页，输入以下设置。
 
-[TABLE]
+	|    |    |
+	|-----|----|
+	|Connection	|**Lakehouse**|
+	|Lakehouse|	Select **DataFactoryLakehouse**|
+	|Root Folder	|select the **Table** radio button.|
+	|Table|	• Select New, enter +++Generated-NYC-Taxi-Green-Discounts+++ and click on Create button|
 
 > ![](./media/image78.png)
 >
 > ![A screenshot of a computer Description automatically
 > generated](./media/image79.png)
 
-7.  从色带中选择**“Run**”。
+7.  从色带中选择**Run**。
 
 > ![](./media/image80.png)
 
@@ -540,18 +552,15 @@ generated](./media/image84.png)
 16. 会显示 **Pipeline expression builder**
     对话框。输入以下表达式，然后选择**OK** :
 
-> *+++@concat('DI in an Hour Pipeline Succeeded with Pipeline Run Id',
-> pipeline().RunId)+++*
->
++++@concat('DI in an Hour Pipeline Succeeded with Pipeline Run Id', pipeline().RunId)+++
+
 > ![](./media/image91.png)
 
 17. 对于正文，再次选择字段，并在文本区域下方出现时选择“**View in
     expression builder**”选项。在出现的 **Pipeline expression
     builder** 对话框中再次添加以下表达式，然后选择**OK**  :
 
-> *+++@concat('RunID = ', pipeline().RunId, ' ; ', 'Copied rows ',
-> activity('Copy data1').output.rowsCopied, ' ; ','Throughput ',
-> activity('Copy data1').output.throughput)+++*
++++@concat('RunID = ', pipeline().RunId, ' ; ', 'Copied rows ', activity('Copy data1').output.rowsCopied, ' ; ','Throughput ', activity('Copy data1').output.throughput)+++
 >
 > ![](./media/image92.png)
 >
@@ -647,3 +656,4 @@ generated](./media/image110.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image111.png)
+
