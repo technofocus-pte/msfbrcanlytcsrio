@@ -851,7 +851,7 @@ generated](./media/image98.png)
 > ![A screenshot of a computer Description automatically
 > generated](./media/image107.png)
 
-7.  在 **Merge **设置页面输入以下信息。
+7.  在 **Merge**设置页面输入以下信息。
 
 - 在**左侧表格中的合并下**拉菜单中，选择**dimension_city**
 
@@ -1086,23 +1086,16 @@ SQL 端点之间运行 T-SQL 查询是多么容易 。你可以像 SQL Server
 2.  在查询编辑器中，复制粘贴以下 T-SQL
     代码。选择**Run**按钮来执行查询。查询完成后，你会看到结果。
 
-> SQLCopy
->
-> SELECT Sales.StockItemKey,
->
-> Sales.Description,
->
-> SUM(CAST(Sales.Quantity AS int)) AS SoldQuantity,
->
-> c.Customer
->
-> FROM \[dbo\].\[fact_sale\] AS Sales,
->
-> \[ShortcutExercise\].\[dbo\].\[dimension_customer\] AS c
->
-> WHERE Sales.CustomerKey = c.CustomerKey
->
-> GROUP BY Sales.StockItemKey, Sales.Description, c.Customer;
+    ```
+    SELECT Sales.StockItemKey, 
+    Sales.Description, 
+    SUM(CAST(Sales.Quantity AS int)) AS SoldQuantity, 
+    c.Customer
+    FROM [dbo].[fact_sale] AS Sales,
+    [ShortcutExercise].[dbo].[dimension_customer] AS c
+    WHERE Sales.CustomerKey = c.CustomerKey
+    GROUP BY Sales.StockItemKey, Sales.Description, c.Customer;
+    ```
 
 ![](./media/image138.png)
 
@@ -1310,3 +1303,4 @@ Blob存储中的数据传输到指定的表中。后续任务涉及数据管理�
 BI中的地理数据表示。随后，创建了一系列Power
 BI报告，包括柱状图、地图和表格，以促进深入的销售数据分析。最后一项任务是从OneLake数据中心生成报告，进一步强调Fabric中数据源的多样性。最后，实验室还提供了资源管理的见解，强调清理程序对于保持高效工作环境的重要性。这些任务综合起来，提供了对在
 Microsoft Fabric 中设置、管理和分析数据的全面理解。
+
