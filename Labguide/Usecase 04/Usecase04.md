@@ -1,289 +1,248 @@
-# Usecase 04: Analyze data with Apache Spark
+# 用例04：用Apache Spark分析數據
 
-**Introduction**
+**介紹**
 
-Apache Spark is an open-source engine for distributed data processing,
-and is widely used to explore, process, and analyze huge volumes of data
-in data lake storage. Spark is available as a processing option in many
-data platform products, including Azure HDInsight, Azure Databricks,
-Azure Synapse Analytics, and Microsoft Fabric. One of the benefits of
-Spark is support for a wide range of programming languages, including
-Java, Scala, Python, and SQL; making Spark a very flexible solution for
-data processing workloads including data cleansing and manipulation,
-statistical analysis and machine learning, and data analytics and
-visualization.
+Apache Spark
+是一個開源的分布式數據處理引擎，廣泛用於探索、處理和分析數據湖存儲中的海量數據。Spark
+作為處理選項在許多數據平臺產品中提供，包括 Azure HDInsight、Azure
+Databricks、Azure Synapse Analytics 和 Microsoft Fabric。Spark
+的一個優勢是支持多種編程語言，包括 Java、Scala、Python 和
+SQL;這使得Spark成為數據處理工作負載的非常靈活解決方案，包括數據清理與作、統計分析與機器學習，以及數據分析與可視化。
 
-Tables in a Microsoft Fabric lakehouse are based on the open
-source *Delta Lake* format for Apache Spark. Delta Lake adds support for
-relational semantics for both batch and streaming data operations, and
-enables the creation of a Lakehouse architecture in which Apache Spark
-can be used to process and query data in tables that are based on
-underlying files in a data lake.
+Microsoft Fabric lakehouse 中的表基於開源的 Apache Spark *Delta Lake*
+格式。Delta Lake 增加了對批處理和流數據作的關係語義支持，並支持創建
+Lakehouse 架構，使 Apache Spark
+能夠處理和查詢基於數據湖底層文件的表中的數據。
 
-In Microsoft Fabric, Dataflows (Gen2) connect to various data sources
-and perform transformations in Power Query Online. They can then be used
-in Data Pipelines to ingest data into a lakehouse or other analytical
-store, or to define a dataset for a Power BI report.
+在 Microsoft Fabric 中，Dataflows（Gen2）連接多個數據源，並在 Power
+Query Online 中執行轉換。然後它們可以在數據管道中用於將數據導入
+lakehouse 或其他分析存儲，或定義 Power BI 報告中的數據集。
 
-This lab is designed to introduce the different elements of Dataflows
-(Gen2), and not create a complex solution that may exist in an
-enterprise.
+本實驗室旨在介紹
+Dataflows（Gen2）的不同元素，而非創建企業中可能存在的複雜解決方案。
 
-**Objectives**:
+**目的：**
 
-- Create a workspace in Microsoft Fabric with the Fabric trial enabled.
+- 在 Microsoft Fabric 中創建一個工作區，並啟用 Fabric 試用。
 
-- Establish a lakehouse environment and upload data files for analysis.
+- 建立 lakehouse 環境並上傳數據文件進行分析。
 
-- Generate a notebook for interactive data exploration and analysis.
+- 生成一本用於交互式數據探索和分析的筆記本。
 
-- Load data into a dataframe for further processing and visualization.
+- 將數據加載到數據幀中以便進一步處理和可視化。
 
-- Apply transformations to the data using PySpark.
+- 用 PySpark 對數據進行轉換。
 
-- Save and partition the transformed data for optimized querying.
+- 保存並分區轉換後的數據，以便優化查詢。
 
-- Create a table in the Spark metastore for structured data management
+- 在 Spark 元存儲庫中創建一個用於結構化數據管理的表
 
-- Save DataFrame as a managed delta table named "salesorders."
+- 將DataFrame保存為一個名為“salesorders”的管理級delta表。
 
-- Save DataFrame as an external delta table named "external_salesorder"
-  with a specified path.
+- 將DataFrame保存為名為“external_salesorder”的外部delta表，並指定路徑。
 
-- Describe and compare properties of managed and external tables.
+- 描述並比較託管表和外部表的屬性。
 
-- Execute SQL queries on tables for analysis and reporting.
+- 對表執行SQL查詢以進行分析和報告。
 
-- Visualize data using Python libraries such as matplotlib and seaborn.
+- 使用如 matplotlib 和 seaborn 等 Python 庫來可視化數據。
 
-- Establish a data lakehouse in the Data Engineering experience and
-  ingest relevant data for subsequent analysis.
+- 在數據工程體驗中建立數據 lakehouse，並導入相關數據以便後續分析。
 
-- Define a dataflow for extracting, transforming, and loading data into
-  the lakehouse.
+- 定義一個數據流，用於提取、轉換和加載數據到 lakehouse。
 
-- Configure data destinations within Power Query to store the
-  transformed data in the lakehouse.
+- 在 Power Query 中配置數據目的地，將轉換後的數據存儲在 lakehouse 中。
 
-- Incorporate the dataflow into a pipeline to enable scheduled data
-  processing and ingestion.
+- 將數據流整合進流水線，以實現定時的數據處理和攝取。
 
-- Remove the workspace and associated elements to conclude the exercise.
+- 移除工作區及相關元素以結束練習。
 
-# Exercise 1: Create a workspace, lakehouse, notebook and load data into dataframe 
+# 練習1：創建一個工作區、lakehouse、筆記本，並將數據加載到數據框架中 
 
-## Task 1: Create a workspace 
+## 任務1：創建一個工作區 
 
-Before working with data in Fabric, create a workspace with the Fabric
-trial enabled.
+在處理Fabric數據之前，先創建一個啟用Fabric試用區的工作區。
 
-1.  Open your browser, navigate to the address bar, and type or paste
-    the following URL: +++https://app.fabric.microsoft.com/+++ then
-    press the **Enter** button.
+1.  打開瀏覽器，進入地址欄，輸入或粘貼以下URL：+++https://app.fabric.microsoft.com/+++
+    ，然後按下 **Enter** 鍵。
 
-> **Note**: If you are directed to Microsoft Fabric Home page, then skip
-> steps from \#2 to \#4.
+> **Note**：如果你被引導到Microsoft Fabric主頁，可以跳過#2到#4的步驟。
 >
 > ![](./media/image1.png)
 
-2.  In the **Microsoft Fabric** window, enter your credentials, and
-    click on the **Submit** button.
-    |   |   |
-    |---|---|
-    | Username | +++@lab.CloudPortalCredential(User1).Username+++ |
-    | Password | +++@lab.CloudPortalCredential(User1).Password+++ |
+2.  在 **Microsoft Fabric** 窗口中，輸入你的憑證，然後點擊 **Submit**
+    按鈕。
 
 > ![](./media/image2.png)
 
-3.  Then, In the **Microsoft** window enter the password and click on
-    the **Sign in** button**.**
+3.  然後，在 **Microsoft** 窗口輸入密碼，點擊 **Sign in** 按鈕**。**
 
 > ![A login screen with a red box and blue text Description
 > automatically generated](./media/image3.png)
 
-4.  In **Stay signed in?** window, click on the **Yes** button.
+4.  在 **Stay signed in?** 窗口，點擊“**Yes**”按鈕。
 
 > ![A screenshot of a computer error Description automatically
 > generated](./media/image4.png)
 
-5.  Fabric home page, select **+New workspace** tile.
+5.  Fabric 主頁，選擇 **+New workspace** 瓷磚。
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image5.png)
 
-6.  In the **Create a workspace tab**, enter the following details and
-    click on the **Apply** button.
+6.  在“**Create a
+    workspace”標簽**中，輸入以下信息，點擊“**Apply**”按鈕。
 
-    |  |  |
-    |-----|----|
-    |Name|	+++dp_Fabric@lab.LabInstance.Id+++ (must be a unique Id)| 
-    |Description|	This workspace contains Analyze data with Apache Spark|
-    |Advanced|	Under License mode, select Fabric capacity|
-    |Default storage format	|Small dataset storage format|
+[TABLE]
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image6.png)
 >
 > ![](./media/image7.png)
 
-7.  Wait for the deployment to complete. It takes 2-3 minutes to
-    complete. When your new workspace opens, it should be empty.
+7.  等待部署完成。完成大約需要2-3分鐘。
+    當你的新工作區開放時，應該是空的。
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image8.png)
 
-## Task 2: Create a lakehouse and upload files
+## 任務2：創建 lakehouse 並上傳文件
 
-Now that you have a workspace, it’s time to switch to the *Data
-engineering* experience in the portal and create a data lakehouse for
-the data files you’re going to analyze.
+現在你有了工作區，就該切換到門戶中*的數據工程*體驗，為你要分析的數據文件創建一個數據
+lakehouse。
 
-1.  Create a new Eventhouse by clicking on the **+New item** button in
-    the navigation bar.
+1.  點擊導航欄中的**+New item** 按鈕，創建新的活動屋。
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image9.png)
 
-2.  Click on the "**Lakehouse**" tile.
+2.  點擊“**Lakehouse**”瓷磚。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image10.png)
 
-3.  In the **New lakehouse** dialog box,
-    enter **+++Fabric_lakehouse+++** in the **Name** field, click on
-    the **Create** button and open the new lakehouse.
+3.  在“**New lakehouse** ”對話框中，輸入“**Name**”欄的
+    **+++Fabric_lakehouse+++** ，點擊“**Create**”按鈕，打開新lakehouse。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image11.png)
 
-4.  After a minute or so, a new empty lakehouse will be created. You
-    need to ingest some data into the data lakehouse for analysis.
+4.  大約一分鐘後，新的空 lakehouse
+    會被創造出來。你需要把一些數據導入數據 lakehouse 進行分析。
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image12.png)
 
-5.  You will see a notification stating **Successfully created SQL
-    endpoint**.
+5.  你會看到一條通知，提示 **Successfully created SQL endpoint**。
 
 ![](./media/image13.png)
 
-6.  In the **Explorer** section, under the **fabric_lakehouse**, hover
-    your mouse beside **Files folder**, then click on the horizontal
-    ellipses **(…)** menu. Navigate and click on **Upload**, then click
-    on the **Upload folder** as shown in the below image.
+6.  在 **Explorer** 部分，**fabric_lakehouse**下方，將鼠標懸停在 **Files
+    folder**
+    旁邊，然後點擊水平省略號**（...）**菜單。點擊“**Upload**”，然後點擊“**Upload
+    folder**”，如下圖所示。
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image14.png)
 
-7.  On the **Upload folder** pane that appears on the right side, select
-    the **folder icon** under the **Files/** and then browse to
-    **C:\LabFiles** and then select the **orders** folder and click on
-    the **Upload** button.
+7.  在右側的“**Upload folder**”面板上，選擇 **Files/**
+    下的**文件夾圖標**，然後瀏覽到
+    **C：\LabFiles**，再選擇**orders**文件夾，點擊 **Upload** 按鈕。
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image15.png)
 
-8.  In case, the **Upload 3 files to this site?** dialog box appears,
-    then click on **Upload** button.
+8.  如果是，**Upload 3 files to this site?** 對話框出現，然後點擊
+    **Upload** 按鈕。
 
 ![](./media/image16.png)
 
-9.  In the Upload folder pane, click on the **Upload** button.
+9.  在“Upload”文件夾面板中，點擊 **“Upload**”按鈕。
 
 > ![](./media/image17.png)
 
-10. After the files have been uploaded **close** the **Upload folder**
-    pane.
+10. 文件上傳後 **關閉 Upload folder** 面板。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image18.png)
 
-11. Expand **Files** and select the **orders** folder and verify that
-    the CSV files have been uploaded.
+11. 展開 **Files** ，選擇 **orders ** 文件夾，並確認CSV文件已上傳。
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image19.png)
 
-## Task 3: Create a notebook
+## 任務3：製作一本筆記本
 
-To work with data in Apache Spark, you can create a *notebook*.
-Notebooks provide an interactive environment in which you can write and
-run code (in multiple languages), and add notes to document it.
+要在 Apache Spark
+中處理數據，你可以創建一個*筆記本*。筆記本提供了一個互動環境，你可以編寫和運行多種語言的代碼，並添加筆記來記錄代碼。
 
-1.  On the **Home** page while viewing the contents of
-    the **orders** folder in your datalake, in the **Open
-    notebook** menu, select **New notebook**.
+1.  在**主**頁查看 datalake 中 **orders** 文件夾內容時，在 **Open
+    notebook** 菜單中選擇 **New notebook**。
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image20.png)
 
-2.  After a few seconds, a new notebook containing a single *cell* will
-    open. Notebooks are made up of one or more cells that can
-    contain *code* or *markdown* (formatted text).
+2.  幾秒鐘後，會打開一個包含單個*單元格*的新筆記本。筆記本由一個或多個單元格組成，可以包含*代碼*或*標記（*格式化文本）。
 
 ![](./media/image21.png)
 
-3.  Select the first cell (which is currently a *code* cell), and then
-    in the dynamic tool bar at its top-right, use the **M↓** button to
-    **convert the cell to a markdown cell**.
+3.  選擇第一個單元格（目前是一個代碼單元格），然後在其右上角的動態工具欄中，使用**M↓**按鈕**convert
+    the cell to a markdown cell**。 
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image22.png)
 
-4.  When the cell changes to a markdown cell, the text it contains is
-    rendered.
+4.  當該單元格變為標記降低單元格時，其文本會被渲染。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image23.png)
 
-5.  Use the **🖉** (Edit) button to switch the cell to editing mode,
-    replace all the text then modify the markdown as follows:
+5.  使用**🖉**（Edit）按鈕將單元格切換到編輯模式，替換所有文本，然後按以下方式修改標記:
 
-    ```
-    # Sales order data exploration
-    
-    Use the code in this notebook to explore sales order data.
-    ```
+> CodeCopy
+>
+> \# Sales order data exploration
+>
+> Use the code in this notebook to explore sales order data.
 
 ![](./media/image24.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image25.png)
 
-6.  Click anywhere in the notebook outside of the cell to stop editing
-    it and see the rendered markdown.
+6.  點擊筆記本中單元格外的任何位置，停止編輯並查看渲染後的標記。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image26.png)
 
-## Task 4: Load data into a dataframe
+## 任務4：將數據加載到數據幀中
 
-Now you’re ready to run code that loads the data into a *dataframe*.
-Dataframes in Spark are similar to Pandas dataframes in Python, and
-provide a common structure for working with data in rows and columns.
+現在你準備好運行將數據加載到*數據幀*中的代碼了。Spark 中的 Dataframes
+類似於 Python 中的 Pandas dataframe，並為處理行和列數據提供了通用結構。
 
-**Note**: Spark supports multiple coding languages, including Scala,
-Java, and others. In this exercise, we’ll use *PySpark*, which is a
-Spark-optimized variant of Python. PySpark is one of the most commonly
-used languages on Spark and is the default language in Fabric notebooks.
+**注意**：Spark 支持多種編程語言，包括 Scala、Java
+等。在這個練習中，我們將使用*PySpark*，它是Python的Spark優化版本。PySpark
+是 Spark 上最常用的語言之一，也是 Fabric 筆記本的默認語言。
 
-1.  With the notebook visible, expand the **Files** list and select
-    the **orders** folder so that the CSV files are listed next to the
-    notebook editor.
+1.  筆記本可見後，展開 **Files** 列表，選擇
+    **orders **文件夾，使CSV文件與筆記本編輯器並列。
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image27.png)
 
-2.  Now, hover your mouse to 2019.csv file. Click on the horizontal
-    ellipses **(…)** beside 2019.csv. Navigate and click on **Load
-    data**, then select **Spark**. A new code cell containing the
-    following code will be added to the notebook:
+2.  現在，將鼠標懸停到2019.csv文件。點擊2019.csv旁邊的水平橢圓（...）。點擊
+    **Load data**，然後選擇
+    **Spark**。筆記本中將添加一個包含以下代碼的新代碼單元格:
 
-    ```
-    df = spark.read.format("csv").option("header","true").load("Files/orders/2019.csv")
-    # df now is a Spark DataFrame containing CSV data from "Files/orders/2019.csv".
-    display(df)
-    ```
+> CodeCopy
+>
+> df =
+> spark.read.format("csv").option("header","true").load("Files/orders/2019.csv")
+>
+> \# df now is a Spark DataFrame containing CSV data from
+> "Files/orders/2019.csv".
+>
+> display(df)
 >
 > ![A screenshot of a computer Description automatically
 > generated](./media/image28.png)
@@ -291,367 +250,367 @@ used languages on Spark and is the default language in Fabric notebooks.
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image29.png)
 
-**Tip**: You can hide the Lakehouse explorer panes on the left by using
-their **«** icons. Doing
+**提示**：你可以用左側的“圖標”隱藏湖屋探索者面板 。正在做
 
-so will help you focus on the notebook.
+這會幫你專注於筆記本。
 
-3.  Use the **▷ Run cell** button on the left of the cell to run it.
+3.  使用單元左側的 ** ▷ Run cell ** 按鈕來運行它。
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image30.png)
 
-**Note**: Since this is the first time you’ve run any Spark code, a
-Spark session must be started. This means that the first run in the
-session can take a minute or so to complete. Subsequent runs will be
-quicker.
+**注意**：由於這是你第一次運行任何 Spark 代碼，必須啟動一次 Spark
+會話。這意味著會話中的第一次運行可能需要一分鐘左右完成。後續的運行會更快。
 
-4.  When the cell command has completed, review the output below the
-    cell, which should look similar to this:
+4.  當單元格命令完成後，查看單元格下方的輸出，應該類似於這個:
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image31.png)
 
-5.  The output shows the rows and columns of data from the 2019.csv
-    file. However, note that the column headers don’t look right. The
-    default code used to load the data into a dataframe assumes that the
-    CSV file includes the column names in the first row, but in this
-    case the CSV file just includes the data with no header information.
+5.  輸出顯示的是2019.csv文件中的行和列數據。不過，請注意列頭看起來不太對。用於將數據加載到數據幀的默認代碼假設CSV文件第一行包含列名，但在此情況下，CSV文件僅包含數據，沒有任何頭部信息。
 
-6.  Modify the code to set the **header** option to **false**. Replace
-    all the code in the **cell** with the following code and click on
-    **▷ Run cell** button and review the output
+6.  修改代碼，將 **header** 選項設置為
+    **false**。將該**單元格**中的所有代碼替換為以下代碼，點擊 **▷ Run
+    cell** 按鈕，查看輸出結果 
 
-    ```
-    df = spark.read.format("csv").option("header","false").load("Files/orders/2019.csv")
-    # df now is a Spark DataFrame containing CSV data from "Files/orders/2019.csv".
-    display(df)
-    ```
+> CodeCopy
+>
+> df =
+> spark.read.format("csv").option("header","false").load("Files/orders/2019.csv")
+>
+> \# df now is a Spark DataFrame containing CSV data from
+> "Files/orders/2019.csv".
+>
+> display(df)
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image32.png)
 
-7.  Now the dataframe correctly includes first row as data values, but
-    the column names are auto-generated and not very helpful. To make
-    sense of the data, you need to explicitly define the correct schema
-    and data type for the data values in the file.
+7.  現在數據幀正確地包含了第一行作為數據值，但列名是自動生成的，幫助不大。要理解數據，你需要明確定義文件中數據值的正確模式和數據類型。
 
-8.  Replace all the code in the **cell** with the following code and
-    click on **▷ Run cell** button and review the output
+8.  將該**單元格**中的所有代碼 替換為以下代碼，點擊 **▷ Run cell**
+    按鈕，查看輸出結果
 
-    ```
-    from pyspark.sql.types import *
-    
-    orderSchema = StructType([
-        StructField("SalesOrderNumber", StringType()),
-        StructField("SalesOrderLineNumber", IntegerType()),
-        StructField("OrderDate", DateType()),
-        StructField("CustomerName", StringType()),
-        StructField("Email", StringType()),
-        StructField("Item", StringType()),
-        StructField("Quantity", IntegerType()),
-        StructField("UnitPrice", FloatType()),
-        StructField("Tax", FloatType())
-        ])
-    
-    df = spark.read.format("csv").schema(orderSchema).load("Files/orders/2019.csv")
-    display(df)
-    ```
- 
+> from pyspark.sql.types import \*
+>
+> orderSchema = StructType(\[
+>
+> StructField("SalesOrderNumber", StringType()),
+>
+> StructField("SalesOrderLineNumber", IntegerType()),
+>
+> StructField("OrderDate", DateType()),
+>
+> StructField("CustomerName", StringType()),
+>
+> StructField("Email", StringType()),
+>
+> StructField("Item", StringType()),
+>
+> StructField("Quantity", IntegerType()),
+>
+> StructField("UnitPrice", FloatType()),
+>
+> StructField("Tax", FloatType())
+>
+> \])
+>
+> df =
+> spark.read.format("csv").schema(orderSchema).load("Files/orders/2019.csv")
+>
+> display(df)
+>
 > ![](./media/image33.png)
 >
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image34.png)
 
-9.  Now the dataframe includes the correct column names (in addition to
-    the **Index**, which is a built-in column in all dataframes based on
-    the ordinal position of each row). The data types of the columns are
-    specified using a standard set of types defined in the Spark SQL
-    library, which were imported at the beginning of the cell.
+9.  現在，數據幀包含正確的列名（除了索引，**Index**
+    是所有數據幀中基於每行序數位置的內置列）。列的數據類型使用Spark
+    SQL庫中定義的標準類型集指定，這些類型在單元格開頭導入。
 
-10. Confirm that your changes have been applied to the data by viewing
-    the dataframe.
+10. 通過查看數據幀確認你的更改已被應用到數據上。
 
-11. Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output
+11. 使用單元格輸出下方的 **+
+    Code** 圖標，向筆記本添加一個新的代碼單元格，並輸入以下代碼。點擊
+    **▷ Run cell** 按鈕，查看輸出結果
 
-    ```
-    display(df)
-    ```
+> CodeCopy
+>
+> display(df)
+>
 > ![](./media/image35.png)
 
-12. The dataframe includes only the data from the **2019.csv** file.
-    Modify the code so that the file path uses a \* wildcard to read the
-    sales order data from all of the files in the **orders** folder
+12. 數據幀僅包含**2019.csv**文件中的數據
+    。修改代碼，使文件路徑使用\*通配符讀取**訂單**文件夾中所有文件的銷售訂單數據
 
-13. Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it.
+13. 使用單元格輸出下方的 **+
+    Code **圖標，向筆記本添加一個新的代碼單元格，並輸入以下代碼。
 
-    ```
-    from pyspark.sql.types import *
-    
-    orderSchema = StructType([
-        StructField("SalesOrderNumber", StringType()),
-        StructField("SalesOrderLineNumber", IntegerType()),
-        StructField("OrderDate", DateType()),
-        StructField("CustomerName", StringType()),
-        StructField("Email", StringType()),
-        StructField("Item", StringType()),
-        StructField("Quantity", IntegerType()),
-        StructField("UnitPrice", FloatType()),
-        StructField("Tax", FloatType())
-        ])
-    
-    df = spark.read.format("csv").schema(orderSchema).load("Files/orders/*.csv")
-    display(df)
-    ```
+CodeCopy
+
+> from pyspark.sql.types import \*
+>
+> orderSchema = StructType(\[
+>
+>     StructField("SalesOrderNumber", StringType()),
+>
+>     StructField("SalesOrderLineNumber", IntegerType()),
+>
+>     StructField("OrderDate", DateType()),
+>
+>     StructField("CustomerName", StringType()),
+>
+>     StructField("Email", StringType()),
+>
+>     StructField("Item", StringType()),
+>
+>     StructField("Quantity", IntegerType()),
+>
+>     StructField("UnitPrice", FloatType()),
+>
+>     StructField("Tax", FloatType())
+>
+>     \])
+>
+> df =
+> spark.read.format("csv").schema(orderSchema).load("Files/orders/\*.csv")
+>
+> display(df)
+>
 > ![](./media/image36.png)
 
-14. Run the modified code cell and review the output, which should now
-    include sales for 2019, 2020, and 2021.
+14. 運行修改後的代碼單元格，查看輸出，現在應該包括2019、2020和2021年的銷售額。
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image37.png)
 
-**Note**: Only a subset of the rows is displayed, so you may not be able
-to see examples from all years.
+**注意**：僅顯示部分行，因此你可能無法看到所有年份的示例。
 
-# Exercise 2: Explore data in a dataframe
+# 練習2：探索數據框架內的數據
 
-The dataframe object includes a wide range of functions that you can use
-to filter, group, and otherwise manipulate the data it contains.
+數據框對象包含多種函數，可用於過濾、分組和以其他方式作其包含的數據。
 
-## Task 1: Filter a dataframe
+## 任務1：過濾數據幀
 
-1.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it.
+1.  使用單元格輸出下方的 **+ Code**
+    圖標，向筆記本添加一個新的代碼單元格，並輸入以下代碼。
 
-    ```
-    customers = df['CustomerName', 'Email']
-    print(customers.count())
-    print(customers.distinct().count())
-    display(customers.distinct())
-    ```
+> customers = df\['CustomerName', 'Email'\]
+>
+> print(customers.count())
+>
+> print(customers.distinct().count())
+>
+> display(customers.distinct())
+>
 > ![](./media/image38.png)
 
-2.  **Run** the new code cell, and review the results. Observe the
-    following details:
+2.  **運行** 新的代碼單元，查看結果。請注意以下細節:
 
-    - When you perform an operation on a dataframe, the result is a new
-      dataframe (in this case, a new **customers** dataframe is created
-      by selecting a specific subset of columns from
-      the **df** dataframe)
+    - 當你對數據幀執行作時，結果是一個新的數據幀（此例中，通過從**df**數據幀**中**選擇特定列子集創建新的**客戶**數據幀）
 
-    - Dataframes provide functions such
-      as **count** and **distinct** that can be used to summarize and
-      filter the data they contain.
+    - 數據幀提供**計數**和**不同**等功能，可用於總結和過濾其包含的數據。
 
-    - The dataframe\['Field1', 'Field2', ...\] syntax is a shorthand way
-      of defining a subset of columns. You can also
-      use **select** method, so the first line of the code above could
-      be written as customers = df.select("CustomerName", "Email")
+    - dataframe\['Field1', 'Field2',
+      ...\] 語法是一種簡寫方式，用來定義列的子集。
+      你也可以使用**select**方法，比如上面代碼的第一行可以寫成customers
+      = df.select（“CustomerName”， “Email”）
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image39.png)
 
-3.  Modify the code, replace all the code in the **cell** with the
-    following code and click on **▷ Run cell** button as follows:
+3.  修改代碼，將該**單元格**中的所有代碼替換為以下代碼，然後點擊 **▷ Run
+    cell** 按鈕，如下所示:
 
-    ```
-    customers = df.select("CustomerName", "Email").where(df['Item']=='Road-250 Red, 52')
-    print(customers.count())
-    print(customers.distinct().count())
-    display(customers.distinct())
-    ```
+> CodeCopy
+>
+> customers = df.select("CustomerName",
+> "Email").where(df\['Item'\]=='Road-250 Red, 52')
+>
+> print(customers.count())
+>
+> print(customers.distinct().count())
+>
+> display(customers.distinct())
 
-4.  **Run** the modified code to view the customers who have purchased
-    the ***Road-250 Red, 52* product**. Note that you can “**chain**”
-    multiple functions together so that the output of one function
-    becomes the input for the next - in this case, the dataframe created
-    by the **select** method is the source dataframe for
-    the **where** method that is used to apply filtering criteria.
+4.  **運行**修改後的代碼以查看購買 ***Road-250 Red 52*** 產品的客戶。
+    注意，你可以“**chain**”多個函數，使一個函數的輸出成為下一個函數的輸入——在這種情況下，**select**方法創建的數據幀是用於應用過濾條件的**where**方法的源數據幀。
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image40.png)
 
-## Task 2: Aggregate and group data in a dataframe
+## 任務2：將數據匯總和分組到數據框架中
 
-1.  Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
+1.  點擊 **+** **Code** ，複製粘貼下面的代碼，然後點擊 **“Run cell”**
+    按鈕。
 
-    ```
-    productSales = df.select("Item", "Quantity").groupBy("Item").sum()
-    display(productSales)
-    ```
+> **CodeCopy:**
+>
+> productSales = df.select("Item", "Quantity").groupBy("Item").sum()
+>
+> display(productSales)
 >
 > ![](./media/image41.png)
 
-2.  Note that the results show the sum of order quantities grouped by
-    product. The **groupBy** method groups the rows by *Item*, and the
-    subsequent **sum** aggregate function is applied to all of the
-    remaining numeric columns (in this case, *Quantity*)
+2.  請注意，結果顯示了按產品分組的訂單數量之和。**groupBy**
+    方法按項目*對行進行分組*，隨後對剩餘所有數值列（此處為數量）應用和匯總函數
 
-3.  Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
+3.  點擊 **+** **Code**，複製粘貼下面的代碼，然後點擊 **“Run cell”**
+    按鈕。
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image42.png)
 
-    ```
-    from pyspark.sql.functions import *
-    
-    yearlySales = df.select(year("OrderDate").alias("Year")).groupBy("Year").count().orderBy("Year")
-    display(yearlySales)
-    ```
+> **CodeCopy**
+>
+> from pyspark.sql.functions import \*
+>
+> yearlySales =
+> df.select(year("OrderDate").alias("Year")).groupBy("Year").count().orderBy("Year")
+>
+> display(yearlySales)
+>
 > ![](./media/image43.png)
 
-4.  Note that the results show the number of sales orders per year. Note
-    that the **select** method includes a SQL **year** function to
-    extract the year component of the *OrderDate* field (which is why
-    the code includes an **import** statement to import functions from
-    the Spark SQL library). It then uses an **alias** method is used to
-    assign a column name to the extracted year value. The data is then
-    grouped by the derived *Year* column and the count of rows in each
-    group is calculated before finally the **orderBy** method is used to
-    sort the resulting dataframe.
+4.  請注意，結果顯示的是每年銷售訂單數量。注意，**select**方法包含一個SQL
+    **年**函數，用於提取*OrderDate*字段中的年份成分（這也是代碼中包含
+    導入語句以導入Spark
+    SQL庫中的函數的原因）。然後它使用**別名**方法為提取的年份值分配列名。然後將數據按派生*的年份*列分組，計算每組的行數，最後
+    使用**OrderBy**方法對所得數據幀進行排序**。**
 
-# Exercise 3: Use Spark to transform data files
+# 練習3：使用 Spark 轉換數據文件
 
-A common task for data engineers is to ingest data in a particular
-format or structure, and transform it for further downstream processing
-or analysis.
+數據工程師的一項常見任務是以特定格式或結構導入數據，並將其轉換以供後續處理或分析。
 
-## Task 1: Use dataframe methods and functions to transform data
+## 任務1：使用數據框架方法和函數進行數據轉換
 
-1.  Click on + Code and copy and paste the below code
+1.  點擊 + Code，複製粘貼下面的代碼
 
-    ```
-    from pyspark.sql.functions import *
-    
-    ## Create Year and Month columns
-    transformed_df = df.withColumn("Year", year(col("OrderDate"))).withColumn("Month", month(col("OrderDate")))
-    
-    # Create the new FirstName and LastName fields
-    transformed_df = transformed_df.withColumn("FirstName", split(col("CustomerName"), " ").getItem(0)).withColumn("LastName", split(col("CustomerName"), " ").getItem(1))
-    
-    # Filter and reorder columns
-    transformed_df = transformed_df["SalesOrderNumber", "SalesOrderLineNumber", "OrderDate", "Year", "Month", "FirstName", "LastName", "Email", "Item", "Quantity", "UnitPrice", "Tax"]
-    
-    # Display the first five orders
-    display(transformed_df.limit(5))
-    ```
+**CodeCopy**
 
+> from pyspark.sql.functions import \*
+>
+> \## Create Year and Month columns
+>
+> transformed_df = df.withColumn("Year",
+> year(col("OrderDate"))).withColumn("Month", month(col("OrderDate")))
+>
+> \# Create the new FirstName and LastName fields
+>
+> transformed_df = transformed_df.withColumn("FirstName",
+> split(col("CustomerName"), " ").getItem(0)).withColumn("LastName",
+> split(col("CustomerName"), " ").getItem(1))
+>
+> \# Filter and reorder columns
+>
+> transformed_df = transformed_df\["SalesOrderNumber",
+> "SalesOrderLineNumber", "OrderDate", "Year", "Month", "FirstName",
+> "LastName", "Email", "Item", "Quantity", "UnitPrice", "Tax"\]
+>
+> \# Display the first five orders
+>
+> display(transformed_df.limit(5))
+>
 > ![](./media/image44.png)
 
-2.  **Run** the code to create a new dataframe from the original order
-    data with the following transformations:
+2.  **運行** 代碼，從原始順序數據中創建新的數據幀，並進行以下變換:
 
-    - Add **Year** and **Month** columns based on
-      the **OrderDate** column.
+    - 根據**OrderDate**列添加**年份**和**月份**列。
 
-    - Add **FirstName** and **LastName** columns based on
-      the **CustomerName** column.
+    - 根據**CustomerName**列添加**FirstName**和**LastName**列。
 
-    - Filter and reorder the columns, removing
-      the **CustomerName** column.
+    - 過濾並重新排序列，移除**CustomerName**列。
 
 > ![](./media/image45.png)
 
-3.  Review the output and verify that the transformations have been made
-    to the data.
+3.  檢查輸出並確認數據的轉換已完成。
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image46.png)
 
-You can use the full power of the Spark SQL library to transform the
-data by filtering rows, deriving, removing, renaming columns, and
-applying any other required data modifications.
+你可以充分利用 Spark SQL
+庫的全部功能，通過過濾行、推導、刪除、重命名列以及應用其他必要的數據修改來轉換數據。
 
-**Tip**: See the [*Spark dataframe
-documentation*](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/dataframe.html) to
-learn more about the methods of the Dataframe object.
+**提示**：請參閱 [*Spark dataframe
+文檔*](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/dataframe.html)，瞭解更多關於
+Dataframe 對象的方法。
 
-## Task 2: Save the transformed data
+## 任務2：保存轉換後的數據
 
-1.  **Add a new cell** with the following code to save the transformed
-    dataframe in Parquet format (Overwriting the data if it already
-    exists). **Run** the cell and wait for the message that the data has
-    been saved.
+1.  **添加一個新單元格，**並在其中寫入以下代碼，以將轉換後的數據框保存為
+    Parquet
+    格式（如果數據已存在，則覆蓋現有數據）。**運行**該單元格並等待數據保存成功的提示信息。
 
-    ```
-    transformed_df.write.mode("overwrite").parquet('Files/transformed_data/orders')
-    print ("Transformed data saved!")
-    ```
+> CodeCopy
 >
-> **Note**: Commonly, *Parquet* format is preferred for data files that
-> you will use for further analysis or ingestion into an analytical
-> store. Parquet is a very efficient format that is supported by most
-> large scale data analytics systems. In fact, sometimes your data
-> transformation requirement may simply be to convert data from another
-> format (such as CSV) to Parquet!
+> transformed_df.write.mode("overwrite").parquet('Files/transformed_data/orders')
+>
+> print ("Transformed data saved!")
+>
+> **注意**：通常，*Parquet*格式更適合用於進一步分析或導入分析存儲的數據文件。Parquet是一種非常高效的格式，大多數大型數據分析系統都支持它。事實上，有時你的數據轉換需求可能只是將其他格式（如CSV）的數據轉換成Parquet！
 >
 > ![](./media/image47.png)
 >
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image48.png)
 
-2.  Then, in the **Lakehouse explorer** pane on the left, in
-    the **…** menu for the **Files** node, select **Refresh**.
+2.  然後，在左側的 **Lakehouse explorer** 
+    窗格中，在“**Files**”節點的“…”菜單中，選擇“**Refresh**”。
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image49.png)
 
-3.  Click on the **transformed_data** folder to verify that it contains
-    a new folder named **orders**, which in turn contains one or more
-    **Parquet files**.
+3.  單擊 **transformed_data** 文件夾，確認其中是否包含一個名為
+    **orders** 的新文件夾，而 orders 文件夾又包含一個或多個 **Parquet
+    文件**。
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image50.png)
 
-4.  Click on **+ Code** following code to load a new dataframe from the
-    parquet files in the **transformed_data -\> orders** folder:
+4.  點擊 **+ Code** 跟隨代碼，從 **transformed_data -\> orders**
+    文件夾中的 parquet 文件加載新數據幀 :
 
-    ```
-    orders_df = spark.read.format("parquet").load("Files/transformed_data/orders")
-    display(orders_df)
-    ```
+> **CodeCopy**
+>
+> orders_df =
+> spark.read.format("parquet").load("Files/transformed_data/orders")
+>
+> display(orders_df)
+>
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image51.png)
 
-5.  **Run** the cell and verify that the results show the order data
-    that has been loaded from the parquet files.
+5.  **運行** 該單元格，驗證結果是否顯示了從parquet文件加載的順序數據。
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image52.png)
 
-## Task 3: Save data in partitioned files
+## 任務3：將數據保存到分區文件中
 
-1.  Add a new cell, Click on **+ Code** with the following code; which
-    saves the dataframe, partitioning the data
-    by **Year** and **Month**. **Run** the cell and wait for the message
-    that the data has been saved
+1.  添加一個新單元格，點擊以下代碼的**+
+    Code**;它保存數據幀，按**年份**和**月份劃分**數據。
+    **運行**小區並等待數據已保存的消息
 
-    ```
-    orders_df.write.partitionBy("Year","Month").mode("overwrite").parquet("Files/partitioned_data")
-    print ("Transformed data saved!")
-    ```
+> CodeCopy
+>
+> orders_df.write.partitionBy("Year","Month").mode("overwrite").parquet("Files/partitioned_data")
+>
+> print ("Transformed data saved!")
+>
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image53.png)
 >
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image54.png)
 
-2.  Then, in the **Lakehouse explorer** pane on the left, in
-    the **…** menu for the **Files** node, select **Refresh.**
+2.  然後，在左側的 **Lakehouse explorer**
+    窗格中，在“**Files**”節點的“…”菜單中，選擇“**Refresh**”。 
 
 ![A screenshot of a computer Description automatically
 generated](./media/image55.png)
 
-3.  Expand the **partitioned_orders** folder to verify that it contains
-    a hierarchy of folders named **Year=*xxxx***, each containing
-    folders named **Month=*xxxx***. Each month folder contains a parquet
-    file with the orders for that month.
+3.  展開**partitioned_orders**文件夾，確認其中包含名為**Year=xxxx**的文件夾層級結構，每個文件夾包含名為**Month=xxxx**的文件夾。每個月文件夾都包含一個鑲花文件，裡面有當月的訂單。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image56.png)
@@ -659,282 +618,262 @@ generated](./media/image56.png)
 ![A screenshot of a computer Description automatically
 generated](./media/image57.png)
 
-> Partitioning data files is a common way to optimize performance when
-> dealing with large volumes of data. This technique can significant
-> improve performance and make it easier to filter data.
+> 數據文件分區是處理大量數據時優化性能的常見方法。這種方法可以顯著提升性能，並使數據過濾變得更簡單。
 
-4.  Add a new cell, click on **+ Code** with the following code to load
-    a new dataframe from the **orders.parquet** file:
+4.  添加一個新單元格，點擊以下代碼的 **+Code，**從 **orders.parquet**
+    文件加載新數據幀 :
 
-    ```
-    orders_2021_df = spark.read.format("parquet").load("Files/partitioned_data/Year=2021/Month=*")
-    display(orders_2021_df)
-    ```
+> CodeCopy
+>
+> orders_2021_df =
+> spark.read.format("parquet").load("Files/partitioned_data/Year=2021/Month=\*")
+>
+> display(orders_2021_df)
 
-5.  **Run** the cell and verify that the results show the order data for
-    sales in 2021. Note that the partitioning columns specified in the
-    path (**Year** and **Month**) are not included in the dataframe.
+5.  **運行**
+    單元格，確認結果顯示的是2021年的訂單數據。注意路徑中指定的分區列（**年份**和**月份**）未包含在數據幀中。
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image58.png)
 
-# **Exercise 3: Work with tables and SQL**
+# **練習3：處理表和SQL**
 
-As you’ve seen, the native methods of the dataframe object enable you to
-query and analyze data from a file quite effectively. However, many data
-analysts are more comfortable working with tables that they can query
-using SQL syntax. Spark provides a *metastore* in which you can define
-relational tables. The Spark SQL library that provides the dataframe
-object also supports the use of SQL statements to query tables in the
-metastore. By using these capabilities of Spark, you can combine the
-flexibility of a data lake with the structured data schema and SQL-based
-queries of a relational data warehouse - hence the term “data
-lakehouse”.
+正如你所見，dataframe對象的原生方法讓你能夠非常有效地查詢和分析文件中的數據。然而，許多數據分析師更習慣使用可以用SQL語法查詢的表。Spark
+提供了一個元*存儲*庫，你可以在這裡定義關係表。提供數據框架對象的 Spark
+SQL 庫也支持使用 SQL 語句查詢元存儲中的表。通過使用 Spark
+的這些功能，你可以將數據湖的靈活性與關系型數據倉庫的結構化數據模式和基於
+SQL 的查詢結合起來——這就是“數據lakehouse”這一術語的由來。
 
-## Task 1: Create a managed table
+## 任務1：創建一個受管理表
 
-Tables in a Spark metastore are relational abstractions over files in
-the data lake. tables can be *managed* (in which case the files are
-managed by the metastore) or *external* (in which case the table
-references a file location in the data lake that you manage
-independently of the metastore).
+Spark
+元存儲中的表是數據湖中文件的關係抽象。表可以被*管理*（此時文件由元存儲管理）或*外部*（此時表引用數據湖中獨立於元存儲管理的文件位置）。
 
-1.  Add a new code, click on **+ Code** cell to the notebook and enter
-    the following code, which saves the dataframe of sales order data as
-    a table named **salesorders**:
+1.  添加新代碼，點擊筆記本中的**“+
+    Code“**單元格，輸入以下代碼，該代碼會將銷售訂單數據的數據框保存為名為
+    **salesorders** 的表格:
 
-    ```
-    # Create a new table
-    df.write.format("delta").saveAsTable("salesorders")
-    
-    # Get the table description
-    spark.sql("DESCRIBE EXTENDED salesorders").show(truncate=False)
-    ```
+> CodeCopy
+>
+> \# Create a new table
+>
+> df.write.format("delta").saveAsTable("salesorders")
+>
+> \# Get the table description
+>
+> spark.sql("DESCRIBE EXTENDED salesorders").show(truncate=False)
 
-**Note**: It’s worth noting a couple of things about this example.
-Firstly, no explicit path is provided, so the files for the table will
-be managed by the metastore. Secondly, the table is saved
-in **delta** format. You can create tables based on multiple file
-formats (including CSV, Parquet, Avro, and others) but *delta lake* is a
-Spark technology that adds relational database capabilities to tables;
-including support for transactions, row versioning, and other useful
-features. Creating tables in delta format is preferred for data
-lakehouses in Fabric.
+**注意**：關於這個例子，值得注意幾點。首先，沒有提供顯式路徑，因此表的文件將由元存儲管理。其次，表格以
+**delta** 格式保存。你可以基於多種文件格式創建表（包括
+CSV、Parquet、Avro 等），但 *delta lake* 是一種 Spark
+技術，為表增加了關系數據庫功能;包括對事務、行版本控制及其他實用功能的支持。在
+Fabric 中創建數據湖屋更傾向於以 delta 格式創建表。
 
-2.  **Run** the code cell and review the output, which describes the
-    definition of the new table.
+2.  **運行** 代碼單元並查看輸出，後者描述了新表的定義。
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image59.png)
 
-3.  In the **Lakehouse** **explorer** pane, in the **…** menu for
-    the **Tables** folder, select **Refresh.**
+3.  在 **Lakehouse**
+    **explorer** 窗格中，在“**Tables**”文件夾的“…”菜單中，選擇“**Refresh**”。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image60.png)
 
-4.  Then, expand the **Tables** node and verify that
-    the **salesorders** table has been created under the **dbo** schema.
+4.  然後展開 **Tables** 節點，確認 **SalesOrders** 表是否已在 **dbo**
+    模式下創建。
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image61.png)
 
-5.  Hover your mouse beside **salesorders** table, then click on the
-    horizontal ellipses (…). Navigate and click on **Load data**, then
-    select **Spark**.
+5.  將鼠標懸停在 **salesorders**
+    表旁邊，然後單擊水平省略號（…）。導航並單擊“**Load data**”，然後選擇
+    **Spark**。
 
 > ![](./media/image62.png)
 
-6.  Click on **▷ Run cell** button and which uses the Spark SQL library
-    to embed a SQL query against the **salesorder** table in PySpark
-    code and load the results of the query into a dataframe.
+6.  點擊 **▷ Run cell** 按鈕，該按鈕使用Spark SQL庫將針對
+    **salesorder** 表的SQL查詢嵌入到PySpark代碼中，並將查詢結果加載到數據幀中。
 
-    ```
-    df = spark.sql("SELECT * FROM [your_lakehouse].salesorders LIMIT 1000")
-    display(df)
-    ```
+> CodeCopy
+>
+> df = spark.sql("SELECT \* FROM Fabric_lakehouse.dbo.salesorders LIMIT
+> 1000")
+>
+> display(df)
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image63.png)
 
-## Task 2: Create an external table
+## 任務2：創建一個外部表格
 
-You can also create *external* tables for which the schema metadata is
-defined in the metastore for the lakehouse, but the data files are
-stored in an external location.
+你也可以創建 外部表，模式元數據在 lakehouse
+的元存儲中定義，但數據文件存儲在外部位置。
 
-1.  Under the results returned by the first code cell, use the **+
-    Code** button to add a new code cell if one doesn’t already exist.
-    Then enter the following code in the new cell.
+1.  在第一個代碼單元返回的結果下，如果沒有新的代碼單元格，使用 **+
+    Code**按鈕添加新代碼單元。然後在新格子裡輸入以下代碼。
 
-    ```
-    df.write.format("delta").saveAsTable("external_salesorder", path="<abfs_path>/external_salesorder")
-    ```
+CodeCopy
+
+> df.write.format("delta").saveAsTable("external_salesorder",
+> path="\<abfs_path\>/external_salesorder")
 
 ![A screenshot of a computer Description automatically
 generated](./media/image64.png)
 
-2.  In the **Lakehouse explorer** pane, in the **…** menu for
-    the **Files** folder, select **Copy ABFS path** in the notepad.
+2.  在 **Lakehouse
+    explorer** 窗格中，“**Files**”文件夾的“…”菜單中，選擇在記事本中**Copy
+    ABFS path**”。
 
-> The ABFS path is the fully qualified path to the **Files** folder in
-> the OneLake storage for your lakehouse - similar to this:
+> ABFS路徑是你 **lakehouse** **OneLake**
+> 存儲中**Files**文件夾的完整合格路徑——類似於這個:
 
 abfss://dp_Fabric29@onelake.dfs.fabric.microsoft.com/Fabric_lakehouse.Lakehouse/Files/external_salesorder
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image65.png)
 
-3.  Now, move into the code cell, replace **\<abfs_path\>** with the
-    **path** you copied to the notepad so that the code saves the
-    dataframe as an external table with data files in a folder named
-    **external_salesorder** in your **Files** folder location. The full
-    path should look similar to this
+3.  現在，進入代碼單元格，將 **\`\<abfs_path\>\`**
+    替換為您複製到記事本中的**路徑**，以便代碼將數據幀保存為外部表，並將數據文件保存在“文件”文件夾下的名為
+    **\`external_salesorder\`** 的**Files**中。完整路徑應類似於這樣
 
 abfss://dp_Fabric29@onelake.dfs.fabric.microsoft.com/Fabric_lakehouse.Lakehouse/Files/external_salesorder
 
-4.  Use the **▷ (*Run cell*)** button on the left of the cell to run it.
+4.  使用單元左側的 **▷ (Run cell)** 按鈕來運行它。
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image66.png)
 
-5.  In the **Lakehouse explorer** pane, in the **…** menu for
-    the **Tables** folder, select the **Refresh**.
+5.  在 **Lakehouse
+    explorer** 窗格中，在“**Tables** ”文件夾的“…”菜單中，選擇“**Refresh**”。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image67.png)
 
-6.  Then expand the **Tables** node and verify that
-    the **external_salesorder** table has been created.
+6.  然後展開“**Tables**”節點，並驗證 **external_salesorder**
+    表是否已創建。
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image68.png)
 
-7.  In the **Lakehouse explorer** pane, in the **…** menu for
-    the **Files** folder, select **Refresh**.
+7.  在 **Lakehouse
+    explorer** 窗格中，“**Files**”文件夾的“…”菜單中，選擇“**Refresh**”。 
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image69.png)
 
-8.  Then expand the **Files** node and verify that
-    the **external_salesorder** folder has been created for the table’s
-    data files.
+8.  然後展開**Files**節點，確認**external_salesorder**文件夾已為表中的數據文件創建。 
 
 ![](./media/image70.png)
 
-## Task 3: Compare managed and external tables
+## 任務3：比較託管表和外部表
 
-Let’s explore the differences between managed and external tables.
+讓我們來探討託管表和外部表之間的區別。
 
-1.  Under the results returned by the code cell, use the **+
-    Code** button to add a new code cell. Copy the code below into the
-    Code cell and use the **▷ (*Run cell*)** button on the left of the
-    cell to run it.
-    ```
-    %%sql
-    
-    DESCRIBE FORMATTED salesorders;
-    ```
+1.  在代碼單元返回的結果下，使用 **+ Code**
+    按鈕添加新的代碼單元。將下面的代碼複製到代碼單元格，並使用單元格左側的
+    **▷ (Run cell)** 按鈕來運行它。
+
+> SqlCopy
+>
+> %%sql
+>
+> DESCRIBE FORMATTED salesorders;
 >
 > ![](./media/image71.png)
 
-2.  In the results, view the **Location** property for the table, which
-    should be a path to the OneLake storage for the lakehouse ending
-    with **/Tables/salesorders** (you may need to widen the **Data
-    type** column to see the full path).
+2.  在結果中，查看表的 **Location** 屬性，該屬性應該是指向 Lakehouse 的
+    OneLake 存儲的路徑，以
+    **/Tables/salesorders** 結尾（您可能需要展開“**Data
+    type** ”列才能看到完整路徑）。
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image72.png)
 
-3.  Modify the **DESCRIBE** command to show the details of
-    the **external_saleorder** table as shown here.
+3.  修改 **DESCRIBE** 命令以顯示 **external_saleorder**
+    表的詳細信息，如圖所示。
 
-4.  Under the results returned by the code cell, use the **+
-    Code** button to add a new code cell. Copy the below code and use
-    the **▷ (*Run cell*)** button on the left of the cell to run it.
+4.  在代碼單元格返回的結果下方，使用“**+
+    Code** ”按鈕添加一個新的代碼單元格。複製下面的代碼，然後使用單元格左側的
+    **▷ (*Run cell*)** 按鈕運行它。
 
-    ```
-    %%sql
-    
-    DESCRIBE FORMATTED external_salesorder;
-    ```
+> SqlCopy
+>
+> %%sql
+>
+> DESCRIBE FORMATTED external_salesorder;
 
-5.  In the results, view the **Location** property for the table, which
-    should be a path to the OneLake storage for the lakehouse ending
-    with **/Files/external_saleorder** (you may need to widen the **Data
-    type** column to see the full path).
+5.  在結果中，查看表的 **Location** 屬性，它應該是指向 Lakehouse 的
+    **OneLake** 存儲的路徑，以 **/Files/external_saleorder**
+    結尾（您可能需要展開“**Data type**”列才能看到完整路徑）。
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image73.png)
 
-## Task 4: Run SQL code in a cell
+## 任務4：在單元格中運行SQL代碼
 
-While it’s useful to be able to embed SQL statements into a cell
-containing PySpark code, data analysts often just want to work directly
-in SQL.
+雖然能夠將SQL語句嵌入包含PySpark代碼的單元格很有用，但數據分析師通常只想直接用SQL工作。
 
-1.  Click on **+ Code** cell to the notebook, and enter the following
-    code in it. Click on **▷ Run cell** button and review the results.
-    Observe that:
+1.  點擊筆記本的**+ Code**單元，輸入以下代碼。點擊 **▷ Run cell**
+    按鈕，查看結果。請注意:
 
-    - The %%sql line at the beginning of the cell (called a *magic*)
-      indicates that the Spark SQL language runtime should be used to
-      run the code in this cell instead of PySpark.
+    - 單元格開頭的%%sql行（稱為*magic*）表示應使用Spark
+      SQL語言運行時來運行該單元的代碼，而非PySpark。
 
-    - The SQL code references the **salesorders** table that you created
-      previously.
+    - SQL代碼引用 的是你之前創建的**salesorders** 表。
 
-    - The output from the SQL query is automatically displayed as the
-      result under the cell
+    - SQL查詢的輸出會自動顯示為單元格下的結果
 
-      ```
-      %%sql
-      SELECT YEAR(OrderDate) AS OrderYear,
-             SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue
-      FROM salesorders
-      GROUP BY YEAR(OrderDate)
-      ORDER BY OrderYear;
-      ```
+> SqlCopy
+>
+> %%sql
+>
+> SELECT YEAR(OrderDate) AS OrderYear,
+>
+> SUM((UnitPrice \* Quantity) + Tax) AS GrossRevenue
+>
+> FROM salesorders
+>
+> GROUP BY YEAR(OrderDate)
+>
+> ORDER BY OrderYear;
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image74.png)
 
-**Note**: For more information about Spark SQL and dataframes, see
-the [*Spark SQL
-documentation*](https://spark.apache.org/docs/2.2.0/sql-programming-guide.html).
+**注意**：有關 Spark SQL 和數據幀的更多信息，請參見 [*Spark SQL
+文檔*](https://spark.apache.org/docs/2.2.0/sql-programming-guide.html)。
 
-# Exercise 4: Visualize data with Spark
+# 練習四：用Spark可視化數據
 
-A picture is proverbially worth a thousand words, and a chart is often
-better than a thousand rows of data. While notebooks in Fabric include a
-built in chart view for data that is displayed from a dataframe or Spark
-SQL query, it is not designed for comprehensive charting. However, you
-can use Python graphics libraries like **matplotlib** and **seaborn** to
-create charts from data in dataframes.
+俗話說，一幅圖勝千言萬語，一張圖表往往比一千行數據更好。雖然 Fabric
+中的筆記本內置了數據框架或 Spark SQL
+查詢數據的圖表視圖，但它並非為全面的圖表設計。不過，你可以用 Python
+圖形庫，比如 **matplotlib** 和 **seaborn**，從數據幀中生成圖表。
 
-## Task 1: View results as a chart
+## 任務1：以圖表形式查看結果
 
-1.  Click on **+ Code** cell to the notebook, and enter the following
-    code in it. Click on **▷ Run cell** button and observe that it
-    returns the data from the **salesorders** view you created
-    previously.
+1.  點擊筆記本中的**+ Code** 單元格，並在其中輸入以下代碼。點擊“ **▷ Run
+    cell** ”按鈕，觀察它是否返回了您之前創建的 **salesorders**
+    視圖中的數據。
 
-    ```
-    %%sql
-    SELECT * FROM salesorders
-    ```
+> SqlCopy
+>
+> %%sql
+>
+> SELECT \* FROM salesorders
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image75.png)
 
-2.  In the results section beneath the cell, change the **View** option
-    from **Table** to **+New chart**.
+2.  在單元格下方的結果部分，將 **View** 選項從 **Table** 更改為 **New
+    chart**。
 
 ![](./media/image76.png)
 
-3.  Use the **Start editing** button at the top right of the chart to
-    display the options pane for the chart. Then set the options as
-    follows and select **Apply**:
+3.  使用圖表右上角的**“Start
+    editing**”按鈕，顯示圖表的選項面板。然後設置如下選項，選擇
+    **Apply**:
 
     - **Chart type**: Bar chart
 
@@ -954,135 +893,153 @@ incorrect.](./media/image77.png)
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image78.png)
 
-4.  Verify that the chart looks similar to this
+4.  請確認圖表是否與此相似
 
 > ![](./media/image79.png)
 
-## Task 2: Get started with matplotlib
+## 任務2：開始使用 matplotlib
 
-1.  Click on **+ Code** and copy and paste the below code. **Run** the
-    code and observe that it returns a Spark dataframe containing the
-    yearly revenue.
+1.  點擊 **+ Code**，複製粘貼下面的代碼。 **運行**
+    代碼，觀察它返回一個包含年度收入的 Spark 數據幀。
 
-    ```
-    sqlQuery = "SELECT CAST(YEAR(OrderDate) AS CHAR(4)) AS OrderYear, \
-                    SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue \
-                FROM salesorders \
-                GROUP BY CAST(YEAR(OrderDate) AS CHAR(4)) \
-                ORDER BY OrderYear"
-    df_spark = spark.sql(sqlQuery)
-    df_spark.show()
-    ```
+> CodeCopy
+>
+> sqlQuery = "SELECT CAST(YEAR(OrderDate) AS CHAR(4)) AS OrderYear, \\
+>
+> SUM((UnitPrice \* Quantity) + Tax) AS GrossRevenue \\
+>
+> FROM salesorders \\
+>
+> GROUP BY CAST(YEAR(OrderDate) AS CHAR(4)) \\
+>
+> ORDER BY OrderYear"
+>
+> df_spark = spark.sql(sqlQuery)
+>
+> df_spark.show()
+>
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image80.png)
 
-2.  To visualize the data as a chart, we’ll start by using
-    the **matplotlib** Python library. This library is the core plotting
-    library on which many others are based, and provides a great deal of
-    flexibility in creating charts.
+2.  為了將數據可視化為圖表，我們將先使用 **matplotlib** Python
+    庫。該庫是許多其他庫的核心繪圖庫，提供了極大的圖表製作靈活性。
 
-3.  Click on **+ Code** and copy and paste the below code.
+3.  點擊 **+ Code**，複製粘貼下面的代碼。
 
-    ```
-    from matplotlib import pyplot as plt
-    
-    # matplotlib requires a Pandas dataframe, not a Spark one
-    df_sales = df_spark.toPandas()
-    
-    # Create a bar plot of revenue by year
-    plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'])
-    
-    # Display the plot
-    plt.show()
-    ```
+**CodeCopy**
+
+> from matplotlib import pyplot as plt
+>
+> \# matplotlib requires a Pandas dataframe, not a Spark one
+>
+> df_sales = df_spark.toPandas()
+>
+> \# Create a bar plot of revenue by year
+>
+> plt.bar(x=df_sales\['OrderYear'\], height=df_sales\['GrossRevenue'\])
+>
+> \# Display the plot
+>
+> plt.show()
 
 ![A screenshot of a computer Description automatically
 generated](./media/image81.png)
 
-5.  Click on the **Run cell** button and review the results, which
-    consist of a column chart with the total gross revenue for each
-    year. Note the following features of the code used to produce this
-    chart:
+5.  點擊 **“Run
+    cell ”**按鈕查看結果，結果包括一個欄狀圖，顯示每年的總總收入。請注意用於製作該圖表的代碼的以下特點:
 
-    - The **matplotlib** library requires a *Pandas* dataframe, so you
-      need to convert the *Spark* dataframe returned by the Spark SQL
-      query to this format.
+    - **matplotlib** 庫需要 *Pandas* 數據幀，所以你需要將 *Spark* SQL
+      查詢返回的數據幀轉換成這個格式。
 
-    - At the core of the **matplotlib** library is
-      the **pyplot** object. This is the foundation for most plotting
-      functionality.
+    - matplotlib **庫**的核心是 **pyplot**
+      對象。這是大多數繪圖功能的基礎。
 
-    - The default settings result in a usable chart, but there’s
-      considerable scope to customize it
+    - 默認設置會得到可用的圖表，但自定義空間很大
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image82.png)
 
-6.  Modify the code to plot the chart as follows, replace all the code
-    in the **cell** with the following code and click on **▷ Run
-    cell** button and review the output
+6.  修改代碼，將圖表繪製如下圖，將該**單元格**中的所有代碼替換為以下代碼，點擊**▷
+    Run cell** 格按鈕，查看輸出結果
 
-    ```
-    from matplotlib import pyplot as plt
-    
-    # Clear the plot area
-    plt.clf()
-    
-    # Create a bar plot of revenue by year
-    plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
-    
-    # Customize the chart
-    plt.title('Revenue by Year')
-    plt.xlabel('Year')
-    plt.ylabel('Revenue')
-    plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)
-    plt.xticks(rotation=45)
-    
-    # Show the figure
-    plt.show()
-    ```
- 
+> CodeCopy
+>
+> from matplotlib import pyplot as plt
+>
+> \# Clear the plot area
+>
+> plt.clf()
+>
+> \# Create a bar plot of revenue by year
+>
+> plt.bar(x=df_sales\['OrderYear'\], height=df_sales\['GrossRevenue'\],
+> color='orange')
+>
+> \# Customize the chart
+>
+> plt.title('Revenue by Year')
+>
+> plt.xlabel('Year')
+>
+> plt.ylabel('Revenue')
+>
+> plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y',
+> alpha=0.7)
+>
+> plt.xticks(rotation=45)
+>
+> \# Show the figure
+>
+> plt.show()
+>
 > ![A screenshot of a computer program AI-generated content may be
 > incorrect.](./media/image83.png)
 >
 > ![A graph with orange bars AI-generated content may be
 > incorrect.](./media/image84.png)
 
-7.  The chart now includes a little more information. A plot is
-    technically contained with a **Figure**. In the previous examples,
-    the figure was created implicitly for you; but you can create it
-    explicitly.
+7.  圖表現在包含了一些更多信息。劇情技術上是由**一個人物**所包含的。在前面的例子中，這個圖形是隱含地為你創造的;但你可以明確創建它。
 
-8.  Modify the code to plot the chart as follows, replace all the code
-    in the **cell** with the following code.
+8.  修改代碼，將圖表繪製如下圖，將**單元格**中的所有代碼替換
+    為以下代碼。
 
-    ```
-    from matplotlib import pyplot as plt
-    
-    # Clear the plot area
-    plt.clf()
-    
-    # Create a Figure
-    fig = plt.figure(figsize=(8,3))
-    
-    # Create a bar plot of revenue by year
-    plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
-    
-    # Customize the chart
-    plt.title('Revenue by Year')
-    plt.xlabel('Year')
-    plt.ylabel('Revenue')
-    plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)
-    plt.xticks(rotation=45)
-    
-    # Show the figure
-    plt.show()
-    ```
+> CodeCopy
+>
+> from matplotlib import pyplot as plt
+>
+> \# Clear the plot area
+>
+> plt.clf()
+>
+> \# Create a Figure
+>
+> fig = plt.figure(figsize=(8,3))
+>
+> \# Create a bar plot of revenue by year
+>
+> plt.bar(x=df_sales\['OrderYear'\], height=df_sales\['GrossRevenue'\],
+> color='orange')
+>
+> \# Customize the chart
+>
+> plt.title('Revenue by Year')
+>
+> plt.xlabel('Year')
+>
+> plt.ylabel('Revenue')
+>
+> plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y',
+> alpha=0.7)
+>
+> plt.xticks(rotation=45)
+>
+> \# Show the figure
+>
+> plt.show()
 
-9.  **Re-run** the code cell and view the results. The figure determines
-    the shape and size of the plot.
+9.  **重新運行** 代碼單元，查看結果。圖形決定了地塊的形狀和大小。
 
-> A figure can contain multiple subplots, each on its own *axis*.
+> 一個圖可以包含多個子線，每個子線都圍繞其自身*軸*線。
 >
 > ![A screenshot of a computer program AI-generated content may be
 > incorrect.](./media/image85.png)
@@ -1090,261 +1047,308 @@ generated](./media/image81.png)
 > ![A screenshot of a graph AI-generated content may be
 > incorrect.](./media/image86.png)
 
-10. Modify the code to plot the chart as follows. **Re-run** the code
-    cell and view the results. The figure contains the subplots
-    specified in the code.
+10. 修改代碼，將圖表繪製如下圖。 **重新運行**
+    代碼單元，查看結果。圖中包含了代碼中指定的子線。
 
-    ```
-    from matplotlib import pyplot as plt
-    
-    # Clear the plot area
-    plt.clf()
-    
-    # Create a figure for 2 subplots (1 row, 2 columns)
-    fig, ax = plt.subplots(1, 2, figsize = (10,4))
-    
-    # Create a bar plot of revenue by year on the first axis
-    ax[0].bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
-    ax[0].set_title('Revenue by Year')
-    
-    # Create a pie chart of yearly order counts on the second axis
-    yearly_counts = df_sales['OrderYear'].value_counts()
-    ax[1].pie(yearly_counts)
-    ax[1].set_title('Orders per Year')
-    ax[1].legend(yearly_counts.keys().tolist())
-    
-    # Add a title to the Figure
-    fig.suptitle('Sales Data')
-    
-    # Show the figure
-    plt.show()
-    ```
+> CodeCopy
+>
+> from matplotlib import pyplot as plt
+>
+> \# Clear the plot area
+>
+> plt.clf()
+>
+> \# Create a figure for 2 subplots (1 row, 2 columns)
+>
+> fig, ax = plt.subplots(1, 2, figsize = (10,4))
+>
+> \# Create a bar plot of revenue by year on the first axis
+>
+> ax\[0\].bar(x=df_sales\['OrderYear'\],
+> height=df_sales\['GrossRevenue'\], color='orange')
+>
+> ax\[0\].set_title('Revenue by Year')
+>
+> \# Create a pie chart of yearly order counts on the second axis
+>
+> yearly_counts = df_sales\['OrderYear'\].value_counts()
+>
+> ax\[1\].pie(yearly_counts)
+>
+> ax\[1\].set_title('Orders per Year')
+>
+> ax\[1\].legend(yearly_counts.keys().tolist())
+>
+> \# Add a title to the Figure
+>
+> fig.suptitle('Sales Data')
+>
+> \# Show the figure
+>
+> plt.show()
+>
 > ![A screenshot of a computer program AI-generated content may be
 > incorrect.](./media/image87.png)
 >
 > ![A screenshot of a computer screen AI-generated content may be
 > incorrect.](./media/image88.png)
 
-**Note**: To learn more about plotting with matplotlib, see
-the [*matplotlib documentation*](https://matplotlib.org/).
+**注意**：想瞭解更多關於使用 matplotlib 繪製的信息，請參閱 [*matplotlib
+文檔*](https://matplotlib.org/)。
 
-## Task 3: Use the seaborn library
+## 任務3：使用 Seaborn 庫
 
-While **matplotlib** enables you to create complex charts of multiple
-types, it can require some complex code to achieve the best results. For
-this reason, over the years, many new libraries have been built on the
-base of matplotlib to abstract its complexity and enhance its
-capabilities. One such library is **seaborn**.
+雖然 **matplotlib**
+可以讓你創建多種類型的複雜圖表，但要達到最佳效果可能需要一些複雜的代碼。因此，多年來，許多新的庫在
+matplotlib 基礎上構建，以抽象化其複雜性並增強其能力。其中一個圖書館是
+**seaborn**。
 
-1.  Click on **+ Code** and copy and paste the below code.
+1.  點擊 **+ Code**，複製粘貼下面的代碼。
 
-    ```
-    import seaborn as sns
-    
-    # Clear the plot area
-    plt.clf()
-    
-    # Create a bar chart
-    ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
-    plt.show()
-    ```
-2.  **Run** the code and observe that it displays a bar chart using the
-    seaborn library.
+CodeCopy
+
+> import seaborn as sns
+>
+> \# Clear the plot area
+>
+> plt.clf()
+>
+> \# Create a bar chart
+>
+> ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+>
+> plt.show()
+
+2.  **運行** 代碼，觀察它顯示的是使用 Seaborn 庫的條形圖。
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image89.png)
 
-3.  **Modify** the code as follows. **Run** the modified code and note
-    that seaborn enables you to set a consistent color theme for your
-    plots.
-    ```
-    import seaborn as sns
-    
-    # Clear the plot area
-    plt.clf()
-    
-    # Set the visual theme for seaborn
-    sns.set_theme(style="whitegrid")
-    
-    # Create a bar chart
-    ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
-    plt.show()
-    ```
+3.  **修改** 代碼如下。 **運行** 修改後的代碼，注意 seaborn
+    可以讓你為地塊設置一致的顏色主題。
+
+> CodeCopy
+>
+> import seaborn as sns
+>
+> \# Clear the plot area
+>
+> plt.clf()
+>
+> \# Set the visual theme for seaborn
+>
+> sns.set_theme(style="whitegrid")
+>
+> \# Create a bar chart
+>
+> ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+>
+> plt.show()
+>
 > ![A screenshot of a graph AI-generated content may be
 > incorrect.](./media/image90.png)
 
-4.  **Modify** the code again as follows. **Run** the modified code to
-    view the yearly revenue as a line chart.
+4.  再次**修改** 代碼如下。 **運行**
+    修改後的代碼，以折線圖的形式查看年度收入。
 
-    ```
-    import seaborn as sns
-    
-    # Clear the plot area
-    plt.clf()
-    
-    # Create a bar chart
-    ax = sns.lineplot(x="OrderYear", y="GrossRevenue", data=df_sales)
-    plt.show()
-    ```
+> CodeCopy
+>
+> import seaborn as sns
+>
+> \# Clear the plot area
+>
+> plt.clf()
+>
+> \# Create a bar chart
+>
+> ax = sns.lineplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+>
+> plt.show()
+>
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image91.png)
 
-**Note**: To learn more about plotting with seaborn, see the [*seaborn
-documentation*](https://seaborn.pydata.org/index.html).
+**注意**：想瞭解更多關於用 seaborn 策劃的建議，請參見
+[*seaborn文檔*](https://seaborn.pydata.org/index.html)。
 
-## Task 4: Use delta tables for streaming data
+## 任務4：使用delta表進行流數據流處理
 
-Delta lake supports streaming data. Delta tables can be a *sink* or
-a *source* for data streams created using the Spark Structured Streaming
-API. In this example, you’ll use a delta table as a sink for some
-streaming data in a simulated internet of things (IoT) scenario.
+Delta Lake 支持流式數據。Delta 表可以作為使用 Spark Structured Streaming
+API 創建的數據流的接收器或源。在本示例中，您將使用 Delta
+表作為模擬物聯網 (IoT) 場景中某些流式數據的接收器。
 
-1.  Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
+1.  點擊 **+ Code** ，複製粘貼下面的代碼，然後點擊 **“Run cell”** 按鈕。
 
-    ```
-    from notebookutils import mssparkutils
-    from pyspark.sql.types import *
-    from pyspark.sql.functions import *
-    
-    # Create a folder
-    inputPath = 'Files/data/'
-    mssparkutils.fs.mkdirs(inputPath)
-    
-    # Create a stream that reads data from the folder, using a JSON schema
-    jsonSchema = StructType([
-    StructField("device", StringType(), False),
-    StructField("status", StringType(), False)
-    ])
-    iotstream = spark.readStream.schema(jsonSchema).option("maxFilesPerTrigger", 1).json(inputPath)
-    
-    # Write some event data to the folder
-    device_data = '''{"device":"Dev1","status":"ok"}
-    {"device":"Dev1","status":"ok"}
-    {"device":"Dev1","status":"ok"}
-    {"device":"Dev2","status":"error"}
-    {"device":"Dev1","status":"ok"}
-    {"device":"Dev1","status":"error"}
-    {"device":"Dev2","status":"ok"}
-    {"device":"Dev2","status":"error"}
-    {"device":"Dev1","status":"ok"}'''
-    mssparkutils.fs.put(inputPath + "data.txt", device_data, True)
-    print("Source stream created...")
-    ```
+CodeCopy
+
+> from notebookutils import mssparkutils
+>
+> from pyspark.sql.types import \*
+>
+> from pyspark.sql.functions import \*
+>
+> \# Create a folder
+>
+> inputPath = 'Files/data/'
+>
+> mssparkutils.fs.mkdirs(inputPath)
+>
+> \# Create a stream that reads data from the folder, using a JSON
+> schema
+>
+> jsonSchema = StructType(\[
+>
+> StructField("device", StringType(), False),
+>
+> StructField("status", StringType(), False)
+>
+> \])
+>
+> iotstream =
+> spark.readStream.schema(jsonSchema).option("maxFilesPerTrigger",
+> 1).json(inputPath)
+>
+> \# Write some event data to the folder
+>
+> device_data = '''{"device":"Dev1","status":"ok"}
+>
+> {"device":"Dev1","status":"ok"}
+>
+> {"device":"Dev1","status":"ok"}
+>
+> {"device":"Dev2","status":"error"}
+>
+> {"device":"Dev1","status":"ok"}
+>
+> {"device":"Dev1","status":"error"}
+>
+> {"device":"Dev2","status":"ok"}
+>
+> {"device":"Dev2","status":"error"}
+>
+> {"device":"Dev1","status":"ok"}'''
+>
+> mssparkutils.fs.put(inputPath + "data.txt", device_data, True)
+>
+> print("Source stream created...")
+>
 > ![A screenshot of a computer program AI-generated content may be
 > incorrect.](./media/image92.png)
 >
 > ![A screenshot of a computer program AI-generated content may be
 > incorrect.](./media/image93.png)
 
-2.  Ensure the message ***Source stream created…*** is printed. The code
-    you just ran has created a streaming data source based on a folder
-    to which some data has been saved, representing readings from
-    hypothetical IoT devices.
+2.  確保消息源 ***Source stream
+    created…*** 已印刷。你剛運行的代碼基於一個文件夾創建了一個流數據源，該文件夾保存了一些數據，代表假設的物聯網設備的讀數。
 
-3.  Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
+3.  點擊 **+ Code** ，複製粘貼下面的代碼，然後點擊 **“Run cell”** 按鈕。
 
-    ```
-    # Write the stream to a delta table
-    delta_stream_table_path = 'Tables/iotdevicedata'
-    checkpointpath = 'Files/delta/checkpoint'
-    deltastream = iotstream.writeStream.format("delta").option("checkpointLocation", checkpointpath).start(delta_stream_table_path)
-    print("Streaming to delta sink...")
-    ```
+CodeCopy
+
+> \# Write the stream to a delta table
+>
+> delta_stream_table_path = 'Tables/iotdevicedata'
+>
+> checkpointpath = 'Files/delta/checkpoint'
+>
+> deltastream =
+> iotstream.writeStream.format("delta").option("checkpointLocation",
+> checkpointpath).start(delta_stream_table_path)
+>
+> print("Streaming to delta sink...")
+>
 > ![](./media/image94.png)
 
-4.  This code writes the streaming device data in delta format to a
-    folder named **iotdevicedata**. Because the path for the folder
-    location is in the **Tables** folder, a table will automatically be
-    created for it. Click on the horizontal ellipses beside table, then
-    click on **Refresh**.
+4.  此代碼以增量格式將流式設備數據寫入名為 **iotdevicedata**
+    的文件夾。由於文件夾路徑位於 **Tables** 
+    文件夾中，因此會自動為其創建一個表格。單擊表格旁邊的水平省略號，然後單擊“**Refresh**”。
 
 ![](./media/image95.png)
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image96.png)
 
-5.  Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
+5.  點擊“ **+ Code**”，複製並粘貼以下代碼，然後點擊“**Run cell**”按鈕。
 
-    ```
-    %%sql
-    
-    SELECT * FROM IotDeviceData;
-    ```
+> SqlCopy
+>
+> %%sql
+>
+> SELECT \* FROM IotDeviceData;
+>
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image97.png)
 
-6.  This code queries the **IotDeviceData** table, which contains the
-    device data from the streaming source.
+6.  該代碼查詢包含流媒體源設備數據的 **IotDeviceData** 表。
 
-7.  Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
+7.  點擊 **+ Code**，複製粘貼下面的代碼，然後點擊“**Run cell**”按鈕。
 
-    ```
-    # Add more data to the source stream
-    more_data = '''{"device":"Dev1","status":"ok"}
-    {"device":"Dev1","status":"ok"}
-    {"device":"Dev1","status":"ok"}
-    {"device":"Dev1","status":"ok"}
-    {"device":"Dev1","status":"error"}
-    {"device":"Dev2","status":"error"}
-    {"device":"Dev1","status":"ok"}'''
-    
-    mssparkutils.fs.put(inputPath + "more-data.txt", more_data, True)
-    ```
+> CodeCopy
+>
+> \# Add more data to the source stream
+>
+> more_data = '''{"device":"Dev1","status":"ok"}
+>
+> {"device":"Dev1","status":"ok"}
+>
+> {"device":"Dev1","status":"ok"}
+>
+> {"device":"Dev1","status":"ok"}
+>
+> {"device":"Dev1","status":"error"}
+>
+> {"device":"Dev2","status":"error"}
+>
+> {"device":"Dev1","status":"ok"}'''
+>
+> mssparkutils.fs.put(inputPath + "more-data.txt", more_data, True)
+>
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image98.png)
 
-8.  This code writes more hypothetical device data to the streaming
-    source.
+8.  這段代碼會將更多假設的設備數據寫入流源。
 
-9.  Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
+9.  點擊 **+ Code**，複製粘貼下面的代碼，然後點擊“**Run cell**”按鈕。
 
-    ```
-    %%sql
-    
-    SELECT * FROM IotDeviceData;
-    ```
+> SqlCopy
+>
+> %%sql
+>
+> SELECT \* FROM IotDeviceData;
+>
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image99.png)
 
-10. This code queries the **IotDeviceData** table again, which should
-    now include the additional data that was added to the streaming
-    source.
+10. 該代碼再次查詢 **IotDeviceData**
+    表，表中應包含已添加到流源的額外數據。
 
-11. Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
+11. 點擊 **+ Code**，複製粘貼下面的代碼，然後點擊“**Run cell**”按鈕。
 
-    ```
-    deltastream.stop()
-    ```
+> CodeCopy
+>
+> deltastream.stop()
+>
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image100.png)
 
-12. This code stops the stream.
+12. 這個代碼會停止直播。
 
-## Task 5: Save the notebook and end the Spark session
+## 任務五：保存筆記本並結束 Spark 會話
 
-Now that you’ve finished working with the data, you can save the
-notebook with a meaningful name and end the Spark session.
+現在你已經完成數據處理，可以保存筆記本並命名有意義，並結束 Spark 會話。
 
-1.  In the notebook menu bar, use the ⚙️ **Settings** icon to view the
-    notebook settings.
+1.  在筆記本菜單欄，使用 ⚙️ **Settings **圖標查看筆記本設置。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image101.png)
 
-2.  Set the **Name** of the notebook to +++**Explore Sales Orders+++**,
-    and then close the settings pane.
+2.  將筆記本的 **Name** 設置為  +++**Explore Sales
+    Orders+++**，然後關閉設置窗格。 
 
 ![A screenshot of a computer Description automatically
 generated](./media/image102.png)
 
-3.  On the notebook menu, select **Stop session** to end the Spark
-    session.
+3.  在筆記本菜單中，選擇 **Stop session** 以結束Spark會話。
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image103.png)
@@ -1352,127 +1356,112 @@ incorrect.](./media/image103.png)
 ![A screenshot of a computer Description automatically
 generated](./media/image104.png)
 
-# Exercise 5: Create a Dataflow (Gen2) in Microsoft Fabric
+# 練習5：在Microsoft Fabric中創建數據流（Gen2）
 
-In Microsoft Fabric, Dataflows (Gen2) connect to various data sources
-and perform transformations in Power Query Online. They can then be used
-in Data Pipelines to ingest data into a lakehouse or other analytical
-store, or to define a dataset for a Power BI report.
+在 Microsoft Fabric 中，數據流（Gen2）連接多個數據源，並在 Power Query
+Online
+中執行轉換。然後它們可以在數據管道中用於將數據導入湖屋或其他分析存儲，或定義
+Power BI 報告中的數據集。
 
-This exercise is designed to introduce the different elements of
-Dataflows (Gen2), and not create a complex solution that may exist in an
-enterprise
+本練習旨在介紹數據流（Gen2）的不同元素，而非創建企業中可能存在的複雜解決方案
 
-## Task 1: Create a Dataflow (Gen2) to ingest data
+## 任務1：創建數據流（Gen2）以獲取數據
 
-Now that you have a lakehouse, you need to ingest some data into it. One
-way to do this is to define a dataflow that encapsulates an *extract,
-transform, and load* (ETL) process.
+現在你有了湖屋，需要把一些數據導入去。一種方法是定義一個數據流，封裝提取*、轉換和加載*（ETL）過程。
 
-1.  Now, click on **Fabric_lakehouse** on the left-sided navigation
-    pane.
+1.  現在，點擊 左側導航面板上的Fabric_lakehouse。
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image105.png)
 
-2.  In the **Fabric_lakehouse** home page, click on the drop-down arrow
-    in the **Get data** and select **New Dataflow Gen2.** The Power
-    Query editor for your new dataflow opens.
+2.  **Fabric_lakehouse** 主頁上，單擊“**Get
+    data**”中的下拉箭頭，然後選擇“**New Dataflow
+    Gen2**”。此時將打開新數據流的 Power Query 編輯器。
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image106.png)
 
-5.  In the **New Dataflow Gen2** dialog box,
-    enter **+++Gen2_Dataflow+++** in the **Name** field, click on
-    the **Create** button and open the new Dataflow Gen2.
+5.  在“**New Dataflow Gen2**”對話框中，在“**Name**”字段中輸入
+    **+++Gen2_Dataflow+++** ，單擊“**Create**”按鈕，打開新的數據流
+    Gen2。
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image107.png)
 
-3.  In the **Power Query** pane under the **Home tab**, click on
-    **Import from a Text/CSV file**.
+3.  在 **Power Query 主頁標簽**下的窗格中，點擊“**Import from a Text/CSV
+    file**”。
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image108.png)
 
-4.  In the **Connect to data source** pane, under **Connection
-    settings**, select **Link to file (Preview)** radio button
+4.  在“**Connect to data source**”窗格的“**Connection
+    settings**”下，選擇“**Link to file (Preview)**”單選按鈕。
 
-- **Link to file**: *Selected*
+- **文件鏈接**: *已選擇*
 
-- **File path or
-  URL**: +++https://raw.githubusercontent.com/MicrosoftLearning/dp-data/main/orders.csv+++
+- **文件路徑或URL**: +++https://raw.githubusercontent.com/MicrosoftLearning/dp-data/main/orders.csv+++
 
-   ![](./media/image109.png)
+![](./media/image109.png)
 
-5.  In the **Connect to data source** pane, under **Connection
-    credentials,** enter the following details and click on the **Next**
-    button.
+5.  在“**Connect to data source**”窗格的“**Connection
+    credentials**”下，輸入以下詳細信息，然後單擊“**Next**”按鈕。
 
-- **Connection**: Create new connection
+- **連接**：創造新的連接
 
-- **Connection name**: Orders
+- **連接名稱**：Orders
 
-- **data gateway**: (none)
+- **數據網關**：（無）
 
-- **Authentication kind**: Anonymous
+- **認證類型**：匿名
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image110.png)
 
-6.  In **Preview file data** pane, click on **Create** to create the
-    data source. ![A screenshot of a computer Description automatically
+6.  在“**Preview file data**”窗格中，單擊“**Create**”以創建數據源。![A
+    screenshot of a computer Description automatically
     generated](./media/image111.png)
 
-7.  The **Power Query** editor shows the data source and an initial set
-    of query steps to format the data.
+7.  **Power Query** 編輯器顯示數據源及初始查詢步驟，用於格式化數據。
 
 ![](./media/image112.png)
 
-8.  On the toolbar ribbon, select the **Add column** tab. Then,
-    select **Custom column.**
+8.  在工具欄功能區上，選擇**“Add column**”標簽。然後，選擇 **Custom
+    column。**
 
 > ![](./media/image113.png) 
 
-9.  Set the New column name to +++**MonthNo+++** , set the Data type to
-    **Whole Number** and then add the following
-    formula:+++**Date.Month(\[OrderDate\])+++** under **Custom column
-    formula**. Select **OK**.
+9.  將新列名稱設置為 +++**MonthNo+++**，數據類型設置為**Whole
+    Number**，然後在“**Custom column
+    formula**”下添加以下公式：+++**Date.Month(\[OrderDate\])+++**。單擊“**OK**”。
 
 > ![](./media/image114.png)
 
-10. Notice how the step to add the custom column is added to the query.
-    The resulting column is displayed in the data pane.
+10. 注意添加自定義列的步驟是如何添加到查詢中的。生成的列會顯示在數據窗格中。
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image115.png)
 
-**Tip:** In the Query Settings pane on the right side, notice
-the **Applied Steps** include each transformation step. At the bottom,
-you can also toggle the **Diagram flow** button to turn on the Visual
-Diagram of the steps.
+**提示：**在右側的查詢設置面板中，注意應用 **Applied
+Steps** 了每個變換步驟。在底部，你還可以切換“**Diagram
+flow**”按鈕，打開步驟的可視化示意圖。
 
-Steps can be moved up or down, edited by selecting the gear icon, and
-you can select each step to see the transformations apply in the preview
-pane.
+步數可以上下移動，通過選擇齒輪圖標進行編輯，你還可以選擇每個步驟，在預覽窗格中看到變換的應用。
 
-## **Task 2: Add data destination for Dataflow**
+任務2：為Dataflow添加數據目的地
 
-1.  On the **Power Query** toolbar ribbon, select the **Home** tab. Then
-    in the D**ata destination** drop-down menu, select **Lakehouse**(if
-    not selected already).
+1.  在 **Power Query** 工具欄功能區中，選擇“**Home**”標簽。然後在 D**ata
+    destination** 下拉菜單中，選擇 **Lakehouse**（如果還沒選中）。
 
 ![](./media/image116.png)
 
 ![](./media/image117.png)
 
-**Note:** If this option is grayed out, you may already have a data
-destination set. Check the data destination at the bottom of the Query
-settings pane on the right side of the Power Query editor. If a
-destination is already set, you can change it using the gear.
+**注意：**如果該選項顯示為灰色，說明你可能已經設置了數據目的地。請在
+Power Query
+編輯器右側的查詢設置窗底部查看數據目的地。如果目的地已經設定好，可以用檔位來更改。
 
-2.  The **Lakehouse** destination is indicated as an **icon** in the
-    **query** in the Power Query editor.
+2.  在 Power Query 編輯器中，**Lakehouse**
+    目的地以**圖標**的形式顯示在**query**中。 
 
 ![A screenshot of a computer Description automatically
 generated](./media/image118.png)
@@ -1480,66 +1469,57 @@ generated](./media/image118.png)
 ![A screenshot of a computer Description automatically
 generated](./media/image119.png)
 
-3.  On the Home window, select **Save & run** and click on **Save &
-    run** button
+3.  在主頁窗口，選擇“**Save & run**”，然後點擊“**Save & run**”按鈕
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image120.png)
 
-4.  On the left navigation select ***dp_Fabric-XXXXX workspace icon***,
-    as shown in the image below
+4.  在左側導航中選擇 ***dp_Fabric-XXXXX workspace圖標***，如下圖所示
 
 ![](./media/image121.png)
 
-## Task 3: Add a dataflow to a pipeline
+## 任務3：向管道添加數據流
 
-You can include a dataflow as an activity in a pipeline. Pipelines are
-used to orchestrate data ingestion and processing activities, enabling
-you to combine dataflows with other kinds of operation in a single,
-scheduled process. Pipelines can be created in a few different
-experiences, including Data Factory experience.
+你可以將數據流作為流水線中的活動包含。管道用於協調數據的攝取和處理活動，使你能夠將數據流與其他類型的作結合在一個單一的定時流程中。管道可以在幾種不同的體驗中創建，包括Data
+Factory體驗。
 
-1.  In the Synapse Data Engineering Home page , Under **dp_FabricXX**
-    pane, select **+New item** -\> P**ipeline**
+1.  在 Synapse 數據工程主頁的 **dp_FabricXX** 窗格中，選擇**+New item**
+    -\> P**ipeline**”。
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image122.png)
 
-2.  In the **New pipeline** dialog box, enter +++**Load data+++** in
-    the **Name** field, click on the **Create** button to open the new
-    pipeline.
+2.  在“**New pipeline**”對話框中，在“**Name**”字段中輸入 +++**Load
+    data+++**，然後單擊“**Create**”按鈕以打開新管道。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image123.png)
 
-3.  The pipeline editor opens.
+3.  管道編輯器打開。
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image124.png)
 >
-> **Tip**: If the Copy Data wizard opens automatically, close it!
+> **提示**：如果複製數據嚮導自動打開，請關閉它！
 
-4.  Select **Pipeline activity**, and add a **Dataflow** activity to the
-    pipeline.
+4.  選擇 **Pipeline activity**，並將 **Dataflow** 活動添加到管道中。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image125.png)
 
-5.  With the new **Dataflow1** activity selected, on
-    the **Settings** tab, in the **Dataflow** drop-down list,
-    select **Gen2_Dataflow** (the data flow you created previously)
+5.  選擇新的 **Dataflow1**
+    活動後，在“**Settings**”選項卡上的“**Dataflow**”下拉列表中，選擇
+    **Gen2_Dataflow**（您之前創建的數據流）。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image126.png)
 
-6.  On the **Home** tab, save the pipeline using the **🖫 (*Save*)**
-    icon.
+6.  在**主頁**標簽頁，使用**🖫（*保存*）**圖標保存管道。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image127.png)
 
-7.  Use the **▷ Run** button to run the pipeline, and wait for it to
-    complete. It may take a few minutes.
+7.  使用 **▷ Run** 按鈕運行管道，等待它完成。可能需要幾分鐘。
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image128.png)
@@ -1550,52 +1530,47 @@ generated](./media/image127.png)
 > ![A screenshot of a computer Description automatically
 > generated](./media/image130.png)
 
-8.  From the top bar, select **Fabric_lakehouse** tab.
+8.  從頂部欄選擇 **Fabric_lakehouse** 標簽。
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image131.png)
 
-9.  In **Explorer** pane, select the **…** menu for **Tables**,
-    select **refresh**. Then expand **Tables** and select
-    the **orders** table, which has been created by your dataflow.
+9.  在 **Explorer**
+    窗格中，選擇“**Tables**”的“…”菜單，然後選擇“**refresh**”。接著展開“**Tables**”，選擇由數據流創建的
+    **orders** 表。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image132.png)
 
 ![](./media/image133.png)
 
-**Tip**: Use the Power BI Desktop *Dataflows connector* to connect
-directly to the data transformations done with your dataflow.
+**提示**： 使用Power
+BI桌面*數據流連接器*，直接連接到數據流中的數據轉換。
 
-You can also make additional transformations, publish as a new dataset,
-and distribute with intended audience for specialized datasets.
+你還可以進行額外的轉換，作為新數據集發佈，並向目標受眾分發專門數據集。
 
-## Task 4: Clean up resources
+## 任務4：清理資源
 
-In this exercise, you’ve learned how to use Spark to work with data in
-Microsoft Fabric.
+在這個練習中，你已經學會了如何使用Spark在Microsoft Fabric中處理數據。
 
-If you’ve finished exploring your lakehouse, you can delete the
-workspace you created for this exercise.
+如果你已經完成了 lakehouse 探索，可以刪除你為這個練習創建的工作區。
 
-1.  In the bar on the left, select the icon for your workspace to view
-    all of the items it contains.
+1.  在左側欄中，選擇工作區圖標，查看其所有項目。
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image134.png)
 
-2.  In the **…** menu on the toolbar, select **Workspace settings**.
+2.  在**......**工具欄菜單，選擇 **Workspace settings**。
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image135.png)
 
-3.  Select **General** and click on **Remove this workspace.**
+3.  選擇“**General**”，然後單擊“**Remove this workspace**”。
 
 ![A screenshot of a computer settings Description automatically
 generated](./media/image136.png)
 
-4.  In the **Delete workspace?** dialog box, click on the **Delete**
-    button.
+4.  在 **Delete workspace?** 對話框，點擊 **Delete** 按鈕。
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image137.png)
@@ -1603,41 +1578,19 @@ generated](./media/image136.png)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image138.png)
 
-**Summary**
+**摘要**
 
-This use case guides you through the process of working with Microsoft
-Fabric within Power BI. It covers various tasks, including setting up a
-workspace, creating a lakehouse, uploading and managing data files, and
-using notebooks for data exploration. Participants will learn how to
-manipulate and transform data using PySpark, create visualizations, and
-save and partition data for efficient querying.
+本 用例 將引導你在 Power BI 中使用 Microsoft Fabric
+的過程。它涵蓋了多個任務，包括搭建工作區、創建
+lakehouse、上傳和管理數據文件，以及使用筆記本進行數據探索。參與者將學習如何使用PySpark作和轉換數據，創建可視化，並保存和分區數據以實現高效的查詢。
 
-In this use case, participants will engage in a series of tasks focused
-on working with delta tables in Microsoft Fabric. The tasks encompass
-uploading and exploring data, creating managed and external delta
-tables, comparing their properties, the lab introduces SQL capabilities
-for managing structured data and provides insights on data visualization
-using Python libraries like matplotlib and seaborn. The exercises aim to
-provide a comprehensive understanding of utilizing Microsoft Fabric for
-data analysis, and incorporating delta tables for streaming data in an
-IoT context.
+在這個用例中，參與者將參與一系列專注於Microsoft
+Fabric中三角表的任務。任務包括上傳和探索數據、創建託管和外部 delta
+表、比較其屬性，實驗室介紹了用於結構化數據管理的 SQL 功能，並利用
+Matplotlib 和 seaborn 等 Python
+庫提供數據可視化的見解。這些練習旨在全面理解如何使用 Microsoft Fabric
+進行數據分析，以及在物聯網環境中引入差異表進行數據流傳輸。
 
-This use case guides you through the process of setting up a Fabric
-workspace, creating a data lakehouse, and ingesting data for analysis.
-It demonstrates how to define a dataflow to handle ETL operations and
-configure data destinations for storing the transformed data.
-Additionally, you'll learn how to integrate the dataflow into a pipeline
-for automated processing. Finally, you'll be provided with instructions
-to clean up resources once the exercise is complete.
+這個用例將引導你完成搭建Fabric工作區、創建數據湖屋以及數據導入分析的過程。它演示了如何定義數據流以處理ETL作，並配置存儲轉換後數據的數據目的地。此外，你還將學習如何將數據流集成到自動化處理的流水線中。最後，您將獲得清理資源的指導。
 
-This lab equips you with essential skills for working with Fabric,
-enabling you to create and manage workspaces, establish data lakehouses,
-and perform data transformations efficiently. By incorporating dataflows
-into pipelines, you'll learn how to automate data processing tasks,
-streamlining your workflow and enhancing productivity in real-world
-scenarios. The cleanup instructions ensure you leave no unnecessary
-resources, promoting an organized and efficient workspace management
-approach.
-
-
-
+該實驗室為您提供使用Fabric所需的必要技能，使您能夠創建和管理工作空間，建立數據湖，並高效執行數據轉換。通過將數據流融入管道，您將學會如何自動化數據處理任務，簡化工作流程並在現實環境中提升生產力。清理說明確保不遺留多餘資源，促進有序高效的工作管理方式。
