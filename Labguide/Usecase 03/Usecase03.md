@@ -1,135 +1,121 @@
-# Usecase 03- Chat with your data using Fabric Data Agent
+# 用例03——使用 Fabric 數據代理與你的數據聊天
 
-**Introduction:**
+**介紹：**
 
-This usecase introduces you to Microsoft Fabric’s Data Agent, enabling
-natural language querying over structured datasets. By leveraging large
-language models (LLMs), the Fabric Data Agent can interpret plain
-English questions and translate them into valid T-SQL queries, executed
-over your chosen lakehouse data. This hands-on exercise guides you
-through the process of configuring your environment, setting up a Fabric
-workspace, uploading data, and using the AI skill to interact with your
-data conversationally. You will also explore advanced features like
-providing query examples, adding instructions to improve accuracy, and
-calling the AI skill programmatically from a Fabric notebook
+該用例將向你介紹Microsoft
+Fabric的數據代理，支持對結構化數據集進行自然語言查詢。通過利用大型語言模型（LLM），Fabric
+Data Agent 可以解釋簡單的英語問題，並將其翻譯成有效的 T-SQL
+查詢，運行在您選擇的湖屋數據上。這個動手練習將引導你完成配置環境、搭建Fabric工作區、上傳數據，以及利用AI技能與你的數據進行對話式互動的過程。你還將探索高級功能，比如提供查詢示例、添加提高準確性說明，以及從Fabric筆記本中程序化調用AI技能
 
-**Objectives:**
+**目標:**
 
-- Set up a Fabric workspace and load data into a lakehouse.
+- 搭建一個Fabric工作區，並將數據加載到 lakehouse 中。
 
-- Create and configure a Data Agent to enable natural language querying.
+- 創建並配置一個數據代理，以支持自然語言查詢。
 
-- Ask questions in plain English and view AI-generated SQL query
-  results.
+- 用通俗易懂的英語提問，並查看AI生成的SQL查詢結果。
 
-- Enhance AI responses using custom instructions and example queries.
+- 通過自定義指令和示例查詢來增強AI回答。
 
-- Use the Data agent programmatically from a Fabric notebook.
+- 在 Fabric 筆記本中編程使用 Data agent。
 
-## **Task 0: Sync Host environment time**
+## **任務0：同步主機環境時間**
 
-1.  In your VM, navigate and click in the **Search bar**, type
-    **Settings** and then click on **Settings** under **Best match**.
+1.  在您的VM中，導航並單擊 **Search
+    bar**，鍵入“**Settings**”，然後單擊“**Best
+    match**”下的“**Settings**”。
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image1.png)
 
-2.  On Settings window, navigate and click on **Time & language**.
+2.  在設置窗口中，點擊 **Time & language**。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image2.png)
 
-3.  On **Time & language** page, navigate and click on **Date & time**.
+3.  在“**Time & language**”頁面，點擊“**Date & time**”。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image3.png)
 
-4.  Scroll down and navigate to **Additional settings** section, then
-    click on **Syn now** button. It will take 3-5 minutes to syn.
+4.  向下滾動，進入“**Additional settings**”部分，然後點擊“**Syn
+    now**”按鈕。同步需要3-5分鐘。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image4.png)
 
-5.  Close the **Settings** window.
+5.  關閉 **Settings** 窗口。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image5.png)
 
-## **Task 1: Create a Fabric workspace**
+## **任務1：創建Fabric工作區**
 
-In this task, you create a Fabric workspace. The workspace contains all
-the items needed for this lakehouse tutorial, which includes lakehouse,
-dataflows, Data Factory pipelines, the notebooks, Power BI datasets, and
-reports.
+在這個任務中，你需要創建一個Fabric工作區。工作區包含了本 lakehouse
+教程所需的所有內容，包括 lakehouse、數據流、Data Factory
+管道、筆記本、Power BI 數據集和報表。
 
-1.  Open your browser, navigate to the address bar, and type or paste
-    the following URL: +++https://app.fabric.microsoft.com/+++ then
-    press the **Enter** button.
+1.  打開瀏覽器，進入地址欄，輸入或粘貼以下URL：+++https://app.fabric.microsoft.com/+++
+    ，然後按下 **Enter** 鍵。
 
 > ![A search engine window with a red box Description automatically
 > generated with medium confidence](./media/image6.png)
 
-2.  In the **Microsoft Fabric** window, enter your credentials, and
-    click on the **Submit** button.
+2.  在 **Microsoft Fabric** 窗口中，輸入你的憑證，然後點擊 **Submit**
+    按鈕。
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image7.png)
 
-3.  Then, In the **Microsoft** window enter the password and click on
-    the **Sign in** button**.**
+3.  然後，在 **Microsoft** 窗口輸入密碼，點擊 **Sign in** 按鈕**。**
 
 > ![A login screen with a red box and blue text AI-generated content may
 > be incorrect.](./media/image8.png)
 
-4.  In **Stay signed in?** window, click on the **Yes** button.
+4.  在 **Stay signed in?** 窗口，點擊**“Yes”**按鈕。
 
 > ![A screenshot of a computer error AI-generated content may be
 > incorrect.](./media/image9.png)
 
-5.  In the Workspaces pane Select **+New workspace**.
+5.  在工作區面板中選擇 **+New workspace**。
 
 > ![](./media/image10.png)
 
-6.  In the **Create a workspace** pane that appears on the right side,
-    enter the following details, and click on the **Apply** button.
+6.  在右側的 **Create a workspace**
+    面板中，輸入以下細節，然後點擊“**Apply**”按鈕。
 
     |    |   |
     |----|----|
     |Name	|+++AI-Fabric-@lab.LabInstance.Id+++ (must be a unique Id) |
     |Advanced	|Under License mode, select Fabric capacity|
     |Default storage format	|Small dataset storage format|
-
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image11.png)
 >
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image12.png)
 
-7.  Wait for the deployment to complete. It takes 1-2 minutes to
-    complete.
+7.  等待部署完成。完成大約需要1-2分鐘。
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image13.png)
 
-## **Task 2: Create a lakehouse**
+## **任務 2: 建造 lakehouse**
 
-1.  In the **Fabric** **Home** page, select **+New item** and
-    select **Lakehouse** tile.
+1.  在**Fabric主頁**，選擇 **+New item** ，選擇 **Lakehouse** 瓷磚。
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image14.png)
 
-2.  In the **New lakehouse** dialog box, enter
-    +++**AI_Fabric_lakehouseXX**+++ in the **Name** field, click on the
-    **Create** button and open the new lakehouse.
+2.  在“**New lakehouse** ”對話框中，輸入“**Name**”欄的
+    +++**AI_Fabric_lakehouseXX**+++，點擊“**Create**”按鈕，打開新湖屋。
 
-> **Note**: Ensure to remove space before **AI_Fabric_lakehouseXX**.
+> **注意**：**AI_Fabric_lakehouseXX** 前請務必清空。
 >
 > ![A screenshot of a computer Description automatically
 > generated](./media/image15.png)
 
-3.  You will see a notification stating **Successfully created SQL
-    endpoint**.
+3.  你會看到一條通知，提示 **Successfully created SQL endpoint**。
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image16.png)
@@ -137,24 +123,21 @@ reports.
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image17.png)
 
-4.  Next, create a new notebook to query the table. In
-    the **Home** ribbon, select the drop down for **Open notebook** and
-    choose **New notebook**.
+4.  接下來，創建一個新的筆記本來查詢該表。在“**Home**”功能區中，選擇“**Open
+    notebook** ”下拉菜單，然後選擇“**New notebook**”。 
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image18.png)
 
-## **Task 3: Upload AdventureWorksDW data into lakehouse**
+## **任務3：將 AdventureWorksDW 數據上傳到 Lakehouse**
 
-First, create a lakehouse and populate it with the necessary data.
+首先，創建一個lakehouse並填充必要的數據。
 
-If you already have an instance of AdventureWorksDW in a warehouse or
-lakehouse, you can skip this step. If not, create a lakehouse from a
-notebook. Use the notebook to populate the lakehouse with the data.
+如果你已經在warehouse或lakehouse裡有 AdventureWorksDW
+實例，可以跳過這一步。如果沒有，就用筆記本創建一個lakehouse。用筆記本填充lakehouse的數據。
 
-1.  In the query editor, copy and paste the following code. Select
-    the **Run all** button to execute the query. After the query is
-    completed, you will see the results.
+1.  在查詢編輯器中，複製粘貼以下代碼。選擇“**Run
+    all **”按鈕來執行查詢。查詢完成後，你會看到結果。
 
     ```
     import pandas as pd
@@ -173,7 +156,6 @@ notebook. Use the notebook to populate the lakehouse with the data.
         # save as lakehouse table
         spark.createDataFrame(df).write.mode('overwrite').saveAsTable(table)
     ```
-
 > ![A screenshot of a computer Description automatically
 > generated](./media/image19.png)
 >
@@ -182,25 +164,24 @@ notebook. Use the notebook to populate the lakehouse with the data.
 >
 > ![](./media/image21.png)
 
-After a few minutes, the lakehouse is populated with the necessary data.
+幾分鐘後，lakehouse已經收集了所需的數據。
 
-## **Task 4: Create Data agent**
+## **任務4：創建數據代理**
 
-1.  Now, click on **AI-Fabric-XXXX** on the left-sided navigation pane.
+1.  現在，點擊 左側導航面板上的 **AI-Fabric-XXXX** 。
 
 ![](./media/image22.png)
 
-2.  In the **Fabric** home page, select **+New item.**
+2.  在 **Fabric** 主頁，選擇 **+New item**。
 
 ![](./media/image23.png)
 
-3.  In the **Filter by item type** search box, enter **+++data
-    agent+++** and select the **Data agent.**
+3.  在“**Filter by item type**”搜索框中，輸入 **+++data agent+++**
+    並選擇 **Data agent**。
 
 ![](./media/image24.png)
 
-4.  Enter **+++AI-agent+++** as the Data agent name and
-    select **Create**.
+4.  輸入 **+++AI-agent+++** 作為 Data 代理名稱，選擇 **Create**。
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image25.png)
@@ -208,23 +189,22 @@ incorrect.](./media/image25.png)
 ![A screenshot of a computer Description automatically
 generated](./media/image26.png)
 
-5.  In AI-agent page, select **Add a data source**.
+5.  在 AI 代理頁面中，選擇 **Add a data source**。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image27.png)
 
-6.  In the **OneLake catalog** tab, select the **AI-Fabric_lakehouse
-    lakehouse** and select **Add**.
+6.  在 **OneLake catalog** 標簽頁中，選擇 **AI-Fabric_lakehouse
+    lakehouse** 並選擇 **Add**。
 
 > ![](./media/image28.png)
 >
 > ![A screenshot of a computer Description automatically
 > generated](./media/image29.png)
 
-1.  You must then select the tables for which you want the AI skill to
-    have available access.
+1.  然後你必須選擇你希望AI技能能訪問的表格。
 
-This lab uses these tables:
+這個實驗室使用這些表格:
 
 - DimCustomer
 
@@ -248,21 +228,19 @@ This lab uses these tables:
 
 > ![](./media/image30.png)
 
-## **Task 5: Provide instructions**
+## **任務5：提供指令**
 
-1.  When you first ask the questions with the listed tables select
-    **factinternetsales**, the data agent answers them fairly well.
+1.  當你第一次用列出的表格選擇 **factinternetsales**
+    來提問時，數據代理會相當準確地回答。
 
-2.  For instance, for the question +++**What is the most sold
-    product?+++**
+2.  例如，對於+++**What is the most sold product?+++**
 
 ![A screenshot of a computer Description automatically
 generated](./media/image31.png)
 
 ![](./media/image32.png)
 
-3.  Copy the question and SQL queries and paste them in a notepad and
-    then Save the notepad to use the information in the upcoming tasks.
+3.  複製問題和SQL查詢，粘貼到記事本，然後保存記事本，以便後續任務中使用這些信息。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image33.png)
@@ -270,10 +248,10 @@ generated](./media/image33.png)
 ![A screenshot of a computer Description automatically
 generated](./media/image34.png)
 
-4.  Select **FactResellerSales** and enter the following text and click
-    on the **Submit icon** as shown in the below image.
+4.  選擇 **FactResellerSales**，輸入以下文字，點擊下圖所示的
+    **Submit圖標**。
 
-   **+++What is our most sold product?+++**
++++**What is our most sold product?**+++
 
 ![A screenshot of a computer Description automatically
 generated](./media/image35.png)
@@ -281,13 +259,11 @@ generated](./media/image35.png)
 ![A screenshot of a computer Description automatically
 generated](./media/image36.png)
 
-As you continue to experiment with queries, you should add more
-instructions.
+隨著你不斷嘗試查詢，應該添加更多指令。
 
-5.  Select the **dimcustomer** , enter the following text and click on
-    the **Submit icon**
+5.  選擇 **dimcustomer** ， 輸入以下文字，點擊 **Submit圖標**
 
-   **+++how many active customers did we have June 1st, 2013?+++**
++++**How many active customers did we have on June 1st, 2013?**+++
 
 ![A screenshot of a computer Description automatically
 generated](./media/image37.png)
@@ -295,9 +271,7 @@ generated](./media/image37.png)
 ![A screenshot of a computer Description automatically
 generated](./media/image38.png)
 
-7.  Copy the all question and SQL queries and paste them in a notepad
-    and then Save the notepad to use the information in the upcoming
-    tasks.
+7.  把所有問題和SQL查詢複製出來，粘貼到記事本裡，然後保存記事本，方便後續任務中使用這些信息。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image39.png)
@@ -305,10 +279,10 @@ generated](./media/image39.png)
 ![A screenshot of a computer Description automatically
 generated](./media/image40.png)
 
-8.  Select the **dimdate**, **FactInternetSales** , enter the following
-    text and click on the **Submit icon:**
+8.  選擇 **dimdate，FactInternetSales ，**輸入以下文字，點擊
+    **Submit圖標** **:**
 
-    **+++what are the monthly sales trends for the last year?+++**
++++**what are the monthly sales trends for the last year?**+++
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image41.png)
@@ -316,10 +290,10 @@ incorrect.](./media/image41.png)
 ![A screenshot of a computer Description automatically
 generated](./media/image42.png)
 
-6.  Select the **dimproduct,** **FactInternetSales** , enter the
-    following text and click on the **Submit icon:**
+6.  選擇 **dimproduct，FactInternetSales ，**輸入以下文字，點擊
+    **Submit圖標 :**
 
-**+++which product category had the highest average sales price?+++**
++++**which product category had the highest average sales price?**+++
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image43.png)
@@ -327,31 +301,29 @@ generated](./media/image42.png)
 > ![A screenshot of a computer Description automatically
 > generated](./media/image44.png)
 
-Part of the problem is that "active customer" doesn't have a formal
-definition. More instructions in the notes to the model text box might
-help, but users might frequently ask this question. You need to make
-sure that the AI handles the question correctly.
+問題的一部分在於“活躍客戶”沒有正式的定義。模型文本框備註中更多說明可能會有幫助，但用戶可能會經常問這個問題。你需要確保AI正確地處理這個問題。
 
-7.  The relevant query is moderately complex, so provide an example by
-    selecting the **Example queries** button from the **Setup** pane.
+7.  相關查詢較為複雜，因此請從“**Setup**”窗格中選擇“**Example
+    queries**”按鈕來提供示例。
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image45.png)
 
-8.  In the Example queries tab, select the **Add example.**
+8.  在“Example queries”標簽中，選擇 **Add example。**
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image46.png)
 
-9.  Here, you should add Example queries for the lakehouse data source
-    that you have created. Add the below question in the question field:
+9.  這裡，你應該為你創建的 lakehouse
+    數據源添加示例查詢。請在問題欄中添加以下問題:
 
-    **+++What is the most sold product?+++**
++++What is the most sold product?+++
 
 ![A screenshot of a computer Description automatically
 generated](./media/image47.png)
 
-10. Add the query1 that you have saved in the notepad:  
+10. 添加你保存在記事本中的 query1:  
+      
 ```      
 SELECT TOP 1 ProductKey, SUM(OrderQuantity) AS TotalQuantitySold
 FROM [dbo].[factinternetsales]
@@ -362,19 +334,20 @@ ORDER BY TotalQuantitySold DESC
 ![A screenshot of a computer Description automatically
 generated](./media/image48.png)
 
-11. To add a new query field, click on **+Add.**
+11. 要添加新的查詢字段，請點擊 **+Add。**
 
 ![A screenshot of a computer Description automatically
 generated](./media/image49.png)
 
-12. To add a second question in the question field:
+12. 在問題欄中添加第二個問題:
 
-**+++What are the monthly sales trends for the last year?+++**
++++What are the monthly sales trends for the last year?+++
 
 ![A screenshot of a computer Description automatically
 generated](./media/image50.png)
 
-13. Add the query3 that you have saved in the notepad:  
+13. 把你保存在筆記本裡的query3添加進去:  
+      
 	```      
 	SELECT
 	    d.CalendarYear,
@@ -397,23 +370,25 @@ generated](./media/image50.png)
 	ORDER BY
 	    d.MonthNumberOfYear
 	```
->
 > ![A screenshot of a computer Description automatically
 > generated](./media/image51.png)
 
-14. To add a new query field, click on **+Add.**
+14. 要添加新的查詢字段，請點擊 **+Add。**
 
 ![A screenshot of a computer Description automatically
 generated](./media/image52.png)
 
-15. To add a third question in the question field:
+15. 在問題欄中添加第三個問題:
 
 +++Which product category has the highest average sales price?+++
 
 ![A screenshot of a computer Description automatically
 generated](./media/image53.png)
 
-16. Add the query4 that you have saved in the notepad:  
+16. 添加你保存在筆記本中的 query4:  
+      
+    **SELECT TOP 1**
+
 ```      
 SELECT TOP 1
     dp.ProductSubcategoryKey AS ProductCategory,
@@ -430,8 +405,8 @@ ORDER BY
 ![A screenshot of a computer Description automatically
 generated](./media/image54.png)
 
-11. Add all the queries and SQL queries that you have saved in Notepad,
-    and then click on ‘**Export all’**
+11. 把你保存在筆記本裡的所有查詢和SQL查詢添加進去，然後點擊“**Export
+    all”**
 
 ![A screenshot of a computer Description automatically
 generated](./media/image55.png)
@@ -439,31 +414,25 @@ generated](./media/image55.png)
 ![A screenshot of a computer Description automatically
 generated](./media/image56.png)
 
-## **Task 6: Use the Data agent programmatically**
+## **任務6：程序化使用Data代理**
 
-Both instructions and examples were added to the Data agent. As testing
-proceeds, more examples and instructions can improve the AI skill even
-further. Work with your colleagues to see if you provided examples and
-instructions that cover the kinds of questions they want to ask.
+指令和示例都被添加到了Data代理中。隨著測試的推進，更多的示例和說明可以進一步提升AI技能。和同事一起看看你是否提供了涵蓋他們想問的問題的例子和說明。
 
-You can use the AI skill programmatically within a Fabric notebook. To
-determine whether or not the AI skill has a published URL value.
+你可以在Fabric筆記本中編程使用AI技能。用來判斷AI技能是否有已發佈的URL值。
 
-1.  In the Data agent Fabric page, in the **Home** ribbon select the
-    **Settings**.
+1.  在 Data agent Fabric頁面，**Home**功能區選擇**Settings**。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image57.png)
 
-2.  Before you publish the AI skill, it doesn't have a published URL
-    value, as shown in this screenshot.
+2.  在你發佈AI技能之前，它沒有發佈的URL值，如這張截圖所示。
 
-3.  Close the AI Skill setting.
+3.  關閉AI技能設置。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image58.png)
 
-4.  In the **Home** ribbon, select the **Publish**.
+4.  在 **Home**頁功能區，選擇 **Publish**。 
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image59.png)
@@ -471,38 +440,36 @@ generated](./media/image58.png)
 > ![A screenshot of a computer Description automatically
 > generated](./media/image60.png)
 
-9.  Click on the **View publishing details**
+9.  點擊查看 **View publishing details**
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image61.png)
 
-5.  The published URL for the AI agent appears, as shown in this
-    screenshot.
+5.  AI代理的公開URL顯示在這張截圖中。
 
-6.  Copy the URL and paste that in a notepad and then Save the notepad
-    to use the information in the upcoming steps.
+6.  複製URL粘貼到記事本，然後保存記事本以便在後續步驟中使用這些信息。
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image62.png)
 
-7.  Select **Notebook1** in the left navigation pane.
+7.  在左側導航窗格選擇**Notebook1。**
 
 ![A screenshot of a computer Description automatically
 generated](./media/image63.png)
 
-10. Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, enter the following code in it and replace the
-    **URL**. Click on **▷ Run** button and review the output
+10. 使用單元格輸出下方的 **+
+    Code** 圖標，向筆記本添加一個新的代碼單元，輸入以下代碼並替換
+    **URL**。點擊 **▷ Run** 按鈕，查看輸出結果
 
-    +++%pip install "openai==1.70.0"+++
++++%pip install "openai==1.70.0"+++
 
 > ![](./media/image64.png)
 >
 > ![](./media/image65.png)
 
-11. Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, enter the following code in it and replace the
-    **URL**. Click on **▷ Run** button and review the output
+11. 使用單元格輸出下方的 **+ Code**
+    圖標，向筆記本添加一個新的代碼單元，輸入以下代碼並替換 **URL**。點擊
+    **▷ Run** 按鈕，查看輸出結果
 
 > +++%pip install httpx==0.27.2+++
 >
@@ -511,9 +478,10 @@ generated](./media/image63.png)
 > ![A screenshot of a computer Description automatically
 > generated](./media/image67.png)
 
-8.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, enter the following code in it and replace the
-    **URL**. Click on **▷ Run** button and review the output
+8.  使用單元格輸出下方的 **+
+    Code** 圖標，向筆記本添加一個新的代碼單元，輸入以下代碼並替換
+    **URL**。點擊 **▷ Run** 按鈕，查看輸出結果
+
 ```
 import requests
 import json
@@ -603,26 +571,25 @@ fabric_client.beta.threads.delete(thread_id=thread.id)
 >
 > ![](./media/image69.png)
 
-## **Task 7: Delete the resources**
+## **任務7：刪除資源**
 
-1.  Select your workspace, the **AI-Fabric-XXXX** from the left-hand
-    navigation menu. It opens the workspace item view.
+1.  選擇你的工作區，在左側導航菜單中使用
+    **AI-Fabric-XXXX**。它會打開工作區的物品視圖。
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image70.png)
 
-2.  Select the **...** option under the workspace name and
-    select **Workspace settings**.
+2.  選擇...... 在工作區名稱下選擇選項，選擇 **Workspace settings**。
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image71.png)
 
-3.  Select **Other** and **Remove this workspace.**
+3.  選擇 **Other** 並 **Remove this workspace**。 
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image72.png)
 
-4.  Click on **Delete** in the warning that pops up.
+4.  點擊彈出的警告中“**Delete**”。
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image73.png)
@@ -630,15 +597,9 @@ fabric_client.beta.threads.delete(thread_id=thread.id)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image74.png)
 
-**Summary:**
+**摘要：**
 
-In this lab, you learned how to unlock the power of conversational
-analytics using Microsoft Fabric’s Data Agent. You configured a Fabric
-workspace, ingested structured data into a lakehouse, and set up an AI
-skill to translate natural language questions into SQL queries. You also
-enhanced the AI agent’s capabilities by providing instructions and
-examples to refine query generation. Finally, you called the agent
-programmatically from a Fabric notebook, demonstrating end-to-end AI
-integration. This lab empowers you to make enterprise data more
-accessible, usable, and intelligent for business users through natural
-language and generative AI technologies.
+在本實驗室中，你學習了如何利用Microsoft
+Fabric的數據代理，釋放對話式分析的力量。你配置了一個Fabric工作區，將結構化數據導入
+lakehouse，並設置了一個AI技能將自然語言問題轉換為SQL查詢。你還通過提供指導和示例來優化查詢生成，增強了AI代理的能力。最後，你通過Fabric筆記本程序化調用了代理，展示了端到端的AI集成。該實驗室通過自然語言和
+generative AI 技術，賦能您讓企業數據對企業用戶更易訪問、更易用且更智能。
