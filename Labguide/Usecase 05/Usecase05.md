@@ -1,125 +1,124 @@
-## Caso de uso 05: Creación de un Data Warehouse de ventas y geografía para Contoso en Microsoft Fabric
+## Caso de uso 05 – Creación de un Data Warehouse geográfico y de ventas para Contoso en Microsoft Fabric
+
 **Introducción**
+Contoso, una empresa multinacional del sector retail, busca modernizar
+su infraestructura de datos para optimizar el análisis geográficoy de
+ventas. Actualmente, sus datos de ventas y clientes se encuentran
+dispersos en múltiples sistemas, lo que dificulta que sus analistas de
+negocio y desarrolladores ciudadanos obtengan información relevante. La
+compañía planea consolidar estos datos en una plataforma unificada
+mediante Microsoft Fabric, con el objetivo de habilitar consultas
+cruzadas, análisis de ventas e informes geográficos.
 
-Contoso, una empresa minorista multinacional, busca modernizar su
-infraestructura de datos para mejorar el análisis de ventas y geografía.
-Actualmente, sus datos de ventas y clientes se encuentran dispersos en
-múltiples sistemas, lo que dificulta que sus analistas de negocio y
-desarrolladores ciudadanos obtengan información útil. La empresa planea
-consolidar estos datos en una plataforma unificada utilizando Microsoft
-Fabric, con el objetivo de permitir consultas cruzadas, análisis de
-ventas e informes geográficos.
-
-En este laboratorio, usted asumirá el rol de ingeniero de datos en
-Contoso, encargado de diseñar e implementar una solución de data
-warehouse utilizando Microsoft Fabric. Comenzará configurando un
-workspace de Fabric, creando un data warehouse, cargando datos desde
-Azure Blob Storage y realizando tareas analíticas para entregar
-información a los tomadores de decisiones de Contoso.
+En este laboratorio, asumirá el rol de ingeniero de datos en Contoso,
+encargado de diseñar e implementar una solución de Data Warehouse
+utilizando Microsoft Fabric. Comenzará configurando un espacio de
+trabajo en Fabric, creando un Data Warehouse, cargando datos desde Azure
+Blob Storage y realizando tareas analíticas para proporcionar
+información útil a los tomadores de decisiones de la empresa.
 
 Aunque muchos conceptos de Microsoft Fabric pueden resultar familiares
-para los profesionales de datos y análisis, aplicarlos en un entorno
-nuevo puede ser un desafío. Este laboratorio ha sido diseñado para
-guiarlo paso a paso a través de un escenario de principio a fin, desde
-la adquisición de datos hasta su consumo, con el fin de construir una
-comprensión básica de la experiencia de usuario de Microsoft Fabric, sus
-diferentes entornos y puntos de integración, así como de las
-experiencias profesionales y para desarrolladores ciudadanos dentro de
-Microsoft Fabric.
+para profesionales de datos y analítica, aplicarlos en un entorno nuevo
+puede representar un desafío. Por ello, este laboratorio está diseñado
+para guiar paso a paso a través de un escenario de extremo a extremo,
+desde la adquisición hasta el consumo de datos, con el objetivo de
+construir una comprensión básica de la experiencia de usuario de
+Microsoft Fabric, las distintas experiencias que ofrece, sus puntos de
+integración y las funcionalidades disponibles tanto para profesionales
+de datos como para desarrolladores ciudadanos.
 
 **Objetivos**
 
-- Configurar un workspace de Fabric con la versión de prueba habilitada.
+- Configurar un espacio de trabajo en Fabric con prueba habilitada.
 
-- Establecer un nuevo Warehouse llamado WideWorldImporters en Microsoft
-  Fabric.
+- Establecer un nuevo Data Warehouse llamado WideWorldImporters en
+  Microsoft Fabric.
 
-- Cargar datos en el workspace Warehouse_FabricXX mediante un pipeline
-  de Data Factory.
+- Cargar datos en el espacio de trabajo Warehouse_FabricXX usando un
+  pipeline de Data Factory.
 
-- Generar las tablas dimension_city **y** fact_sale dentro del data
-  warehouse.
+- Generar las tablas dimension_city y fact_sale dentro del Data
+  Warehouse.
 
-- Poblar las tablas dimension_city **y** fact_sale con datos
-  provenientes de Azure Blob Storage.
+- Poblar las tablas dimension_city y fact_sale con datos provenientes de
+  Azure Blob Storage.
 
-- Crear clones de las tablas dimension_city **y** fact_sale en el
+- Crear clones de las tablas dimension_city y fact_sale dentro del Data
   Warehouse.
 
 - Clonar las tablas dimension_city y fact_sale en el esquema dbo1.
 
-- Desarrollar un stored procedure para transformar los datos y crear la
-  tabla aggregate_sale_by_date_city.
+- Desarrollar un procedimiento almacenado para transformar datos y crear
+  la tabla aggregate_sale_by_date_city.
 
-- Generar consultas mediante el visual query builder para combinar y
-  agregar datos.
+- Generar una consulta utilizando el generador visual de consultas para
+  combinar y agregar datos.
 
 - Utilizar un notebook para consultar y analizar datos de la tabla
-  dimension**\_**customer.
+  dimension_customer.
 
-- Incluir los warehouses WideWorldImporters y ShortcutExercise para
-  realizar cross-querying.
+- Incluir los Data Warehouses WideWorldImporters y ShortcutExercise para
+  consultas cruzadas.
 
-- Ejecutar consultas T-SQL entre los warehouses WideWorldImporters y
-  ShortcutExercise.
+- Ejecutar una consulta T-SQL a través de los Data Warehouses
+  WideWorldImporters y ShortcutExercise.
 
-- Habilitar la integración de Azure Maps desde el Admin portal**.**
+- Habilitar la integración visual con Azure Maps en el portal de
+  administración.
 
-- Generar visualizaciones de column chart, map y table para el reporte
-  Sales Analysis.
+- Generar gráficos de columnas, mapas y tablas para el informe de
+  análisis de ventas.
 
-- Crear un reporte a partir del dataset WideWorldImporters en el OneLake
-  data hub.
+- Crear un informe utilizando datos del conjunto de datos
+  WideWorldImporters en el hub de datos OneLake.
 
-- Eliminar el workspace y todos los elementos asociados una vez
-  finalizado el ejercicio.
+- Eliminar el espacio de trabajo y sus elementos asociados.
 
-# **Ejercicio 1: Crear un workspace de Microsoft Fabric**
+# **Ejercicio 1: Crear un espacio de trabajo en Microsoft Fabric**
 
-## **Tarea 1: Iniciar sesión en la cuenta de Power BI y registrarse para la prueba gratuita de Microsoft Fabric**
+## **Tarea 1: Iniciar sesión en la cuenta de Power BI y registrarse en la prueba gratuita de Microsoft Fabric**
 
-1.  Abra su navegador, navegue hasta la barra de direcciones y escriba o
-    pegue la siguiente URL: +++https://app.fabric.microsoft.com/+++ y
-    luego presione el botón **Enter**.
+1.  Abra su navegador, vaya a la barra de direcciones y escriba o pegue
+    la siguiente URL: +++https://app.fabric.microsoft.com/+++ y luego
+    presione la tecla **Enter**.
 
 > ![](./media/image1.png)
 
 2.  En la ventana de **Microsoft Fabric**, ingrese las credenciales
-    asignadas y haga clic en el botón **Submit** .
+    asignadas y haga clic en el botón **Submit**.
 
 > ![](./media/image2.png)
 
 3.  Luego, en la ventana de **Microsoft**, ingrese la contraseña y haga
-    clic en el botón **Sign in**.
+    clic en el botón **Sign in.**
 
 > ![](./media/image3.png)
 
-4.  En la ventana **Stay signed in?** haga clic en el botón **Yes**.
+4.  En la ventana **Stay signed in?,** haga clic en **Yes.**
 
 > ![](./media/image4.png)
 
-5.  Se le dirigirá a la página de inicio de Power BI.
+5.  Será redirigido a la página de inicio de Power BI.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image5.png)
+> ![](./media/image5.png)
 
-## Tarea 2: Crear un workspace
+## Tarea 2: Crear un espacio de trabajo
 
-Antes de trabajar con datos en Fabric, cree un área de trabajo con la
-versión de prueba de Fabric habilitada.
+Antes de trabajar con datos en Fabric, cree un espacio de trabajo con la
+prueba gratuita de Fabric habilitada.
 
-1.  En el panel **Workspaces**, seleccione **+** **New workspace**.
+1.  En el panel **Workspaces**, seleccione **+ New workspace**.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image6.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image6.png)
 
-2.  En la pestaña **Create a workspace,** ingrese los siguientes
-    detalles y haga clic en el botón **Apply**.
+2.  En la pestaña **Create a workspace**, ingrese los siguientes datos y
+    haga clic en el botón **Apply:**
 
     |  |  |
     |----|---|
-    |Name	|+++Warehouse_FabricXXXX+++ (XXXX can be a unique number) |
-    |Description	|This workspace contains all the artifacts for the data warehouse|
+    |Name	|+++Warehouse_Fabric@lab.LabInstance.Id+++ (must be a unique Id) |
+    |Description	|+++This workspace contains all the artifacts for the data warehouse+++|
     |Advanced	Under License mode| select Fabric capacity|
     |Default storage format	|Small dataset storage format|
 
@@ -128,116 +127,112 @@ versión de prueba de Fabric habilitada.
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image8.png)
 
-3.  Espere a que se complete la implementación. Tarda entre 1 y 2
-    minutos en completarse. Cuando se abra el nuevo workspace, debería
+3.  Espere a que finalice la implementación. Este proceso tarda entre 1
+    y 2 minutos. Cuando se abra su nuevo espacio de trabajo, debería
     estar vacío.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image9.png)
+> ![](./media/image9.png)
 
-## Tarea 4: Crear un Warehouse en Microsoft Fabric
+## Tarea 3: Crear un Warehouse en Microsoft Fabric
 
 1.  En la página de **Fabric**, seleccione **+ New item** para crear un
-    lakehouse y seleccione **Warehouse**.
+    lakehouse y luego seleccione Warehouse.
 
-> ![](./media/image10.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image10.png)
 
 2.  En el cuadro de diálogo **New warehouse**, ingrese
-    **+++WideWorldImporters+++** y haga clic en el botón **Create**.
+    +++**WideWorldImporters**+++ y haga clic en el botón **Create**.
 
 > ![](./media/image11.png)
 
-3.  Cuando se complete el aprovisionamiento, aparecerá la página de
-    inicio del warehouse **WideWorldImporters**.
+3.  Cuando finalice el aprovisionamiento, aparecerá la página inicial
+    del almacén de datos **WideWorldImporters**.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image12.png)
+> ![](./media/image12.png)
 
-# Ejercicio 2: Ingerir datos en un Warehouse en Microsoft Fabric
+# **Ejercicio 2: Ingerir datos en un Warehouse en Microsoft Fabric**
 
 ## Tarea 1: Ingerir datos en un Warehouse
 
-1.  Desde la página de inicio del warehouse **WideWorldImporters**,
-    seleccione **Warehouse_FabricXX** en el menú de navegación lateral
-    izquierdo para volver a la lista de elementos del workspace.
+1.  Desde la página inicial del warehouse **WideWorldImporters**,
+    seleccione **Warehouse_FabricXX** en el menú de navegación izquierdo
+    para regresar a la lista de elementos del espacio de trabajo.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image13.png)
+> ![](./media/image13.png)
 
-2.  En la página **Warehouse_FabricXX**, seleccione **+New item**.
-    Luego, haga clic en **Data pipeline** para ver la lista completa de
-    elementos disponibles debajo de **Get data**.
+2.  En la página **Warehouse_FabricXX**, seleccione **+ New item**.
+    Luego haga clic en **Pipeline** para ver la lista completa de
+    elementos disponibles en Get data.
 
 > ![](./media/image14.png)
 
 3.  En el cuadro de diálogo **New pipeline**, en el campo **Name**,
-    ingrese **+++Load Customer Data+++** y haga clic en el botón
+    ingrese +++**Load Customer Data**+++ y haga clic en el botón
     **Create**.
 
 > ![](./media/image15.png)
 
-4.  En la página **Load Customer Data**, navegue a la sección **Start
-    building your data pipeline** y haga clic en **Pipeline activity**.
+4.  En la página **Load Customer Data**, navegue hasta la sección
+    **Start building your data pipeline** y haga clic en **Pipeline
+    activity**.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image16.png)
+> ![](./media/image16.png)
 
 5.  Navegue y seleccione **Copy data** en la sección **Move &
     transform**.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image17.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image17.png)
 
-6.  Seleccione la actividad recién creada **Copy data 1** desde el
-    lienzo de diseño para configurarla.
+6.  Seleccione la actividad recién creada **Copy data 1** en el lienzo
+    de diseño para configurarla.
 
-> **Nota**: Arrastre la línea horizontal en el lienzo de diseño para
-> tener una vista completa de las distintas funciones.
+> **Nota:** Arrastre la línea horizontal en el lienzo de diseño para ver
+> por completo las diferentes características.
 >
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image18.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image18.png)
 
-7.  En la pestaña **General**, en el campo **Name,** ingrese +++**CD
-    Load dimension_customer+++**.
+7.  En la pestaña **General**, en el campo **Name**, ingrese +++**CD
+    Load dimension_customer+++**
 
-> ![](./media/image19.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image19.png)
 
 8.  En la página **Source**, seleccione el menú desplegable
-    **Connection**. Haga clic en **More** para ver todas las fuentes de
-    datos disponibles, incluidas las fuentes de datos en su OneLake
-    local.
+    **Connection**. Seleccione **Browse all** para ver todas las fuentes
+    de datos disponibles.
 
 > ![](./media/image20.png)
 
-9.  En la ventana **Get data**, busque **+++Azure Blobs+++**, luego haga
-    clic en el botón **Azure Blob Storage**.
+9.  En la ventana **Get data**, busque +++**Azure Blobs**+++ y luego
+    haga clic en el botón **Azure Blob Storage**.
 
 > ![](./media/image21.png)
 
 10. En el panel **Connection settings** que aparece en el lado derecho,
-    configure los siguientes ajustes y haga clic en el botón
-    **Connect**.
+    configure los siguientes valores y haga clic en el botón
+    **Connect**:
 
 - En **Account name or URL**, ingrese
   +++**https://fabrictutorialdata.blob.core.windows.net/sampledata/+++**
 
-- En la sección **Connection credentials**, haga clic en el menú
-  desplegable debajo de **Connection**, y luego seleccione **Create new
-  connection**.
+- En **Connection credentials**, haga clic en el menú desplegable
+  **Connection** y seleccione **Create new connection**.
 
-- En el campo **Connection name,** ingrese +++**Wide World Importers
-  Public Sample+++**.
+- En **Connection name**, ingrese +++**Wide World Importers Public Sample+++**.
 
-- Configure **Authentication kind** en **Anonymous**.
+- Establezca **Authentication kind** en **Anonymous**.
 
-![](./media/image22.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image22.png)
 
-11. Cambie la configuración restante en la página **Source** de la
-    actividad de copia de la siguiente manera para llegar a los archivos
-    .parquet
-    en **https://fabrictutorialdata.blob.core.windows.net/sampledata/WideWorldImportersDW/parquet/full/dimension_customer/\*.parquet**
+11. Cambie los valores restantes en la página **Source** de la actividad
+    de copia para llegar a los archivos .parquet ubicados en:
+    **https://fabrictutorialdata.blob.core.windows.net/sampledata/WideWorldImportersDW/parquet/full/dimension_customer/\*.parquet**
 
-12. En los cuadros de texto **File** **path**, ingrese:
+12. En las cajas de texto **File path**, proporcione:
 
 - **Container:** +++**sampledata+++**
 
@@ -245,75 +240,80 @@ versión de prueba de Fabric habilitada.
 
 - **File path - File name:** +++**dimension_customer.parquet+++**
 
-- En el desplegable **File format**, seleccione **Parquet** (si no puede
-  ver **Parquet**, escríbalo en el cuadro de búsqueda y luego
-  selecciónelo)
+- En el menú desplegable **File format**, seleccione **Parquet** (si no
+  aparece, escríbalo en la barra de búsqueda y selecciónelo).
 
-![](./media/image23.png)
+> ![](./media/image23.png)
 
 13. Haga clic en **Preview data** en el lado derecho de la configuración
-    de **File path** para asegurarse de que no haya errores y luego haga
-    clic en **Close**.
+    de **File path** para asegurarse de que no existan errores y luego
+    cierre la ventana.
 
 > ![](./media/image24.png)
+>
+> ![A screenshot of a computer Description automatically
+> generated](./media/image25.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image25.png)
-
-14. En la pestaña **Destination**, ingrese la siguiente configuración.
+14. En la pestaña **Destination**, ingrese los siguientes valores:
 
     |  |  |
     |---|---|
     |Connection	|WideWorldImporters|
     |Table option	|select the Auto create table radio button.|
-    |Data Warehouse|	Drop down, select WideWorldImporters from the list
-    |Table	|•	In the first box enter +++dbo+++                                                                                                            •	In the second box enter +++dimension_customer+++|
+    |Table	|•	In the first box enter +++dbo+++<br>•	In the second box enter +++dimension_customer+++|
 
-> ![](./media/image26.png)
-
-15. En la cinta de opciones, seleccione **Run** .
-
-> ![](./media/image27.png)
-
-16. En el cuadro de diálogo **Save and run?** haga clic en el botón
-    **Save and run**.
-
-> ![](./media/image28.png)
+> **Nota: Al agregar la conexión como WideWorldImporters warehouse,
+> agréguela desde el catálogo OneLake navegando a la opción Browse
+> all.**
 >
-> ![](./media/image29.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image26.png)
+>
+> ![A screenshot of a computer Description automatically
+> generated](./media/image27.png)
+>
+> ![A screenshot of a computer Description automatically
+> generated](./media/image28.png)
 
-17. Monitoree el progreso de la actividad Copy en la página **Output** y
-    espere a que se complete.
+15. En la cinta de opciones, seleccione **Run**.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image30.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image29.png)
 
-# Ejercicio 3: Crear tablas en un Data Warehouse 
+16. En el cuadro de diálogo **Save and run?**, haga clic en **Save and
+    run**.
 
-## Tarea 1: Crear tabla en un Data Warehouse
+> ![](./media/image30.png)
+>
+> ![A screenshot of a computer Description automatically
+> generated](./media/image31.png)
 
-1.  En la página **Load Customer Data**, haga clic en el workspace
-    **Warehouse_FabricXX** en la barra de navegación izquierda.
+17. Supervise el progreso de la actividad de copia en la página
+    **Output** y espere a que finalice.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image31.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image32.png)
 
-2.  En la página **Synapse Data Engineering Warehouse_FabricXX**,
-    navegue con cuidado y haga clic en **WideWorldImporters**, que tiene
-    el tipo **Warehouse**, como se muestra en la imagen a continuación.
+# Ejercicio 3: Crear tablas en un Data Warehouse
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image32.png)
+## Tarea 1: Crear una tabla en un Data Warehouse
 
-3.  En la página **WideWorldImporters**, vaya a la pestaña **Home**,
+1.  En la página **Load Customer Data**, haga clic en el espacio de
+    trabajo **Warehouse_FabricXX** en la barra de navegación izquierda y
+    seleccione **WideWorldImporters** Warehouse.
+
+> ![A screenshot of a computer Description automatically
+> generated](./media/image33.png)
+
+2.  En la página **WideWorldImporters**, vaya a la pestaña **Home**,
     seleccione **SQL** en el menú desplegable y haga clic en **New SQL
     query**.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image33.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image34.png)
 
-4.  En el editor de consultas, pegue el siguiente código y seleccione
-    **Run** para ejecutar la consulta.
+3.  En el editor de consultas, pegue el siguiente código y seleccione
+    **Run** para ejecutar la consulta:
 
     ```
     /*
@@ -376,47 +376,55 @@ generated](./media/image25.png)
             [Quarter] [int] NULL
         );
     ```
-> ![](./media/image34.png)
+
+> ![A screenshot of a computer Description automatically
+> generated](./media/image35.png)
 >
-> ![](./media/image35.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image36.png)
 
-5.  Para guardar esta consulta, haga clic derecho en la pestaña **SQL
-    query 1** justo encima del editor y seleccione **Rename**.
+4.  Para guardar esta consulta, haga clic derecho sobre la pestaña **SQL
+    query 1** ubicada encima del editor y seleccione **Rename**.
 
-> ![](./media/image36.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image37.png)
 
-6.  En el cuadro de diálogo **Rename**, en el campo **Name**, ingrese
-    +++**Create Tables+++** para cambiar el nombre de **SQL query 1**.
-    Luego, haga clic en el botón **Rename**.
-
-> ![](./media/image37.png)
-
-7.  Valide que la tabla se creó correctamente seleccionando el icono de
-    **Refresh** en la cinta de opciones.
+5.  En el cuadro de diálogo **Rename**, en el campo **Name**, ingrese
+    +++**Create Tables**+++ para cambiar el nombre de **SQL query 1**.
+    Luego haga clic en el botón **Rename**.
 
 > ![](./media/image38.png)
+>
+> ![A screenshot of a computer Description automatically
+> generated](./media/image39.png)
 
-8.  En el panel **Explorer**, verá las tablas **fact_sale** y
+6.  Valide que la tabla se creó correctamente seleccionando el ícono
+    **Refresh** en la cinta de opciones.
+
+> ![A screenshot of a computer Description automatically
+> generated](./media/image40.png)
+
+7.  En el panel **Explorer**, verá las tablas **fact_sale** y
     **dimension_city**.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image39.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image41.png)
 
-## Tarea 2: Cargar datos usando T-SQL
+## Tarea 2: Cargar datos mediante T-SQL
 
-Ahora que sabe cómo construir un data warehouse, cargar una tabla y
-generar un reporte, es momento de ampliar la solución explorando otros
+Ahora que ya sabe cómo crear un data warehouse, cargar una tabla y
+generar un informe, es momento de ampliar la solución explorando otros
 métodos para cargar datos.
 
-1.  En la página de **WideWorldImporters**, vaya a la pestaña **Home**,
+1.  En la página **WideWorldImporters,** vaya a la pestaña **Home**,
     seleccione **SQL** en el menú desplegable y haga clic en **New SQL
     query**.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image40.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image42.png)
 
-2.  En el editor de consultas, pegue el siguiente código y luego haga
-    clic en **Run** para ejecutar la consulta.
+2.  En el editor de consultas, **pegue** el siguiente código y luego
+    haga clic en **Run** para ejecutarlo:
 
     ```
     --Copy data from the public Azure storage account to the dbo.dimension_city table.
@@ -428,59 +436,64 @@ métodos para cargar datos.
     COPY INTO [dbo].[fact_sale]
     FROM 'https://fabrictutorialdata.blob.core.windows.net/sampledata/WideWorldImportersDW/tables/fact_sale.parquet'
     WITH (FILE_TYPE = 'PARQUET');
-    
     ```
-> ![](./media/image41.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image43.png)
 
-3.  Una vez que se complete la consulta, revise los mensajes, los cuales
-    indican el número de filas que se cargaron en las tablas
+3.  Una vez que la consulta se complete, revise los mensajes, los cuales
+    indican la cantidad de filas que se cargaron en las tablas
     **dimension_city** y **fact_sale**, respectivamente.
 
-> ![](./media/image42.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image44.png)
 
-4.  Cargue la vista previa de los datos para validar que la información
-    se haya cargado correctamente, seleccionando la tabla **fact_sale**
-    en el **Explorer**.
-
-> ![](./media/image43.png)
-
-5.  Cambie el nombre de la consulta. Haga clic derecho en **SQL query
-    1** en el **Explorer** y luego seleccione **Rename**.
-
-> ![](./media/image44.png)
-
-6.  En el cuadro de diálogo **Rename**, en el campo **Name**, ingrese
-    +++**Load Tables+++**. Luego, haga clic en el botón **Rename**.
+4.  Cargue la vista previa de los datos para validar que se hayan
+    cargado correctamente, seleccionando la tabla **fact_sale** en el
+    panel **Explorer**.
 
 > ![](./media/image45.png)
 
-7.  Haga clic en el icono **Refresh** en la barra de comandos debajo de
-    la pestaña **Home**.
+5.  Cambie el nombre de la consulta. Haga clic derecho en **SQL query
+    1** en el panel **Explore**r y seleccione **Rename**.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image46.png)
+> ![](./media/image46.png)
 
-# Ejercicio 4: Clonar una tabla usando T-SQL en Microsoft Fabric
+6.  En el cuadro de diálogo **Rename**, en el campo **Name**, ingrese
+    +++**Load Tables**+++. Luego haga clic en el botón **Rename**.
+
+> ![A screenshot of a computer Description automatically
+> generated](./media/image47.png)
+>
+> ![A screenshot of a computer Description automatically
+> generated](./media/image48.png)
+
+7.  Haga clic en el ícono **Refresh** en la barra de comandos situada
+    debajo de la pestaña **Home**.
+
+> ![A screenshot of a computer Description automatically
+> generated](./media/image49.png)
+
+# Ejercicio 4: Clonar una tabla mediante T-SQL en Microsoft Fabric
 
 ## Tarea 1: Crear un clon de tabla dentro del mismo esquema en un warehouse
 
-Esta tarea le guía para crear un [clon de
-tabla](https://learn.microsoft.com/en-in/fabric/data-warehouse/clone-table) en
-un Warehouse en Microsoft Fabric, utilizando la sintaxis T-SQL [CREATE
+Esta tarea le guía en la creación de un [clon de
+tabla](https://learn.microsoft.com/en-in/fabric/data-warehouse/clone-table)
+en un warehouse de Microsoft Fabric utilizando la sintaxis T-SQL [CREATE
 TABLE AS CLONE
 OF](https://learn.microsoft.com/en-us/sql/t-sql/statements/create-table-as-clone-of-transact-sql?view=fabric&preserve-view=true).
 
-1.  Crear un clon de tabla dentro del mismo esquema en un warehouse.
+1.  Cree un clon de tabla dentro del mismo esquema en un warehouse.
 
-2.  En la página de **WideWorldImporters**, vaya a la pestaña **Home**,
+2.  En la página **WideWorldImporters**, vaya a la pestaña **Home**,
     seleccione **SQL** en el menú desplegable y haga clic en **New SQL
     query**.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image47.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image50.png)
 
 3.  En el editor de consultas, pegue el siguiente código para crear
-    clones de las tablas **dbo.dimension_city** y **dbo.fact_sale**.
+    clones de las tablas **dbo.dimension_city** y **dbo.fact_sale**:
 
     ```
     --Create a clone of the dbo.dimension_city table.
@@ -489,63 +502,71 @@ OF](https://learn.microsoft.com/en-us/sql/t-sql/statements/create-table-as-clone
     --Create a clone of the dbo.fact_sale table.
     CREATE TABLE [dbo].[fact_sale1] AS CLONE OF [dbo].[fact_sale];
     ```
-> ![](./media/image48.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image51.png)
 
-4.  Seleccione **Run** para ejecutar la consulta. La ejecución tomará
-    unos segundos. Una vez completada, se crearán los clones de tabla
-    **dimension_city1** y **fact_sale1**.
+4.  Seleccione **Run** para ejecutar la consulta. La ejecución tarda
+    unos segundos. Una vez concluida, se habrán creado los clones de
+    tablas **dimension_city1** y **fact_sale1**.
 
-> ![](./media/image49.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image52.png)
 >
-> ![](./media/image50.png)
-
-5.  Cargue la vista previa de los datos para validar que se hayan
-    cargado correctamente, seleccionando la tabla **dimension_city1** en
-    el **Explorer**.
-
-> ![](./media/image51.png)
-
-6.  Haga clic derecho en la **SQL query** que creó para clonar las
-    tablas en el **Explorer** y seleccione **Rename**.
-
-> ![](./media/image52.png)
-
-7.  En el cuadro de diálogo **Rename**, en el campo **Name**, ingrese
-    **+++Clone Table+++** y luego haga clic en el botón **Rename**.
-
 > ![A screenshot of a computer Description automatically
 > generated](./media/image53.png)
 
-8.  Haga clic en el icono **Refresh** en la barra de comandos debajo de
-    la pestaña **Home**.
+5.  Cargue la vista previa de datos para validar que se hayan cargado
+    correctamente, seleccionando la tabla **dimension_city1** en el
+    panel **Explorer.**
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image54.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image54.png)
+
+6.  Haga clic derecho en la **consulta SQL** que creó para clonar las
+    tablas, ubicada en el panel **Explorer**, y seleccione **Rename.**
+
+> ![A screenshot of a computer Description automatically
+> generated](./media/image55.png)
+
+7.  En el cuadro de diálogo **Rename**, en el campo **Name**, ingrese
+    +++**Clone Table**+++, luego haga clic en el botón **Rename**.
+
+> ![A screenshot of a computer Description automatically
+> generated](./media/image56.png)
+>
+> ![A screenshot of a computer Description automatically
+> generated](./media/image57.png)
+
+8.  Haga clic en el ícono **Refresh** en la barra de comandos situada
+    debajo de la pestaña **Home**.
+
+> ![A screenshot of a computer Description automatically
+> generated](./media/image58.png)
 
 ## Tarea 2: Crear un clon de tabla entre esquemas dentro del mismo warehouse
 
-1.  En la página de **WideWorldImporters**, vaya a la pestaña **Home**,
+1.  En la página **WideWorldImporters,** vaya a la pestaña **Home**,
     seleccione **SQL** en el menú desplegable y haga clic en **New SQL
     query**.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image40.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image59.png)
 
 2.  Cree un nuevo esquema dentro del warehouse **WideWorldImporters**
-    llamado **dbo1**. **Copie**, **pegue** y **ejecute** el siguiente
-    código T-SQL tal como se muestra en la imagen a continuación:
+    llamado **dbo1**. Copie, pegue y ejecute el siguiente código
+    **T-SQL:**
 
     +++CREATE SCHEMA dbo1+++
+> ![A screenshot of a computer Description automatically
+> generated](./media/image60.png)
+>
+> ![A screenshot of a computer Description automatically
+> generated](./media/image61.png)
 
-![](./media/image55.png)
-
-![](./media/image56.png)
-
-3.  En el editor de consultas, elimine el código existente y pegue el
+3.  En el editor de consultas, elimine el código existente y pegue lo
     siguiente para crear clones de las tablas **dbo.dimension_city** y
-    **dbo.fact_sale** en el esquema **dbo1**.
+    **dbo.fact_sale** en el esquema **dbo1**:
 
-> **SQLCopy**
     ```
     --Create a clone of the dbo.dimension_city table in the dbo1 schema.
     CREATE TABLE [dbo1].[dimension_city1] AS CLONE OF [dbo].[dimension_city];
@@ -554,57 +575,66 @@ OF](https://learn.microsoft.com/en-us/sql/t-sql/statements/create-table-as-clone
     CREATE TABLE [dbo1].[fact_sale1] AS CLONE OF [dbo].[fact_sale];
     ```
 
-4.  Seleccione **Run** para ejecutar la consulta. La ejecución de la
-    consulta tomará unos segundos.
+4.  Seleccione **Run** para ejecutar la consulta. La ejecución tarda
+    unos segundos.
 
-> ![](./media/image57.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image62.png)
+>
+> ![A screenshot of a computer Description automatically
+> generated](./media/image63.png)
 
-5.  Una vez que la consulta se complete, se habrán creado los clones
-    **dimension_city1** y **fact_sale1** en el esquema **dbo1**.
+5.  Una vez completada la consulta, los clones **dimension_city1** y
+    **fact_sale1** habrán sido creados en el esquema **dbo1**.
 
-> ![](./media/image58.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image64.png)
 
-6.  Cargue la vista previa de los datos para validar que se hayan
-    cargado correctamente, seleccionando la tabla **dimension_city1**
-    bajo el esquema **dbo1** en el **Explorer**.
+6.  Cargue la vista previa de datos para validar que se hayan cargado
+    correctamente, seleccionando la tabla **dimension_city1** bajo el
+    esquema **dbo1** en el panel **Explorer**.
 
-> ![](./media/image59.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image65.png)
 
-7.  **Cambie el nombre** de la consulta para referencia posterior. Haga
-    clic derecho sobre **SQL query 1** en el **Explorer** y seleccione
-    **Rename**.
+7.  **Cambie** el nombre de la consulta para futuras referencias. Haga
+    clic derecho en **SQL query 1** en el panel **Explorer** y
+    seleccione **Rename**.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image60.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image66.png)
 
 8.  En el cuadro de diálogo **Rename**, en el campo **Name**, ingrese
-    **+++Clone Table in another schema+++**, luego haga clic en el botón
+    +++**Clone Table in another schema**+++. Luego haga clic en el botón
     **Rename**.
 
-> ![](./media/image61.png)
+> ![](./media/image67.png)
+>
+> ![A screenshot of a computer Description automatically
+> generated](./media/image68.png)
 
-9.  Haga clic en el icono **Refresh** en la barra de comandos debajo de
-    la pestaña **Home**.
+9.  Haga clic en el ícono **Refresh** en la barra de comandos situada
+    debajo de la pestaña **Home**.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image62.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image69.png)
 
-# Ejercicio 5: Transformar datos usando un procedimiento almacenado
+# **Ejercicio 5: Transformar datos mediante un procedimiento almacenado**
 
 Aprenda cómo crear y guardar un nuevo procedimiento almacenado para
 transformar datos.
 
-1.  En la página de **WideWorldImporters**, vaya a la pestaña **Home**,
+1.  En la página **WideWorldImporters**, vaya a la pestaña **Home**,
     seleccione **SQL** en el menú desplegable y haga clic en **New SQL
     query**.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image63.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image70.png)
 
 2.  En el editor de consultas, pegue el siguiente código para crear el
     procedimiento almacenado **dbo.populate_aggregate_sale_by_city**.
-    Este procedimiento almacenado creará y llenará la tabla
-    **dbo.aggregate_sale_by_date_city** en un paso posterior.
+    Este procedimiento creará y cargará la tabla
+    **dbo.aggregate_sale_by_date_city** en un paso posterior:
 
     ```
     --Drop the stored procedure if it already exists.
@@ -654,90 +684,98 @@ transformar datos.
             DC.[City];
     END
     ```
-> ![](./media/image64.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image71.png)
 >
-> ![](./media/image65.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image72.png)
 
-3.  Haga clic derecho sobre la **SQL query** que creó para clonar las
-    tablas en el **Explorer** y seleccione **Rename**.
+3.  Haga clic derecho en la consulta SQL creada y seleccione **Rename**.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image66.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image73.png)
 
-4.  En el cuadro de diálogo **Rename**, en el campo **Name**, escriba
-    **+++Create Aggregate Procedure+++** y luego haga clic en el botón
-    **Rename**.
+4.  En el cuadro de diálogo **Rename**, en el campo **Name**, ingrese
+    +++**Create Aggregate Procedure**+++ y haga clic en **Rename**.
 
-> ![](./media/image67.png)
+> ![A screenshot of a computer screen Description automatically
+> generated](./media/image74.png)
+>
+> ![A screenshot of a computer Description automatically
+> generated](./media/image75.png)
 
-5.  Haga clic en el icono **Refresh** debajo de la pestaña **Home**.
+5.  Haga clic en el ícono **Refresh** debajo de la pestaña **Home**.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image68.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image76.png)
 
-6.  En la pestaña **Explorer**, verifique que pueda ver el procedimiento
-    almacenado recién creado expandiendo el nodo **StoredProcedures**
-    debajo el esquema **dbo**.
+6.  En la pestaña **Explorer**, verifique que el procedimiento
+    almacenado recién creado esté visible expandiendo el nodo **Stored
+    Procedures** bajo el esquema **dbo**.
 
-> ![](./media/image69.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image77.png)
 
 7.  En la página **WideWorldImporters**, vaya a la pestaña **Home**,
     seleccione **SQL** en el menú desplegable y haga clic en **New SQL
-    query**.
+    query.**
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image70.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image78.png)
 
-8.  En el editor de consultas, pegue el siguiente código. Este T-SQL
-    ejecuta **dbo.populate_aggregate_sale_by_city** para crear la tabla
-    **dbo.aggregate_sale_by_date_city**. Luego, haga clic en **Run**
-    para ejecutar la consulta.
-
-SQLCopy
+8.  En el editor de consultas, pegue el siguiente código para ejecutar
+    **dbo.populate_aggregate_sale_by_city** y crear la tabla
+    **dbo.aggregate_sale_by_date_city**, luego ejecute la consulta:
 
     ```
     --Execute the stored procedure to create the aggregate table.
     EXEC [dbo].[populate_aggregate_sale_by_city];
     ```
-> ![](./media/image71.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image79.png)
+>
+> ![A screenshot of a computer Description automatically
+> generated](./media/image80.png)
 
-9.  Para guardar esta consulta para referencia futura, haga clic derecho
-    en la pestaña de la consulta justo encima del editor y seleccione
-    **Rename**.
+9.  Para guardar esta consulta, haga clic derecho en la pestaña de la
+    consulta ubicada sobre el editor y seleccione **Rename.**
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image72.png)
+![A screenshot of a computer Description automatically
+generated](./media/image81.png)
 
 10. En el cuadro de diálogo **Rename**, en el campo **Name**, ingrese
-    **+++Run Create Aggregate Procedure+++** y luego haga clic en el
-    botón **Rename**.
+    +++**Run Create Aggregate Procedure**+++, luego haga clic en
+    **Rename**.
 
-![](./media/image73.png)
+![](./media/image82.png)
 
-11. Seleccione el icono **Refresh** en la cinta de opciones.
+![A screenshot of a computer Description automatically
+generated](./media/image83.png)
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image74.png)
+11. Seleccione el ícono **Refresh** en la cinta de opciones.
+
+![A screenshot of a computer Description automatically
+generated](./media/image84.png)
 
 12. En la pestaña **Object Explorer**, cargue la vista previa de los
     datos para validar que se hayan cargado correctamente, seleccionando
-    la tabla **aggregate_sale_by_city** en el **Explorer**.
+    la tabla **aggregate_sale_by_date_city** en el panel **Explorer.**
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image75.png)
+![A screenshot of a computer Description automatically
+generated](./media/image85.png)
 
-Ejercicio 6: Time travel usando T-SQL a nivel de instrucción
+# Ejercicio 6: Viaje en el tiempo mediante T-SQL a nivel de sentencia
 
 1.  En la página **WideWorldImporters**, vaya a la pestaña **Home**,
     seleccione **SQL** en el menú desplegable y haga clic en **New SQL
     query**.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image76.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image86.png)
 
 2.  En el editor de consultas, pegue el siguiente código para crear la
-    vista Top10CustomerView. Seleccione **Run** para ejecutar la
-    consulta.
+    vista **Top10CustomersView** y seleccione **Run** para ejecutarlo:
+
     ```
     CREATE VIEW dbo.Top10CustomersView
     AS
@@ -755,38 +793,40 @@ Ejercicio 6: Time travel usando T-SQL a nivel de instrucción
     ORDER BY
         TotalSalesAmount DESC;
     ```
-![](./media/image77.png)
 
-3.  En el **Explorer**, verifique que pueda ver la nueva vista
-    **Top10CustomersView** expandiendo el nodo **Views** bajo el esquema
-    dbo.
+![A screenshot of a computer Description automatically
+generated](./media/image87.png)
 
-![](./media/image78.png)
+![A screenshot of a computer Description automatically
+generated](./media/image88.png)
 
-4.  Para guardar esta consulta como referencia, haga clic derecho en la
-    pestaña de la consulta justo encima del editor y seleccione
-    **Rename**.
+3.  En el panel **Explorer**, verifique que la vista
+    **Top10CustomersView** se haya creado correctamente expandiendo el
+    nodo **View** bajo el esquema **dbo.**
 
-![](./media/image79.png)
+![](./media/image89.png)
+
+4.  Para guardar esta consulta, haga clic derecho en la pestaña de la
+    consulta ubicada sobre el editor y seleccione **Rename.**
+
+![A screenshot of a computer Description automatically
+generated](./media/image90.png)
 
 5.  En el cuadro de diálogo **Rename**, en el campo **Name**, ingrese
-    **+++Top10CustomersView+++** y luego haga clic en el botón
-    **Rename**.
+    +++**Top10CustomersView**+++ y haga clic en **Rename**.
 
-![](./media/image80.png)
+![](./media/image91.png)
 
-6.  Cree una nueva consulta, de manera similar al Paso 1. En la pestaña
-    **Home** de la cinta, seleccione **New SQL query**.
+6.  Cree otra nueva consulta, de manera similar al paso 1. Desde la
+    pestaña **Home**, seleccione **New SQL query**.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image81.png)
+![A screenshot of a computer Description automatically
+generated](./media/image92.png)
 
-7.  En el editor de consultas, pegue el siguiente código. Esto
-    actualizará el valor de la columna **TotalIncludingTax** a
-    **200000000** para el registro que tiene el valor **SaleKey** igual
-    a **22632918**. Seleccione **Run** para ejecutar la consulta.
-
-SQLCopy
+7.  En el editor de consultas, pegue el siguiente código para actualizar
+    la columna **TotalIncludingTax** a **200000000** para el registro
+    con **SaleKey** igual a **22632918**. Seleccione **Run** para
+    ejecutarlo:
 
     ```
     /*Update the TotalIncludingTax value of the record with SaleKey value of 22632918*/
@@ -795,39 +835,40 @@ SQLCopy
     WHERE SaleKey = 22632918;
     ```
 
-![](./media/image82.png)
+![A screenshot of a computer Description automatically
+generated](./media/image93.png)
+
+![A screenshot of a computer Description automatically
+generated](./media/image94.png)
 
 8.  En el editor de consultas, pegue el siguiente código. La función
-    T-SQL CURRENT_TIMESTAMP devuelve la marca de tiempo UTC actual como
-    un valor **datetime**. Seleccione **Run** para ejecutar la consulta.
+    **T-SQL CURRENT_TIMESTAMP** devuelve la fecha y hora actual en
+    **UTC** como un valor de tipo datetime. Seleccione **Run** para
+    ejecutar la consulta:
 
     ```
     SELECT CURRENT_TIMESTAMP;
     ```
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image83.png)
+![](./media/image95.png)
 
-9.  Copie el valor de la marca de tiempo devuelto en su portapapeles.
+9.  Copie el valor de timestamp que se devuelve en su portapapeles.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image84.png)
+![A screenshot of a computer Description automatically
+generated](./media/image96.png)
 
-10. Pegue el siguiente código en el editor de consultas y reemplace el
-    valor de timestamp con el valor de marca de tiempo (timestamp)
-    obtenido en el paso anterior. El formato de la sintaxis de timestamp
-    es YYYY-MM-DDTHH:MM:SS\[.FFF\].
+10. Pegue el siguiente código en el editor y reemplace el valor del
+    timestamp con el obtenido en el paso anterior. El formato de
+    timestamp es **YYYY-MM-DDTHH:MM:SS**.
 
-  **YYYY-MM-DDTHH:MM:SS\[.FFF\].**
+11. Elimine los ceros finales si es necesario, por
+    ejemplo: **2025-06-09T06:16:08.807**.
 
-11. Elimine los ceros finales, por ejemplo: **2025-06-09T06:16:08.807**.
+12. Este ejemplo devuelve la lista de los diez principales clientes
+    según **TotalIncludingTax**, incluyendo el nuevo valor para
+    **SaleKey 22632918**. Pegue el código siguiente y seleccione
+    **Run**:
 
-12. El siguiente ejemplo devuelve la lista de los diez principales
-    clientes por **TotalIncludingTax**, incluyendo el nuevo valor para
-    **SaleKey 22632918**. Reemplace el código existente, pegue el
-    siguiente código y seleccione **Run** para ejecutar la consulta.
-
-    SQLCopy
     ```
     /*View of Top10 Customers as of today after record updates*/
     SELECT *
@@ -835,14 +876,15 @@ incorrect.](./media/image84.png)
     OPTION (FOR TIMESTAMP AS OF '2025-06-09T06:16:08.807');
     ```
 
-![](./media/image85.png)
+![A screenshot of a computer Description automatically
+generated](./media/image97.png)
 
-14. Pegue el siguiente código en el editor de consultas y reemplace el
-    valor de timestamp por un momento anterior a la ejecución del script
-    de actualización de **TotalIncludingTax**. Esto devolverá la lista
-    de los diez principales clientes *antes* de que se actualizara el
-    valor de **TotalIncludingTax** para **SaleKey** 22632918. Seleccione
-    **Run** para ejecutar la consulta.
+13. Pegue el siguiente código en el editor y reemplace el valor del
+    timestamp con un momento anterior a la ejecución del script de
+    actualización de **TotalIncludingTax**. Esto devolverá la lista de
+    los diez principales clientes *antes* de la actualización del
+    registro **SaleKey** 22632918. Seleccione **Run**:
+
     ```
     /*View of Top10 Customers as of today before record updates*/
     SELECT *
@@ -850,110 +892,109 @@ incorrect.](./media/image84.png)
     OPTION (FOR TIMESTAMP AS OF '2024-04-24T20:49:06.097');
     ```
 
-![](./media/image86.png)
+![A screenshot of a computer Description automatically
+generated](./media/image98.png)
 
-# Exercise 7: Crear una consulta con el generador de consultas visual
+# Ejercicio 7: Crear una consulta con visual query builder
 
-## Tarea 1: Usar el generador visual de consultas 
+## Tarea 1: Usar visual query builder
 
-Cree y guarde una consulta con el generador visual de consultas en el
-portal de Microsoft Fabric.
+Cree y guarde una consulta utilizando visual query builder en el portal
+de Microsoft Fabric.
 
 1.  En la página **WideWorldImporters**, desde la pestaña **Home** de la
-    cinta, seleccione **New visual query**.
+    cinta de opciones, seleccione **New visual query**.
 
-> ![](./media/image87.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image99.png)
 
 2.  Haga clic derecho sobre **fact_sale** y seleccione **Insert into
     canvas**.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image88.png)
->
-> ![](./media/image89.png)
-
-3.  Navegue a la pestaña **Transformations** de la cinta en el panel de
-    diseño de consultas y limite el tamaño del conjunto de datos
-    haciendo clic en el menú desplegable **Reduce rows**, luego haga
-    clic en **Keep top rows** como se muestra en la imagen a
-    continuación.
-
-![](./media/image90.png)
-
-4.  En el cuadro de diálogo **Keep top rows**, ingrese **10000** y
-    seleccione **OK**.
-
-> ![](./media/image91.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image100.png)
 >
 > ![A screenshot of a computer Description automatically
-> generated](./media/image92.png)
+> generated](./media/image101.png)
+
+3.  En el panel de diseño de la consulta, en la cinta de
+    **Transformations**, limite el tamaño del conjunto de datos haciendo
+    clic en el menú desplegable **Reduce rows**, luego seleccione **Keep
+    top rows.**
+
+> ![A screenshot of a computer Description automatically
+> generated](./media/image102.png)
+
+4.  En el cuadro de diálogo **Keep top rows**, ingrese 10000 y haga clic
+    en **OK.**
+
+> ![](./media/image103.png)
+>
+> ![A screenshot of a computer Description automatically
+> generated](./media/image104.png)
 
 5.  Haga clic derecho sobre **dimension_city** y seleccione **Insert
-    into canvas**.
+    into canvas.**
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image93.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image105.png)
 >
-> ![](./media/image94.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image106.png)
 
-6.  Desde la cinta **Transformations**, seleccione el menú desplegable
-    junto a **Combine** y seleccione **Merge queries as new** como se
-    muestra en la imagen a continuación.
+6.  En la cinta de **Transformations**, haga clic en el menú desplegable
+    junto a **Combine** y seleccione **Merge queries as new**.
 
-![](./media/image95.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image107.png)
 
-7.  En la página **Merge settings**, ingrese los siguientes detalles.
+7.  En la página de configuración **Merge settings**, ingrese los
+    siguientes valores:
 
-- En el menú desplegable **Left table for merge**,
-  seleccione **dimension_city**
+- En **Left table for merge**, seleccione dimension_city
 
-&nbsp;
+- En **Right table for merge**, seleccione **fact_sale** (use las barras
+  de desplazamiento horizontal y vertical si es necesario)
 
-- En el menú desplegable **Right table for merge**,
-  seleccione **fact_sale** (utilice las barras de desplazamiento
-  horizontal y vertical)
+- Seleccione la columna **CityKey** en la tabla **dimension_city**
+  haciendo clic en el encabezado de la columna para indicar la columna
+  de unión.
 
-&nbsp;
+- Seleccione la columna **CityKey** en la tabla **fact_sale** de la
+  misma manera.
 
-- Seleccione el campo **CityKey** en la tabla **dimension_city**
-  haciendo clic en el nombre de la columna en la fila del encabezado
-  para indicar la columna de unión.
+- En el diagrama **Join kind**, seleccione **Inner** y haga clic en
+  **Ok**.
 
-&nbsp;
-
-- Seleccione el campo **CityKey** en la tabla **fact_sale** haciendo
-  clic en el nombre de la columna en la fila del encabezado para indicar
-  la columna de unión.
-
-&nbsp;
-
-- En la selección del diagrama **Join kind**, seleccione **Inner** y
-  haga clic en el botón **OK**.
-
-![](./media/image96.png)
-
-![](./media/image97.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image108.png)
+>
+> ![A screenshot of a computer Description automatically
+> generated](./media/image109.png)
 
 8.  Con el paso **Merge** seleccionado, haga clic en el botón **Expand**
-    junto a **fact_sale** en el encabezado de la cuadrícula de datos
-    como se muestra en la imagen a continuación, luego seleccione las
-    columnas **TaxAmount**, **Profit**, **TotalIncludingTax** y
-    seleccione **OK**.
+    junto a **fact_sale** en el encabezado de la cuadrícula de datos,
+    luego seleccione las columnas **TaxAmount, Profit,
+    TotalIncludingTax** y haga clic en **Ok**.
 
-![](./media/image98.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image110.png)
+>
+> ![A screenshot of a computer Description automatically
+> generated](./media/image111.png)
 
-![](./media/image99.png)
+9.  En la cinta de **Transformations**, haga clic en el menú desplegable
+    junto a **Transform** y seleccione **Group by**.
 
-9.  En la cinta **Transformations**, haga clic en el menú desplegable
-    junto a **Transform**, luego seleccione **Group by**.
+> ![A screenshot of a computer Description automatically
+> generated](./media/image112.png)
 
-![](./media/image100.png)
+10. En la página de configuración **Group by**, ingrese los siguientes
+    valores:
 
-10. En la página **Group by settings**, ingrese los siguientes detalles.
+- Seleccione el botón **Advanced.**
 
-- Seleccione el botón de opción **Advanced**.
-
-- Debajo **Group by**, seleccione lo siguiente:
+- En **Group by**, seleccione las siguientes columnas:
 
   1.  **Country**
 
@@ -961,196 +1002,199 @@ portal de Microsoft Fabric.
 
   3.  **City**
 
-- En **New column name**, ingrese **SumOfTaxAmount**; en el campo
-  **Operation**, seleccione **Sum**, luego en el campo **Column**,
-  seleccione **TaxAmount**. Haga clic en **Add aggregation** para
-  agregar más columnas y operaciones agregadas.
+- En **New column name**, ingrese **SumOfTaxAmount,** en **Operation**
+  seleccione **Sum**, y en **Column** seleccione **TaxAmount**. Haga
+  clic en **Add aggregation** para agregar más columnas agregadas.
 
-- En **New column name**, ingrese **SumOfProfit**; en el campo
-  **Operation**, seleccione **Sum**, luego en el campo **Column**,
-  seleccione **Profit**. Haga clic en **Add aggregation** para agregar
-  más columnas y operaciones agregadas.
+- En **New column name**, ingrese **SumOfProfit**, en **Operation**
+  seleccione **Sum**, y en **Column** seleccione **Profit**. Haga clic
+  en **Add aggregation**.
 
-- En **New column name**, ingrese **SumOfTotalIncludingTax**; en el
-  campo **Operation**, seleccione **Sum**, luego en el campo **Column**,
-  seleccione **TotalIncludingTax.** 
+- En **New column name**, ingrese **SumOfTotalIncludingTax**, en
+  **Operation** seleccione **Sum**, y en **Column** seleccione
+  **TotalIncludingTax.**
 
-- Haga clic en el botón **OK**.
+- Haga clic en **OK.**
 
-![](./media/image101.png)
+![](./media/image113.png)
 
-![](./media/image102.png)
+![A screenshot of a computer Description automatically
+generated](./media/image114.png)
 
-11. En el **explorer**, navegue a **Queries** y haga clic derecho sobre
-    **Visual query 1** bajo **Queries**. Luego, seleccione **Rename**.
+11. En el panel **Explorer**, navegue a **Queries**, haga clic derecho
+    sobre **Visual query 1** y seleccione **Rename**.
 
-> ![](./media/image103.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image115.png)
 
-12. Escriba **+++Sales Summary+++** para cambiar el nombre de la
-    consulta. Presione **Enter** en el teclado o seleccione cualquier
-    lugar fuera de la pestaña para guardar el cambio.
+12. Ingrese +++**Sales Summary**+++ para cambiar el nombre de la
+    consulta. Presione **Enter** o haga clic fuera de la pestaña para
+    guardar el cambio.
 
-> ![](./media/image104.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image116.png)
 
-13. Haga clic en el icono **Refresh** debajo de la pestaña **Home**.
+13. Haga clic en el ícono **Refresh** debajo de la pestaña **Home**.
 
-> ![](./media/image105.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image117.png)
 
-# Ejercicio 8: Analizar datos con un notebook
+# **Ejercicio 8: Analizar datos con un notebook**
 
-## Task 1: Crear un acceso directo de lakehouse y analizar datos con un notebook
+## Tarea 1: Crear un acceso directo a un lakehouse y analizar datos con un notebook
 
-En esta tarea, aprenda cómo puede guardar sus datos una sola vez y luego
-utilizarlos con muchos otros servicios. También se pueden crear accesos
-directos a datos almacenados en Azure Data Lake Storage y S3 para
-permitir el acceso directo a tablas delta desde sistemas externos.
+En esta tarea, aprenderá cómo guardar sus datos una vez y luego
+utilizarlos en múltiples servicios. También se pueden crear accesos
+directos a datos almacenados en Azure Data Lake Storage y S3, lo que le
+permite acceder directamente a las tablas delta desde sistemas externos.
 
-Primero, creamos un nuevo lakehouse. Para crear un nuevo lakehouse en su
+Primero, crearemos un nuevo lakehouse. Para ello, siga estos pasos en su
 espacio de trabajo de Microsoft Fabric:
 
-1.  En la página **WideWorldImporters**, haga clic en
-    **Warehouse_FabricXX** Workspace en el menú de navegación lateral
-    izquierdo.
+1.  En la página **WideWorldImporters**, haga clic en el espacio de
+    trabajo **Warehouse_FabricXX** en el menú de navegación izquierdo.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image106.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image118.png)
 
-2.  En la página de inicio de **Synapse Data Engineering
-    Warehouse_FabricXX**, debajo del panel **Warehouse_FabricXX**, haga
-    clic en **+New item** y luego seleccione **Lakehouse** debajo de
-    **Stored data.**
+2.  En la página de inicio **Synapse Data Engineering
+    Warehouse_FabricXX**, bajo el panel **Warehouse_FabricXX**, haga
+    clic en **+New item** y luego seleccione **Lakehouse** bajo **Stored
+    data.**
 
-> ![](./media/image107.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image119.png)
 
-3.  En el campo **Name**, ingrese +++**ShortcutExercise+++** y haga clic
-    en el botón **Create**.
+3.  En el campo **Name**, ingrese +++ShortcutExercise+++ y haga clic en
+    **Create.**
 
-> ![](./media/image108.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image120.png)
 
-4.  El nuevo lakehouse se carga y se abre la vista **Explorer**, con el
-    menú **Get data in your lakehouse**. Bajo **Load data in your
-    lakehouse**, seleccione el botón **New shortcut**.
+4.  El nuevo **lakehouse** se carga y se abre la vista **Explorer**,
+    mostrando el menú **Get data in your lakehouse**. Bajo **Load data
+    in your lakehouse**, seleccione el botón **New shortcut**.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image109.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image121.png)
 
 5.  En la ventana **New shortcut**, seleccione **Microsoft OneLake**.
 
-> ![](./media/image110.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image122.png)
 
 6.  En la ventana **Select a data source type**, navegue cuidadosamente
-    y haga clic en el **Warehouse** llamado **WideWorldImporters** que
-    creó previamente, luego haga clic en el botón **Next**.
+    y haga clic en el Warehouse llamado WideWorldImporters que creó
+    previamente, luego haga clic en **Next**.
+
+> ![A screenshot of a computer Description automatically
+> generated](./media/image123.png)
+
+7.  En el explorador de objetos **OneLake**, expanda **Tables**, luego
+    expanda el esquema **dbo** y seleccione el botón de opción junto a
+    **dimension_customer**. Haga clic en **Next**.
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image111.png)
+> incorrect.](./media/image124.png)
 
-6.  En el explorador de objetos de **OneLake**, expanda **Tables**,
-    luego expanda el esquema **dbo** y seleccione el botón de opción
-    junto a **dimension_customer**. Seleccione el botón **Next**.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image112.png)
-
-7.  En la ventana **New shortcut**, haga clic en el botón **Create** y
-    luego en el botón **Close**.
+8.  En la ventana **New shortcut**, haga clic en **Create** y luego en
+    **Close**.
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image113.png)
+> incorrect.](./media/image125.png)
 >
-> ![](./media/image114.png)
+> ![](./media/image126.png)
 
-8.  Espere un momento y luego haga clic en el icono **Refresh**.
+9.  Espere unos momentos y luego haga clic en el ícono **Refresh**.
 
-9.  Luego, seleccione **dimension_customer** en la lista de **Table**
-    para previsualizar los datos. Observe que el lakehouse muestra los
+10. Seleccione **dimension_customer** en la lista de tablas para
+    previsualizar los datos. Observe que el **lakehouse** muestra los
     datos de la tabla **dimension_customer** del **Warehouse**.
 
-> ![](./media/image115.png)
+> ![](./media/image127.png)
 
-10. A continuación, cree un nuevo notebook para consultar la tabla
+11. A continuación, cree un nuevo **notebook** para consultar la tabla
     **dimension_customer**. En la cinta **Home**, seleccione el menú
-    desplegable de **Open notebook** y seleccione **New notebook**.
+    desplegable **Open notebook** y elija **New notebook**.
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image116.png)
+> incorrect.](./media/image128.png)
 
-11. Seleccione y arrastre **dimension_customer** esde la lista de
-    **Tables** a la celda abierta del **notebook**. Podrá ver que se ha
-    generado una consulta **PySpark** para consultar todos los datos de
-    **ShortcutExercise.dimension_customer**. Esta experiencia de
-    notebook es similar a la experiencia de Jupyter notebook en Visual
-    Studio Code. También puede abrir el notebook en VS Code.
+12. Seleccione y arrastre dimension_customer desde la lista de tablas
+    hacia la celda del notebook abierto. Se generará automáticamente una
+    consulta **PySpark** para consultar todos los datos de
+    ShortcutExercise.dimension_customer. Esta experiencia en el notebook
+    es similar a la de **Visual Studio Code Jupyter notebook**. También
+    puede abrir el **notebook** en **VS Code.**
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image117.png)
+> incorrect.](./media/image129.png)
 
-12. En la cinta **Home**, seleccione el botón **Run all**. ¡Una vez que
-    la consulta se complete, verá que puede usar fácilmente **PySpark**
-    para consultar las tablas del **Warehouse**!
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image118.png)
+13. En la cinta **Home**, seleccione el botón **Run all**. Una vez
+    completada la consulta, verá que puede usar **PySpark** fácilmente
+    para consultar las tablas del **Warehouse.**
 
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image119.png)
+incorrect.](./media/image130.png)
 
-# Ejercicio 9: Crear consultas entre warehouses con el editor de consultas SQL
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image131.png)
+
+# **Ejercicio 9: Crear consultas entre warehouses con el SQL query editor**
 
 ## Tarea 1: Agregar múltiples warehouses al Explorer
 
-En esta tarea, aprenda cómo puede crear y ejecutar fácilmente consultas
-T-SQL con el SQL query editor a través de múltiples warehouses,
-incluyendo la combinación de datos de un SQL Endpoint y un Warehouse en
+En esta tarea, aprenderá cómo crear y ejecutar consultas T-SQL en el SQL
+query editor utilizando datos de múltiples warehouses, incluyendo la
+posibilidad de unir datos entre un SQL Endpoint y un Warehouse en
 Microsoft Fabric.
 
-1.  En la página **Notebook1**, navegue y haga clic en
-    **Warehouse_FabricXX Workspace** en el menú de navegación lateral
-    izquierdo.
+1.  Desde la página **Notebook1**, navegue y haga clic en el espacio de
+    trabajo **Warehouse_FabricXX** en el menú de navegación izquierdo.
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image120.png)
+> incorrect.](./media/image132.png)
 
 2.  En la vista **Warehouse_FabricXX**, seleccione el warehouse
     **WideWorldImporters**.
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image121.png)
+> incorrect.](./media/image133.png)
 
-3.  En la página **WideWorldImporters**, debajo de la pestaña
-    **Explorer**, seleccione el botón **+ Warehouses**.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image122.png)
-
-4.  En la ventana Add warehouses, seleccione **ShortcutExercise** y haga
-    clic en el botón **Confirm**. Ambas experiencias de warehouse se
-    agregan a la consulta.
+3.  En la página de **WideWorldImporters**, en la pestaña **Explorer**,
+    seleccione el botón + **Warehouses**.
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image123.png)
+> incorrect.](./media/image134.png)
 
-5.  Sus warehouses seleccionados ahora muestran el mismo panel
-    **Explorer**.
+4.  En la ventana **Add warehouses**, seleccione **ShortcutExercise** y
+    haga clic en **Confirm**. Ambas experiencias de **warehouse** se
+    agregarán al entorno de consulta.
 
-![](./media/image124.png)
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image135.png)
+
+5.  Los warehouses seleccionados ahora aparecen en el mismo panel
+    **Explorer.**
+
+![](./media/image136.png)
 
 ## Tarea 2: Ejecutar una consulta entre warehouses
 
-En este ejemplo, puede ver lo fácil que es ejecutar consultas T-SQL a
-través del warehouse the WideWorldImporters y el ShortcutExercise SQL
-Endpoint. Puede escribir consultas entre bases de datos utilizando la
-nomenclatura de tres partes para hacer referencia a
-database.schema.table, como en SQL Server.
+En este ejemplo, verá lo fácil que es ejecutar consultas T-SQL entre el
+warehouse **WideWorldImporters** y el **SQL Endpoint ShortcutExercise**.
+Puede escribir consultas entre bases de datos utilizando nombres de tres
+partes para hacer referencia a **database.schema.table**, tal como en
+SQL Server.
 
-1.  Desde la pestaña **Home** de la cinta, seleccione **New SQL query**.
+1.  En la cinta **Home**, seleccione **New SQL query**.
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image125.png)
+> incorrect.](./media/image137.png)
 
 2.  En el editor de consultas, copie y pegue el siguiente código T-SQL.
-    Seleccione el botón **Run** para ejecutar la consulta. Una vez que
-    la consulta se complete, verá los resultados.
+    Seleccione **Run** para ejecutar la consulta. Una vez completada,
+    podrá ver los resultados.
 
     ```
     SELECT Sales.StockItemKey, 
@@ -1163,262 +1207,262 @@ database.schema.table, como en SQL Server.
     GROUP BY Sales.StockItemKey, Sales.Description, c.Customer;
     ```
 
-![](./media/image126.png)
+![](./media/image138.png)
 
-3.  Cambie el nombre de la consulta para referencia. Haga clic derecho
-    sobre **SQL query** en el **Explorer** y seleccione **Rename**.
+3.  Cambie el nombre de la consulta para referencia futura. En el panel
+    **Explorer**, haga clic derecho sobre **SQL query** y seleccione
+    **Rename**.
 
-> ![](./media/image127.png)
+> ![](./media/image139.png)
 
-4.  En el cuadro de diálogo **Rename**, en el campo **Name**, ingrese
-    **+++Cross-warehouse query+++**, luego haga clic en el botón
-    **Rename**. 
+4.  En el cuadro de diálogo **Rename**, en el campo **Name**, escriba
+    +++**Cross-warehouse query**+++, luego haga clic en **Rename**.
 
-> ![](./media/image128.png)
+> ![](./media/image140.png)
 
 # Ejercicio 10: Crear informes de Power BI
 
 ## Tarea 1: Crear un modelo semántico
 
-En esta tarea, aprendemos cómo crear y guardar varios tipos de informes
-de Power BI.
+En esta tarea aprenderá a crear y guardar varios tipos de informes de
+Power BI.
 
-1.  En la página **WideWorldImportes**, debajo de la pestaña **Home**,
-    seleccione **New semantic model**.
+1.  En la página **WideWorldImporters**, en la pestaña **Home**,
+    seleccione **New semantic model**.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image129.png)
-
-2.  En la ventana **New semantic model**, en el cuadro **Direct Lake
-    semantic model name**, ingrese **+++Sales Model+++**
-
-3.  Expanda el esquema dbo, expanda la carpeta **Tables**, y luego
-    marque las tablas **dimension_city** y **fact_sale**. Seleccione
-    **Confirm**.
-
-> ![](./media/image130.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image131.png)
-
-4.  Para abrir el modelo semántico, regrese a la página principal del
-    **workspace**, y luego seleccione el modelo semántico **Sales
-    Model**.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image132.png)
-
-5.  Para abrir el model designer, en el menú, seleccione **Open data
-    model**.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image133.png)
->
-> ![](./media/image134.png)
-
-6. En la página **Sales Model**, para editar **Manage Relationships**,
-    cambie el modo de **Viewing** a **Editing.**![A screenshot of a
-    computer AI-generated content may be
-    incorrect.](./media/image135.png)
-
-7. Para crear una relación, en el **model designer**, en la cinta
-    **Home**, seleccione **Manage relationships**.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image136.png)
-
-8. En la ventana **New relationship**, complete los siguientes pasos
-    para crear la relación:
-
-&nbsp;
-
-1)  En la lista desplegable **From table**, seleccione la tabla
-    **dimension_city**.
-
-2)  En la lista desplegable **To table**, seleccione la tabla
-    **fact_sale**.
-
-3)  En la lista desplegable **Cardinality**, seleccione **One to many
-    (1:\*)**.
-
-4)  En la lista desplegable **Cross-filter direction**, seleccione
-    **Single**.
-
-5)  Marque la casilla **Assume referential integrity**..
-
-6)  Seleccione **Save**.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image137.png)
->
-> ![](./media/image138.png)
->
-> ![](./media/image139.png)
-
-13. En la ventana **Manage relationship**, seleccione **Close**.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image140.png)
->
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image141.png)
 
-## Tarea 2: Crear un informe de Power BI
+2.  En la ventana **New semantic model**, en el cuadro **Direct Lake
+    semantic model name**, escriba **+++Sales Model+++**.
 
-En esta tarea, aprenda cómo crear un reporte de Power BI basado en el
-modelo semántico que creó en la tarea anterior.
-
-1.  En la cinta **File**, seleccione **Create new report**.
+3.  Expanda el esquema **dbo**, expanda la carpeta **Tables**, y luego
+    marque las tablas **dimension_city** y **fact_sale**. Seleccione
+    **Confirm**.
 
 > ![](./media/image142.png)
+>
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image143.png)
 
-2.  2\. En el diseñador de informes, complete los siguientes pasos para
-    crear un visual de gráfico de barras:
+9.  En la navegación izquierda, seleccione **Warehouse_FabricXXXXX**,
+    como se muestra en la imagen.
 
-&nbsp;
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image144.png)
 
-1)  En el panel **Data**, expanda la tabla **fact_sale**, y luego revise
-    el campo Profit.
-
-2)  En el panel **Data**, expanda la tabla dimension_city, y luego
-    revise el campo SalesTerritory.
-
-> ![](./media/image143.png)
-
-3.  En el panel **Visualizations**, seleccione el visual **Azure Map**.
-
-> ![](./media/image144.png)
-
-4.  En el panel **Data**, desde la tabla **dimension_city**, arrastre
-    los campos **StateProvince** al **Location well** en el panel
-    **Visualizations**.
+10. Para abrir el modelo semántico, vuelva a la página principal del
+    espacio de trabajo y luego seleccione el modelo semántico **Sales
+    Model**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image145.png)
 
-5.  En el panel **Data**, desde la tabla fact_sale, marque el
-    campo Profit para agregarlo al mapa visual **Size**.
-
-6.  En el panel **Visualizations**, seleccione el visual **Table**.
+11. Para abrir el diseñador del modelo, en el menú seleccione **Open
+    data model**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image146.png)
-
-7.  En el panel **Data**, marque los siguientes campos:
-
-&nbsp;
-
-1)  SalesTerritory de la tabla dimension_city 
-
-2)  StateProvince de la tabla dimension_city 
-
-3)  Profit de la tabla fact_sale 
-
-4)  TotalExcludingTax de la tabla fact_sale 
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image147.png)
 >
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image148.png)
+> ![](./media/image147.png)
 
-8.  Verifique que el diseño completo de la página del reporte se asemeje
-    a la siguiente imagen.
+12. En la página **Sales Model**, para editar **Manage Relationships**,
+    cambie el modo de **Viewing** a **Editing.  
+    **![A screenshot of a computer AI-generated content may be
+    incorrect.](./media/image148.png)
+
+13. Para crear una relación, en el diseñador del modelo, en la cinta
+    **Home**, seleccione **Manage relationships**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image149.png)
 
-9.  Para guardar el reporte, en la cinta **Home**, seleccione **File \>
-    Save**.
+14. En la ventana **New relationship**, complete los siguientes pasos
+    para crear la relación:
 
+> a\) En la lista desplegable **From table**, seleccione la tabla
+> **dimension_city**.  
+> b) En la lista desplegable **To table**, seleccione la tabla
+> **fact_sale.**  
+> c) En la lista desplegable **Cardinality**, seleccione **One to many
+> (1:\*).**  
+> d) En la lista desplegable **Cross-filter direction**, seleccione
+> **Single**.  
+> e) Marque la casilla **Assume referential integrity**.  
+> f) Seleccione **Save**.
+>
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image150.png)
-
-10. En la ventana **Save your report**, en el cuadro **Enter a name for
-    your report**, ingrese **+++Sales Analysis+++** y seleccione
-    **Save**.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image151.png)
 >
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image152.png)
+> ![](./media/image151.png)
 >
+> ![](./media/image152.png)
+
+15. En la ventana **Manage relationships**, seleccione **Close**.
+
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image153.png)
+>
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image154.png)
 
-## Tarea 3: Eliminar recursos
+## Tarea 2: Crear un informe de Power BI
 
-Puede eliminar reportes individuales, pipelines, warehouses y otros
-elementos, o bien eliminar todo el workspace. En este tutorial, limpiará
-el workspace, los reportes individuales, pipelines, warehouses y otros
-elementos que creó como parte del laboratorio.
+En esta tarea, aprenderá a crear un informe de Power BI basado en el
+modelo semántico que creó en la tarea anterior.
 
-1.  Seleccione **Warehouse_FabricXX** en el menú de navegación para
-    regresar a la lista de elementos del workspace.
-
-> ![](./media/image154.png)
-
-2.  En el menú del encabezado del workspace, seleccione **Workspace
-    settings**.
+1.  En la cinta **File**, seleccione **Create new report**.
 
 > ![](./media/image155.png)
 
-3.  En el cuadro de diálogo **Workspace settings**, seleccione **Other**
-    y luego seleccione **Remove this workspace**.
+2.  En el diseñador de informes, complete los siguientes pasos para
+    crear un gráfico de columnas:  
+    a) En el panel **Data**, expanda la tabla **fact_sale** y seleccione
+    el campo **Profit**.  
+    b) En el panel **Data**, expanda la tabla **dimension_city** y
+    seleccione el campo **SalesTerritory**.
 
 > ![](./media/image156.png)
 
-4.  En el cuadro de diálogo **Delete workspace?** haga clic en el botón
-    **Delete**. ![](./media/image157.png)
+3.  En el panel **Visualizations**, seleccione el **visual Azure Map**.
+
+> ![](./media/image157.png)
+
+4.  En el panel **Data**, dentro de la tabla dimension_city, arrastre el
+    campo StateProvince al contenedor **Location** en el panel
+    **Visualizations**.
+
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image158.png)
+
+5.  En el panel **Data**, dentro de la tabla **fact_sale**, seleccione
+    el campo **Profit** para agregarlo al contenedor **Size map
+    visual**.
+
+6.  En el panel **Visualizations**, seleccione el **visual Table**.
+
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image159.png)
+
+7.  En el panel **Data**, seleccione los siguientes campos:
+
+&nbsp;
+
+1)  **SalesTerritory** de la tabla **dimension_city**
+
+2)  **StateProvince** de la tabla **dimension_city**
+
+3)  **Profit** de la tabla **fact_sale**
+
+4)  **TotalExcludingTax** de la tabla **fact_sale**
+
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image160.png)
+>
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image161.png)
+
+8.  Verifique que el diseño final de la página del informe coincida con
+    la imagen proporcionada.
+
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image162.png)
+
+9.  Para guardar el informe, en la cinta **Home**, seleccione **File \>
+    Save**.
+
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image163.png)
+
+10. En la ventana **Save your report**, en el cuadro **Enter a name for
+    your report**, ingrese **Sales Analysis** y seleccione **Save**.
+
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image164.png)
+>
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image165.png)
+>
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image166.png)
+
+## Tarea 3: Eliminación de recursos
+
+Puede eliminar informes, pipelines, warehouses y otros elementos de
+forma individual, o eliminar todo el espacio de trabajo. En este
+ejercicio, llevará a cabo la eliminación del espacio de trabajo y de los
+informes, pipelines, warehouses y demás elementos creados durante el
+laboratorio.
+
+1.  Seleccione **Warehouse_FabricXX** en el menú de navegación para
+    volver a la lista de elementos del espacio de trabajo.
+
+> ![](./media/image167.png)
+
+2.  En el menú del encabezado del espacio de trabajo, seleccione
+    **Workspace settings**.
+
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image168.png)
+
+3.  En el cuadro de diálogo **Workspace settings**, seleccione
+    **General** y luego **Remove this workspace**.
+
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image169.png)
+
+4.  En el cuadro de diálogo **Delete workspace?,** haga clic en
+    **Delete**. ![](./media/image170.png)
+
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image171.png)
 
 **Resumen**
 
 Este laboratorio integral guía a través de una serie de tareas
-orientadas a establecer un entorno funcional de datos en Microsoft
-Fabric. Comienza con la creación de un workspace, esencial para las
-operaciones de datos, y asegura que la prueba esté habilitada.
-Posteriormente, se establece un Warehouse llamado WideWorldImporters
-dentro del entorno de Fabric, que sirve como el repositorio central para
-el almacenamiento y procesamiento de datos.
+destinadas a establecer un entorno de datos funcional en Microsoft
+Fabric. Inicia con la creación de un espacio de trabajo, fundamental
+para las operaciones de datos, y la habilitación del periodo de prueba.
+Posteriormente, se crea un Warehouse denominado WideWorldImporters
+dentro del entorno de Fabric, el cual funciona como repositorio central
+para el almacenamiento y procesamiento de datos.
 
-Se detalla la ingestión de datos en el workspace Warehouse**\_**FabricXX
-mediante la implementación de un pipeline de Data Factory. Este proceso
-implica obtener datos de fuentes externas e integrarlos de manera fluida
-en el workspace. Se crean tablas críticas, dimension_city y fact_sale,
-dentro del data warehouse para servir como estructuras fundamentales
-para el análisis de datos. El proceso de carga de datos continúa con el
-uso de T-SQL, donde los datos de Azure Blob Storage se transfieren a las
-tablas especificadas.
+A continuación, se detalla la ingesta de datos en el espacio de trabajo
+Warehouse_FabricXX mediante la implementación de un pipeline de Data
+Factory, cuyo propósito es obtener datos desde orígenes externos e
+integrarlos en el espacio de trabajo. Luego se crean las tablas
+dimension_city y fact_sale, elementos esenciales para el análisis de
+datos dentro del warehouse.
 
-Las tareas subsecuentes profundizan en la gestión y manipulación de
-datos. Se demuestra la clonación de tablas, ofreciendo una técnica
-valiosa para la replicación de datos y propósitos de prueba. Además, el
-proceso de clonación se extiende a un esquema diferente **(**dbo1**)**
-dentro del mismo warehouse, mostrando un enfoque estructurado para la
-organización de datos.
+El proceso continúa con la carga de datos a través de T-SQL, trasladando
+información desde Azure Blob Storage hacia estas tablas. Las tareas
+siguientes se centran en la gestión y transformación de datos. Se
+demuestra el proceso de clonación de tablas, una técnica valiosa para
+replicar información y realizar pruebas. Asimismo, se ejemplifica cómo
+clonar una tabla hacia otro esquema (dbo1), mostrando un enfoque
+estructurado para la organización de datos.
 
-El laboratorio avanza hacia la transformación de datos, introduciendo la
-creación de un procedimiento almacenado para agregar eficientemente los
-datos de ventas. Luego, se transita a la construcción de consultas
-visuales, proporcionando una interfaz intuitiva para consultas de datos
-complejas. Esto es seguido por la exploración de notebooks, demostrando
-su utilidad para consultar y analizar datos de la tabla
-dimension_customer**.**
+El laboratorio avanza hacia la transformación de datos mediante la
+creación de un stored procedure para agregar eficientemente información
+de ventas. Posteriormente, se introduce el uso del visual query builder,
+brindando una interfaz intuitiva para consultas complejas. Esto se
+complementa con el uso de notebooks, demostrando su utilidad para
+consultar y analizar datos de la tabla dimension_customer.
 
-Se presentan capacidades de consultas multi-warehouse, permitiendo la
-obtención de datos de manera fluida a través de distintos warehouses
-dentro del workspace. El laboratorio culmina habilitando la integración
-de visuales de Azure Maps, mejorando la representación geográfica de los
-datos en Power BI. Posteriormente, se crean diversos reportes de Power
-BI, incluyendo gráficas de barras, mapas y tablas, para facilitar un
-análisis profundo de los datos de ventas.
+Luego se presentan las capacidades de consultas entre múltiples
+warehouses, habilitando la recuperación de datos desde distintas fuentes
+dentro del espacio de trabajo. El laboratorio continúa con la
+integración de Azure Maps, mejorando la representación geográfica en
+Power BI. Seguidamente, se crean distintos informes de Power BI
+incluyendo gráficos de columnas, mapas y tablas para facilitar un
+análisis detallado de ventas.
 
-La tarea final se enfoca en generar un reporte desde el centro de datos
-**OneLake**, enfatizando aún más la versatilidad de las fuentes de datos
-en Fabric. Finalmente, el laboratorio proporciona conocimientos sobre la
-gestión de recursos, destacando la importancia de los procedimientos de
-limpieza para mantener un workspace eficiente.
-
-En conjunto, estas tareas presentan una comprensión integral sobre cómo
-configurar, gestionar y analizar datos dentro de Microsoft Fabric.
+La penúltima tarea aborda la creación de un informe desde OneLake data
+hub, destacando la versatilidad de las fuentes de datos en Fabric.
+Finalmente, el laboratorio explica los procedimientos de eliminación de
+recursos, subrayando la importancia de mantener un entorno ordenado y
+eficiente.  
+  
+En conjunto, estas tareas proporcionan una comprensión completa sobre
+cómo configurar, administrar y analizar datos dentro de Microsoft
+Fabric.
