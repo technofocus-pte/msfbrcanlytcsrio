@@ -95,82 +95,62 @@ To create a multi-service resource, follow these instructions:
 
 ![](./media/image6.png)
 
-## **Task 2: Create a key vault using the Azure portal**
+## **Task 2: Create an Azure AI Search service in the portal**
 
 1.  In Azure portal home page, click on **+ Create Resource**.
 
 > ![A screenshot of a computer Description automatically
-> generated](./media/image7.png)
+> generated](./media/img1.png)
 
-2.  In the **Create a resource** page search bar, type **Key vault** and
-    click on the appeared **Key vault** .![](./media/image8.png)
+2.  In the **Create a resource** page search bar, type **Azure cognitive
+    Search** and click on the appeared **azure AI search**.
 
-3.  Click on **Key Vault** section.
+![](./media/img2.png)
 
-> ![](./media/image9.png)
-
-4.  On the **Create a key Vault** page, provide the following
-    information and click on **Review+create** button.
-
-    |Field	|Description|
-    |----|----|
-    |Resource group| @lab.CloudSubscription.Name |
-    |Region	| East US 2|
-    |Name	|+++mysearchservice@lab.LabInstance.Id+++ (must can be a unique Id)|
-    |Pricing Tier	|Click on change Price Tire > select Basic|
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image10.png)
-
-5.  Once the Validation is passed, click on the **Create** button.
-
-> ![](./media/image11.png)
-
-6.  After the deployment is completed, click on the **Go to resource**
-    button.
-
-> ![](./media/image12.png)
-
-7.  In your **fabrickeyvaultXX** window, from the left menu, click on
-    the **Access control(IAM).**
-
-![](./media/image13.png)
-
-8.  On the Access control(IAM) page, Click +**Add** and select **Add
-    role assignments.**
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image14.png)
-
-9.  In **Job function roles,** type the +++**Key vault
-    administrator+++** in the search box and select it. Click **Next**
-
-> ![](./media/image15.png)
-
-10.  In the **Add role assignment** tab, select Assign access to User
-    group or service principal. Under Members, click **+Select members**
-
-> ![](./media/image16.png)
-
-11.  On the Select members tab, search your Azure OpenAI subscription and
-    click **Select.**
-
-![](./media/image17.png)
-
-12.  In the **Add role assignment** page, Click **Review + Assign**, you
-    will get a notification once the role assignment is complete.
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image18.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image19.png)
-
-9.  You will see a notification – added as Azure AI Developer for
-    Azure-openai-testXX
+3.  Click on **azure ai search** section.
 
 ![A screenshot of a computer Description automatically
-generated](./media/image20.png)
+generated](./media/img3.png)
+
+4.  In the **Azure AI Search** page, click on the **Create** button.
+
+> ![A screenshot of a computer Description automatically
+> generated](./media/img4.png)
+
+5.  On the **Create a search service** page, provide the following
+    information and click on **Review+create** button.
+
+|Field	|Description|
+|-----|------|
+|Subscription	|Select the assigned subscription|
+|Resource group	|Select your Resource group|
+|Region|	EastUS 2|
+|Name	|+++mysearchserviceXXXXX+++(XXXXX can be Lab instant ID)|
+|Pricing Tier|	Click on change Price Tire>select Basic|
+
+
+![](./media/img5.png)
+
+![A screenshot of a computer Description automatically
+generated](./media/img6.png)
+
+6.  Once the Validation is passed, click on the **Create** button.
+
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/img7.png)
+
+1.  After the deployment is completed, click on the **Go to resource**
+    button.
+
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/img8.png)
+
+2.  copy **AI search name** and paste them in a notepad as shown in the
+    below image, then **Save** the notepad to use the information in the
+    upcoming lab.
+
+![](./media/img9.png)
+
 
 ## **Task 3: Create a Fabric workspace**
 
@@ -981,3 +961,4 @@ generated](./media/image79.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image80.png)
+
