@@ -1,59 +1,43 @@
-# Use case 06: Identifying and extracting text with Document Intelligence in Microsoft Fabric
+##  用例06——在Microsoft Fabric中利用文档智能识别和提取文本
+**介绍 **
 
-**Introduction**
+分析结构化数据已经是个容易的过程，但非结构化数据则不然。非结构化数据，如文本、图片和视频，更难分析和解读。然而，随着先进AI模型的出现，如OpenAI的GPT-3和GPT-4，分析和获取非结构化数据的洞察变得更容易。
 
-Analyzing structured data has been an easy process for some time but the
-same cannot be said for unstructured data. Unstructured data, such as
-text, images, and videos, is more difficult to analyze and interpret.
-However, with the advent of advanced AI models, it is now becoming easier to analyze and gain insights from
-unstructured data.
+此类分析的一个例子是利用自然语言查询文档的特定信息，这可以通过信息检索和语言生成相结合实现。
 
-An example of such analysis is the ability to query a document for
-specific information using natural language which is achievable though a
-combination of information retrieval and language generation.
+通过利用RAG（检索增强生成）框架，你可以创建一个强大的问答流程，利用大型语言模型（LLM）和你自己的数据生成回答。
 
-By leveraging the RAG (Retrieval-Augmented Generation) framework, you
-can create a powerful question-and-answering pipeline that uses a large
-language model (LLM) and you own data to generate responses.
+此类应用的架构如下所示:
 
-The architecture of such an application is as shown below:
+![Architecture diagram connecting Azure OpenAI with Azure AI Search and
+Document Intelligence](./media/image1.png)
 
-> ![Architecture diagram connecting Azure OpenAI with Azure AI Search and
-Document Intelligence](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image1.png)
+**目标**
 
-**Objective**
+- 使用 Azure 门户为 Azure AI 服务创建多服务资源
 
-- Create a multi-service resource for Azure AI services using Azure
-  portal
+- 创建 Fabric 容量和工作区，Key Vault 和 Fabric 工作区
 
-- To create fabric capacity and workspace, Key vault, and fabric
-  workspace
+- 在Azure AI服务中使用Azure AI文档智能预处理PDF文档。
 
-- Pre-process PDF Documents using Azure AI Document Intelligence in
-  Azure AI Services.
+- 使用SynapseML进行文本分块处理。
 
-- Perform text chunking using SynapseML.
+- 使用 SynapseML 和 Azure OpenAI Services 生成区块嵌入。
 
-- Generate embeddings for the chunks using SynapseML and Azure OpenAI
-  Services.
+- 将嵌入存储在 Azure AI 搜索中。
 
-- Store the embeddings in Azure AI Search.
+- 建立一个问答流程。
 
-- Build a question answering pipeline.
+# **练习1：环境设置**
 
-## Exercise 1: Environment Setup
+## 任务1：为Azure AI服务创建多服务资源
 
-### Task 1: Create a multi-service resource for Azure AI services
+多服务资源列在门户的“**Azure AI services \> Azure AI services
+multi-service account**”下。要创建多服务资源，请按照以下说明操作:
 
-The multi-service resource is listed under **Azure AI
-services** \> **Azure AI services multi-service account** in the portal.
-To create a multi-service resource follow these instructions:
+1.  选择此链接创建多服务资源: 
 
-1.  Select this link to create a multi-service resource: 
-
-    +++https://portal.azure.com/#create/Microsoft.CognitiveServicesAllInOne+++
-	
-2.  On the **Create Azure AI services** page, provide the following information:
+++++https://portal.azure.com/#create/Microsoft.CognitiveServicesAllInOne+++
 
     |Project details | Description |
     |-----|----|
@@ -63,253 +47,122 @@ To create a multi-service resource follow these instructions:
     |Name	|+++Cognitive-service@lab.LabInstance.Id+++ (must be a unique Id)|
     |Pricing tier	|Standard S0|
 
-3.  Read and
-    accept the conditions (as applicable), and then select **Review +
-    create**.
+2.  在**Create**页面，提供以下信息:
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image2.png)
+3.  根据需要配置资源的其他设置，阅读并接受条件（如适用），然后选择
+    **Review + create**。
 
-4.  In the **Review+submit** tab, once the Validation is Passed, click
-    on the **Create** button.
+![](./media/image2.png)
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image3.png)
+4.  在**“Review+submit**”标签中，验证通过后，点击 **Create** 按钮。
 
-5.  After the deployment is completed, click on the **Go to resource**
-    button.
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image3.png)
 
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image4.png)
+5.  部署完成后，点击“ **Go to resource** ”按钮。
 
-6.  In your **Cognitive-service@lab.LabInstance.Id** -> **Azure AI service** window, navigate to the **Resource
-    Management** section, and click on **Keys and Endpoints**.
+> ![A screenshot of a computer Description automatically
+> generated](./media/image4.png)
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image5.png)
+6.  在 **Azure** **AI service** 窗口中，导航到“**Resource
+    Management**”部分，然后单击“**Keys and Endpoints**”。
 
-7.  In **Keys and Endpoints** page, copy **KEY1, KEY 2,** and
-    **Endpoint** values and paste them in a notepad as shown in the
-    below image, then **Save** the notepad to use the information in the
-    upcoming tasks.
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image5.png)
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image6.png)
+7.  在“**Keys and Endpoints**”页面，复制**KEY1、KEY 2**和 **Endpoint**
+    的值，并像下图所示粘贴到记事本中，然后**保存**记事本以便在接下来的任务中使用这些信息。
 
-### Task 2: Create a key vault using the Azure portal
+![](./media/image6.png)
 
-1.  In Azure portal home page, click on **+ Create Resource**.
 
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image7.png)
+## **任务2：在门户中创建Azure AI搜索服务**
 
-2.  In the **Create a resource** page search bar, type **+++Key vault+++** and
-    click on the appeared **Key vault**.
-	
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image8.png)
+1.  在 Azure 门户主页，点击 **+ Create Resource**。
 
-3.  Click on **Key Vault** section.
+> ![A screenshot of a computer Description automatically
+> generated](./media/image7.png)
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image9.png)
+2.  在“**Create a resource**”搜索栏中，输入“**Azure cognitive
+    Search**”，点击已出现的 **azure AI search**。
 
-4.  On the **Create a key Vault** page, provide the following
-    information and click on **Review+create** button.
-	
-    | Field | Description |
-    |-----|---|
-    |Subscription|	@lab.CloudSubscription.Name |
-    |Resource group	| @lab.CloudResourceGroup(ResourceGroup1).Name |
-    |Region| East US 2 |
-    |Name	|+++fabrickeyvault@lab.LabInstance.Id+++ (must be a unique Id)|
-    |Pricing Tier|	Click on change Price Tier > select Standard |
+![](./media/image28.png)
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image10.png)
+3.  点击 **azure ai search**部分。
 
-5.  Once the Validation is passed, click on the **Create** button.
+![A screenshot of a computer Description automatically
+generated](./media/image29.png)
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image11.png)
+4.  在 **Azure AI Search**页面，点击“**Create**”按钮。
 
-6.  After the deployment is completed, click on the **Go to resource**
-    button.
+> ![A screenshot of a computer Description automatically
+> generated](./media/image30.png)
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image12.png)
+5.  在“**Create a search
+    service**”页面，输入以下信息，点击“**Review+create**”按钮。
 
-5.  In your **fabrickeyvault@lab.LabInstance.Id** window, from the left menu, click on
-    the **Access control (IAM).**
+|Field	|Description|
+|-----|------|
+|Subscription	|Select the assigned subscription|
+|Resource group	|Select your Resource group|
+|Region|	EastUS 2|
+|Name	|+++mysearchserviceXXXXX+++(XXXXX can be Lab instant ID)|
+|Pricing Tier|	Click on change Price Tire>select Basic|
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image13.png)
+![](./media/image31.png)
 
-6.  On the **Access control (IAM)** page, Click +**Add** and select **Add
-    role assignment**.
+![A screenshot of a computer Description automatically
+generated](./media/image32.png)
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image14.png)
+6.  验证通过后，点击 **Create** 按钮。
 
-5.  In **Job function roles,** type **+++Key vault administrator+++** in the search box and select it. Click **Next**
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image33.png)
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image15.png)
+8.  部署完成后，点击“ **Go to resource** ”按钮。
 
-6.  In the **Add role assignment** -> **Members** tab, select Assign access to **User
-    group or service principal**. Under Members, click **+Select members**
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image34.png)
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image16.png)
+9.  复制 **AI search name**
+    并粘贴到笔记本中，如下图所示，然后**保存**笔记本以便在即将到来的实验中使用这些信息。
 
-7.  On the Select members tab, search your Azure OpenAI subscription, **+++@lab.CloudPortalCredential(User1).Username+++** and
-    click **Select.**
+![](./media/image35.png)
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image17.png)
+## **任务5：创建Fabric工作区**
 
-8.  In the **Add role assignment** -> **Members** tab, Click **Review + assign**.
+在这个任务中，你需要创建一个Fabric工作区。工作区包含了本 lakehouse
+教程所需的所有内容，包括 lakehouse、数据流、Data Factory
+管道、笔记本、Power BI 数据集和报表。
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image18.png)
+1.  打开浏览器，进入地址栏，输入或粘贴以下URL：
+    https://app.fabric.microsoft.com/ 然后按下 **Enter** 键。
 
-1.  On the **Add role assignment** -> **Review + assign** tab, click **Review + assign**.
+> ![A search engine window with a red box Description automatically
+> generated with medium confidence](./media/image36.png)
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image19.png)
+2.  在 **Microsoft Fabric** 窗口中，输入你的凭证，然后点击 **Submit**
+    按钮。
 
-9.  You will see a notification - added as Azure AI Developer for
-    fabrickeyvault@lab.LabInstance.Id
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image37.png)
 
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image20.png)
+3.  然后，在 **Microsoft** 窗口输入密码，点击 **Sign in** 按钮**。**
 
-### Task 3: Create a secret using Azure Key vault
+> ![A login screen with a red box and blue text AI-generated content may
+> be incorrect.](./media/image38.png)
 
-1.  On the Key Vault left-hand sidebar, select **Objects** then
-    select **Secrets**.
+4.  在 **Stay signed in?** 窗口，点击**“Yes”**按钮。
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image21.png)
+> ![A screenshot of a computer error AI-generated content may be
+> incorrect.](./media/image39.png)
 
-2.  Select **+ Generate/Import**.
+5.  在工作区面板中选择 **+New workspace**。
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image22.png)
+> ![](./media/image40.png)
 
-3.  On the **Create a secret** page, provide the following information
-    and click on **Create** button .
-
-    |   |   |
-    |---|---|
-    |Upload options | Manual|
-    |Name|	+++aisearchkey+++|
-    |Secret Value|	+++password321+++|
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image23.png)
-
-4.  Select **+ Generate/Import**.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image24.png)
-
-5.  On the **Create a secret** page, provide the following information
-    and click on **Create** button.
-	
-    |    |   |
-    |----|----|
-    |Upload options | Manual|
-    |Name|	+++aiservicekey+++|
-    |Secret Value|	+++password321+++|
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image25.png)
-    
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image26.png)
-
-6.  In **Key vault** page, copy **Key vault** name, and **Secrets**
-    values and paste them in a notepad as shown in the below image, then
-    **Save** the notepad to use the information in the upcoming tasks.
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image27.png)
-
-### Task 4: Create an Azure AI Search service in the portal
-
-1.  In Azure portal home page, click on **+ Create Resource**.
-
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image7.png)
-
-2.  In the **Create a resource** page search bar, type **+++Azure AI
-    Search+++** and click on the appeared **azure ai search**.
-
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image28.png)
-
-3.  Click on **azure ai search** section.
-
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image29.png)
-
-4.  In the **Azure AI Search** page, click on the **Create** button.
-
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image30.png)
-
-5.  On the **Create a search service** page, provide the following
-    information and click on **Review+create** button.
-	
-    |Field	|Description|
-    |----|----|
-    |Resource group| @lab.CloudSubscription.Name |
-    |Region	| East US 2|
-    |Name	|+++mysearchservice@lab.LabInstance.Id+++ (must can be a unique Id)|
-    |Pricing Tier	|Click on change Price Tire > select Basic|
-    
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image31.png)
-    
-    > ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image32.png)
-
-6.  Once the Validation is passed, click on the **Create** button.
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image33.png)
-
-8.  After the deployment is completed, click on the **Go to resource**
-    button.
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image34.png)
-
-9.  copy **AI search name** and paste it in notepad as shown in the
-    below image, then **Save** the notepad to use the information in the
-    upcoming lab.
-
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image35.png)
-
-### Task 5: Create a Fabric workspace
-
-In this task, you create a Fabric workspace. The workspace contains all
-the items needed for this lakehouse tutorial, which includes lakehouse,
-dataflows, Data Factory pipelines, the notebooks, Power BI datasets, and
-reports.
-
-1.  Open your browser, navigate to the address bar, and type or paste
-    the following URL: +++https://app.fabric.microsoft.com/+++ then press the
-    **Enter** button.
-
-    > ![A search engine window with a red box Description automatically
-    > generated with medium confidence](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image36.png)
-
-2.  In the **Microsoft Fabric** window, enter your credentials, and
-    click on the **Submit** button.
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image37.png)
-
-3.  Then, In the **Microsoft** window enter the password and click on
-    the **Sign in** button**.**
-
-    > ![A login screen with a red box and blue text AI-generated content may
-    > be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image38.png)
-
-4.  In **Stay signed in?** window, click on the **Yes** button.
-
-    > ![A screenshot of a computer error AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image39.png)
-
-5.  In the Workspaces pane Select **+New workspace**.
-
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image40.png)
-
-6.  In the **Create a workspace** pane that appears on the right side,
-    enter the following details, and click on the **Apply** button.
+6.  在右侧的 **Create a workspace**
+    面板中，输入以下细节，然后点击“**Apply**”按钮。
 
     |   |   |
     |----|-----|
@@ -317,62 +170,58 @@ reports.
     |Advanced|	Select **Fabric Capacity**|
     |Capacity	|Select the available capacity|
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image41.png)
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image41.png)
+>
+> ![](./media/image42.png)
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image42.png)
+10. 等待部署完成。完成大约需要2-3分钟。
 
-10. Wait for the deployment to complete. It takes 2-3 minutes to
-    complete.
+![](./media/image43.png)
 
-    > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image43.png)
+## **任务6：建造 lakehouse**
 
-### Task 6: Create a lakehouse
+1.  在 **Fabric主**页，选择 **+New item**，选择 **Lakehouse**  瓷砖。
 
-1.  In the Fabric Home page, select **+ New item** and filter by, and then select the **+++Lakehouse+++** tile.
+> ![A screenshot of a computer Description automatically
+> generated](./media/image44.png)
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image44.png)
+2.  在“**New
+    lakehouse** ”对话框中，在“**Name**”字段中输入+++**data_lakehouse**+++，单击“**Create**”按钮，打开新的
+    lakehouse。
 
-2.  In the **New lakehouse** dialog box, enter +++**data_lakehouse**+++
-    in the **Name** field, click on the **Create** button and open the
-    new lakehouse.
+> **注意**：**data_lakehouse** 前请务必清空。
+>
+> ![A screenshot of a computer Description automatically
+> generated](./media/image45.png)
 
-    >[!note]**Note**: Ensure to remove space before **data_lakehouse**.
+3.  你会看到一条通知，提示 **Successfully created SQL endpoint**。
 
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image45.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image46.png)
 
-3.  You will see a notification stating **Successfully created SQL
-    endpoint**.
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image47.png)
 
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image46.png)
+# **练习 2：PDF文档加载与预处理 **
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image47.png)
+## **任务1：配置Azure API密钥**
 
-## Exercise 2: Loading and Pre-processing PDF Documents
+首先，回到工作区中的rag_workshop Lakehouse，通过选择“Open
+Notebook”和选项中的“New Notebook”创建新笔记本。
 
-### Task 1: Configure Azure API keys
+1.  在 **Lakehouse** 页面中，导航并单击命令栏中的“**Open
+    notebook**”下拉列表，然后选择“**New notebook**”。
 
-To begin, navigate back to the rag_workshop Lakehouse in your workspace
-and create a new notebook by selecting Open Notebook and selecting New
-Notebook from the options.
+![A screenshot of a computer Description automatically
+generated](./media/image48.png)
 
-1.  In the **Lakehouse** page, navigate and click on **Open notebook**
-    drop in the command bar, then select **New notebook**.
+2.  在查询编辑器中，粘贴以下代码。 提供Azure AI服务的密钥、Azure Key
+    Vault名称和访问服务的密钥
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image48.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image49.png)
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image49.png)
-
-2.  In the query editor, paste the following code.  Provide the keys for
-    Azure AI Services, Azure Key Vault name and secrets to access the
-    services.
-	
     ```
     # Azure AI Search
     AI_SEARCH_NAME = ""
@@ -384,17 +233,17 @@ Notebook from the options.
     AI_SERVICES_LOCATION = ""
     ```
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image50.png)
+> ![](./media/image50.png)
 
-### Task 2: Loading & Analyzing the Document
+## 任务2：加载和分析文档
 
-We will be using a specific document named [**support.pdf**](https://github.com/Azure-Samples/azure-openai-rag-workshop/blob/main/data/support.pdf) which
-will be the source of our data.
+1.  我们将使用一个名为 **support.pdf** 的特定文档 ，作为我们数据的来源。
 
-1.  To download the document, use the **+ Code** icon below the cell
-    output to add a new code cell to the notebook, and enter the
-    following code in it. Click on **▷ Run cell** button and review the
-    output.
+2.  要下载文档，请使用单元格输出下方的 **+ Code**
+    图标，向笔记本添加一个新的代码单元格，并在其中输入以下代码。点击 **▷
+    Run cell**  按钮，查看输出结果
+
+**Copy**
 
     ```
     import requests
@@ -414,16 +263,18 @@ will be the source of our data.
     with open(os.path.join(path, filename), "wb") as f:
         f.write(response.content)
     ```
+![](./media/image51.png)
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image51.png)
+3.  现在，使用 Apache Spark 提供的
+    spark.read.format（“binaryFile”）方法将 PDF 文档加载到 Spark
+    DataFrame 中
 
-3.  Now, load the PDF document into a Spark DataFrame using the
-    spark.read.format("binaryFile") method provided by Apache Spark
+4.  使用单元格输出下方的 **+ Code** 
+    图标，向笔记本添加一个新的代码单元格，并输入以下代码。点击 **▷ Run
+    cell** 按钮，查看输出结果
 
-    Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output.
-	
+**Copy**
+
     ```
     from pyspark.sql.functions import udf
     from pyspark.sql.types import StringType
@@ -432,20 +283,20 @@ will be the source of our data.
     display(df)
     ```
 
-    > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image52.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image52.png)
 
-    >[!note]**Note**: This code will read the PDF document and create a Spark DataFrame
-    > named df with the contents of the PDF. The DataFrame will have a schema
-    > that represents the structure of the PDF document, including its textual
-    > content.
+该代码将读取 PDF 文档，并生成名为 df 的 Spark DataFrame，包含 PDF
+内容。DataFrame 将包含一个表示 PDF 文档结构的模式，包括其文本内容。
 
-5.  Next, we'll use the Azure AI Document Intelligence to read the PDF
-    documents and extract the text from them.
+5.  接下来，我们将使用Azure AI文档智能读取PDF文档并提取文本。
 
-    Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output.
-	
+6.  使用单元格输出下方的 **+ Code**
+    图标，向笔记本添加一个新的代码单元格，并输入以下代码。点击 **▷ Run
+    cell **按钮，查看输出结果
+
+**Copy**
+
     ```
     from synapse.ml.services import AnalyzeDocument
     from pyspark.sql.functions import col
@@ -466,37 +317,37 @@ will be the source of our data.
     ).cache()
     ```
 
-    > ![A screenshot of a computer code AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image53.png)
+![A screenshot of a computer code AI-generated content may be
+incorrect.](./media/image53.png)
 
-7.  We can observe the analyzed Spark DataFrame named analyzed_df using
-    the following code. Note that we drop the content column as it is
-    not needed anymore.
+7.  我们可以通过以下代码观察分析的名为analyzed_df的火花数据帧。注意我们去掉内容栏，因为它不再需要了。
 
-    Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output.
-	
+8.  使用单元格输出下方的 **+
+    Code** 图标，向笔记本添加一个新的代码单元格，并输入以下代码。点击
+    **▷ Run cell ** 按钮，查看输出结果
+
+**Copy**
+
     ```
     analyzed_df = analyzed_df.drop("content")
     display(analyzed_df)
     ```
-	
-    > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image54.png)
 
-## Exercise 3: Generating and Storing Embeddings
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image54.png)
 
-### Task 1: Text Chunking
+# 练习 3：生成和存储嵌入
 
-Before we can generate the embeddings, we need to split the text into
-chunks. To do this we leverage SynapseML's PageSplitter to divide the
-documents into smaller sections, which are subsequently stored in
-the chunks column. This allows for more granular representation and
-processing of the document content.
+## **任务1：文本分块处理**
 
-1.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output.
-	
+在生成嵌入之前，我们需要将文本拆分成多个块。为此，我们利用SynapseML的PageSplitter将文档划分为更小的部分，这些部分随后存储在区块列中。这使得文档内容能够实现更细致的表示和处理。
+
+1.  使用单元格输出下方的 **+ Code**
+    图标，向笔记本添加一个新的代码单元格，并输入以下代码。点击 **▷ Run
+    cell** 按钮，查看输出结果
+
+**Copy**
+
     ```
     from synapse.ml.featurize.text import PageSplitter
     
@@ -511,17 +362,18 @@ processing of the document content.
     splitted_df = ps.transform(analyzed_df)
     display(splitted_df)
     ```
-	
-    > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image55.png)
 
-    >[!note]**Note**: The chunks for each document are presented in a single row
-    inside an array. In order to embed all the chunks in the following
-    cells, we need to have each chunk in a separate row.
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image55.png)
 
-2.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output.
-	
+注意每个文档的区块以数组内的单行形式呈现。为了将所有区块嵌入后续单元格，我们需要将每个区块放在独立的行中。
+
+2.  使用单元格输出下方的  **+
+    Code** 图标，向笔记本添加一个新的代码单元格，并输入以下代码。点击
+    **▷ Run cell** 按钮，查看输出结果
+
+**Copy**
+
     ```
     from pyspark.sql.functions import posexplode, col, concat
     
@@ -535,24 +387,25 @@ processing of the document content.
     display(exploded_df)
     ```
 
-    > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image56.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image56.png)
 
-From this code snippet we first explode these arrays so there is only
-one chunk in each row, then filter the Spark DataFrame in order to only
-keep the path to the document and the chunk in a single row.
+从这段代码片段中，我们首先将这些数组炸开，使每行只有一个块，然后过滤
+Spark DataFrame，使文档路径和块只保留在同一行。
 
-### Task 2: Generating Embeddings
+## 任务2：生成嵌入
 
-Next we'll generate the embeddings for each chunk. To do this we utilize
-both SynapseML and Azure OpenAI Service. By integrating the built in
-Azure OpenAI service with SynapseML, we can leverage the power of the
-Apache Spark distributed computing framework to process numerous prompts
-using the OpenAI service.
+接下来我们会为每个块生成嵌入。为此，我们同时使用SynapseML和Azure
+OpenAI服务。通过将内置的Azure
+OpenAI服务与SynapseML集成，我们可以利用Apache
+Spark分布式计算框架的力量，利用OpenAI服务处理大量提示。
 
-1.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output.
-	
+1.  使用单元格输出下方的 **+
+    Code** 图标，向笔记本添加一个新的代码单元格，并输入以下代码。点击
+    **▷ Run cell** 按钮，查看输出结果
+
+**Copy**
+
     ```
     from synapse.ml.services import OpenAIEmbedding
     
@@ -568,41 +421,35 @@ using the OpenAI service.
     
     display(df_embeddings)
     ```
-	
-    > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image57.png)
 
-This integration enables the SynapseML embedding client to generate
-embeddings in a distributed manner, enabling efficient processing of
-large volumes of data
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image57.png)
 
-### Task 3: Storing Embeddings 
+这种集成使SynapseML嵌入客户端能够以分布式方式生成嵌入，从而高效处理大量数据
 
-[Azure AI Search](https://learn.microsoft.com/azure/search/search-what-is-azure-search?WT.mc_id=data-114676-jndemenge) is
-a powerful search engine that includes the ability to perform full text
-search, vector search, and hybrid search. For more examples of its
-vector search capabilities, see the [azure-search-vector-samples
-repository](https://github.com/Azure/azure-search-vector-samples/).
+## 任务3：存储嵌入 
 
-Storing data in Azure AI Search involves two main steps:
+[Azure AI
+Search](https://learn.microsoft.com/azure/search/search-what-is-azure-search?WT.mc_id=data-114676-jndemenge)
+是一款强大的搜索引擎，具备全文搜索、矢量搜索和混合搜索功能。欲了解更多向量搜索功能的示例，请参见
+[azure-search-vector-samples
+repository](https://github.com/Azure/azure-search-vector-samples/)。 
 
-**Creating the index:** The first step is to define the schema of the
-search index, which includes the properties of each field as well as any
-vector search strategies that will be used.
+在Azure AI Search中存储数据主要包括两个步骤:
 
-**Adding chunked documents and embeddings:** The second step is to
-upload the chunked documents, along with their corresponding embeddings,
-to the index. This allows for efficient storage and retrieval of the
-data using hybrid and vector search.
+**创建索引：**第一步是定义搜索索引的模式，包括每个字段的属性以及将使用的任何向量搜索策略。
 
-1.  The following code snippet demonstrates how to create an index in
-    Azure AI Search using the Azure AI Search REST API. This code
-    creates an index with fields for the unique identifier of each
-    document, the text content of the document, and the vector embedding
-    of the text content.
+**添加分块文档和嵌入：**第二步是将分块文档及其对应嵌入上传到索引中。这使得数据的高效存储和检索成为利用混合和向量搜索的实现。
 
-    Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Update the **AI_SEARCH_API_KEY** with the value you saved in Notepad and click on **▷ Run cell** button and review the output.
-	
+1.  以下代码片段演示如何使用Azure AI Search REST API在Azure AI
+    Search中创建索引。该代码创建索引，包含每个文档的唯一标识符、文档文本内容以及文本内容的向量嵌入字段。
+
+2.  使用单元格输出下方的 **+
+    Code**图标，向笔记本添加一个新的代码单元格，并输入以下代码。点击**▷
+    Run cell** 按钮，查看输出结果
+
+**Copy**
+
     ```
     import requests
     import json
@@ -659,19 +506,21 @@ data using hybrid and vector search.
         print(f"HTTP response body: {response.text}")
     ```
 
-    > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image58.png)
-    
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image59.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image58.png)
 
-3.  The next step is to upload the chunks to the newly created Azure AI
-    Search index. The Azure AI Search REST API supports up to 1000
-    "documents" per request. Note that in this case, each of our
-    "documents" is in fact a chunk of the original file
+![](./media/image59.png)
 
-    Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output.
-	
+3.  下一步是将区块上传到新创建的 Azure AI 搜索索引中。Azure AI Search
+    REST API 支持每个请求最多 1000
+    个“文档”。请注意，在这种情况下，我们的每一份“文档”实际上都是原始文件的一部分
+
+4.  使用单元格输出下方的 **+ Code**
+    图标，向笔记本添加一个新的代码单元格，并输入以下代码。点击 **▷ Run
+    cell **按钮，查看输出结果
+
+**Copy**
+
     ```
     import re
     
@@ -729,29 +578,29 @@ data using hybrid and vector search.
     res = df_embeddings.rdd.mapPartitions(upload_rows)
     display(res.toDF(["start_index", "end_index", "insertion_status"]))
     ```
-	
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image60.png)
-    
-    > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image61.png)
+![](./media/image60.png)
 
-## Exercise 4: Retrieving Relevant Documents and Answering Questions
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image61.png)
 
-After processing the document, we can proceed to pose a question. We
-will use SynapseML to convert the user's question into an embedding and
-then utilize cosine similarity to retrieve the top K document chunks
-that closely match the user's question.
+# 练习4：检索相关文件并回答问题
 
-### Task 1: Configure Environment & Azure API Keys
+处理完文件后，我们可以提出一个问题。我们将使用 SynapseML
+将用户问题转换为嵌入，然后利用余弦相似性检索与用户问题高度匹配的顶部 K
+个文档块。
 
-Create a new notebook in the Lakehouse and save it as rag_application.
-We'll use this notebook to build the RAG application.
+## 任务1：配置环境及Azure API密钥
 
-1.  Provide the credentials for access to Azure AI Search. You can copy
-    the values from the from Azure Portal (Exercise 1 \>Task 4).
+在湖屋里创建一个新笔记本，并保存为rag_application。我们将用这个笔记本来构建RAG应用程序。
 
-    Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output.
+1.  提供访问Azure AI
+    Search的凭据。你可以从Azure门户复制这些数值。（演习1\>任务4）
+
+2.  使用单元格输出下方的 **+ Code**
+    图标，向笔记本添加一个新的代码单元格，并输入以下代码。点击 **▷ Run
+    cell** 按钮，查看输出结果
+
+Copy
 
     ```
     # Azure AI Search
@@ -759,18 +608,19 @@ We'll use this notebook to build the RAG application.
     AI_SEARCH_INDEX_NAME = 'rag-demo-index'
     AI_SEARCH_API_KEY = ''
     ```
-	
-    > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image62.png)
 
-3.  The following function takes a user's question as input and converts
-    it into an embedding using the text-embedding-ada-002 model. This
-    code assumes you're using the Pre-built AI Services in Microsoft
-    Fabric.
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image62.png)
 
-    Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output.
-	
+3.  以下函数将用户的问题作为输入，并利用文本嵌入-ada-002模型将其转换为嵌入。本代码假设你使用的是Microsoft
+    Fabric中的预构建AI服务
+
+4.  使用单元格输出下方的 **+
+    Code **图标，向笔记本添加一个新的代码单元格，并输入以下代码。点击**▷
+    Run cell** 按钮，查看输出结果
+
+**Copy**
+
     ```
     def gen_question_embedding(user_question):
         """Generates embedding for user_question using SynapseML."""
@@ -789,21 +639,19 @@ We'll use this notebook to build the RAG application.
         question_embedding = row.embeddings.tolist()
         return question_embedding
     ```
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image63.png)
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image63.png)
+## 任务2：检索相关文件
 
-### Task 2: Retrieve Relevant Documents
+1.  下一步是利用用户问题及其嵌入，从搜索索引中检索最相关的前K个文档块。以下函数通过混合搜索检索顶部的K个条目
 
-1.  The next step is to use the user question and its embedding to
-    retrieve the top K most relevant document chunks from the search
-    index. The following function retrieves the top K entries using
-    hybrid search.
+2.  使用单元格输出下方的 **+ Code**
+    图标，向笔记本添加一个新的代码单元格，并输入以下代码。点击 **▷ Run
+    cell** 按钮，查看输出结果
 
-    Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output.
-	
+**Copy**
+
     ```
     import json 
     import requests
@@ -834,18 +682,18 @@ We'll use this notebook to build the RAG application.
         output = json.loads(response.text)
         return output
     ```
-	
-    > ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image64.png)
-    
-    With those functions defined, we can define a function that takes a
-    user's question, generates an embedding for the question, retrieves the
-    top K document chunks, and concatenates the content of the retrieved
-    documents to form the context for the user's question.
 
-3.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output.
-	
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image64.png)
+
+定义了这些函数后，我们可以定义一个函数，接收用户的问题，生成问题嵌入，检索顶部K个文档块，并将检索到的文档内容串接起来，形成用户问题的上下文。
+
+3.  使用单元格输出下方的 **+ Code**
+    图标，向笔记本添加一个新的代码单元格，并输入以下代码。点击**▷ Run
+    cell** 按钮，查看输出结果
+
+**Copy**
+
     ```
     def get_context(user_question, retrieved_k = 5):
         # Generate embeddings for the question
@@ -859,22 +707,19 @@ We'll use this notebook to build the RAG application.
     
         return context
     ```
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image65.png)
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image65.png)
+## **任务3：回答用户的问题**
 
-### Task 3: Answering the User's Question
+最后，我们可以定义一个函数，将用户的问题获取上下文，并将上下文和问题发送到大型语言模型以生成回答。本次演示将使用GPT-35-turbo-16k，一款专为对话优化的型号。
 
-Finally, we can define a function that takes a user's question,
-retrieves the context for the question, and sends both the context and
-the question to a large language model to generate a response. For this
-demo, we'll use the gpt-35-turbo-16k, a model that is optimized for
-conversation.
+1.  使用单元格输出下方的 **+ Code**
+    图标，向笔记本添加一个新的代码单元格，并输入以下代码。点击**▷ Run
+    cell** 按钮，查看输出结果
 
-1.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output.
-	
+**Copy**
+
     ```
     from pyspark.sql import Row
     from synapse.ml.services.openai import OpenAIChatCompletion
@@ -926,88 +771,113 @@ conversation.
         
         return result
     ```
-	
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image66.png)
-    
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image67.png)
+![](./media/image66.png)
 
-    > Now, we can call that function with an example question to see the response:
+![](./media/image67.png)
 
-3.  Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
-    Run cell** button and review the output.
-	
-    ```
-    user_question = "how do i make a booking?"
-    response = get_response(user_question)
-    print(response)
-    ```
+2.  现在，我们可以用示例问题调用该函数，查看响应:
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image68.png)
+3.  使用单元格输出下方的 **+ Code**
+    图标，向笔记本添加一个新的代码单元格，并输入以下代码。点击**▷ Run
+    cell** 按钮，查看输出结果
 
-### Task 4: Delete the resources
+**Copy**
 
-To avoid incurring unnecessary Azure costs, you should delete the
-resources you created in this quickstart if they're no longer needed. To
-manage resources, you can use the [Azure
-portal](https://portal.azure.com/?azure-portal=true).
+```
+import requests
 
-1.  To delete the storage account, navigate to **Azure portal Home**
-    page, click on **Resource groups**.
+# Azure Search configuration
+search_service_name = ''
+index_name = 'rag-demo-index'
+api_key = ''
+endpoint = f'https://{search_service_name}.search.windows.net'
+api_version = '2023-07-01-Preview'
+search_url = f"{endpoint}/indexes/{index_name}/docs/search?api-version={api_version}"
 
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image69.png)
+headers = {
+    "Content-Type": "application/json",
+    "api-key": api_key
+}
 
-2.  Click on the assigned resource group, **@lab.CloudResourceGroup(ResourceGroup1).Name**.
+def get_response(user_question, top_k=1):
+    payload = {
+        "search": user_question,
+        "queryType": "simple",   # Can be "semantic" if enabled in your Azure Search
+        "top": top_k
+    }
+    response = requests.post(search_url, headers=headers, json=payload)
+    response.raise_for_status()
+    results = response.json().get('value', [])
+    if not results:
+        return "No answer found in the knowledge base."
+    return results[0].get('content', '').strip()
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image70.png)
+# Example usage
+user_question = "how do i make a booking?"
+response = get_response(user_question)
+print(response)
+```
 
-3.  In the **Resource group** home page, select the resources Azure AI
-    services, Key vault and Search service.
+![](./media/image68.png)
 
-	> ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image71.png)
+## 任务4：删除资源
 
-4.  Select **Delete**
+为了避免不必要的 Azure
+成本，如果不再需要，你应该删除你在快速入门中创建的资源。管理资源时，可以使用
+[Azure门户](https://portal.azure.com/?azure-portal=true)。
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image72.png)
+1.  要删除存储账户，**Azure portal 主**页，点击**Resource groups**。
 
-5.  In the **Delete Resources** pane that appears on the right side,
-    navigate to **Enter +++delete+++ to confirm deletion** field, then
-    click on the **Delete** button.
+> ![A screenshot of a computer Description automatically
+> generated](./media/image69.png)
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image74.png)
+2.  点击指定的资源组。
 
-6.  On **Delete confirmation** dialog box, click on **Delete** button.
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image70.png)
 
-    > ![A screenshot of a computer error Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image75.png)
+3.  在 **Resource group** 主页中，选择资源 Azure AI 服务、Key Valut 和
+    Search 服务。![](./media/image71.png)
 
-7.  Open your browser, navigate to the address bar, and type or paste
-    the following URL: +++https://app.fabric.microsoft.com/+++ then
-    press the **Enter** button.
+4.  选择 **Delete**
 
-    > ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image76.png)
+![](./media/image72.png)
 
-8.  Select the ***...*** option under the workspace name and
-    select **Workspace settings**.
+![A screenshot of a computer error AI-generated content may be
+incorrect.](./media/image73.png)
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image77.png)
+5.  在右侧出现的 **Delete Resources** 面板中，点击 **Enter +++delete+++
+    to confirm deletion**字段，然后点击 **Delete** 按钮。
 
-9.  Select **General** and click on **Remove this workspace.**
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image74.png)
 
-    > ![A screenshot of a computer AI-generated content may be
-    > incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image78.png)
+6.  在 **Delete confirmation** 对话框中，点击 **Delete** 按钮。
 
-10. Click on **Delete** in the warning that pops up.
+> ![A screenshot of a computer error Description automatically
+> generated](./media/image75.png)
 
-    > ![A white background with black text Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image79.png)
+7.  打开浏览器，进入地址栏，输入或粘贴以下URL：+++https://app.fabric.microsoft.com/+++，
+    然后按下 **Enter** 键。
 
-11. Wait for a notification that the Workspace has been deleted, before
-    proceeding to the next lab.
+> ![](./media/image76.png)
 
-    > ![A screenshot of a computer Description automatically
-    > generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/Cloud-slice/Labguide/Usecase%2006/media/image80.png)
+8.  选择...... 在工作区名称下选择选项，选择**Workspace settings**。
+
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image77.png)
+
+9.  选择“**General**”，点击“**Remove this workspace**”。 
+
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image78.png)
+
+10. 点击弹出的警告中“**Delete**”。
+
+![A white background with black text Description automatically
+generated](./media/image79.png)
+
+11. 等待工作区被删除的通知后，再进入下一个实验室。
+
+![A screenshot of a computer Description automatically
+generated](./media/image80.png)
