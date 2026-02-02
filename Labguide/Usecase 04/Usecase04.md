@@ -1,4 +1,4 @@
-# Use Case 04: Analyze data with Apache Spark
+# Usecase 04: Analyze data with Apache Spark
 
 **Introduction**
 
@@ -1638,5 +1638,6 @@ streamlining your workflow and enhancing productivity in real-world
 scenarios. The cleanup instructions ensure you leave no unnecessary
 resources, promoting an organized and efficient workspace management
 approach.
+
 
 
