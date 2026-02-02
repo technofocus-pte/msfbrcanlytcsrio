@@ -279,7 +279,7 @@ used languages on Spark and is the default language in Fabric notebooks.
     data**, then select **Spark**. A new code cell containing the
     following code will be added to the notebook:
 
-    ```nocopy
+    ```
     df = spark.read.format("csv").option("header","true").load("Files/orders/2019.csv")
     # df now is a Spark DataFrame containing CSV data from "Files/orders/2019.csv".
     display(df)
@@ -1638,4 +1638,5 @@ streamlining your workflow and enhancing productivity in real-world
 scenarios. The cleanup instructions ensure you leave no unnecessary
 resources, promoting an organized and efficient workspace management
 approach.
+
 
