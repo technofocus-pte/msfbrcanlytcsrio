@@ -1,116 +1,115 @@
-# Usecase 02: Data Factory solution for moving and transforming data with dataflows and data pipelines
+# Caso de uso 02: Solução Data Factory para movimentação e transformação de dados com fluxos de dados e pipelines de dados
 
-**Introduction**
+**Introdução**
 
-This lab helps you accelerate the evaluation process for Data Factory in
-Microsoft Fabric by providing a step-by-step guidance for a full data
-integration scenario within one hour. By the end of this tutorial, you
-understand the value and key capabilities of Data Factory and know how
-to complete a common end-to-end data integration scenario.
+Este laboratório ajuda você a acelerar o processo de avaliação do Data
+Factory no Microsoft Fabric, fornecendo um guia passo a passo para um
+cenário completo de integração de dados em apenas uma hora. Ao final
+deste tutorial, você compreenderá o valor e os principais recursos do
+Data Factory e saberá como concluir um cenário comum de integração de
+dados completo.
 
-**Objective**
+**Objetivo**
 
-The lab is divided into three exercises:
+O laboratório está dividido em três seções de exercícios:
 
-- **Exercise 1:** Create a pipeline with Data Factory to ingest raw data
-  from a Blob storage to a bronze table in a data Lakehouse.
+- **Exercício 1:** Criar um pipeline com o Data Factory para ingerir
+  dados brutos de um Blob storage para uma tabela bronze em um Lakehouse
+  de dados.
 
-- **Exercise 2:** Transform data with a dataflow in Data Factory to
-  process the raw data from your bronze table and move it to a Gold
-  table in the data Lakehouse.
+- **Exercício 2:** Transformar os dados com um fluxo de dados no Data
+  Factory para processar os dados brutos da sua tabela bronze e movê-los
+  para uma tabela ouro no Lakehouse.
 
-- **Exercise 3:** Automate and send notifications with Data Factory to
-  send an email to notify you once all the jobs are complete, and
-  finally, setup the entire flow to run on a scheduled basis.
+- **Exercício 3:** Automatizar e enviar notificações com o Data Factory
+  para enviar um e-mail avisando quando todas as tarefas forem
+  concluídas e, por fim, configure todo o fluxo para ser executado de
+  forma agendada.
 
-# Exercise 1: Create a pipeline with Data Factory
+# Exercício 1: Criar um pipeline com o Data Factory
 
-## Task 1: Create a workspace
+## Tarefa 1: Criar um espaço de trabalho
 
-Before working with data in Fabric, create a workspace with the Fabric
-trial enabled.
+Antes de trabalhar com dados no Fabric, crie um espaço de trabalho com a
+versão de avaliação do Fabric ativada.
 
-1.  Open your browser, navigate to the address bar, and type or paste
-    the following URL: +++https://app.fabric.microsoft.com/+++ then
-    press the **Enter** button.
+1.  Abra seu navegador, acesse a barra de endereços e digite ou cole o
+    seguinte URL: +++https://app.fabric.microsoft.com/+++ e pressione a
+    tecla **Enter.**
 
-> **Note**: If you are directed to Microsoft Fabric Home page, then skip
-> steps from \#2 to \#4.
+> **Observação**: Se você for direcionado para a página inicial do
+> Microsoft Fabric, ignore as etapas de nº 2 a nº 4.
 >
 > ![](./media/image1.png)
 
-2.  In the **Microsoft Fabric** window, enter your credentials, and
-    click on the **Submit** button.
+2.  Na janela do **Microsoft Fabric**, insira suas credenciais e clique
+    no botão **Submit**.
 
 > ![](./media/image2.png)
 
-3.  Then, In the **Microsoft** window enter the password and click on
-    the **Sign in** button**.**
+3.  Em seguida, na janela da **Microsoft**, digite a senha e clique no
+    botão **Sign in.**
 
 > ![A login screen with a red box and blue text AI-generated content may
 > be incorrect.](./media/image3.png)
 
-4.  In **Stay signed in?** window, click on the **Yes** button.
+4.  Na janela **Stay signed in?**, clique no botão **Yes.**
 
 > ![A screenshot of a computer error AI-generated content may be
 > incorrect.](./media/image4.png)
 >
 > ![](./media/image5.png)
 
-5.  On the Microsoft **Fabric Home Page**, select **New workspace**
-    option.
+5.  Na **página inicial do Microsoft Fabric**, selecione a opção **New
+    workspace**.
 
 > ![](./media/image6.png)
 
-6.  In the **Create a workspace** tab, enter the following details and
-    click on the **Apply** button.
+6.  Na aba **Create a workspace**, insira os seguintes detalhes e clique
+    no botão **Apply**.
 
-	|   |   |
-	|----|----|
-	|Name	| Data-FactoryXXXX (XXXX can be a unique number) |
-	|Advanced|	Under License mode, select Fabric capacity|
-	|Default storage format|	Small semantic model storage format|
+[TABLE]
 
 > ![](./media/image7.png)
 >
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image8.png)
 
-7.  Wait for the deployment to complete. It’ll take approximately 2-3
-    minutes.
+7.  Aguarde a conclusão da implementação. Isso levará aproximadamente de
+    2 a 3 minutos.
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image9.png)
 
-## Task 2: Create a lakehouse and Ingest sample data
+## Tarefa 2: Criar um Lakehouse e ingerir dados de amostra
 
-1.  In the **Data-FactoryXX** workspace page, navigate and click on
-    **+New item**  button
+1.  Na página do espaço de trabalho **Data- FactoryXX,** navegue até o
+    botão **+New item** e clique nele.
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image10.png)
 
-2.  Click on the "**Lakehouse**" tile.
+2.  Clique no bloco "**Lakehouse**".
 
 ![A screenshot of a computer Description automatically
 generated](./media/image11.png)
 
-3.  In the **New lakehouse** dialog box, enter
-    +++**DataFactoryLakehouse+++** in the **Name** field, click on the
-    **Create** button and open the new lakehouse.
+3.  Na caixa de diálogo **New Lakehouse**, digite
+    +++**DataFactoryLakehouse+++** no campo **Name**, clique no botão
+    **Create** e abra o novo Lakehouse.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image12.png)
 >
 > ![](./media/image13.png)
 
-4.  In the **lakehouse** home page, select **Start with sample data** to
-    open the copy sample data
+4.  Na página inicial do **Lakehouse,** selecione **Start with sample
+    data** para abrir a cópia dos dados de exemplo.
 
 > ![](./media/image14.png)
 
-5.  The **Use a sample** dialog is displayed, select the **NYCTaxi**
-    sample data tile.
+5.  A caixa de diálogo **Use a sample** é exibida; selecione o bloco de
+    dados de amostra do **NYCTaxi**.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image15.png)
@@ -119,15 +118,16 @@ generated](./media/image11.png)
 >
 > ![](./media/image17.png)
 
-6.  To rename the table, right-click on the **green_tripdata_2022** tab
-    just above the editor and select **Rename**.
+6.  Para renomear a tabela, clique com o botão direito do mouse na aba
+    **green_tripdata_2022**, logo acima do editor, e selecione
+    **Rename**.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image18.png)
 
-7.  In the **Rename** dialog box, under **Name** field,
-    enter **+++Bronze+++** to change the name of **table**. Then, click
-    on the **Rename** button.
+7.  Na caixa de diálogo **Rename**, no campo **Name**, digite
+    **+++Bronze+++** para alterar o nome da **table**. Em seguida,
+    clique no botão **Rename**.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image19.png)
@@ -135,168 +135,171 @@ generated](./media/image19.png)
 ![A screenshot of a computer Description automatically
 generated](./media/image20.png)
 
-**Exercise 2: Transform data with a dataflow in Data Factory**
+**Exercício 2:** **Transformar dados com um fluxo de dados no Data
+Factory**
 
-## Task 1: Get data from a Lakehouse table
+## Tarefa 1: Obter dados de uma tabela Lakehouse
 
-1.  Now, click on workspace [**Data
-    Factory-@lab.LabInstance.Id**](mailto:Data%20Factory-@lab.LabInstance.Id) on
-    the left-sided navigation pane.
+1.  Agora, clique no espaço de trabalho [**Data
+    Factory-@lab.LabInstance.Id**](mailto:Data%20Factory-@lab.LabInstance.Id)
+    no painel de navegação à esquerda.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image21.png)
 
-2.  Create a new Dataflow Gen2 by clicking on the **+New item** button
-    in the navigation bar. From the list of available items select
-    the **Dataflow Gen2** item
+2.  Crie um novo Dataflow Gen2 clicando no botão **+ New item** na barra
+    de navegação. Na lista de itens disponíveis, selecione o item
+    **Dataflow Gen2.**
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image22.png)
 
-3.  Provide a New Dataflow Gen2 Name as
-    +++**nyc_taxi_data_with_discounts+++** and then select **Create**.
+3.  Forneça um novo nome de fluxo de dados Gen2 como
+    +++**nyc_taxi_data_with_discounts+++** e selecione **Create**.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image23.png)
 
-4.  From the new dataflow menu, under the **Power Query** pane click on
-    **Get data drop down**, then select **More...**.
+4.  No novo menu de fluxo de dados, no painel do **Power Query,** clique
+    na **lista suspensa Get data** e selecione **More...**
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image24.png)
 
-5.  In the **Choose data source** tab, search box search type
-    **+++Lakehouse+++** and then click on the **Lakehouse** connector.
+5.  Na aba **Choose data source**, na caixa de pesquisa, digite
+    +++**Lakehouse+++** e, em seguida, clique no conector **Lakehouse**.
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image25.png)
 
-6.  The **Connect to data source** dialog appears, and a new connection
-    is automatically created for you based on the currently signed in
-    user. Select **Next**.
+6.  A caixa de diálogo **Connect to data source** é exibida e uma nova
+    conexão é criada automaticamente com base no usuário conectado no
+    momento. Selecione **Next**.
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image26.png)
 
-7.  The **Choose data** dialog is displayed. Use the navigation pane to
-    find the **workspace- Data-FactoryXX** and expand it. Then, expand
-    **Lakehouse** - **DataFactoryLakehouse**  you created for the
-    destination in the prior module, and select the **Bronze** table
-    from the list then click on **Create** button.
+7.  A caixa de diálogo **Choose data** é exibida. Use o painel de
+    navegação para encontrar o **workspace- Data-FactoryXX** e
+    expanda-o. Em seguida, expanda o **Lakehouse** -
+    **DataFactoryLakehouse,** que você criou para o destino no módulo
+    anterior, selecione a tabela **Bronze** na lista e clique no botão
+    **Create**.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image27.png)
 
-8.  You’ll see the canvas is now populated with the data.
+8.  Você verá que a tela agora está preenchida com os dados.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image28.png)
 
-## Task 2: Transform the data imported from the Lakehouse
+**Tarefa 2: Transformando os dados importados do Lakehouse**
 
-1.  Select the data type icon in the column header of the second
-    column, **IpepPickupDatetime**, to display a dropdown menu and
-    select the data type from the menu to convert the column from
-    the **Date/Time** to **Date** type.
+1.  Selecione o ícone de tipo de dados no cabeçalho da segunda coluna,
+    **IpepPickupDatetime**, para exibir um menu suspenso e selecione o
+    tipo de dados no menu para converter a coluna de **Date/Time** para
+    **Date**.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image29.png)
 
-2.  On the **Home** tab of the ribbon, select the **Choose
-    columns** option from the **Manage columns** group.
+2.  Na aba **Home** da faixa de opções, selecione a opção **Choose
+    columns** no grupo **Manage columns**.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image30.png)
 
-3.  On the **Choose columns** dialog, **deselect** some columns listed
-    here, then select **OK**.
+3.  Na caixa de diálogo **Choose columns**, **desmarque** algumas
+    colunas listadas aqui e selecione **OK**.
 
-    - lpepDropoffDatetime
+    1.  lpepDropoffDatetime
 
     &nbsp;
 
-    - DoLocationID
+    1.  DoLocationID
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image31.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image31.png)
 
-4.  Select the **storeAndFwdFlag** column's filter and sort dropdown
-    menu. (If you see a warning **List may be incomplete**,
-    select **Load more** to see all the data.)
+4.  Selecione o filtro da coluna **storeAndFwdFlag** e o menu suspenso
+    de ordenação. (Se aparecer o aviso **List may be incomplete**,
+    selecione **Load more** para ver todos os dados.)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image32.png)
+![A screenshot of a computer Description automatically
+generated](./media/image32.png)
 
-5.  Select '**Y'** to show only rows where a discount was applied, and
-    then select **OK**.
+5.  Selecione 'Y**'** para mostrar apenas as linhas onde um desconto foi
+    aplicado e, em seguida, selecione **OK**.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image33.png)
+![A screenshot of a computer Description automatically
+generated](./media/image33.png)
 
-6.  Select the **Ipep_Pickup_Datetime** column sort and filter dropdown
-    menu, then select **Date filters**, and choose
-    the **Between...** filter provided for Date and Date/Time types.
+6.  Selecione a coluna **Ipep_Pickup_Datetime** no menu suspenso de
+    classificação e filtro, depois selecione **Date filters** e escolha
+    o filtro **Between...** fornecido para os tipos Data e Data/Hora.
 
 ![](./media/image34.png)
 
-7.  In the **Filter rows** dialog, select dates between **January 1,
-    2022**, and **January 31, 2022**, then select **OK**.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image35.png)
-
-## Task 3: Connect to a CSV file containing discount data
-
-Now, with the data from the trips in place, we want to load the data
-that contains the respective discounts for each day and VendorID and
-prepare the data before combining it with the trips data.
-
-1.  From the **Home** tab in the dataflow editor menu, select the **Get
-    data** option, and then choose **Text/CSV**.
-
-> ![](./media/image36.png)
-
-2.  In the **Connect to data source** pane, under **Connection
-    settings**, select **Link to file** radio button, then enter
-    +++https://raw.githubusercontent.com/ekote/azure-architect/master/Generated-NYC-Taxi-Green-Discounts.csv+++
-    and enter the Connection name as +++**dfconnection**+++ make sure
-    **authentication** **kind** is set to **Anonymous**. click on the
-    **Next** button.
+7.  Na caixa de diálogo **Filter rows**, selecione as datas entre
+    **January 1, 2022** e **January 31, 2022** e, em seguida, selecione
+    **OK**.
 
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image37.png)
+incorrect.](./media/image35.png)
 
-3.  On the **Preview file data** dialog, select **Create**.
+**Tarefa 3: Conectar um arquivo CSV contendo dados de desconto**
+
+Agora que os dados das viagens já estão disponíveis, queremos carregar
+os dados que contêm os respectivos descontos para cada dia e ID do
+fornecedor e preparar esses dados antes de combiná-los com os dados das
+viagens.
+
+1.  Na aba **Home** do menu do editor de fluxo de dados, selecione a
+    opção **Get data** e, em seguida, escolha **Text/CSV**.
+
+![](./media/image36.png)
+
+2.  No painel **Connect to data source**, em **Connection settings**,
+    selecione o botão de opção **Link to file**. Em seguida, insira
+    +++https://raw.githubusercontent.com/ekote/azure-architect/master/Generated-NYC-Taxi-Green-Discounts.csv+++
+    e informe o **Connection name** como **+++dfconnection+++.**
+    Certifique-se de que o **authentication** **kind** esteja definido
+    como **Anonymous** e clique no botão **Next.**![A screenshot of a
+    computer AI-generated content may be
+    incorrect.](./media/image37.png)
+
+3.  Na caixa de diálogo **Preview file data**, selecione **Create**.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image38.png)
 
-## Task 4: Transform the discount data
+**Tarefa 4: Transformar os dados de desconto**
 
-1.  Reviewing the data, we see the headers appear to be in the first
-    row. Promote them to headers by selecting the table's context menu
-    at the top left of the preview grid area to select **Use first row
-    as headers**.
+1.  Ao analisar os dados, vemos que os cabeçalhos parecem estar na
+    primeira linha. Para promovê-los a cabeçalhos, selecione o menu de
+    contexto da tabela no canto superior esquerdo da área de
+    visualização da grade e escolha **Use first row as headers**.
 
-> ![](./media/image39.png)
->
-> ***Note:** After promoting the headers, you can see a new step added
-> to the **Applied steps** pane at the top of the dataflow editor to the
-> data types of your columns.*
->
-> ![](./media/image40.png)
+![](./media/image39.png)
 
-2.  Right-click the **VendorID** column, and from the context menu
-    displayed, select the option **Unpivot other columns**. This allows
-    you to transform columns into attribute-value pairs, where columns
-    become rows.
+***Observação:** após promover os cabeçalhos, você verá uma nova etapa
+adicionada ao painel **Applied steps** na parte superior do editor de
+fluxo de dados, referente aos tipos de dados das suas colunas.*
+
+![](./media/image40.png)
+
+2.  Clique com o botão direito do mouse na coluna **VendorID** e, no
+    menu de contexto exibido, selecione a opção **Unpivot other
+    columns**. Isso permite transformar as colunas em pares
+    atributo-valor, onde as colunas se tornam linhas.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image41.png)
 
-3.  With the table unpivoted, rename
-    the **Attribute** and **Value** columns by double-clicking them and
-    changing **Attribute** to +++**Date+++** and **Value** to +++**Discount+++**.
+3.  Com a tabela desagrupada, renomeie as colunas **Attribute** e
+    **Value** clicando duas vezes nelas e alterando **Attribute** para
+    +++**Date+++** e **Value** para +++**Discount+++**.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image42.png)
@@ -304,22 +307,22 @@ generated](./media/image42.png)
 ![A screenshot of a computer Description automatically
 generated](./media/image43.png)
 
-4.  Change the data type of the **Date** column by selecting the data
-    type menu to the left of the column name and choosing **Date**.
+4.  Para alterar o tipo de dados da coluna **Date**, selecione o menu de
+    tipo de dados à esquerda do nome da coluna e escolha **Date**.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image44.png)
+![A screenshot of a computer Description automatically
+generated](./media/image44.png)
 
-5.  Select the **Discount** column and then select the **Transform** tab
-    on the menu. Select **Number column**, and then
-    select **Standard** numeric transformations from the submenu, and
-    choose **Divide**.
+5.  Selecione a coluna **Discount** e, em seguida, selecione a aba
+    **Transform** no menu. Selecione **Number column** e, em seguida,
+    selecione **Standard numeric transformations** no submenu e escolha
+    **Divide**.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image45.png)
+![A screenshot of a computer Description automatically
+generated](./media/image45.png)
 
-6.  On the **Divide** dialog, enter the value +++100+++, then click on
-    **OK** button.
+6.  Na caixa de diálogo **Divide**, insira o valor +++100+++ e clique no
+    botão **OK**.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image46.png)
@@ -327,121 +330,124 @@ generated](./media/image46.png)
 ![A screenshot of a computer Description automatically
 generated](./media/image47.png)
 
-**Task 7: Combine trips and discounts data**
+**Tarefa 7: Combinar dados de viagens e descontos**
 
-The next step is to combine both tables into a single table that has the
-discount that should be applied to the trip, and the adjusted total.
+O próximo passo é combinar as duas tabelas em uma única tabela que
+contenha o desconto a ser aplicado à viagem e o total ajustado.
 
-1.  First, toggle the **Diagram view** button so you can see both of
-    your queries.
+1.  Primeiro, ative o botão **Diagram view** para que você possa ver
+    ambas as suas consultas.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image48.png)
 
-2.  Select the **Bronze** query, and on the **Home** tab, Select
-    the **Combine** menu and choose **Merge queries**, then **Merge
+2.  Selecione a consulta **Bronze** e, na aba **Home**, selecione o menu
+    **Combine** e escolha **Merge queries** e, em seguida, **Merge
     queries as new**.
 
 ![](./media/image49.png)
 
-3.  On the **Merge** dialog,
-    select **Generated-NYC-Taxi-Green-Discounts** from the **Right table
-    for merge** drop down, and then select the "**light bulb**" icon on
-    the top right of the dialog to see the suggested mapping of columns
-    between the three tables.
+3.  Na caixa de diálogo **Merge**, selecione
+    **Generated-NYC-Taxi-Green-Discounts** no menu suspenso **Right
+    table for merge** e, em seguida, selecione o ícone de "**light
+    bulb**" no canto superior direito da caixa de diálogo para ver o
+    mapeamento sugerido de colunas entre as três tabelas.
 
-4.  Choose each of the two suggested column mappings, one at a time,
-    mapping the VendorID and date columns from both tables. When both
-    mappings are added, the matched column headers are highlighted in
-    each table.
+4.  Selecione cada um dos dois mapeamentos de coluna sugeridos, um de
+    cada vez, mapeando as colunas VendorID e data de ambas as tabelas.
+    Quando ambos os mapeamentos forem adicionados, os cabeçalhos das
+    colunas correspondentes serão destacados em cada tabela.
 
-> ![](./media/image50.png)
+![](./media/image50.png)
 
-5.  A message is shown asking you to allow combining data from multiple
-    data sources to view the results. Select **OK** 
+5.  Uma mensagem será exibida solicitando que você permita a combinação
+    de dados de várias fontes para visualizar os resultados. Selecione
+    **OK.** 
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image51.png)
+![A screenshot of a computer Description automatically
+generated](./media/image51.png)
 
-6.  In the table area, you'll initially see a warning that "The
+6.  Na área da tabela, você verá inicialmente um aviso informando **"The
     evaluation was canceled because combining data from multiple sources
     may reveal data from one source to another. Select continue if the
-    possibility of revealing data is okay." Select **Continue** to
-    display the combined data.
+    possibility of revealing data is okay."** Selecione **Continue**
+    para exibir os dados combinados.
 
-> ![](./media/image52.png)
+![](./media/image52.png)
 
-7.  In Privacy Levels dialog box, select the **check box :Ignore Privacy
-    Levels checks for this document. Ignoring privacy Levels could
-    expose sensitive or confidential data to an unauthorized person**
-    and click on the **Save** button.
+7.  Na caixa de diálogo **Privacy Levels**, selecione a **caixa de
+    seleção: Ignore Privacy Levels checks for this document. Ignoring
+    privacy Levels could expose sensitive or confidential data to an
+    unauthorized person.** Em seguida, clique no botão **Save**.
 
-> ![A screenshot of a computer screen Description automatically
-> generated](./media/image53.png)
->
-> ![](./media/image54.png)
+![A screenshot of a computer screen Description automatically
+generated](./media/image53.png)
 
-8.  Notice how a new query was created in Diagram view showing the
-    relationship of the new Merge query with the two queries you
-    previously created. Looking at the table pane of the editor, scroll
-    to the right of the Merge query column list to see a new column with
-    table values is present. This is the "**Generated NYC
-    Taxi-Green-Discounts**" column, and its type is **\[Table\]**.
+![](./media/image54.png)
 
-In the column header there's an icon with two arrows going in opposite
-directions, allowing you to select columns from the table. Deselect all
-of the columns except **Discount**, and then select **OK**.
+8.  Observe como uma nova consulta foi criada na visualização diagrama,
+    mostrando a relação da nova consulta de mesclagem com as duas
+    consultas que você criou anteriormente. No painel de tabelas do
+    editor, role para a direita da lista de colunas da consulta mesclar
+    para ver que há uma nova coluna com valores de tabela. Essa é a
+    coluna **“Generated NYC Taxi-Green-Discounts”**, e o tipo dela é
+    **\[Table\].**
+
+No cabeçalho da coluna, há um ícone com duas setas apontando em direções
+opostas, que permite selecionar colunas da tabela. Desmarque todas as
+colunas, exceto **Discount**, e clique em **"OK"**.
 
 ![](./media/image55.png)
 
-9.  With the discount value now at the row level, we can create a new
-    column to calculate the total amount after discount. To do so,
-    select the **Add column** tab at the top of the editor, and
-    choose **Custom column** from the **General** group.
+9.  Com o valor do desconto agora no nível da linha, podemos criar uma
+    nova coluna para calcular o valor total após o desconto. Para isso,
+    selecione a aba **Add column** na parte superior do editor e escolha
+    **Custom column** no grupo **General**.
 
-> ![](./media/image56.png)
+![](./media/image56.png)
 
-10. On the **Custom column** dialog, you can use the [Power Query
-    formula language (also known as
-    M)](https://learn.microsoft.com/en-us/powerquery-m) to define how
-    your new column should be calculated.
-    Enter +++**TotalAfterDiscount+++** for the **New column name**,
-    select **Currency** for the **Data type**, and provide the following
-    M expression for the **Custom column formula**:
+10. Na caixa de diálogo **Custom column**, você pode usar a [linguagem
+    de fórmulas do Power Query (também conhecida como
+    M)](https://learn.microsoft.com/en-us/powerquery-m) para definir
+    como sua nova coluna deve ser calculada. Digite
+    +++**TotalAfterDiscount+++** para o **New column name**, selecione
+    **Currency** para o **Data type** e forneça a seguinte expressão M
+    para a **Custom column formula**:
 
-> +++if [total_amount] > 0 then [total_amount] * ( 1 -[Discount] ) else [total_amount]+++
++++if \[total_amount\] \> 0 then \[total_amount\] \* ( 1 -\[Discount\] )
+else \[total_amount\]+++
 
-Then select **OK**.
+Em seguida, selecione **OK**.
 
 ![](./media/image57.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image58.png)
 
-11. Select the newly create **TotalAfterDiscount** column and then
-    select the **Transform** tab at the top of the editor window. On
-    the **Number column** group, select the **Rounding** drop down and
-    then choose **Round...**.
+11. Selecione a coluna **TotalAfterDiscount** recém-criada e, em
+    seguida, selecione a aba **Transform** na parte superior da janela
+    do editor. No grupo **Number column**, selecione o menu suspenso
+    **Rounding** e escolha **Round** …
 
-**Note**: If you can’t find the **rounding** option, expand the menu to
-see **Number column**.
+**Observação**: Se você não encontrar a opção **Round**, expanda o menu
+para visualizar a **Number column**.
 
 ![](./media/image59.png)
 
-12. On the **Round** dialog, enter **2** for the number of decimal
-    places and then select **OK**.
+12. Na caixa de diálogo **Round**, digite **2** para o número de casas
+    decimais e selecione **OK**.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image60.png)
 
-13. Change the data type of the **IpepPickupDatetime** from **Date** to
+13. Altere o tipo de dados do **IpepPickupDatetime** de **Date** para
     **Date/Time**.
 
 ![](./media/image61.png)
 
-14. Finally, expand the **Query settings** pane from the right side of
-    the editor if it isn't already expanded, and rename the query
-    from **Merge** to +++**Output+++**.
+14. Por fim, expanda o painel **Query settings** no lado direito do
+    editor, caso ainda não esteja expandido, e renomeie a consulta de
+    **Merge** para +++**Output+++**.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image62.png)
@@ -449,232 +455,233 @@ generated](./media/image62.png)
 ![A screenshot of a computer Description automatically
 generated](./media/image63.png)
 
-**Task 8: Load the output query to a table in the Lakehouse**
+**Tarefa 8: Carregar a consulta de saída em uma tabela no Lakehouse**
 
-With the output query now fully prepared and with data ready to output,
-we can define the output destination for the query.
+Com a consulta de saída agora totalmente preparada e com os dados
+prontos para serem exibidos, podemos definir o destino da saída da
+consulta.
 
-1.  Select the **Output** merge query created previously. Then select
-    the **+ icon** to add **data destination** to this Dataflow.
+1.  Selecione a consulta de mesclagem **Output** criada anteriormente.
+    Em seguida, selecione o **ícone +** para adicionar um **data
+    destination** a este fluxo de dados.
 
-2.  From data destination list, select **Lakehouse** option under the
-    New destination.
+2.  Na lista de destinos de dados, selecione a opção **Lakehouse** em
+    **New destination.**
 
 ![](./media/image64.png)
 
-3.  On the **Connect to data destination** dialog, your connection
-    should already be selected. Select **Next** to continue.
+3.  Na caixa de diálogo **Connect to data destination**, sua conexão já
+    deve estar selecionada. Selecione **Next** para continuar.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image65.png)
 
-4.  On the **Choose destination target** dialog, browse to the
-    Lakehouse, then select **Next** again.
+4.  Na caixa de diálogo **Choose destination target**, navegue até
+    Lakehouse e selecione **Next** novamente.
 
 ![](./media/image66.png)
 
-5.  On the **Choose destination settings** dialog, leave the
-    default **Replace** update method, double check that your columns
-    are mapped correctly, and select **Save settings**.
+5.  Na caixa de diálogo **Choose destination settings**, mantenha o
+    método de atualização padrão **Replace**, verifique novamente se
+    suas colunas estão mapeadas corretamente e selecione **Save
+    settings**.
 
 ![](./media/image67.png)
 
-6.  Back in the main editor window, confirm that you see your output
-    destination on the **Query settings** pane for the **Output** table
-    as **Lakehouse**, and then select **Save and Run** option from the
-    Home tab.
+6.  De volta à janela principal do editor, confirme se o destino de
+    saída exibido no painel **Query settings** para a tabela **Output**
+    e, em seguida, selecione a opção **Save and Run** na aba **Home**.
 
-> ![](./media/image68.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image69.png)
+![](./media/image68.png)
 
-9.  Now, click on **Data Factory-XXXX workspace** on the left-sided
-    navigation pane.
+![A screenshot of a computer Description automatically
+generated](./media/image69.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image70.png)
+7.  Agora, clique no **Data Factory-XXXX workspace** no painel de
+    navegação à esquerda.
 
-10. In the **Data_FactoryXX** pane, select **DataFactoryLakehouse** to
-    view the new table loaded there.
+![A screenshot of a computer Description automatically
+generated](./media/image70.png)
+
+8.  No painel **Data_FactoryXX**, selecione **DataFactoryLakehouse**
+    para visualizar a nova tabela carregada ali.
 
 ![](./media/image71.png)
 
-11. Confirm that the **Output** table appears under the **dbo** schema.
+9.  Confirme se a tabela **Output** aparece no esquema **dbo**.
 
 ![](./media/image72.png)
 
-# Exercise 3: Automate and send notifications with Data Factory
+**Exercício 3: Automatizando e enviando notificações com o Data
+Factory**
 
-## Task 1: Add an Office 365 Outlook activity to your pipeline
+**Tarefa 1: Adicionar uma atividade do Office 365 Outlook ao seu
+pipeline**
 
-1.  Navigate and click on **Data_FactoryXX** Workspace on the left-sided
-    navigation menu.
+1.  Navegue até o espaço de trabalho **Data_FactoryXX** no menu de
+    navegação à esquerda e clique nele.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image73.png)
+![A screenshot of a computer Description automatically
+generated](./media/image73.png)
 
-2.  Select the **+ New item** option on the workspace page and select
-    **Pipeline**
+2.  Selecione a opção **+ New item** na página do espaço de trabalho e
+    selecione **Pipeline.**
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image74.png)
+![A screenshot of a computer Description automatically
+generated](./media/image74.png)
 
-3.  Provide a Pipeline Name as +++**First_Pipeline1+++** and then select
-    **Create**.
+3.  Forneça um nome de pipeline como +++**First_Pipeline1+++** e
+    selecione **Create**.
 
-> ![](./media/image75.png)
+![](./media/image75.png)
 
-4.  Select the **Home** tab in the pipeline editor and find the select
-    **Add to canvas** activity.
+4.  Selecione a aba **Home** no editor de pipeline e encontre a
+    atividade **Add to canvas.**
 
-> ![](./media/image76.png)
+![](./media/image76.png)
 
-5.  On the **Source** tab, enter the following settings and click on
-    **Test connection**
+5.  Na aba **Source**, insira as seguintes configurações e clique em
+    **Test connection.**
 
-	|     |    |
-	|------|------|
-	|Connection|	dfconnection User-XXXX|
-	|Connection Type|	select HTTP.|
-	|File format	|Delimited Text|
+[TABLE]
 
-> ![](./media/image77.png)
+![](./media/image77.png)
 
-6.  On the **Destination** tab, enter the following settings.
+6.  Na aba **Destination**, insira as seguintes configurações.
 
-	|    |    |
-	|-----|----|
-	|Connection	|**Lakehouse**|
-	|Lakehouse|	Select **DataFactoryLakehouse**|
-	|Root Folder	|select the **Table** radio button.|
-	|Table|	• Select New, enter +++Generated-NYC-Taxi-Green-Discounts+++ and click on Create button|
+[TABLE]
 
-> ![](./media/image78.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image79.png)
+![](./media/image78.png)
 
-7.  From the ribbon, select **Run**.
+![A screenshot of a computer Description automatically
+generated](./media/image79.png)
 
-> ![](./media/image80.png)
+7.  Na faixa de opções, selecione **Run**.
 
-8.  In the **Save and run?** dialog box, click on **Save and
-    run** button.
+![](./media/image80.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image81.png)
->
-> ![](./media/image82.png)
+8.  Na caixa de diálogo **Save and run?,** clique no botão **Save and
+    run.**
 
-9.  Select the **Activities** tab in the pipeline editor and find the
-    **Office Outlook** activity.
+![A screenshot of a computer Description automatically
+generated](./media/image81.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image83.png)
+![](./media/image82.png)
 
-10. Select and drag the On Success path (a green checkbox on the top
-    right side of the activity in the pipeline canvas) from your Copy
-    activity to your new Office 365 Outlook activity.
+9.  Selecione a aba **Activities** no editor de pipeline e encontre a
+    atividade **Office Outlook.**
+
+![A screenshot of a computer Description automatically
+generated](./media/image83.png)
+
+10. Selecione e arraste o caminho e em caso de sucesso aparecerá (uma
+    caixa de seleção verde no canto superior direito da atividade na
+    tela do pipeline) da sua atividade de cópia para a sua nova
+    atividade do Office 365 Outlook.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image84.png)
 
-11. Select the Office 365 Outlook activity from the pipeline canvas,
-    then select the **Settings** tab of the property area below the
-    canvas to configure the email. Click on **Connection** dropdown and
-    select **Browse all.**
+11. Selecione a atividade do Office 365 Outlook na tela do pipeline e,
+    em seguida, selecione a aba **Settings** na área de propriedades
+    abaixo da tela para configurar o e-mail. Clique no menu suspenso
+    **Connection** e selecione **Browse all.**
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image85.png)
+![A screenshot of a computer Description automatically
+generated](./media/image85.png)
 
-12. On ‘choose a data source’ window, select **Office 365 Email**
-    source.
+12. Na janela ‘choose a data source’, selecione a fonte de dados
+    **Office 365 Email**.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image86.png)
+![A screenshot of a computer Description automatically
+generated](./media/image86.png)
 
-13. Sign in with the account from which you want to send the email. You
-    can use the existing connection with the already signed in account.
+13. Inicie com a conta a partir da qual você deseja enviar o e-mail.
+    Você pode usar a conexão existente com a conta já conectada.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image87.png)
+![A screenshot of a computer Description automatically
+generated](./media/image87.png)
 
-14. Click on **Connect** to proceed.
+14. Clique em **Connect** para prosseguir.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image88.png)
+![A screenshot of a computer Description automatically
+generated](./media/image88.png)
 
-15. Select the Office 365 Outlook activity from the pipeline canvas, on
-    the **Settings** tab of the property area below the canvas to
-    configure the email.
+15. Selecione a atividade do Office 365 Outlook na tela do pipeline, na
+    aba **Settings** da área de propriedades abaixo da tela, para
+    configurar o e-mail.
 
-    - Enter your email address in the **To** section. If you want to use
-      several addresses, use **;** to separate them.
+    1.  Insira seu endereço de e-mail no campo **To**. Se desejar usar
+        vários endereços, utilize**;** para separá-los.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image89.png)
+![A screenshot of a computer Description automatically
+generated](./media/image89.png)
 
-- For the **Subject**, select the field so that the **Add dynamic
-  content** option appears, and then select it to display the pipeline
-  expression builder canvas.
+1.  No campo **Subject**, selecione-o para que a opção **Add dynamic
+    content** apareça e, em seguida, selecione para exibir a tela do
+    criador de expressões de pipeline.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image90.png)
+![A screenshot of a computer Description automatically
+generated](./media/image90.png)
 
-16. The **Pipeline expression builder** dialog appears. Enter the
-    following expression, then select **OK**:
+16. A caixa de diálogo **Pipeline expression builder** é exibida. Insira
+    a seguinte expressão e selecione **OK**:
 
-+++@concat('DI in an Hour Pipeline Succeeded with Pipeline Run Id', pipeline().RunId)+++
+*+++@concat('DI in an Hour Pipeline Succeeded with Pipeline Run Id',
+pipeline().RunId)+++*
 
-> ![](./media/image91.png)
+![](./media/image91.png)
 
-17. For the **Body**, select the field again and choose the **View in
-    expression builder** option when it appears below the text area. Add
-    the following expression again in the **Pipeline expression
-    builder** dialog that appears, then select **OK**:
+17. Para o **Body**, selecione o campo novamente e escolha a opção
+    **View in expression builder** quando aparecer abaixo do espaço de
+    trabalho. Adicione a seguinte expressão novamente na caixa de
+    diálogo **Pipeline expression builder** que aparece e selecione
+    **OK**:
 
-+++@concat('RunID = ', pipeline().RunId, ' ; ', 'Copied rows ', activity('Copy data1').output.rowsCopied, ' ; ','Throughput ', activity('Copy data1').output.throughput)+++
->
-> ![](./media/image92.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image93.png)
+*concat('RunID = ', pipeline().RunId, ' ; ', 'Copied rows ',
+activity('Copy data1').output.rowsCopied, ' ; ','Throughput ',
+activity('Copy data1').output.throughput)+++*
 
-**  Note:** Replace **Copy data1** with the name of your own pipeline
-copy activity.
+![](./media/image92.png)
 
-18. Finally select the **Home** tab at the top of the pipeline editor,
-    and choose **Run**. Then select **Save and run** again on the
-    confirmation dialog to execute these activities.
+![A screenshot of a computer Description automatically
+generated](./media/image93.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image94.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image95.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image96.png)
+**Observação:** Substitua **Copy data1** pelo nome da sua própria
+atividade de cópia de pipeline.
 
-19. After the pipeline runs successfully, check your email to find the
-    confirmation email sent from the pipeline.
+18. Por fim, selecione a aba **Home** na parte superior do editor de
+    pipeline e escolha **Run**. Em seguida, selecione **Save and run**
+    novamente na caixa de diálogo de confirmação para executar essas
+    atividades.
+
+![A screenshot of a computer Description automatically
+generated](./media/image94.png)
+
+![A screenshot of a computer Description automatically
+generated](./media/image95.png)
+
+![A screenshot of a computer Description automatically
+generated](./media/image96.png)
+
+19. Após a execução bem-sucedida do pipeline, verifique seu e-mail para
+    encontrar a mensagem de confirmação enviada pelo pipeline.
 
 ![](./media/image97.png)
 
-**Task 2: Schedule pipeline execution**
+**Tarefa 2: Agendar a execução do pipeline**
 
-Once you finish developing and testing your pipeline, you can schedule
-it to execute automatically.
+Após concluir o desenvolvimento e os testes do seu pipeline, você pode
+agendá-lo para ser executado automaticamente.
 
-1.  On the **Home** tab of the pipeline editor window,
-    select **Schedule**.
+1.  Na aba **Home** da janela do editor de pipeline, selecione
+    **Schedule**.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image98.png)
 
-2.  Configure the schedule as required. The example here schedules the
-    pipeline to execute daily at 8:00 PM until the end of the year.
+2.  Configure o agendamento conforme necessário. O exemplo aqui agenda a
+    execução do pipeline diariamente às 20h até o final do ano.
 
 ![A screenshot of a schedule Description automatically
 generated](./media/image99.png)
@@ -685,39 +692,39 @@ incorrect.](./media/image100.png)
 ![A screenshot of a schedule AI-generated content may be
 incorrect.](./media/image101.png)
 
-**Task 3: Add a Dataflow activity to the pipeline**
+**Tarefa 3: Adicionar uma atividade de fluxo de dados ao pipeline**
 
-1.  Hover over the green line connecting the **Copy activity** and the
-    **Office 365 Outlook** activity on your pipeline canvas, and select
-    the **+** button to insert a new activity.
+1.  Posicione o cursor sobre a linha verde que conecta a atividade
+    **Copy** e a atividade do **Office 365 Outlook** na tela do seu
+    pipeline e selecione o botão **+** para inserir uma nova atividade.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image102.png)
+![A screenshot of a computer Description automatically
+generated](./media/image102.png)
 
-2.  Choose **Dataflow** from the menu that appears.
+2.  Selecione **Dataflow** no menu que aparece.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image103.png)
 
-3.  The newly created Dataflow activity is inserted between the Copy
-    activity and the Office 365 Outlook activity, and selected
-    automatically, showing its properties in the area below the canvas.
-    Select the **Settings** tab on the properties area, and then select
-    your dataflow created in **Exercise 2: Transform data with a
-    dataflow in Data Factory**.
+3.  A atividade de fluxo de dados recém-criada é inserida entre a
+    atividade **Copy** e a atividade do **Office 365 Outlook** e
+    selecionada automaticamente, exibindo suas propriedades na área
+    abaixo da tela. Selecione a aba **Settings** na área de propriedades
+    e, em seguida, selecione o fluxo de dados criado no **Exercício 2:
+    Transformar dados com um fluxo de dados no Data Factory**
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image104.png)
 
-4.  Select the **Home** tab at the top of the pipeline editor, and
-    choose **Run**. Then select **Save and run** again on the
-    confirmation dialog to execute these activities.
+4.  Selecione a aba **Home** na parte superior do editor de pipeline e
+    escolha **Run**. Em seguida, selecione **Save and run** novamente na
+    caixa de diálogo de confirmação para executar essas atividades.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image105.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image106.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image105.png)
+
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image106.png)
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image107.png)
@@ -725,28 +732,25 @@ incorrect.](./media/image107.png)
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image108.png)
 
-## Task 4: Clean up resources
+**Tarefa 4: Limpar recursos**
 
-You can delete individual reports, pipelines, warehouses, and other
-items or remove the entire workspace. Use the following steps to delete
-the workspace you created for this tutorial.
+Você pode excluir relatórios individuais, pipelines, armazéns e outros
+itens ou remover todo o espaço de trabalho. Siga as etapas a seguir para
+excluir o espaço de trabalho que você criou para este tutorial.
 
-1.  Select your workspace, the **Data-FactoryXX** from the left-hand
-    navigation menu. It opens the workspace item view.
+1.  Selecione seu espaço de trabalho, o **Data- FactoryXX**, no menu de
+    navegação à esquerda. Isso abrirá a visualização dos itens do espaço
+    de trabalho.
 
 ![](./media/image109.png)
 
-2.  Select the  **Workspace settings** option on the workspace page
-    located at the top right corner.
+2.  Selecione a opção **Workspace settings** na página do espaço de
+    trabalho, localizada no canto superior direito.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image110.png)
 
-3.  Select **General tab** and **Remove this workspace.**
+3.  Selecione a aba **General** e **Remove this workspace.**
 
 ![A screenshot of a computer Description automatically
 generated](./media/image111.png)
-
-
-
-
