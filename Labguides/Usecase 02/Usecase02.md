@@ -1,216 +1,208 @@
-# 사용 사례 02: 데이터 플로우 및 데이터 파이프라인을 활용한 데이터 이동 및 변환을 위한 Data Factory 솔루션
+# 사용 사례 02: 데이터 플로우 및 데이터 파이프라인을 이동하고 변환하기 위해 Data Factory 솔루션
 
 **소개**
 
-이 실습에서는 단계별 안내를 통해 완전한 데이터 통합 시나리오를 1시간
-안에 수행하며, Microsoft Fabric의 Data Factory를 빠르고 효과적으로
-평가할 수 있도록 돕습니다. 튜토리얼을 마치면 Data Factory의 핵심 기능과
-가치를 이해하고, 일반적인 엔드투엔드 데이터 통합 시나리오를 직접 완성할
-수 있게 됩니다.
+이 실습은 Microsoft Fabric의 Data Factory 평가 과정을 1시간 이내에 전체
+데이터 통합 시나리오에 대한 단계별 안내를 제공하여 가속화할 수 있도록
+돕습니다. 이 튜토리얼을 마치면 Data Factory의 가치와 핵심 기능을
+이해하고, 일반적인 종단 간 데이터 통합 시나리오를 완성하는 방법을 알게
+됩니다.
 
 **목표**
 
-이 실습은 세 가지 연습(exercises)으로 구성되어 있습니다:
+이 실습은 3 가지 연습으로 나뉩니다:
 
-- **연습1:** Data Factory를 사용해 파이프라인을 생성하고 Blob
-  스토리지에서 데이터 레이크하우스의 브론즈 테이블로 원시 데이터를
-  수집합니다.
+- **연습 1:** Data Factory로 파이프라인을 생성하여 Blob 스토리지에서
+  data Lakehouse의 브론즈 테이블로 원시 데이터를 수집하기
 
-- **연습2:** Data Factory의 데이터 플로우를 사용하여 Bronze 테이블의
-  원시 데이터를 변환하고, 이를 Data Lakehouse의 Gold 테이블로
-  이동시킵니다.
+- **연습 2:** Data Factory에서 데이터플로우로 데이터를 변환하여 브론즈
+  테이블의 원시 데이터를 처리한 후 data Lakehouse의 골드 테이블로
+  이동하기
 
-- **연습3:** Data Factory에서 모든 작업이 완료되면 이메일로 알림을
-  보내는 자동화 프로세스를 설정하고, 전체 플로우를 일정 주기로
-  실행되도록 구성합니다.
+- **연습 3:** Data Factory로 알림을 자동화하고 보내서 모든 작업이
+  완료되면 이메일로 알림을 보내고, 마지막으로 전체 플로우를 일정 단위로
+  실행하도록 설정하기
 
-# 연습 1: Data Factory로 파이프라인 생성하기
+# 연습 1: Data Factory를 사용하여 파이프라인 생성하기
 
-## 연습 1: 작업 영역 만들기
+## 작업 1: 작업 공간을 생성하기
 
-Fabric에서 데이터 작업을 시작하기 전에, Fabric 평가판이 활성화된 작업
-영역을 생성해야 합니다.
+Fabric에서 데이터를 다루기 전에 Fabric 체험판이 활성화된 작업 공간을
+생성하세요.
 
-1.  브라우저를 열고 주소창에 다음 URL을 입력하거나 붙여넣은
-    뒤 **Enter** 키를 누르세요: +++https://app.fabric.microsoft.com/+++.
+1.  브라우저를 열고 주소 바로 이동하고 다음URL:
+    +++https://app.fabric.microsoft.com/+++을 입력하고 붙여넣고
+    **Enter** 버튼을 누르세요.
 
-> **참고**: Microsoft Fabric 홈 페이지로 바로 이동한 경우, 2번부터 4번
-> 단계는 건너뛰어도 됩니다.
+> **참고**: 만약 Microsoft Fabric 홈페이지로 이동한다면, \#2부터
+> \#4까지의 단계를 건너뛰세요.
 >
 > ![](./media/image1.png)
 
-2.  **Microsoft Fabric** 창에서 자격 증명을 입력한 후 **Submit** 버튼을
+2.  **Microsoft Fabric** 창에서 자격 증명을 입력하고 **Submit** 버튼을
     클릭하세요.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image2.png)
+> ![](./media/image2.png)
 
-3.  이후 **Microsoft** 창에서 비밀번호를 입력한 뒤 **Sign in** 버튼을
-    클릭하세요**.**
+3.  **Microsoft** 창에서 비밀번호를 입력하고 **Sign in** 버튼을
+    클릭하세요.
 
 > ![A login screen with a red box and blue text AI-generated content may
 > be incorrect.](./media/image3.png)
 
-4.  **Stay signed in?** 창이 표시되면 **Yes** 버튼을 클릭하세요.
+4.  **Stay signed in?** 창에서 **Yes** 버튼을 클릭하세요.
 
 > ![A screenshot of a computer error AI-generated content may be
 > incorrect.](./media/image4.png)
 >
 > ![](./media/image5.png)
 
-5.  Microsoft **Fabric Home Page**에서 **New workspace**를 선택하세요.
+5.  Microsoft **Fabric 홈페이지**에서 **New workspace** 옵션을
+    선택하세요.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image6.png)
+> ![](./media/image6.png)
 
-6.  **Create a workspace** 탭에서 다음 정보를 입력한 후 **Apply** 을
+6.  **Create a workspace** 탭에서 다음 정보를 입력하고 **Apply** 버튼을
     클릭하세요.
 
-    |   |   |
-    |-----|----|
-    |Name	| Data-FactoryXXXX (XXXX는 고유 번호로 지정 가능) |
-    |Advanced|	License mode에서Fabric capacity 선택|
-    |Default storage format|	Small semantic model storage format|
-
+[TABLE]
 
 > ![](./media/image7.png)
 >
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image8.png)
 
-7.  배포가 완료될 때까지 기다려 주세요. 약 2~3분 정도 소요됩니다.
+7.  배포를 완료할 때까지 기다리세요. 약 2-3분 정도 걸립니다.
 
-> ![](./media/image9.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image9.png)
 
-## 작업 2: Lakehouse 생성 및 샘플 데이터 적재
+## 작업 2: lakehouse를 생성하고 샘플 데이터를 수집하기
 
-1.  **Data-FactoryXX** 작업 영역 페이지에서 **+New item**  버튼을
-    클릭하세요.
+1.  **Data-FactoryXX** 작업 공간 페이지에서 이동하고 **+New item**
+    버튼을 클릭하세요
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image10.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image10.png)
 
 2.  "**Lakehouse**" 타일을 클릭하세요.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image11.png)
+![A screenshot of a computer Description automatically
+generated](./media/image11.png)
 
 3.  **New lakehouse** 대화 상자에서**Name** 필드에
-    +++**DataFactoryLakehouse+++**를 입력하고 **Create** 버튼을 클릭한
-    후, 새로운 레이크하우스를 여세요.
+    +++**DataFactoryLakehouse+++**를 입력하고 **Create** 버튼을 클릭하고
+    새로운 lakehouse를 여세요.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image12.png)
 >
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image13.png)
+> ![](./media/image13.png)
 
-4.  **Lakehouse** 홈 페이지에서 **Start with sample data** 를 선택하여
-    Copy sample data를 여세요.
+4.  **Lakehouse** 홈페이지에서 복사 샘플 데이터를 열기 위해 **Start with
+    sample data**를 선택하세요.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image14.png)
+> ![](./media/image14.png)
 
-5.  **Use a sample** 대화 상자가 표시되면 **NYCTaxi** 샘플 데이터 타일을
+5.  **Use a sample** 대화 상자가 표시되면 **NYCTaxi** 샘플 데이터 타일을
     선택하세요.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image15.png)
 >
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image16.png)
+> ![](./media/image16.png)
 >
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image17.png)
+> ![](./media/image17.png)
 
-6.  테이블 이름을 변경하려면, 편집기 위에
-    있는 **green_tripdata_2022** 탭을 마우스 오른쪽 버튼으로 클릭한
-    후 **Rename**을 선택하세요.
+6.  테이블 이름을 바꾸려면 editor 바로 위의 **green_tripdata_2022** 탭을
+    우클릭한 후 **Rename**을 선택하세요.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image18.png)
+![A screenshot of a computer Description automatically
+generated](./media/image18.png)
 
-7.  **Rename** 대화 상자의 **Name** 필드에 **+++Bronze+++** 를 입력해
-    **table** 이름을 변경한 후, **Rename** 버튼을 클릭하세요.
+7.  **Rename** 대화 상자의 **Name** 필드에서 **table**의 이름을
+    **+++Bronze+++**로 바꾸고 **Rename** 버튼을 클릭하세요.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image19.png)
+![A screenshot of a computer Description automatically
+generated](./media/image19.png)
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image20.png)
+![A screenshot of a computer Description automatically
+generated](./media/image20.png)
 
-**연습 2: Data Factory의 데이터 플로우로 데이터 변환하기**
+**연습 2: Data Factory에서 데이터플로우로 데이토를 변환하기**
 
-## 작업1: Lakehouse테이블에서 데이터 가져오기
+## 작업 1: Lakehouse 테이블에서 데이터를 가져오기
 
-1.  왼쪽 탐색 창에서[**Data
-    Factory-@lab.LabInstance.Id**](mailto:Data%20Factory-@lab.LabInstance.Id) 작업
-    영역을 클릭하세요.
+1.  이제 왼쪽 탐색 창에서 작업 공간 [**Data
+    Factory-@lab.LabInstance.Id**](mailto:Data%20Factory-@lab.LabInstance.Id)를
+    클릭하세요.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image21.png)
 
-2.  탐색 모음에서 **+New item** 버튼을 클릭하여 새로운 **Dataflow
-    Gen2**를 생성하세요. 목록에서**Dataflow Gen2** 항목을 선택하세요.
+2.  탐색 바의 **+New item** 버튼을 클릭하여 새로운 Dataflow Gen2를
+    생성하세요. 사용 가능한 항목 목록에서 **Dataflow Gen2** 항목을
+    선택하세요
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image22.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image22.png)
 
-3.  New Dataflow Gen2 Name으로 **+++nyc_taxi_data_with_discounts+++**를
-    입력한 후 **Create**을 선택하세요.
+3.  새로운 Dataflow Gen2 이름을 +++**nyc_taxi_data_with_discounts+++**로
+    설정한 후 **Create**를 선택하세요.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image23.png)
 
-4.  새로운 dataflow 메뉴에서 **Power Query** 창의 **Get data 드롭다운**
-    메뉴를 클릭한 후, More...을 선택하세요.
+4.  새로운 데이터플로우 메뉴의 **Power Query** 창에서 **Get data drop
+    down**을 클릭하고 **More...**를 선택하세요.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image24.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image24.png)
 
-5.  **Choose data source** 탭의 검색 상자에+++**Lakehouse+++**를 입력한
-    후, **Lakehouse** 커넥터를 클릭하세요.
+5.  **Choose data source** 탭의 검색 바에서 +++**Lakehouse+++**를
+    검색하고 입력하고 **Lakehouse** 커넥터를 클릭하세요.
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image25.png)
 
-6.  The **Connect to data source** 대화 상자가 나타나고, 현재 로그인한
-    사용자를 기준으로 새 연결이 자동으로 생성됩니다. **Next**를
+6.  **Connect to data source** 대화상자가 나타나고 현재 로그인한
+    사용자를 기반으로 자동으로 새로운 연결이 생성됩니다. **Next**를
     선택하세요.
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image26.png)
 
-7.  **Choose data** 대화 상자가 표시됩니다. 탐색 창에서**workspace-
-    Data-FactoryXX**를 찾아 확장한 후, 이전 모듈에서 생성한
-    **Lakehouse** - **DataFactoryLakehouse** 를 확장하세요.
-    목록에서 **Bronze** 테이블을 선택한 후**Create** 버튼을 클릭하세요.
+7.  **Choose data** 대화 상자가 표시됩니다. 탐색 창을 사용해 **작업
+    공간인 Data-FactoryXX**를 찾아 확장하세요. 그 다음 이전 모듈에서
+    목적지에 대해 생성한 **Lakehouse - DataFactoryLakehouse**를 펼친 후,
+    목록에서 **Bronze** 테이블을 선택한 후 **Create** 버튼을 클릭하세요.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image27.png)
+![A screenshot of a computer Description automatically
+generated](./media/image27.png)
 
-8.  이제 캔버스에 데이터가 표시되는 것을 확인할 수 있습니다.
+8.  캔버스에 데이터가 채워진 것을 볼 수 있을 것입니다.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image28.png)
+![A screenshot of a computer Description automatically
+generated](./media/image28.png)
 
-## 작업2: Lakehouse에서 가져온 데이터 변환하기
+## 작업 2: Lakehouse에서 가져온 데이터를 변환하기
 
-1.  두 번째 열 **IpepPickupDatetime**의 열 머리글에 있는 데이터 유형
-    아이콘을 선택해 드롭다운 메뉴를 표시 합니다. 메뉴에서 데이터 유형을
-    선택해 열을 **Date/Time** 에서 **Date** 유형으로 변환하세요.
+1.  두 번째 열의 열 헤더에 있는 데이터 타입 아이콘
+    **IpepPickupDatetime**을 선택하고 드롭다운 메뉴가 표시되고, 메뉴에서
+    데이터 타입을 선택하여 **Date/Time** 에서 **Date**로 타입으로 열을
+    변환하세요.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image29.png)
+![A screenshot of a computer Description automatically
+generated](./media/image29.png)
 
-2.  리본 메뉴의 **Home** 탭에서 **Manage columns** 그룹 내 **Choose
-    columns**을 선택하세요.
+2.  리본에서 **Home** 탭에서 **Manage columns** 그룹에서 **Choose
+    columns** 옵션을 선택하세요.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image30.png)
+![A screenshot of a computer Description automatically
+generated](./media/image30.png)
 
-3.  **Choose columns** 대화 상자에서 일부 열의 **선택을 해제**한
-    후 **OK**를 선택하세요.
+3.  **Choose columns** 대화 상자에서 여기에 나열된 열을 **deselect한**
+    후 **OK**를 선택하세요.
 
     - lpepDropoffDatetime
 
@@ -221,86 +213,80 @@ incorrect.](./media/image30.png)
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image31.png)
 
-4.  **storeAndFwdFlag**  열의 필터 및 드롭다운 메뉴를 선택하세요.
-    ( **List may be incomplete**경고가 표시되면, 모든 데이터를 확인하기
-    위해 **Load more** 선택)
+4.  **storeAndFwdFlag** 열의 필터를 선택하고 정렬 드롭다운 메뉴를
+    선택하세요. (**List may be incomplete** 경고를 보면 **Load more을**
+    선택하면 모든 데이터를 볼 수 있습니다.)
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image32.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image32.png)
 
-5.  할인이 적용된 행만 표시되도록 '**Y'** 를 선택한 후, **OK**를
+5.  할인이 적용된 행만 보여주려면 **'Y'**를 선택한 후 **OK**를
     선택하세요.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image33.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image33.png)
 
-6.  **Ipep_Pickup_Datetime** 열의 정렬 및 필터 드롭다운 메뉴를 선택한
-    뒤, **Date filters**를 선택하고 **Between...** 필터(Date 및Date/Time
-    유형)를 선택하세요.
+6.  **Ipep_Pickup_Datetime** 열 정렬 및 필터 드롭다운 메뉴를 선택한 후
+    **Date filters**를 선택한 후, **Between...** 필터가 날짜 및
+    날짜/시간 유형별로 제공됩니다.
 
 ![](./media/image34.png)
 
-7.  **Filter rows** 대화 상자에서 날짜를 **January 1, 2022**부터
-    **January 31, 2022**까지로 선택한 후 **OK**를 클릭하세요.
+7.  **Filter rows** 대화상자에서 **January 1, 2022**부터 **January 31,
+    2022** 사이의 날짜를 **OK**를 선택하세요.
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image35.png)
 
-## 작업3: 할인 데이터가 포함된 CSV 파일 연결하기
+## 작업 3: 할인 데이터를 포함된 CSV 파일을 연결하기
 
-이제 trips 데이터가 준비되었으므로, 각 날짜와 **VendorID**별로 적용된
-할인 정보를 포함한 데이터를 불러와서, trips 데이터와 결합하기 전에 이를
-준비합니다.
+이제 여행 데이터가 준비된 후, 각 날짜별 할인 정보와 VendorID가 포함된
+데이터를 불러와, 여행 데이터와 결합하기 전에 데이터를 준비하고자 합니다.
 
-1.  Dataflow 편집기 메뉴의 **Home** 탭에서 **Get data** 옵션을 선택한
-    후, **Text/CSV**를 선택하세요.
+1.  Dataflow editor메뉴의 **Home** 탭에서 **Get data** 옵션을 선택하고
+    **Text/CSV**를 선택하세요.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image36.png)
+> ![](./media/image36.png)
 
-2.  **Connect to data source** 창에서 **Connection settings** 아래의
-    **Link to file** 라디오 버튼을 선택하세요. 그 후, 다음 URL을
-    입력하세요:
-    +++https://raw.githubusercontent.com/ekote/azure-architect/master/Generated-NYC-Taxi-Green-Discounts.csv+++
-    . Connection name 에는 +++**dfconnection**+++를 입력하고,
-    **authentication** **kind** 가 **Anonymous**로 설정되어 있는지
-    확인하세요. 모두 완료되면 **Next** 버튼을 클릭하세요.
+2.  **Connect to data source** 창의 **Connection settings**에서 **Link
+    to file** 라디오 버튼을 선택하고
+    +++https://raw.githubusercontent.com/ekote/azure-architect/master/Generated-NYC-Taxi-Green-Discounts.csv+++를
+    입력하고 Connection name을 +++**dfconnection**+++로 입력하고
+    **authentication** **kind**가 is set to **Anonymous**로 설정되는지
+    확인하세요. **Next** 버튼을 클릭하세요.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image37.png)
 
-3.  **Preview file data** 대화 상자에서 **Create**를 선택하세요.
+3.  **Preview file data** 대화 상자에서 **Create**를 선택하세요.
 
-![](./media/image38.png)
+![A screenshot of a computer Description automatically
+generated](./media/image38.png)
 
-## 작업4: 할인 데이터 변환하기
+## 작업 4: 할인 데이터를 변환하기
 
-1.  데이터를 검토하면, 열 제목(headers)이 첫 번째 행에 있는 것을 확인할
-    수 있습니다. 미리 보기 그리드의 왼쪽 상단에 있는 테이블 컨텍스트
-    메뉴를 클릭한 후  **Use first row as headers**를 선택하여 첫 번째
-    행을 열 제목으로 지정하세요.
+1.  데이터를 검토해 보면, 헤더가 첫 번째 행에 있는 것으로 보입니다.
+    미리보기 그리드 영역 왼쪽 상단의 테이블 컨텍스트 메뉴를 선택해 **Use
+    first row as headers**를 선택해 헤더로 승격시키려 합니다.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image39.png)
+> ![](./media/image39.png)
 >
-> ***참고:** 헤더를 승격한 후, 데이터 플로우 편집기 상단의 **Applied
-> steps** 창에서 새 단계가 추가된 것을 확인할 수 있으며, 이를 통해 각
-> 열의 데이터 유형이 설정됩니다.*
+> ***참고:** 헤더를 프로모션한 후, 데이터플로우 편집기 상단의 **Applied
+> steps** 창에 열의 데이터 타입에 새로운 단계가 추가된 것을 볼 수
+> 있습니다.*
 >
 > ![](./media/image40.png)
 
-2.  **VendorID** 열을 마우스 오른쪽 버튼으로 클릭한 후, 표시된 컨텍스트
-    메뉴에서 **Unpivot other columns** 옵션을 선택하세요. 이 기능을
-    사용하면 열을 행으로 변환해 각 열이 속성-값(attribute-value) 쌍으로
-    나타나도록 데이터 구조를 변경할 수 있습니다.
+2.  **VendorID** 열을 우클릭 한 후, 표시되는 컨텍스트 메뉴에서 **Unpivot
+    other columns** 옵션을 선택하세요. 이 기능을 통해 열을 속성-값
+    쌍으로 변환할 수 있고, 열은 행이 됩니다.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image41.png)
 
-3.  테이블의 열을 행으로 변환한 후, **Attribute** 및**Value** 열을 두 번
-    클릭해 이름을
-    변경하세요. **Attribute** 는 +++**Date+++**로, **Value**는 +++**Discount+++**로
-    변경하세요.
+3.  테이블이 피벗되지 않은 상태에서 **Attribute **및** Value **열의
+    이름을 더블 클릭하여 변경하고 **Attribute**를 **+++Date+++**로,
+    Value를 **+++Discount+++**로 변경합니다.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image42.png)
@@ -308,433 +294,423 @@ generated](./media/image42.png)
 ![A screenshot of a computer Description automatically
 generated](./media/image43.png)
 
-4.  **Date** 열의 데이터 유형을 변경하려면, 열 이름 왼쪽에 있는 데이터
-    유형 메뉴를 클릭하고 **Date**를 선택하세요.
+4.  **Date** 열의 데이터 타입을 변경하려면 열 이름 왼쪽에 있는 데이터
+    타입 메뉴를 선택하고 **Date**를 선택하세요.
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image44.png)
 
-5.  **Discount** 열을 선택한 후, 메뉴에서 **Transform** 탭을
-    클릭하세요. **Number column**을 선택하고, 하위
-    메뉴에서 **Standard** 숫자 변환을 선택하고, **Divide**를 클릭하세요.
+5.  **Discount** 열을 선택하고 메뉴에서 **Transform** 탭을 선택하세요.
+    **Number column**을 선택하고 서브 메뉴에서 **Standard** 수치 변환을
+    선택한 후 **Divide**를 선택하세요.
 
-> ![](./media/image45.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image45.png)
 
-6.  **Divide** 대화 상자에서 값으로 +++100+++을 입력한 후, **OK** 버튼을
+6.  **Divide** 대화 상자에서 value를 +++100+++로 입력하고 **OK** 버튼을
     클릭하세요.
 
-![](./media/image46.png)
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image47.png)
-
-**작업 7: Trips 및 discounts 데이터 결합**
-
-다음 단계는 두 테이블을 하나의 테이블로 결합하여 trips에 적용해야 하는
-할인과 조정된 합계를 포함하도록 하는 것입니다.
-
-1.  먼저, **Diagram view** 버튼을 토글해 두 쿼리를 모두 볼 수 있도록
-    합니다.
-
-![](./media/image48.png)
-
-2.  **Bronze** 쿼리를 선택한 후, **Home** 탭에서 **Combine** 메뉴를
-    클릭하고**Merge queries**, 이어서 **Merge queries as new**를
-    선택하세요.
+![A screenshot of a computer Description automatically
+generated](./media/image46.png)
 
 ![A screenshot of a computer Description automatically
-generated](./media/image49.png)
+generated](./media/image47.png)
 
-3.  **Merge** 대화 상자에서 **Right table for merge** 드롭다운에서
-    **Generated-NYC-Taxi-Green-Discounts**를 선택한 후, 대화 상자 오른쪽
-    상단의 "**light bulb**" 아이콘을 클릭하여 세 테이블 간의 권장 열
-    매핑을 확인하세요.
+**작업 7: 여행 및 할인 데이터를 결합하기**
 
-4.  권장된 두 개의 열 매핑을 하나씩 선택하여, 두
-    테이블의 **VendorID**와 **VendorID** 열을 각각 매핑합니다. 두 매핑이
-    모두 추가되면, 각 테이블에서 일치하는 열 제목이 강조 표시됩니다.
+다음 단계는 두 표를 하나의 표로 합치는 것으로, 여행에 적용해야 할 할인과
+조정된 총액을 포함시키는 것입니다.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image50.png)
+1.  먼저 **Diagram view** 버튼을 켜서 두 쿼리를 모두 볼 수 있게 하세요.
 
-5.  결과를 확인하기 위해 서로 다른 데이터 출처의 데이터를 결합하도록
-    허용할 것인지 묻는 메시지가 표시됩니다. **OK**를 선택하세요. 
+![A screenshot of a computer Description automatically
+generated](./media/image48.png)
+
+2.  **Bronze** 쿼리를 선택하고 **Home** 탭에서 **Combine** 메뉴를
+    선택하고 **Merge queries**를 선택하고 **Merge queries as new**를
+    선택하세요.
+
+![](./media/image49.png)
+
+3.  **Merge** 대화상자의**Right table for merge** 드롭다운에서
+    **Generated-NYC-Taxi-Green-Discounts**를 선택하고 대화상자 오른쪽
+    상단의 "**light bulb**" 아이콘을 선택하면, 세 테이블 간 열의 권장
+    매핑을 확인할 수 있습니다.
+
+4.  두 가지 제안된 열 매핑 중 하나씩을 선택하여 두 테이블의 VendorID와
+    날짜 열을 매핑하세요. 두 매핑이 모두 추가되면, 각 테이블에서
+    일치하는 열 헤더가 강조 표시됩니다.
+
+> ![](./media/image50.png)
+
+5.  여러 데이터 소스의 데이터를 결합해 결과를 볼 수 있도록 허용하라는
+    메시지가 표시됩니다. **OK**를 선택하세요.
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image51.png)
 
-6.  테이블 영역에서 처음에는 다음과 같은 경고가 표시됩니다: "The
-    evaluation was canceled because combining data from multiple sources
-    may reveal data from one source to another. Select continue if the
-    possibility of revealing data is okay." **Continue** 를 선택해
-    결합된 데이터를 표시합니다.
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image52.png)
-
-7.  Privacy Levels 대화 상자에서**Ignore Privacy Levels checks for this
-    document. Ignoring privacy Levels could expose sensitive or
-    confidential data to an unauthorized person** 체크박스를 선택한 후,
-    **Save** 버튼을 클릭하세요.
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image53.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image54.png)
-
-8.  Notice how a new query was created in Diagram 뷰에서 새로 생성된
-    쿼리가 이전에 만든 두 쿼리와 결합(Merge) 관계를 보여주는 것을 확인할
-    수 있습니다. 편집기의 테이블 창에서 Merge 쿼리 열 목록 오른쪽으로
-    스크롤하면 테이블 값이 있는 새 열이 표시됩니다. 이 열이 "Generated
-    NYC Taxi-Green-Discounts"이며, 데이터 유형은 **\[Table\]**입니다.
-
-열 머리글에는 서로 반대 방향을 가리키는 두 개의 화살표 아이콘이 있으며,
-이를 통해 테이블에서 선택할 열을 지정할 수 있습니다. **Discount**를
-제외한 모든 열의 선택을 해제한 후**OK**를 클릭하세요.
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image55.png)
-
-9.  이제 할인 값이 행 수준(Row level)에 적용되었으므로, 할인 적용 후
-    총액을 계산하는 새 열을 생성할 수 있습니다. 이를 위해 편집기
-    상단의 **Add column** 탭을 선택하고,  **General** 그룹에서 **Custom
-    column**을 선택하세요.
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image56.png)
-
-10. **Custom column** 대화 상자에서, 새 열의 계산 방법을 정의하기 위해
-    [Power Query 수식
-    언어(M)](https://learn.microsoft.com/en-us/powerquery-m) 를 사용할
-    수 있습니다. **New column name** 에 +++**TotalAfterDiscount+++**를
-    입력하세요. **Data type**은 **Currency**를 선택하세요. **Custom
-    column formula**에는 M 수식을 입력하세요 :
-
-+++if [total_amount] > 0 then [total_amount] * ( 1 -[Discount] ) else [total_amount]+++
-
-그 후, **OK**를 클릭하세요.
-
-![A screenshot of a computer Description automatically
-generated](./media/image57.png)
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image58.png)
-
-11. 새로 생성된 **TotalAfterDiscount** 열을 선택한 후, 편집기
-    상단의 **Transform** 탭을 클릭하세요. **Number
-    column** 그룹에서 **Rounding** 드롭다운을 선택한 후 **Round...**를
+6.  테이블 영역에서 "The evaluation was canceled because combining data
+    from multiple sources may reveal data from one source to another.
+    Select continue if the possibility of revealing data is okay."라는
+    경고가 볼 수 있습니다. 합쳐진 데이터를 표시하려면 **Continue**를
     선택하세요.
 
-**참고**: **rounding** 옵션을 찾을 수 없는 경우 메뉴를 확장해
+> ![](./media/image52.png)
 
-**Number column**을 확인하세요.
+7.  Privacy Levels 대화 상자에서**check box :Ignore Privacy Levels
+    checks for this document. Ignoring privacy Levels could expose
+    sensitive or confidential data to an unauthorized person**을
+    선택하고 **Save** 버튼을 클릭하세요.
+
+> ![A screenshot of a computer screen Description automatically
+> generated](./media/image53.png)
+>
+> ![](./media/image54.png)
+
+8.  다이어그램 뷰에서 새 쿼리가 생성된 것을 주목하라. 이 쿼리가 이전에
+    만든 두 쿼리와의 관계를 보여준다. 편집기의 테이블 창을 보면, Merge
+    query 열 목록 오른쪽으로 스크롤하면 테이블 값이 포함된 새로운 열이
+    표시됩니다. 이것은 "**Generated NYC Taxi-Green-Discounts"** 열이며,
+    그 유형은 **\[Table\]**입니다.
+
+열 헤더에는 반대 방향으로 향하는 두 개의 화살표가 있는 아이콘이 있어,
+테이블에서 열을 선택할 수 있습니다. **Discount**을 제외한 모든 열을 선택
+해제한 후 **OK**를 선택하세요.
+
+![](./media/image55.png)
+
+9.  할인 값이 행 수준에 위치하면, 할인 후 총 금액을 계산할 새로운 열을
+    생성할 수 있습니다. 이를 위해 편집기 상단의 **Add column** 탭을
+    선택한 후 **General group**에서 **Custom column**을 선택하세요.
+
+> ![](./media/image56.png)
+
+10. On the **Custom column** 대화 상자에서, Power Query 공식
+    언어(M라고도 함)[를 사용하여 새 열을 어떻게 계산할지
+    정의](https://learn.microsoft.com/en-us/powerquery-m)할 수 있습니다.
+    **New column name**을 +++**TotalAfterDiscount+++**로 입력하고,
+    **Data type**을 **Currency**로 선택하고, **Custom column formula**에
+    대해 다음과 같은 M식 제공하세요:
+
+> +++if \[total_amount\] \> 0 then \[total_amount\] \* ( 1 -\[Discount\]
+> ) else \[total_amount\]+++
+
+**OK**를 선택하세요.
+
+![](./media/image57.png)
+
+![A screenshot of a computer Description automatically
+generated](./media/image58.png)
+
+11. 새로 생성한 **TotalAfterDiscount** 열을 선택하고 editor 창 상단에서
+    **Transform** 탭을 선택하세요. **Number column** 그룹에서
+    **Rounding** 드롭다운을 선택하고 **Round...**를 선택하세요.
+
+**참고**: **rounding** 옵션을 못 찾으면 메뉴를 확장하고 **Number
+column**을 보세요.
 
 ![](./media/image59.png)
 
-12.  **Round** 대화 상자에서 소수 자릿수를
-    **2**로 입력한 후**OK**를 클릭하세요.
-      ![](./media/image60.png)
+12. **Round** 대화상자에서, 소수점 수를 위해 **2**를 입력한 후 **OK**를
+    선택하세요.
 
-13. **IpepPickupDatetime** 열의 데이터 유형을**Date**에서
-    **Date/Time**으로 변경하세요.
+![A screenshot of a computer Description automatically
+generated](./media/image60.png)
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image61.png)
-
-14. 마지막으로, 편집기 오른쪽에 있는 **Query settings** 창이 펼쳐져 있지
-    않다면 확장한 후, 쿼리 이름을 **Merge**에서 **+++Output+++**로
+13. **IpepPickupDatetime**의 데이터 유형을 **Date**에서 **Date/Time**을
     변경하세요.
+
+![](./media/image61.png)
+
+14. 마지막으로, editor오른쪽에서 Query settings창이 아직 확장되어 있지
+    않다면 확장하고 쿼리를 **Merge**에서 +++**Output+++**로 변경하세요.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image62.png)
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image63.png)
+![A screenshot of a computer Description automatically
+generated](./media/image63.png)
 
-**작업 8: 출력 쿼리를 Lakehouse의 테이블로 로드하기**
+**작업 8: 출력 쿼리를 Lakehouse 내 테이블에 로드하기**
 
-출력 쿼리가 완전히 준비되고 데이터를 내보낼 준비가 되면, 쿼리의 출력
-대상을 설정할 수 있습니다.
+출력 쿼리가 완전히 준비되고 데이터가 출력될 준비가 되었으면, 쿼리의 출력
+목적지를 정의할 수 있습니다.
 
-1.  이전에 생성한 **Output** merge쿼리를 선택한 후, **+ icon**을
-    클릭하여 Dataflow에 **data destination**을 추가하세요.
+1.  이전에 생성된 **Output** 병합 쿼리를 선택하세요. 그 다음 **+
+    icon**을 선택하여 **data destination**을 이 데이터 플로우에
+    추가하세요.
 
-2.  데이터 대상 목록에서 New destination 아래의 **Lakehouse**을
+2.  Data destination 목록에서 New destination에서 **Lakehouse** 옵션을
     선택하세요.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image64.png)
+![](./media/image64.png)
 
-3.  **Connect to data destination** 대화 상자에서 연결이 이미 선택되어
-    있는지 확인한 후, **Next**를 클릭하여 계속 진행하세요.
+3.  **Connect to data destination** 대화 상자에서 연결은 이미 선택되어
+    있어야 합니다. 계속하려면 **Next**를 선택하세요.
 
 ![A screenshot of a computer Description automatically
 generated](./media/image65.png)
 
-4.  **Choose destination target** 대화 상자에서 대상 Lakehouse를 찾아
-    선택한 후, 다시 **Next**를 클릭하세요.
+4.  **Choose destination target** 대화 상자에서 Lakehouse로 이동하고
+    **Next**를 다시 선택하세요.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image66.png)
+![](./media/image66.png)
 
-5.  **Choose destination settings** 대화 상자에서,
-    기본 **Replace** 업데이트 방법을 그대로 두고, 열이 올바르게
-    매핑되었는지 다시 확인한 후, **Save settings**을 선택하세요.
+5.  **Choose destination settings** 대화 상자에서 기본
+    **Replace** 업데이트 방법을 남겨두고 열이 올바르게 매핑되어 있는지
+    다시 한번 확인한 후 **Save settings**을 선택하세요.
 
 ![](./media/image67.png)
 
-6.  편집기 메인 창으로 돌아가 **Query settings** 창에서
-    **Output** 테이블의 출력 대상이 **Lakehouse**로 표시되는지 확인한
-    후, Home 탭에서 **Save and Run**을 선택하세요.
+6.  메인 editor 창에서 출력 테이블의 **Query settings** 창에서
+    **Output** 목적지가 **Lakehouse**로 표시되어 있는지 확인한 후, 홈
+    탭에서 **Save and Run**옵션을 선택하세요.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image68.png)
+> ![](./media/image68.png)
 >
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image69.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image69.png)
 
-9.  이제 왼쪽 탐색 창에서 **Data Factory-XXXX workspace**을 클릭하세요.
+9.  Now, click on **Data Factory-XXXX workspace** on the left-sided
+    navigation pane.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image70.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image70.png)
 
-10. **Data_FactoryXX** 창에서 **DataFactoryLakehouse** 를 선택하여 새로
+10. **Data_FactoryXX** 창에서 **DataFactoryLakehouse**를 선택하여 새로
     로드된 테이블을 확인하세요.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image71.png)
+![](./media/image71.png)
 
-11. **Output** 테이블이 표시되는지 확인하세요.
+11. **Output** 테이블이 **dbo** 스키마 아래에 나타나는지 확인하세요.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image72.png)
+![](./media/image72.png)
 
-# 연습 3: Data Factory로 자동화 및 알림 전송하기
+# 연습 3: Data Factory로 알림을 자동화하고 보내기
 
-## 작업 1: 파이프라인에 Office 365 Outlook 활동 추가하기
+## 작업 1: 파이프라인에 Office 365 Outlook 활동을 추가하기
 
-1.  왼쪽 탐색 메뉴에서 **Data_FactoryXX** 작업 영역을 클릭하세요.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image73.png)
-
-2.  작업 영역 페이지에서 **+ New item** 옵션을 선택한 후, **Pipeline**을
-    선택하세요.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image74.png)
-
-3.  Pipeline Name에 +++**First_Pipeline1+++**를 입력한 후, **Create**을
-    선택하세요.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image75.png)
-
-4.  파이프라인 편집기에서**Home** 탭을 선택한 후, **Add to canvas**를
-    찾아 선택하세요.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image76.png)
-
-5.  **Source** 탭에서 다음 설정을 입력한 후 **Test connection**을
+1.  왼쪽 탐색 메뉴에서 **Data_FactoryXX** Workspace로 이동하고
     클릭하세요.
 
-    |   |   |
-    |-----|-----|
-    |Connection	|dfconnection User-XXXX|
-    |Connection Type|	HTTP 선택|
-    |File format	|Delimited Text|
+> ![A screenshot of a computer Description automatically
+> generated](./media/image73.png)
 
+2.  작업 공간 페이지에서 **+ New item** 옵션을 선택하고 **Pipeline**을
+    선택하세요
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image77.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image74.png)
 
-6.  Destination 탭에 다음 설정을 입력하세요.
+3.  Pipeline Name을 +++**First_Pipeline1+++**로 입력하고 **Create**를
+    선택하세요.
 
-    |   |  |
-    |----|----|
-    |Connection|	Lakehouse|
-    |Lakehouse|DataFactoryLakehouse 선택|
-    |Root Folder|	Table 라디오 버튼 선택|
-    |Table|	• New 선택하고, +++Generated-NYC-Taxi-Green-Discounts+++ 입력 후, Create 버튼 클릭|
+> ![](./media/image75.png)
 
+4.  파이프라인 편집기에서 **Home** 탭을 선택하고 검색하고 **Add to
+    canvas** 활동을 선택하세요.
+
+> ![](./media/image76.png)
+
+5.  **Source** 탭에서다음 설정을 입력하고 **Test connection**을
+    클릭하세요
+
+[TABLE]
+
+> ![](./media/image77.png)
+
+6.  **Destination** 탭에서 다음 정보를 입력하세요.
+
+[TABLE]
 
 > ![](./media/image78.png)
+>
+> ![A screenshot of a computer Description automatically
+> generated](./media/image79.png)
 
 7.  리본에서 **Run**을 선택하세요.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image79.png)
+> ![](./media/image80.png)
 
 8.  **Save and run?** 대화 상자에서 **Save and run** 버튼을 클릭하세요.
 
-> ![A screenshot of a computer error AI-generated content may be
-> incorrect.](./media/image80.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image81.png)
 >
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image81.png)
-
-9.  파이프라인 편집기에서 **Activities** 탭을 선택하고, **Office
-    Outlook** 작업을 찾으세요.
-
 > ![](./media/image82.png)
 
-10. 파이프라인 캔버스에서 Copy 작업의 오른쪽 상단에 있는 On success
-    경로(녹색 체크박스)를 선택하여 새로운 Office 365 Outlook 작업으로
-    드래그하세요.
+9.  파이프라인 편집기에서 **Activities** 탭을 선택하고 **Office
+    Outlook** 활동을 검색하세요.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image83.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image83.png)
 
-11. 파이프라인 캔버스에서 Office 365 Outlook 작업을 선택한 후, 캔버스
-    아래의 속성 영역에서 **Settings** 탭을 선택하여 이메일을 구성하세요.
-    그런 다음 **Sign in** 버튼을 클릭하세요.
+10. Copy activity에서 새 Office 365 Outlook 활동으로 전환하는 On Success
+    (파이프라인 캔버스 활동 오른쪽 상단의 녹색 체크박스)를 드래그하세요.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image84.png)
+![A screenshot of a computer Description automatically
+generated](./media/image84.png)
 
-12. Power BI 을 선택한 후, **Allow access**를 클릭하여 권한을
-    확인하세요.
+11. 파이프라인 캔버스에서 Office 365 Outlook 활동을 선택한 후, 캔버스
+    아래 속성 영역의 **Settings** 탭을 선택하여 이메일을 설정하세요.
+    **Connection** 드롭다운을 클릭하고 **Browse all**을 선택하세요.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image85.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image85.png)
 
-13. 파이프라인 캔버스에서 Office 365 Outlook 작업을 선택하고 캔버스
-    아래의 속성 영역에 있는 **Settings** 탭에서 이메일을 구성하세요.
+12. ‘Choose a data source’ 창에서 **Office 365 Email** 소스를
+    선택하세요.
 
-    - **To** 필드에 이메일 주소를 입력하세요. 여러 주소를 사용할
-      경우, **;** 로 구분하세요.
+> ![A screenshot of a computer Description automatically
+> generated](./media/image86.png)
 
-    &nbsp;
+13. 이메일을 보내고 싶은 계정으로 로그인하세요. 이미 로그인된 계정으로
+    기존 연결을 사용할 수 있습니다.
 
-    -  **Subject** 필드를 선택하면 **Add dynamic
-      content** 옵션이 표시됩니다. 이를 선택하면 파이프라인
-      식(Expression) 빌더 캔버스가 표시됩니다.
-     ![](./media/image86.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image87.png)
 
-14. **Pipeline expression builder** 대화 상자가 표시됩니다. 다음
-    식(expression)을 입력한 후 **OK**를 선택하세요:
+14. 계속하려면 **Connect**를 클릭하세요.
 
-   +++@concat('DI in an Hour Pipeline Succeeded with Pipeline Run Id', pipeline().RunId)+++
- 
-> ![](./media/image87.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image88.png)
 
-15. **Body** 항목을 다시 선택한 후, 텍스트 영역 아래에 표시되는 **View
-    in expression builder** 옵션을 선택하세요. 표시되는 **Pipeline
-    expression builder** 대화 상자에 다음 식(expression)을 입력한 후,
-    **OK**를 선택하세요:
+15. 파이프라인 캔버스에서 Office 365 Outlook 활동을 선택하고, 캔버스
+    아래 속성 영역의 **Settings** 탭에서 이메일을 설정하세요.
 
-+++@concat('RunID = ', pipeline().RunId, ' ; ', 'Copied rows ', activity('Copy data1').output.rowsCopied, ' ; ','Throughput ', activity('Copy data1').output.throughput)+++
+    - **To** 섹션에 이메일 주소를 입력하세요. 여러 주소를 사용하고
+      싶다면**;** 분리시키기 위합니다.
 
-> ![](./media/image88.png)
->
-> ![](./media/image89.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image89.png)
 
-**  참고: Copy data1**을 사용자의 파이프라인 복사 작업 이름으로
-변경하세요.
+- **Subject**에 필드를 선택하여**Add dynamic content** 옵션이 나타나게
+  하고, 파이프라인 표현식 빌더 캔버스를 표시하도록 선택하세요.
 
-16. 마지막으로, 파이프라인 편집기 상단의 **Home** 탭을
-    선택하고 **Run**을 클릭하세요. 확인 대화 상자가 나타나면 **Save and
-    run**을 다시 클릭해 작업을 실행하세요.
+> ![A screenshot of a computer Description automatically
+> generated](./media/image90.png)
 
-> ![](./media/image90.png)
+16. **Pipeline expression builder** 대화 상자에 나타납니다. 다음 식을
+    입력한 후 **OK**를 선택하세요:
+
+> *+++@concat('DI in an Hour Pipeline Succeeded with Pipeline Run Id',
+> pipeline().RunId)+++*
 >
 > ![](./media/image91.png)
+
+17. **Body**는 필드를 다시 선택한 후 텍스트 영역 아래에 나타나면 **View
+    in expression builder** 옵션을 선택하세요. **Pipeline expression
+    builder** 대화상자에 다음 표현식을 다시 추가한 후 **OK**를
+    선택하세요:
+
+> *+++@concat('RunID = ', pipeline().RunId, ' ; ', 'Copied rows ',
+> activity('Copy data1').output.rowsCopied, ' ; ','Throughput ',
+> activity('Copy data1').output.throughput)+++*
 >
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image92.png)
+> ![](./media/image92.png)
 >
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image93.png)
+> ![A screenshot of a computer Description automatically
+> generated](./media/image93.png)
 
-17. 파이프라인이 정상적으로 실행되면, 파이프라인에서 발송한 확인
-    이메일을 확인하세요.
+**  참고: Copy data1**을 자신의 파이프라인 복사 활동 이름으로
+대체하세요.
 
-![](./media/rio6.png)
+18. 마지막으로 파이프라인 편집기 상단의 **Home** 탭을 선택하고 **Run**을
+    선택하세요. 그 후 **Save and run**을 선택하고 확인 대화상자에서 다시
+    실행하여 이 활동을 실행하세요.
 
-**작업 2: 파이프라인 실행 예약**
+> ![A screenshot of a computer Description automatically
+> generated](./media/image94.png)
+>
+> ![A screenshot of a computer Description automatically
+> generated](./media/image95.png)
+>
+> ![A screenshot of a computer Description automatically
+> generated](./media/image96.png)
 
-파이프라인 개발과 테스트를 마치면, 자동으로 실행되도록 예약할 수
+19. 파이프라인이 성공적으로 실행되면 이메일에서 발송된 확인 이메일을
+    확인하세요.
+
+![](./media/image97.png)
+
+**작업 2: 파이프라인 실행 예약하기**
+
+파이프라인 개발과 테스트를 마치면 자동으로 실행되도록 스케줄링할 수
 있습니다.
 
-1.  파이프라인 편집기 창의 **Home** 탭에서 **Schedule**을 선택하세요.
+1.  Pipeline editor 창의 **Home** 탭에서 **Schedule**를 선택하세요.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image95.png)
+![A screenshot of a computer Description automatically
+generated](./media/image98.png)
 
-2.  필요에 맞게 실행 일정을 설정하세요. 예시에서는 파이프라인이 매일
-    오후 8시에 실행되도록 하고, 연말까지 반복되도록 구성했습니다.
+2.  필요에 따라 일정을 설정하세요. 여기 예시는 파이프라인을 연말까지
+    매일 오후 8시에 실행하도록 예약한 것입니다.
 
-![A screenshot of a schedule AI-generated content may be
-incorrect.](./media/image96.png)
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image97.png)
-
-![A screenshot of a schedule AI-generated content may be
-incorrect.](./media/image98.png)
-
-**작업 3: 파이프라인에 Dataflow 작업 추가하기**
-
-1.  파이프라인 캔버스에서 **Copy activity**과 **Office 365 Outlook**
-    작업을 연결하는 녹색 선 위로 마우스를 이동한 후, **+** 버튼을
-    클릭하여 새 작업을 삽입하세요.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image99.png)
-
-2.  나타나는 메뉴에서 **Dataflow**를 선택하세요.
+![A screenshot of a schedule Description automatically
+generated](./media/image99.png)
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image100.png)
 
-3.  새로 생성된 Dataflow 작업이 Copy 적업과 Office 365 Outlook
-    작업 사이에 삽입되며 자동으로 선택되어, 속성 영역에 해당 속성이
-    표시됩니다. 속성 영역에서 **Settings** 탭을 선택한 후, **Exercise 2:
-    Transform data with a dataflow in Data Factory**에서 생성한 데이터
-    플로우를 선택하세요.
-
-![A screenshot of a computer AI-generated content may be
+![A screenshot of a schedule AI-generated content may be
 incorrect.](./media/image101.png)
 
-4.  파이프라인 편집기 상단의 **Home** 탭을 선택하고 **Run**을
-    클릭하세요. 이어 표시되는 확인 대화 상자에서 **Save and run**을
-    선택해 작업을 실행하세요.
+**작업 3: 파이프라인에 데이터 플로우 활동을 추가하기**
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image102.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image103.png)
+1.  파이프라인 캔버스에서 **Copy activity**와 **Office 365 Outlook**
+    활동을 연결하는 녹색 선에 마우스를 올리고, **+** 버튼을 눌러 새
+    활동을 삽입하세요.
+
+> ![A screenshot of a computer Description automatically
+> generated](./media/image102.png)
+
+2.  나타나는 메뉴에서 **Dataflow**를 선택하세요.
+
+![A screenshot of a computer Description automatically
+generated](./media/image103.png)
+
+3.  새로 생성된 Dataflow 활동은 Copy activity와 Office 365 Outlook 활동
+    사이에 삽입되어 자동으로 선택되며, 캔버스 아래 영역에서 속성이
+    표시됩니다. 속성 영역에서 Settings 탭을 선택한 후, **연습 2: Data
+    Factory에서 데이터플로우로 데이토를 변환하기**를 선택하세요.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image104.png)
 
+4.  Pipeline editor 상단의 **Home** 탭을 선택하고 **Run**을 선택하세요.
+    그 다음 **Save and run**을 선택하고 확인 대화상자에서 다시 실행하여
+    이 활동을 실행하세요.
+
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image105.png)
+>
+> ![A screenshot of a computer AI-generated content may be
+> incorrect.](./media/image106.png)
+
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image105.png)
+incorrect.](./media/image107.png)
 
-## 작업 4: 리소스 정리
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image108.png)
 
-개별 보고서, 파이프라인, 웨어하우스 및 기타 항목을 삭제하거나, 전체 작업
-영역을 제거할 수 있습니다. 다음 단계에 따라 이번 튜토리얼에서 생성한
-작업 영역을 삭제하세요.
+## 작업 4: 리소스를 정리하기
 
-1.  왼쪽 탐색 메뉴에서 **Data-FactoryXX** 작업 영역을 선택하세요. 작업
-    영역 항목 뷰가 열립니다.
+개별 보고서, 파이프라인, warehouse 및 기타 항목을 삭제하거나 전체 작업
+공간을 제거할 수 있습니다. 이 튜토리얼을 위해 생성한 작업 공간을
+삭제하는 방법은 다음 단계를 사용하세요.
 
-![](./media/image106.png)
+1.  왼쪽 탐색 메뉴에서 **Data-FactoryXX** 작업 공간을 선택하세요. 그러면
+    작업 공간 항목 뷰기 열립니다.
 
-2.  작업 영역 페이지 오른쪽 상단에 있는 **Workspace settings** 옵션을
+![](./media/image109.png)
+
+2.  오른쪽 상다의 작업 공간 페이지에서 **Workspace settings** 옵션을
     선택하세요.
 
 ![A screenshot of a computer Description automatically
-generated](./media/image107.png)
+generated](./media/image110.png)
 
-3.  **General 탭**을 선택한 후, **Remove this workspace**를 클릭하세요.
+3.  **General tab** 및 **Remove this workspace**를 선택하세요.
 
 ![A screenshot of a computer Description automatically
-generated](./media/image108.png)
-
-
-
+generated](./media/image111.png)
