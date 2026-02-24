@@ -272,12 +272,11 @@ Nota: Para encontrar su lab instant ID, seleccione **Help** y copie el
 >
 > Pegue el código tal como se muestra en la imagen inferior y luego haga
 > clic en el ícono de **reproducir** para ejecutar el script:
-
-    ```
-    SELECT BuyingGroup, Count(*) AS Total
-    FROM dimension_customer
-    GROUP BY BuyingGroup
-    ```
+ ```
+ SELECT BuyingGroup, Count(*) AS Total
+ FROM dimension_customer
+ GROUP BY BuyingGroup
+```
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image30.png)
@@ -1125,3 +1124,4 @@ Power BI, con el fin de realizar un análisis de datos eficiente.
 El objetivo principal es ofrecer una experiencia práctica que permita
 comprender cómo utilizar Microsoft Fabric y Power BI para la gestión
 integral de datos y la generación de informes empresariales.
+
