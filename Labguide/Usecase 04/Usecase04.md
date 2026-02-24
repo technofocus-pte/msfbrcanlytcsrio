@@ -405,12 +405,12 @@ la celda.
 11. Use el ícono **+ Code** debajo del resultado de la celda para
     agregar una nueva **code cell** al notebook.
 
-> Ingrese el siguiente código, ejecute con **▷ Run cell** y revise el
-> resultado:
+Ingrese el siguiente código, ejecute con **▷ Run cell** y revise el
+resultado:
     ```
     display(df)
     ```
-> ![](./media/image35.png)
+ ![](./media/image35.png)
 
 12. El dataframe contiene únicamente los datos del archivo
     **2019.csv**.  
@@ -422,26 +422,25 @@ la celda.
     siguiente código:
 
 CodeCopy
+```
+from pyspark.sql.types import *
 
-    ```
-    from pyspark.sql.types import *
-    
-    orderSchema = StructType([
-        StructField("SalesOrderNumber", StringType()),
-        StructField("SalesOrderLineNumber", IntegerType()),
-        StructField("OrderDate", DateType()),
-        StructField("CustomerName", StringType()),
-        StructField("Email", StringType()),
-        StructField("Item", StringType()),
-        StructField("Quantity", IntegerType()),
-        StructField("UnitPrice", FloatType()),
-        StructField("Tax", FloatType())
-        ])
-    
-    df = spark.read.format("csv").schema(orderSchema).load("Files/orders/*.csv")
-    display(df)
-    ```
-> ![](./media/image36.png)
+orderSchema = StructType([
+    StructField("SalesOrderNumber", StringType()),
+    StructField("SalesOrderLineNumber", IntegerType()),
+    StructField("OrderDate", DateType()),
+    StructField("CustomerName", StringType()),
+    StructField("Email", StringType()),
+    StructField("Item", StringType()),
+    StructField("Quantity", IntegerType()),
+    StructField("UnitPrice", FloatType()),
+    StructField("Tax", FloatType())
+    ])
+
+df = spark.read.format("csv").schema(orderSchema).load("Files/orders/2019.csv")
+display(df)
+```
+![](./media/image36.png)
 
 14. Ejecute la celda modificada y revise el resultado, que ahora debe
     incluir datos de ventas de 2019, 2020 y 2021.
@@ -518,12 +517,11 @@ utilizar para filtrar, agrupar y manipular los datos que contiene.
 1.  Haga clic en **+ Code**, copie y pegue el siguiente código, y luego
     haga clic en **▷ Run cell**:
 
-> **CodeCopy:**
-    ```
-    productSales = df.select("Item", "Quantity").groupBy("Item").sum()
-    display(productSales)
-    ```
-> ![](./media/image41.png)
+```
+productSales = df.select("Item", "Quantity").groupBy("Item").sum()
+display(productSales)
+```
+ ![](./media/image41.png)
 
 2.  Observe que los resultados muestran la suma de las cantidades de los
     pedidos agrupadas por producto.
@@ -538,13 +536,13 @@ restantes (en este caso, *Quantity*).
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image42.png)
 
-    ```
-    from pyspark.sql.functions import *
-    
-    yearlySales = df.select(year("OrderDate").alias("Year")).groupBy("Year").count().orderBy("Year")
-    display(yearlySales)
-    ```
-> ![](./media/image43.png)
+```
+from pyspark.sql.functions import *
+
+yearlySales = df.select(year("OrderDate").alias("Year")).groupBy("Year").count().orderBy("Year")
+display(yearlySales)
+```
+ ![](./media/image43.png)
 
 4.  Los resultados muestran la cantidad de órdenes de venta por año.
 
@@ -574,23 +572,22 @@ o análisis posterior.
 1.  Haga clic en + Code y copie y pegue el siguiente código:
 
 **CodeCopy**
+```
+from pyspark.sql.functions import *
 
-    ```
-    from pyspark.sql.functions import *
-    
-    ## Create Year and Month columns
-    transformed_df = df.withColumn("Year", year(col("OrderDate"))).withColumn("Month", month(col("OrderDate")))
-    
-    # Create the new FirstName and LastName fields
-    transformed_df = transformed_df.withColumn("FirstName", split(col("CustomerName"), " ").getItem(0)).withColumn("LastName", split(col("CustomerName"), " ").getItem(1))
-    
-    # Filter and reorder columns
-    transformed_df = transformed_df["SalesOrderNumber", "SalesOrderLineNumber", "OrderDate", "Year", "Month", "FirstName", "LastName", "Email", "Item", "Quantity", "UnitPrice", "Tax"]
-    
-    # Display the first five orders
-    display(transformed_df.limit(5))
-    ```
-> ![](./media/image44.png)
+## Create Year and Month columns
+transformed_df = df.withColumn("Year", year(col("OrderDate"))).withColumn("Month", month(col("OrderDate")))
+
+# Create the new FirstName and LastName fields
+transformed_df = transformed_df.withColumn("FirstName", split(col("CustomerName"), " ").getItem(0)).withColumn("LastName", split(col("CustomerName"), " ").getItem(1))
+
+# Filter and reorder columns
+transformed_df = transformed_df["SalesOrderNumber", "SalesOrderLineNumber", "OrderDate", "Year", "Month", "FirstName", "LastName", "Email", "Item", "Quantity", "UnitPrice", "Tax"]
+
+# Display the first five orders
+display(transformed_df.limit(5))
+```
+ ![](./media/image44.png)
 
 2.  **Ejecute** el código para crear un nuevo dataframe a partir de los
     datos originales de pedidos con las siguientes transformaciones:
@@ -661,14 +658,13 @@ sea necesaria.
 4.  Haga clic en **+ Code** e ingrese el siguiente código para cargar un
     nuevo dataframe desde los archivos Parquet ubicados en la carpeta
     **transformed_data -\> orders**:
-
-> **CodeCopy**
-    ```
-    orders_df = spark.read.format("parquet").load("Files/transformed_data/orders")
-    display(orders_df)
-    ```
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image51.png)
+**CodeCopy**
+```
+orders_df = spark.read.format("parquet").load("Files/transformed_data/orders")
+display(orders_df)
+```
+ ![A screenshot of a computer AI-generated content may be
+ incorrect.](./media/image51.png)
 
 5.  **Ejecute** la celda y verifique que los resultados muestren los
     datos de pedidos que se han cargado desde los archivos Parquet.
@@ -682,15 +678,14 @@ sea necesaria.
     siguiente código, que guarda el dataframe particionando los datos
     por **Year** y **Month.** **Ejecute** la celda y espere el mensaje
     que confirme que los datos se han guardado:
+CodeCopy
+```
+orders_df.write.partitionBy("Year","Month").mode("overwrite").parquet("Files/partitioned_data")
+print ("Transformed data saved!")
+```
+![A screenshot of a computer AI-generated content may be
+ incorrect.](./media/image53.png)
 
-> CodeCopy
-    ```
-    orders_df.write.partitionBy("Year","Month").mode("overwrite").parquet("Files/partitioned_data")
-    print ("Transformed data saved!")
-    ```
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image53.png)
->
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image54.png)
 
@@ -722,11 +717,11 @@ generated](./media/image57.png)
     siguiente código para cargar un nuevo dataframe desde el archivo
     **orders.parquet**:
 
-> CodeCopy
-    ```
-    orders_2021_df = spark.read.format("parquet").load("Files/partitioned_data/Year=2021/Month=*")
-    display(orders_2021_df)
-    ```
+
+```
+orders_2021_df = spark.read.format("parquet").load("Files/partitioned_data/Year=2021/Month=*")
+display(orders_2021_df)
+```
 
 5.  **Ejecute** la celda y verifique que los resultados muestren los
     datos de pedidos correspondientes a las ventas de 2021.
@@ -833,9 +828,9 @@ datos se almacenan en una ubicación externa.
 
 CodeCopy
 
-    ```
-    df.write.format("delta").saveAsTable("external_salesorder", path="<abfs_path>/external_salesorder")
-    ```
+```
+df.write.format("delta").saveAsTable("external_salesorder", path="<abfs_path>/external_salesorder")
+```
 
 ![A screenshot of a computer Description automatically
 generated](./media/image64.png)
@@ -1042,15 +1037,15 @@ incorrect.](./media/image78.png)
     **Ejecútelo** y observe que devuelve un Spark dataframe que contiene
     los ingresos anuales.
 
-    ```
-    sqlQuery = "SELECT CAST(YEAR(OrderDate) AS CHAR(4)) AS OrderYear, \
-                    SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue \
-                FROM salesorders \
-                GROUP BY CAST(YEAR(OrderDate) AS CHAR(4)) \
-                ORDER BY OrderYear"
-    df_spark = spark.sql(sqlQuery)
-    df_spark.show()
-    ```
+```
+sqlQuery = "SELECT CAST(YEAR(OrderDate) AS CHAR(4)) AS OrderYear, \
+                SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue \
+            FROM salesorders \
+            GROUP BY CAST(YEAR(OrderDate) AS CHAR(4)) \
+            ORDER BY OrderYear"
+df_spark = spark.sql(sqlQuery)
+df_spark.show()
+```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image80.png)
 
@@ -1063,18 +1058,18 @@ incorrect.](./media/image78.png)
 
 **CodeCopy**
 
-    ```
-    from matplotlib import pyplot as plt
-    
-    # matplotlib requires a Pandas dataframe, not a Spark one
-    df_sales = df_spark.toPandas()
-    
-    # Create a bar plot of revenue by year
-    plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'])
-    
-    # Display the plot
-    plt.show()
-    ```
+```
+from matplotlib import pyplot as plt
+
+# matplotlib requires a Pandas dataframe, not a Spark one
+df_sales = df_spark.toPandas()
+
+# Create a bar plot of revenue by year
+plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'])
+
+# Display the plot
+plt.show()
+```
 
 ![A screenshot of a computer Description automatically
 generated](./media/image81.png)
@@ -1221,16 +1216,16 @@ capacidades. Una de estas bibliotecas es **seaborn**.
 
 **CodeCopy**
 
-    ```
-    import seaborn as sns
-    
-    # Clear the plot area
-    plt.clf()
-    
-    # Create a bar chart
-    ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
-    plt.show()
-    ```
+```
+import seaborn as sns
+
+# Clear the plot area
+plt.clf()
+
+# Create a bar chart
+ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+plt.show()
+```
 2.  **Ejecute** el código y observe que se muestra un gráfico de barras
     generado con la biblioteca seaborn.
 
@@ -1293,35 +1288,35 @@ Cosas (IoT).
 
 CodeCopy
 
-    ```
-    from notebookutils import mssparkutils
-    from pyspark.sql.types import *
-    from pyspark.sql.functions import *
-    
-    # Create a folder
-    inputPath = 'Files/data/'
-    mssparkutils.fs.mkdirs(inputPath)
-    
-    # Create a stream that reads data from the folder, using a JSON schema
-    jsonSchema = StructType([
-    StructField("device", StringType(), False),
-    StructField("status", StringType(), False)
-    ])
-    iotstream = spark.readStream.schema(jsonSchema).option("maxFilesPerTrigger", 1).json(inputPath)
-    
-    # Write some event data to the folder
-    device_data = '''{"device":"Dev1","status":"ok"}
-    {"device":"Dev1","status":"ok"}
-    {"device":"Dev1","status":"ok"}
-    {"device":"Dev2","status":"error"}
-    {"device":"Dev1","status":"ok"}
-    {"device":"Dev1","status":"error"}
-    {"device":"Dev2","status":"ok"}
-    {"device":"Dev2","status":"error"}
-    {"device":"Dev1","status":"ok"}'''
-    mssparkutils.fs.put(inputPath + "data.txt", device_data, True)
-    print("Source stream created...")
-    ```
+```
+from notebookutils import mssparkutils
+from pyspark.sql.types import *
+from pyspark.sql.functions import *
+
+# Create a folder
+inputPath = 'Files/data/'
+mssparkutils.fs.mkdirs(inputPath)
+
+# Create a stream that reads data from the folder, using a JSON schema
+jsonSchema = StructType([
+StructField("device", StringType(), False),
+StructField("status", StringType(), False)
+])
+iotstream = spark.readStream.schema(jsonSchema).option("maxFilesPerTrigger", 1).json(inputPath)
+
+# Write some event data to the folder
+device_data = '''{"device":"Dev1","status":"ok"}
+{"device":"Dev1","status":"ok"}
+{"device":"Dev1","status":"ok"}
+{"device":"Dev2","status":"error"}
+{"device":"Dev1","status":"ok"}
+{"device":"Dev1","status":"error"}
+{"device":"Dev2","status":"ok"}
+{"device":"Dev2","status":"error"}
+{"device":"Dev1","status":"ok"}'''
+mssparkutils.fs.put(inputPath + "data.txt", device_data, True)
+print("Source stream created...")
+```
 > ![A screenshot of a computer program AI-generated content may be
 > incorrect.](./media/image92.png)
 >
@@ -1339,14 +1334,14 @@ CodeCopy
 
 **CodeCopy**
 
-    ```
-    # Write the stream to a delta table
-    delta_stream_table_path = 'Tables/iotdevicedata'
-    checkpointpath = 'Files/delta/checkpoint'
-    deltastream = iotstream.writeStream.format("delta").option("checkpointLocation", checkpointpath).start(delta_stream_table_path)
-    print("Streaming to delta sink...")
-    ```
-> ![](./media/image94.png)
+```
+# Write the stream to a delta table
+delta_stream_table_path = 'Tables/iotdevicedata'
+checkpointpath = 'Files/delta/checkpoint'
+deltastream = iotstream.writeStream.format("delta").option("checkpointLocation", checkpointpath).start(delta_stream_table_path)
+print("Streaming to delta sink...")
+```
+![](./media/image94.png)
 
 4.  Este código escribe los datos de dispositivos en streaming en
     formato Delta dentro de una carpeta llamada **iotdevicedata**. Como
@@ -1743,3 +1738,4 @@ su flujo de trabajo y aumentando la productividad en escenarios reales.
 Las instrucciones de eliminación de recursos aseguran que no queden
 elementos innecesarios, promoviendo una gestión organizada y eficiente
 del espacio de trabajo.
+
