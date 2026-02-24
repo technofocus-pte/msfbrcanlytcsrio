@@ -588,18 +588,18 @@ Spark permanece activa.
 **Nota:** Si no puede ver el resultado, haga clic en las líneas
 horizontales del lado izquierdo de **Spark jobs.**
 
-    ```
-    from pyspark.sql.functions import col, year, month, quarter
+```
+from pyspark.sql.functions import col, year, month, quarter
     
-    table_name = 'fact_sale'
+table_name = 'fact_sale'
     
-    df = spark.read.format("parquet").load('Files/fact_sale_1y_full')
-    df = df.withColumn('Year', year(col("InvoiceDateKey")))
-    df = df.withColumn('Quarter', quarter(col("InvoiceDateKey")))
-    df = df.withColumn('Month', month(col("InvoiceDateKey")))
+df = spark.read.format("parquet").load('Files/fact_sale_1y_full')
+df = df.withColumn('Year', year(col("InvoiceDateKey")))
+df = df.withColumn('Quarter', quarter(col("InvoiceDateKey")))
+df = df.withColumn('Month', month(col("InvoiceDateKey")))
     
-    df.write.mode("overwrite").format("delta").partitionBy("Year","Quarter").save("Tables/" + table_name)
-    ```
+df.write.mode("overwrite").format("delta").partitionBy("Year","Quarter").save("Tables/" + table_name)
+```
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image70.png)
@@ -706,23 +706,23 @@ En esta celda, se unen las tablas usando los dataframes creados
 anteriormente, se realiza un **group by**, se renombran algunas columnas
 y finalmente se escribe como tabla Delta en **Tables**:
 
-    ```
-    sale_by_date_city = df_fact_sale.alias("sale") \
-    .join(df_dimension_date.alias("date"), df_fact_sale.InvoiceDateKey == df_dimension_date.Date, "inner") \
-    .join(df_dimension_city.alias("city"), df_fact_sale.CityKey == df_dimension_city.CityKey, "inner") \
-    .select("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", 
-     "city.SalesTerritory", "sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")\
-    .groupBy("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", 
-     "city.SalesTerritory")\
-    .sum("sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")\
-    .withColumnRenamed("sum(TotalExcludingTax)", "SumOfTotalExcludingTax")\
-    .withColumnRenamed("sum(TaxAmount)", "SumOfTaxAmount")\
-    .withColumnRenamed("sum(TotalIncludingTax)", "SumOfTotalIncludingTax")\
-    .withColumnRenamed("sum(Profit)", "SumOfProfit")\
-    .orderBy("date.Date", "city.StateProvince", "city.City")
-    
-    sale_by_date_city.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_city")
-    ```
+```
+sale_by_date_city = df_fact_sale.alias("sale") \
+.join(df_dimension_date.alias("date"), df_fact_sale.InvoiceDateKey == df_dimension_date.Date, "inner") \
+.join(df_dimension_city.alias("city"), df_fact_sale.CityKey == df_dimension_city.CityKey, "inner") \
+.select("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", 
+ "city.SalesTerritory", "sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")\
+.groupBy("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", 
+ "city.SalesTerritory")\
+.sum("sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")\
+.withColumnRenamed("sum(TotalExcludingTax)", "SumOfTotalExcludingTax")\
+.withColumnRenamed("sum(TaxAmount)", "SumOfTaxAmount")\
+.withColumnRenamed("sum(TotalIncludingTax)", "SumOfTotalIncludingTax")\
+.withColumnRenamed("sum(Profit)", "SumOfProfit")\
+.orderBy("date.Date", "city.StateProvince", "city.City")
+
+sale_by_date_city.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_city")
+```
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image78.png)
 
@@ -742,24 +742,24 @@ vista temporal de Spark y se escribe como una tabla Delta en la sección
 En esta celda, se crea una vista temporal de Spark uniendo tres tablas,
 se realiza un **group by** y se renombran algunas columnas:
 
-    ```
-    %%sql
-    CREATE OR REPLACE TEMPORARY VIEW sale_by_date_employee
-    AS
-    SELECT
-           DD.Date, DD.CalendarMonthLabel
-     , DD.Day, DD.ShortMonth Month, CalendarYear Year
-          ,DE.PreferredName, DE.Employee
-          ,SUM(FS.TotalExcludingTax) SumOfTotalExcludingTax
-          ,SUM(FS.TaxAmount) SumOfTaxAmount
-          ,SUM(FS.TotalIncludingTax) SumOfTotalIncludingTax
-          ,SUM(Profit) SumOfProfit 
-    FROM wwilakehouse.fact_sale FS
-    INNER JOIN wwilakehouse.dimension_date DD ON FS.InvoiceDateKey = DD.Date
-    INNER JOIN wwilakehouse.dimension_Employee DE ON FS.SalespersonKey = DE.EmployeeKey
-    GROUP BY DD.Date, DD.CalendarMonthLabel, DD.Day, DD.ShortMonth, DD.CalendarYear, DE.PreferredName, DE.Employee
-    ORDER BY DD.Date ASC, DE.PreferredName ASC, DE.Employee ASC
-    ```
+```
+%%sql
+CREATE OR REPLACE TEMPORARY VIEW sale_by_date_employee
+AS
+SELECT
+       DD.Date, DD.CalendarMonthLabel
+ , DD.Day, DD.ShortMonth Month, CalendarYear Year
+      ,DE.PreferredName, DE.Employee
+      ,SUM(FS.TotalExcludingTax) SumOfTotalExcludingTax
+      ,SUM(FS.TaxAmount) SumOfTaxAmount
+      ,SUM(FS.TotalIncludingTax) SumOfTotalIncludingTax
+      ,SUM(Profit) SumOfProfit 
+FROM wwilakehouse.fact_sale FS
+INNER JOIN wwilakehouse.dimension_date DD ON FS.InvoiceDateKey = DD.Date
+INNER JOIN wwilakehouse.dimension_Employee DE ON FS.SalespersonKey = DE.EmployeeKey
+GROUP BY DD.Date, DD.CalendarMonthLabel, DD.Day, DD.ShortMonth, DD.CalendarYear, DE.PreferredName, DE.Employee
+ORDER BY DD.Date ASC, DE.PreferredName ASC, DE.Employee ASC
+```
 
  ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image79.png)
@@ -771,11 +771,10 @@ incorrect.](./media/image79.png)
 En esta celda, se lee desde la vista temporal de Spark creada en la
 celda anterior y, finalmente, se escribe como una tabla Delta en la
 sección **Tables** del lakehouse.
-
-    ```
-    sale_by_date_employee = spark.sql("SELECT * FROM sale_by_date_employee")
-    sale_by_date_employee.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_employee")
-    ```
+```
+sale_by_date_employee = spark.sql("SELECT * FROM sale_by_date_employee")
+sale_by_date_employee.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_employee")
+```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image80.png)
@@ -1124,4 +1123,5 @@ Power BI, con el fin de realizar un análisis de datos eficiente.
 El objetivo principal es ofrecer una experiencia práctica que permita
 comprender cómo utilizar Microsoft Fabric y Power BI para la gestión
 integral de datos y la generación de informes empresariales.
+
 
