@@ -72,7 +72,7 @@ que tenga habilitada la versión de prueba de Fabric.
 
 	|   |   |
 	|----|----|
-	|Name	| Data-FactoryXXXX (XXXX can be a unique number) |
+	|Name	| +++Data-FactoryXXXX+++ (XXXX can be a unique number) |
 	|Advanced|	Under License mode, select Fabric capacity|
 	|Default storage format|	Small semantic model storage format|
 
@@ -174,7 +174,7 @@ incorrect.](./media/image23.png)
 > generated](./media/image24.png)
 
 5.  En la pestaña **Choose data source**, en el cuadro de búsqueda
-    escriba +++ **Lakehouse** +++ y haga clic en el conector
+    escriba **+++Lakehouse+++** y haga clic en el conector
     **Lakehouse**.
 
 > ![A screenshot of a computer Description automatically
@@ -427,7 +427,7 @@ Deseleccione todas las columnas excepto **Discount** y luego seleccione
     type**, y proporcione la siguiente expresión M para la fórmula de la
     **columna personalizada**:
 
-> +++if [total_amount] > 0 then [total_amount] * ( 1 -[Discount] ) else [total_amount]+++
+ +++if [total_amount] > 0 then [total_amount] * ( 1 -[Discount] ) else [total_amount]+++
 
 Luego, seleccione **OK**.
 
@@ -775,3 +775,4 @@ generated](./media/image110.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image111.png)
+
