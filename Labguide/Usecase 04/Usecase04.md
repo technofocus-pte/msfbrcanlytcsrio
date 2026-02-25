@@ -72,6 +72,10 @@ Dataflows（Gen2）的不同元素，而非創建企業中可能存在的複雜�
 
 2.  在 **Microsoft Fabric** 窗口中，輸入你的憑證，然後點擊 **Submit**
     按鈕。
+    |   |   |
+    |---|---|
+    | Username | +++@lab.CloudPortalCredential(User1).Username+++ |
+    | Password | +++@lab.CloudPortalCredential(User1).Password+++ |
 
 > ![](./media/image2.png)
 
@@ -93,7 +97,12 @@ Dataflows（Gen2）的不同元素，而非創建企業中可能存在的複雜�
 6.  在“**Create a
     workspace”標簽**中，輸入以下信息，點擊“**Apply**”按鈕。
 
-[TABLE]
+    |  |  |
+    |-----|----|
+    |Name|	+++dp_Fabric@lab.LabInstance.Id+++ (must be a unique Id)| 
+    |Description|	This workspace contains Analyze data with Apache Spark|
+    |Advanced|	Under License mode, select Fabric capacity|
+    |Default storage format	|Small dataset storage format|
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image6.png)
@@ -199,11 +208,11 @@ generated](./media/image23.png)
 
 5.  使用**🖉**（Edit）按鈕將單元格切換到編輯模式，替換所有文本，然後按以下方式修改標記:
 
-> CodeCopy
->
-> \# Sales order data exploration
->
-> Use the code in this notebook to explore sales order data.
+    ```
+    # Sales order data exploration
+    
+    Use the code in this notebook to explore sales order data.
+    ```
 
 ![](./media/image24.png)
 
@@ -234,16 +243,11 @@ generated](./media/image26.png)
     **Load data**，然後選擇
     **Spark**。筆記本中將添加一個包含以下代碼的新代碼單元格:
 
-> CodeCopy
->
-> df =
-> spark.read.format("csv").option("header","true").load("Files/orders/2019.csv")
->
-> \# df now is a Spark DataFrame containing CSV data from
-> "Files/orders/2019.csv".
->
-> display(df)
->
+    ```
+    df = spark.read.format("csv").option("header","true").load("Files/orders/2019.csv")
+    # df now is a Spark DataFrame containing CSV data from "Files/orders/2019.csv".
+    display(df)
+    ```
 > ![A screenshot of a computer Description automatically
 > generated](./media/image28.png)
 >
@@ -273,15 +277,11 @@ incorrect.](./media/image31.png)
     **false**。將該**單元格**中的所有代碼替換為以下代碼，點擊 **▷ Run
     cell** 按鈕，查看輸出結果 
 
-> CodeCopy
->
-> df =
-> spark.read.format("csv").option("header","false").load("Files/orders/2019.csv")
->
-> \# df now is a Spark DataFrame containing CSV data from
-> "Files/orders/2019.csv".
->
-> display(df)
+    ```
+    df = spark.read.format("csv").option("header","false").load("Files/orders/2019.csv")
+    # df now is a Spark DataFrame containing CSV data from "Files/orders/2019.csv".
+    display(df)
+    ```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image32.png)
@@ -291,37 +291,26 @@ incorrect.](./media/image32.png)
 8.  將該**單元格**中的所有代碼 替換為以下代碼，點擊 **▷ Run cell**
     按鈕，查看輸出結果
 
-> from pyspark.sql.types import \*
->
-> orderSchema = StructType(\[
->
-> StructField("SalesOrderNumber", StringType()),
->
-> StructField("SalesOrderLineNumber", IntegerType()),
->
-> StructField("OrderDate", DateType()),
->
-> StructField("CustomerName", StringType()),
->
-> StructField("Email", StringType()),
->
-> StructField("Item", StringType()),
->
-> StructField("Quantity", IntegerType()),
->
-> StructField("UnitPrice", FloatType()),
->
-> StructField("Tax", FloatType())
->
-> \])
->
-> df =
-> spark.read.format("csv").schema(orderSchema).load("Files/orders/2019.csv")
->
-> display(df)
->
-> ![](./media/image33.png)
->
+    ```
+    from pyspark.sql.types import *
+    
+    orderSchema = StructType([
+        StructField("SalesOrderNumber", StringType()),
+        StructField("SalesOrderLineNumber", IntegerType()),
+        StructField("OrderDate", DateType()),
+        StructField("CustomerName", StringType()),
+        StructField("Email", StringType()),
+        StructField("Item", StringType()),
+        StructField("Quantity", IntegerType()),
+        StructField("UnitPrice", FloatType()),
+        StructField("Tax", FloatType())
+        ])
+    
+    df = spark.read.format("csv").schema(orderSchema).load("Files/orders/2019.csv")
+    display(df)
+    ```
+ ![](./media/image33.png)
+ 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image34.png)
 
@@ -335,11 +324,10 @@ incorrect.](./media/image32.png)
     Code** 圖標，向筆記本添加一個新的代碼單元格，並輸入以下代碼。點擊
     **▷ Run cell** 按鈕，查看輸出結果
 
-> CodeCopy
->
-> display(df)
->
-> ![](./media/image35.png)
+    ```
+    display(df)
+    ```
+ ![](./media/image35.png)
 
 12. 數據幀僅包含**2019.csv**文件中的數據
     。修改代碼，使文件路徑使用\*通配符讀取**訂單**文件夾中所有文件的銷售訂單數據
@@ -349,36 +337,25 @@ incorrect.](./media/image32.png)
 
 CodeCopy
 
-> from pyspark.sql.types import \*
->
-> orderSchema = StructType(\[
->
->     StructField("SalesOrderNumber", StringType()),
->
->     StructField("SalesOrderLineNumber", IntegerType()),
->
->     StructField("OrderDate", DateType()),
->
->     StructField("CustomerName", StringType()),
->
->     StructField("Email", StringType()),
->
->     StructField("Item", StringType()),
->
->     StructField("Quantity", IntegerType()),
->
->     StructField("UnitPrice", FloatType()),
->
->     StructField("Tax", FloatType())
->
->     \])
->
-> df =
-> spark.read.format("csv").schema(orderSchema).load("Files/orders/\*.csv")
->
-> display(df)
->
-> ![](./media/image36.png)
+```
+from pyspark.sql.types import *
+
+orderSchema = StructType([
+    StructField("SalesOrderNumber", StringType()),
+    StructField("SalesOrderLineNumber", IntegerType()),
+    StructField("OrderDate", DateType()),
+    StructField("CustomerName", StringType()),
+    StructField("Email", StringType()),
+    StructField("Item", StringType()),
+    StructField("Quantity", IntegerType()),
+    StructField("UnitPrice", FloatType()),
+    StructField("Tax", FloatType())
+    ])
+
+df = spark.read.format("csv").schema(orderSchema).load("Files/orders/2019.csv")
+display(df)
+```
+![](./media/image36.png)
 
 14. 運行修改後的代碼單元格，查看輸出，現在應該包括2019、2020和2021年的銷售額。
 
@@ -396,15 +373,13 @@ CodeCopy
 1.  使用單元格輸出下方的 **+ Code**
     圖標，向筆記本添加一個新的代碼單元格，並輸入以下代碼。
 
-> customers = df\['CustomerName', 'Email'\]
->
-> print(customers.count())
->
-> print(customers.distinct().count())
->
-> display(customers.distinct())
->
-> ![](./media/image38.png)
+    ```
+    customers = df['CustomerName', 'Email']
+    print(customers.count())
+    print(customers.distinct().count())
+    display(customers.distinct())
+    ```
+  ![](./media/image38.png)
 
 2.  **運行** 新的代碼單元，查看結果。請注意以下細節:
 
@@ -423,16 +398,12 @@ CodeCopy
 3.  修改代碼，將該**單元格**中的所有代碼替換為以下代碼，然後點擊 **▷ Run
     cell** 按鈕，如下所示:
 
-> CodeCopy
->
-> customers = df.select("CustomerName",
-> "Email").where(df\['Item'\]=='Road-250 Red, 52')
->
-> print(customers.count())
->
-> print(customers.distinct().count())
->
-> display(customers.distinct())
+    ```
+    customers = df.select("CustomerName", "Email").where(df['Item']=='Road-250 Red, 52')
+    print(customers.count())
+    print(customers.distinct().count())
+    display(customers.distinct())
+    ```
 
 4.  **運行**修改後的代碼以查看購買 ***Road-250 Red 52*** 產品的客戶。
     注意，你可以“**chain**”多個函數，使一個函數的輸出成為下一個函數的輸入——在這種情況下，**select**方法創建的數據幀是用於應用過濾條件的**where**方法的源數據幀。
@@ -445,13 +416,11 @@ CodeCopy
 1.  點擊 **+** **Code** ，複製粘貼下面的代碼，然後點擊 **“Run cell”**
     按鈕。
 
-> **CodeCopy:**
->
-> productSales = df.select("Item", "Quantity").groupBy("Item").sum()
->
-> display(productSales)
->
-> ![](./media/image41.png)
+```
+productSales = df.select("Item", "Quantity").groupBy("Item").sum()
+display(productSales)
+```
+ ![](./media/image41.png)
 
 2.  請注意，結果顯示了按產品分組的訂單數量之和。**groupBy**
     方法按項目*對行進行分組*，隨後對剩餘所有數值列（此處為數量）應用和匯總函數
@@ -462,16 +431,13 @@ CodeCopy
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image42.png)
 
-> **CodeCopy**
->
-> from pyspark.sql.functions import \*
->
-> yearlySales =
-> df.select(year("OrderDate").alias("Year")).groupBy("Year").count().orderBy("Year")
->
-> display(yearlySales)
->
-> ![](./media/image43.png)
+```
+from pyspark.sql.functions import *
+
+yearlySales = df.select(year("OrderDate").alias("Year")).groupBy("Year").count().orderBy("Year")
+display(yearlySales)
+```
+![](./media/image43.png)
 
 4.  請注意，結果顯示的是每年銷售訂單數量。注意，**select**方法包含一個SQL
     **年**函數，用於提取*OrderDate*字段中的年份成分（這也是代碼中包含
@@ -489,30 +455,22 @@ incorrect.](./media/image42.png)
 
 **CodeCopy**
 
-> from pyspark.sql.functions import \*
->
-> \## Create Year and Month columns
->
-> transformed_df = df.withColumn("Year",
-> year(col("OrderDate"))).withColumn("Month", month(col("OrderDate")))
->
-> \# Create the new FirstName and LastName fields
->
-> transformed_df = transformed_df.withColumn("FirstName",
-> split(col("CustomerName"), " ").getItem(0)).withColumn("LastName",
-> split(col("CustomerName"), " ").getItem(1))
->
-> \# Filter and reorder columns
->
-> transformed_df = transformed_df\["SalesOrderNumber",
-> "SalesOrderLineNumber", "OrderDate", "Year", "Month", "FirstName",
-> "LastName", "Email", "Item", "Quantity", "UnitPrice", "Tax"\]
->
-> \# Display the first five orders
->
-> display(transformed_df.limit(5))
->
-> ![](./media/image44.png)
+```
+from pyspark.sql.functions import *
+
+## Create Year and Month columns
+transformed_df = df.withColumn("Year", year(col("OrderDate"))).withColumn("Month", month(col("OrderDate")))
+
+# Create the new FirstName and LastName fields
+transformed_df = transformed_df.withColumn("FirstName", split(col("CustomerName"), " ").getItem(0)).withColumn("LastName", split(col("CustomerName"), " ").getItem(1))
+
+# Filter and reorder columns
+transformed_df = transformed_df["SalesOrderNumber", "SalesOrderLineNumber", "OrderDate", "Year", "Month", "FirstName", "LastName", "Email", "Item", "Quantity", "UnitPrice", "Tax"]
+
+# Display the first five orders
+display(transformed_df.limit(5))
+```
+ ![](./media/image44.png)
 
 2.  **運行** 代碼，從原始順序數據中創建新的數據幀，並進行以下變換:
 
@@ -542,12 +500,10 @@ Dataframe 對象的方法。
     Parquet
     格式（如果數據已存在，則覆蓋現有數據）。**運行**該單元格並等待數據保存成功的提示信息。
 
-> CodeCopy
->
-> transformed_df.write.mode("overwrite").parquet('Files/transformed_data/orders')
->
-> print ("Transformed data saved!")
->
+    ```
+    transformed_df.write.mode("overwrite").parquet('Files/transformed_data/orders')
+    print ("Transformed data saved!")
+    ```
 > **注意**：通常，*Parquet*格式更適合用於進一步分析或導入分析存儲的數據文件。Parquet是一種非常高效的格式，大多數大型數據分析系統都支持它。事實上，有時你的數據轉換需求可能只是將其他格式（如CSV）的數據轉換成Parquet！
 >
 > ![](./media/image47.png)
@@ -571,13 +527,10 @@ Dataframe 對象的方法。
 4.  點擊 **+ Code** 跟隨代碼，從 **transformed_data -\> orders**
     文件夾中的 parquet 文件加載新數據幀 :
 
-> **CodeCopy**
->
-> orders_df =
-> spark.read.format("parquet").load("Files/transformed_data/orders")
->
-> display(orders_df)
->
+```
+orders_df = spark.read.format("parquet").load("Files/transformed_data/orders")
+display(orders_df)
+```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image51.png)
 
@@ -592,12 +545,10 @@ Dataframe 對象的方法。
     Code**;它保存數據幀，按**年份**和**月份劃分**數據。
     **運行**小區並等待數據已保存的消息
 
-> CodeCopy
->
-> orders_df.write.partitionBy("Year","Month").mode("overwrite").parquet("Files/partitioned_data")
->
-> print ("Transformed data saved!")
->
+```
+orders_df.write.partitionBy("Year","Month").mode("overwrite").parquet("Files/partitioned_data")
+print ("Transformed data saved!")
+```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image53.png)
 >
@@ -623,12 +574,10 @@ generated](./media/image57.png)
 4.  添加一個新單元格，點擊以下代碼的 **+Code，**從 **orders.parquet**
     文件加載新數據幀 :
 
-> CodeCopy
->
-> orders_2021_df =
-> spark.read.format("parquet").load("Files/partitioned_data/Year=2021/Month=\*")
->
-> display(orders_2021_df)
+```
+orders_2021_df = spark.read.format("parquet").load("Files/partitioned_data/Year=2021/Month=*")
+display(orders_2021_df)
+```
 
 5.  **運行**
     單元格，確認結果顯示的是2021年的訂單數據。注意路徑中指定的分區列（**年份**和**月份**）未包含在數據幀中。
@@ -653,15 +602,13 @@ Spark
     Code“**單元格，輸入以下代碼，該代碼會將銷售訂單數據的數據框保存為名為
     **salesorders** 的表格:
 
-> CodeCopy
->
-> \# Create a new table
->
-> df.write.format("delta").saveAsTable("salesorders")
->
-> \# Get the table description
->
-> spark.sql("DESCRIBE EXTENDED salesorders").show(truncate=False)
+    ```
+    # Create a new table
+    df.write.format("delta").saveAsTable("salesorders")
+    
+    # Get the table description
+    spark.sql("DESCRIBE EXTENDED salesorders").show(truncate=False)
+    ```
 
 **注意**：關於這個例子，值得注意幾點。首先，沒有提供顯式路徑，因此表的文件將由元存儲管理。其次，表格以
 **delta** 格式保存。你可以基於多種文件格式創建表（包括
@@ -695,12 +642,10 @@ generated](./media/image60.png)
 6.  點擊 **▷ Run cell** 按鈕，該按鈕使用Spark SQL庫將針對
     **salesorder** 表的SQL查詢嵌入到PySpark代碼中，並將查詢結果加載到數據幀中。
 
-> CodeCopy
->
-> df = spark.sql("SELECT \* FROM Fabric_lakehouse.dbo.salesorders LIMIT
-> 1000")
->
-> display(df)
+    ```
+    df = spark.sql("SELECT * FROM [your_lakehouse].salesorders LIMIT 1000")
+    display(df)
+    ```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image63.png)
@@ -715,8 +660,9 @@ incorrect.](./media/image63.png)
 
 CodeCopy
 
-> df.write.format("delta").saveAsTable("external_salesorder",
-> path="\<abfs_path\>/external_salesorder")
+```
+df.write.format("delta").saveAsTable("external_salesorder", path="<abfs_path>/external_salesorder")
+```
 
 ![A screenshot of a computer Description automatically
 generated](./media/image64.png)
@@ -774,13 +720,12 @@ incorrect.](./media/image69.png)
     按鈕添加新的代碼單元。將下面的代碼複製到代碼單元格，並使用單元格左側的
     **▷ (Run cell)** 按鈕來運行它。
 
-> SqlCopy
->
-> %%sql
->
-> DESCRIBE FORMATTED salesorders;
->
-> ![](./media/image71.png)
+    ```
+    %%sql
+    
+    DESCRIBE FORMATTED salesorders;
+    ```
+  ![](./media/image71.png)
 
 2.  在結果中，查看表的 **Location** 屬性，該屬性應該是指向 Lakehouse 的
     OneLake 存儲的路徑，以
@@ -797,11 +742,11 @@ incorrect.](./media/image72.png)
     Code** ”按鈕添加一個新的代碼單元格。複製下面的代碼，然後使用單元格左側的
     **▷ (*Run cell*)** 按鈕運行它。
 
-> SqlCopy
->
-> %%sql
->
-> DESCRIBE FORMATTED external_salesorder;
+    ```
+    %%sql
+    
+    DESCRIBE FORMATTED external_salesorder;
+    ```
 
 5.  在結果中，查看表的 **Location** 屬性，它應該是指向 Lakehouse 的
     **OneLake** 存儲的路徑，以 **/Files/external_saleorder**
@@ -824,19 +769,14 @@ incorrect.](./media/image73.png)
 
     - SQL查詢的輸出會自動顯示為單元格下的結果
 
-> SqlCopy
->
-> %%sql
->
-> SELECT YEAR(OrderDate) AS OrderYear,
->
-> SUM((UnitPrice \* Quantity) + Tax) AS GrossRevenue
->
-> FROM salesorders
->
-> GROUP BY YEAR(OrderDate)
->
-> ORDER BY OrderYear;
+      ```
+      %%sql
+      SELECT YEAR(OrderDate) AS OrderYear,
+             SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue
+      FROM salesorders
+      GROUP BY YEAR(OrderDate)
+      ORDER BY OrderYear;
+      ```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image74.png)
@@ -857,11 +797,10 @@ incorrect.](./media/image74.png)
     cell** ”按鈕，觀察它是否返回了您之前創建的 **salesorders**
     視圖中的數據。
 
-> SqlCopy
->
-> %%sql
->
-> SELECT \* FROM salesorders
+    ```
+    %%sql
+    SELECT * FROM salesorders
+    ```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image75.png)
@@ -902,22 +841,15 @@ incorrect.](./media/image78.png)
 1.  點擊 **+ Code**，複製粘貼下面的代碼。 **運行**
     代碼，觀察它返回一個包含年度收入的 Spark 數據幀。
 
-> CodeCopy
->
-> sqlQuery = "SELECT CAST(YEAR(OrderDate) AS CHAR(4)) AS OrderYear, \\
->
-> SUM((UnitPrice \* Quantity) + Tax) AS GrossRevenue \\
->
-> FROM salesorders \\
->
-> GROUP BY CAST(YEAR(OrderDate) AS CHAR(4)) \\
->
-> ORDER BY OrderYear"
->
-> df_spark = spark.sql(sqlQuery)
->
-> df_spark.show()
->
+```
+sqlQuery = "SELECT CAST(YEAR(OrderDate) AS CHAR(4)) AS OrderYear, \
+                SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue \
+            FROM salesorders \
+            GROUP BY CAST(YEAR(OrderDate) AS CHAR(4)) \
+            ORDER BY OrderYear"
+df_spark = spark.sql(sqlQuery)
+df_spark.show()
+```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image80.png)
 
@@ -928,20 +860,18 @@ incorrect.](./media/image78.png)
 
 **CodeCopy**
 
-> from matplotlib import pyplot as plt
->
-> \# matplotlib requires a Pandas dataframe, not a Spark one
->
-> df_sales = df_spark.toPandas()
->
-> \# Create a bar plot of revenue by year
->
-> plt.bar(x=df_sales\['OrderYear'\], height=df_sales\['GrossRevenue'\])
->
-> \# Display the plot
->
-> plt.show()
+```
+from matplotlib import pyplot as plt
 
+# matplotlib requires a Pandas dataframe, not a Spark one
+df_sales = df_spark.toPandas()
+
+# Create a bar plot of revenue by year
+plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'])
+
+# Display the plot
+plt.show()
+```
 ![A screenshot of a computer Description automatically
 generated](./media/image81.png)
 
@@ -962,36 +892,25 @@ generated](./media/image81.png)
 6.  修改代碼，將圖表繪製如下圖，將該**單元格**中的所有代碼替換為以下代碼，點擊**▷
     Run cell** 格按鈕，查看輸出結果
 
-> CodeCopy
->
-> from matplotlib import pyplot as plt
->
-> \# Clear the plot area
->
-> plt.clf()
->
-> \# Create a bar plot of revenue by year
->
-> plt.bar(x=df_sales\['OrderYear'\], height=df_sales\['GrossRevenue'\],
-> color='orange')
->
-> \# Customize the chart
->
-> plt.title('Revenue by Year')
->
-> plt.xlabel('Year')
->
-> plt.ylabel('Revenue')
->
-> plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y',
-> alpha=0.7)
->
-> plt.xticks(rotation=45)
->
-> \# Show the figure
->
-> plt.show()
->
+    ```
+    from matplotlib import pyplot as plt
+    
+    # Clear the plot area
+    plt.clf()
+    
+    # Create a bar plot of revenue by year
+    plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
+    
+    # Customize the chart
+    plt.title('Revenue by Year')
+    plt.xlabel('Year')
+    plt.ylabel('Revenue')
+    plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)
+    plt.xticks(rotation=45)
+    
+    # Show the figure
+    plt.show()
+    ```
 > ![A screenshot of a computer program AI-generated content may be
 > incorrect.](./media/image83.png)
 >
@@ -1003,39 +922,28 @@ generated](./media/image81.png)
 8.  修改代碼，將圖表繪製如下圖，將**單元格**中的所有代碼替換
     為以下代碼。
 
-> CodeCopy
->
-> from matplotlib import pyplot as plt
->
-> \# Clear the plot area
->
-> plt.clf()
->
-> \# Create a Figure
->
-> fig = plt.figure(figsize=(8,3))
->
-> \# Create a bar plot of revenue by year
->
-> plt.bar(x=df_sales\['OrderYear'\], height=df_sales\['GrossRevenue'\],
-> color='orange')
->
-> \# Customize the chart
->
-> plt.title('Revenue by Year')
->
-> plt.xlabel('Year')
->
-> plt.ylabel('Revenue')
->
-> plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y',
-> alpha=0.7)
->
-> plt.xticks(rotation=45)
->
-> \# Show the figure
->
-> plt.show()
+    ```
+    from matplotlib import pyplot as plt
+    
+    # Clear the plot area
+    plt.clf()
+    
+    # Create a Figure
+    fig = plt.figure(figsize=(8,3))
+    
+    # Create a bar plot of revenue by year
+    plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
+    
+    # Customize the chart
+    plt.title('Revenue by Year')
+    plt.xlabel('Year')
+    plt.ylabel('Revenue')
+    plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)
+    plt.xticks(rotation=45)
+    
+    # Show the figure
+    plt.show()
+    ```
 
 9.  **重新運行** 代碼單元，查看結果。圖形決定了地塊的形狀和大小。
 
@@ -1050,43 +958,31 @@ generated](./media/image81.png)
 10. 修改代碼，將圖表繪製如下圖。 **重新運行**
     代碼單元，查看結果。圖中包含了代碼中指定的子線。
 
-> CodeCopy
->
-> from matplotlib import pyplot as plt
->
-> \# Clear the plot area
->
-> plt.clf()
->
-> \# Create a figure for 2 subplots (1 row, 2 columns)
->
-> fig, ax = plt.subplots(1, 2, figsize = (10,4))
->
-> \# Create a bar plot of revenue by year on the first axis
->
-> ax\[0\].bar(x=df_sales\['OrderYear'\],
-> height=df_sales\['GrossRevenue'\], color='orange')
->
-> ax\[0\].set_title('Revenue by Year')
->
-> \# Create a pie chart of yearly order counts on the second axis
->
-> yearly_counts = df_sales\['OrderYear'\].value_counts()
->
-> ax\[1\].pie(yearly_counts)
->
-> ax\[1\].set_title('Orders per Year')
->
-> ax\[1\].legend(yearly_counts.keys().tolist())
->
-> \# Add a title to the Figure
->
-> fig.suptitle('Sales Data')
->
-> \# Show the figure
->
-> plt.show()
->
+    ```
+    from matplotlib import pyplot as plt
+    
+    # Clear the plot area
+    plt.clf()
+    
+    # Create a figure for 2 subplots (1 row, 2 columns)
+    fig, ax = plt.subplots(1, 2, figsize = (10,4))
+    
+    # Create a bar plot of revenue by year on the first axis
+    ax[0].bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
+    ax[0].set_title('Revenue by Year')
+    
+    # Create a pie chart of yearly order counts on the second axis
+    yearly_counts = df_sales['OrderYear'].value_counts()
+    ax[1].pie(yearly_counts)
+    ax[1].set_title('Orders per Year')
+    ax[1].legend(yearly_counts.keys().tolist())
+    
+    # Add a title to the Figure
+    fig.suptitle('Sales Data')
+    
+    # Show the figure
+    plt.show()
+    ```
 > ![A screenshot of a computer program AI-generated content may be
 > incorrect.](./media/image87.png)
 >
@@ -1107,17 +1003,16 @@ matplotlib 基礎上構建，以抽象化其複雜性並增強其能力。其中
 
 CodeCopy
 
-> import seaborn as sns
->
-> \# Clear the plot area
->
-> plt.clf()
->
-> \# Create a bar chart
->
-> ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
->
-> plt.show()
+```
+import seaborn as sns
+
+# Clear the plot area
+plt.clf()
+
+# Create a bar chart
+ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+plt.show()
+```
 
 2.  **運行** 代碼，觀察它顯示的是使用 Seaborn 庫的條形圖。
 
@@ -1127,46 +1022,37 @@ incorrect.](./media/image89.png)
 3.  **修改** 代碼如下。 **運行** 修改後的代碼，注意 seaborn
     可以讓你為地塊設置一致的顏色主題。
 
-> CodeCopy
->
-> import seaborn as sns
->
-> \# Clear the plot area
->
-> plt.clf()
->
-> \# Set the visual theme for seaborn
->
-> sns.set_theme(style="whitegrid")
->
-> \# Create a bar chart
->
-> ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
->
-> plt.show()
->
+    ```
+    import seaborn as sns
+    
+    # Clear the plot area
+    plt.clf()
+    
+    # Set the visual theme for seaborn
+    sns.set_theme(style="whitegrid")
+    
+    # Create a bar chart
+    ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+    plt.show()
+    ```
 > ![A screenshot of a graph AI-generated content may be
 > incorrect.](./media/image90.png)
 
 4.  再次**修改** 代碼如下。 **運行**
     修改後的代碼，以折線圖的形式查看年度收入。
 
-> CodeCopy
->
-> import seaborn as sns
->
-> \# Clear the plot area
->
-> plt.clf()
->
-> \# Create a bar chart
->
-> ax = sns.lineplot(x="OrderYear", y="GrossRevenue", data=df_sales)
->
-> plt.show()
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image91.png)
+    ```
+    import seaborn as sns
+    
+    # Clear the plot area
+    plt.clf()
+    
+    # Create a bar chart
+    ax = sns.lineplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+    plt.show()
+    ```
+ ![A screenshot of a computer AI-generated content may be
+ incorrect.](./media/image91.png)
 
 **注意**：想瞭解更多關於用 seaborn 策劃的建議，請參見
 [*seaborn文檔*](https://seaborn.pydata.org/index.html)。
@@ -1181,62 +1067,40 @@ API 創建的數據流的接收器或源。在本示例中，您將使用 Delta
 
 CodeCopy
 
-> from notebookutils import mssparkutils
->
-> from pyspark.sql.types import \*
->
-> from pyspark.sql.functions import \*
->
-> \# Create a folder
->
-> inputPath = 'Files/data/'
->
-> mssparkutils.fs.mkdirs(inputPath)
->
-> \# Create a stream that reads data from the folder, using a JSON
-> schema
->
-> jsonSchema = StructType(\[
->
-> StructField("device", StringType(), False),
->
-> StructField("status", StringType(), False)
->
-> \])
->
-> iotstream =
-> spark.readStream.schema(jsonSchema).option("maxFilesPerTrigger",
-> 1).json(inputPath)
->
-> \# Write some event data to the folder
->
-> device_data = '''{"device":"Dev1","status":"ok"}
->
-> {"device":"Dev1","status":"ok"}
->
-> {"device":"Dev1","status":"ok"}
->
-> {"device":"Dev2","status":"error"}
->
-> {"device":"Dev1","status":"ok"}
->
-> {"device":"Dev1","status":"error"}
->
-> {"device":"Dev2","status":"ok"}
->
-> {"device":"Dev2","status":"error"}
->
-> {"device":"Dev1","status":"ok"}'''
->
-> mssparkutils.fs.put(inputPath + "data.txt", device_data, True)
->
-> print("Source stream created...")
->
-> ![A screenshot of a computer program AI-generated content may be
-> incorrect.](./media/image92.png)
->
-> ![A screenshot of a computer program AI-generated content may be
-> incorrect.](./media/image93.png)
+```
+from notebookutils import mssparkutils
+from pyspark.sql.types import *
+from pyspark.sql.functions import *
+
+# Create a folder
+inputPath = 'Files/data/'
+mssparkutils.fs.mkdirs(inputPath)
+
+# Create a stream that reads data from the folder, using a JSON schema
+jsonSchema = StructType([
+StructField("device", StringType(), False),
+StructField("status", StringType(), False)
+])
+iotstream = spark.readStream.schema(jsonSchema).option("maxFilesPerTrigger", 1).json(inputPath)
+
+# Write some event data to the folder
+device_data = '''{"device":"Dev1","status":"ok"}
+{"device":"Dev1","status":"ok"}
+{"device":"Dev1","status":"ok"}
+{"device":"Dev2","status":"error"}
+{"device":"Dev1","status":"ok"}
+{"device":"Dev1","status":"error"}
+{"device":"Dev2","status":"ok"}
+{"device":"Dev2","status":"error"}
+{"device":"Dev1","status":"ok"}'''
+mssparkutils.fs.put(inputPath + "data.txt", device_data, True)
+print("Source stream created...")
+```
+ ![A screenshot of a computer program AI-generated content may be
+incorrect.](./media/image92.png)
+
+![A screenshot of a computer program AI-generated content may be
+incorrect.](./media/image93.png)
 
 2.  確保消息源 ***Source stream
     created…*** 已印刷。你剛運行的代碼基於一個文件夾創建了一個流數據源，該文件夾保存了一些數據，代表假設的物聯網設備的讀數。
@@ -1245,19 +1109,14 @@ CodeCopy
 
 CodeCopy
 
-> \# Write the stream to a delta table
->
-> delta_stream_table_path = 'Tables/iotdevicedata'
->
-> checkpointpath = 'Files/delta/checkpoint'
->
-> deltastream =
-> iotstream.writeStream.format("delta").option("checkpointLocation",
-> checkpointpath).start(delta_stream_table_path)
->
-> print("Streaming to delta sink...")
->
-> ![](./media/image94.png)
+```
+# Write the stream to a delta table
+delta_stream_table_path = 'Tables/iotdevicedata'
+checkpointpath = 'Files/delta/checkpoint'
+deltastream = iotstream.writeStream.format("delta").option("checkpointLocation", checkpointpath).start(delta_stream_table_path)
+print("Streaming to delta sink...")
+```
+ ![](./media/image94.png)
 
 4.  此代碼以增量格式將流式設備數據寫入名為 **iotdevicedata**
     的文件夾。由於文件夾路徑位於 **Tables** 
@@ -1270,12 +1129,11 @@ incorrect.](./media/image96.png)
 
 5.  點擊“ **+ Code**”，複製並粘貼以下代碼，然後點擊“**Run cell**”按鈕。
 
-> SqlCopy
->
-> %%sql
->
-> SELECT \* FROM IotDeviceData;
->
+    ```
+    %%sql
+    
+    SELECT * FROM IotDeviceData;
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image97.png)
 
@@ -1283,26 +1141,18 @@ incorrect.](./media/image96.png)
 
 7.  點擊 **+ Code**，複製粘貼下面的代碼，然後點擊“**Run cell**”按鈕。
 
-> CodeCopy
->
-> \# Add more data to the source stream
->
-> more_data = '''{"device":"Dev1","status":"ok"}
->
-> {"device":"Dev1","status":"ok"}
->
-> {"device":"Dev1","status":"ok"}
->
-> {"device":"Dev1","status":"ok"}
->
-> {"device":"Dev1","status":"error"}
->
-> {"device":"Dev2","status":"error"}
->
-> {"device":"Dev1","status":"ok"}'''
->
-> mssparkutils.fs.put(inputPath + "more-data.txt", more_data, True)
->
+    ```
+    # Add more data to the source stream
+    more_data = '''{"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"error"}
+    {"device":"Dev2","status":"error"}
+    {"device":"Dev1","status":"ok"}'''
+    
+    mssparkutils.fs.put(inputPath + "more-data.txt", more_data, True)
+    ```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image98.png)
 
@@ -1310,26 +1160,24 @@ incorrect.](./media/image96.png)
 
 9.  點擊 **+ Code**，複製粘貼下面的代碼，然後點擊“**Run cell**”按鈕。
 
-> SqlCopy
->
-> %%sql
->
-> SELECT \* FROM IotDeviceData;
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image99.png)
+    ```
+    %%sql
+    
+    SELECT * FROM IotDeviceData;
+    ```
+ ![A screenshot of a computer AI-generated content may be
+ incorrect.](./media/image99.png)
 
 10. 該代碼再次查詢 **IotDeviceData**
     表，表中應包含已添加到流源的額外數據。
 
 11. 點擊 **+ Code**，複製粘貼下面的代碼，然後點擊“**Run cell**”按鈕。
 
-> CodeCopy
->
-> deltastream.stop()
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image100.png)
+    ```
+    deltastream.stop()
+    ```
+![A screenshot of a computer AI-generated content may be
+ incorrect.](./media/image100.png)
 
 12. 這個代碼會停止直播。
 
@@ -1594,3 +1442,4 @@ Matplotlib 和 seaborn 等 Python
 這個用例將引導你完成搭建Fabric工作區、創建數據湖屋以及數據導入分析的過程。它演示了如何定義數據流以處理ETL作，並配置存儲轉換後數據的數據目的地。此外，你還將學習如何將數據流集成到自動化處理的流水線中。最後，您將獲得清理資源的指導。
 
 該實驗室為您提供使用Fabric所需的必要技能，使您能夠創建和管理工作空間，建立數據湖，並高效執行數據轉換。通過將數據流融入管道，您將學會如何自動化數據處理任務，簡化工作流程並在現實環境中提升生產力。清理說明確保不遺留多餘資源，促進有序高效的工作管理方式。
+
