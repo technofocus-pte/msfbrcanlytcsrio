@@ -277,7 +277,7 @@ generated](./media/image34.png)
 4.  **FactResellerSales**を選択し、次のテキストを入力し、下の画像に示すように
     \[**Submit**\] アイコンをクリックします。
 
-+++**What is our most sold product?**+++
+**+++What is our most sold product?+++**
 
 ![A screenshot of a computer Description automatically
 generated](./media/image35.png)
@@ -290,7 +290,7 @@ generated](./media/image36.png)
 5.  dimcustomer
     を選択し、次のテキストを入力し、**Submit**アイコンをクリックします。
 
-+++**How many active customers did we have on June 1st, 2013?**+++
+**+++How many active customers did we have on June 1st, 2013?+++**
 
 ![A screenshot of a computer Description automatically
 generated](./media/image37.png)
@@ -309,7 +309,7 @@ generated](./media/image40.png)
 
 8.  **dimdate、FactInternetSales**を選択してください、次のテキストを入力し、**Submit**アイコンをクリックします。
 
-+++**what are the monthly sales trends for the last year?**+++
+**+++what are the monthly sales trends for the last year?+++**
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image41.png)
@@ -320,7 +320,7 @@ generated](./media/image42.png)
 6.  **dimproduct FactInternetSales**
     を選択します。次のテキストを入力し、**Submit**アイコンをクリックします。
 
-+++**which product category had the highest average sales price?**+++
+**+++which product category had the highest average sales price?+++**
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image43.png)
@@ -376,28 +376,28 @@ generated](./media/image50.png)
 
 13. メモ帳に保存したクエリ3を追加します。  
       
-	```      
-	SELECT
-	    d.CalendarYear,
-	    d.MonthNumberOfYear,
-	    d.EnglishMonthName,
-	    SUM(f.SalesAmount) AS TotalSales
-	FROM
-	    dbo.factinternetsales f
-	    INNER JOIN dbo.dimdate d ON f.OrderDateKey = d.DateKey
-	WHERE
-	    d.CalendarYear = (
-	        SELECT MAX(CalendarYear)
-	        FROM dbo.dimdate
-	        WHERE DateKey IN (SELECT DISTINCT OrderDateKey FROM dbo.factinternetsales)
-	    )
-	GROUP BY
-	    d.CalendarYear,
-	    d.MonthNumberOfYear,
-	    d.EnglishMonthName
-	ORDER BY
-	    d.MonthNumberOfYear
-	```
+```
+SELECT
+    d.CalendarYear,
+    d.MonthNumberOfYear,
+    d.EnglishMonthName,
+    SUM(f.SalesAmount) AS TotalSales
+FROM
+    dbo.factinternetsales f
+    INNER JOIN dbo.dimdate d ON f.OrderDateKey = d.DateKey
+WHERE
+    d.CalendarYear = (
+        SELECT MAX(CalendarYear)
+        FROM dbo.dimdate
+        WHERE DateKey IN (SELECT DISTINCT OrderDateKey FROM dbo.factinternetsales)
+    )
+GROUP BY
+    d.CalendarYear,
+    d.MonthNumberOfYear,
+    d.EnglishMonthName
+ORDER BY
+    d.MonthNumberOfYear
+```
 > ![A screenshot of a computer Description automatically
 > generated](./media/image51.png)
 
@@ -645,3 +645,4 @@ languageの質問を SQL クエリに変換する AI
 AI 統合を実証しました。このラボでは、natural languageとgenerative
 AIテクノロジを通じて、ビジネスユーザーがエンタープライズ
 データにアクセスしやすく、使いやすく、インテリジェントに活用できるようにします。　　
+
