@@ -300,7 +300,7 @@ instrucciones.
 5.  Seleccione **dimcustomer**, ingrese el siguiente texto y haga clic
     en el ícono **Submit.**
 
-+++**How many active customers did we have on June 1st, 2013?**+++
++++How many active customers did we have on June 1st, 2013?+++
 
 ![A screenshot of a computer Description automatically
 generated](./media/image37.png)
@@ -321,7 +321,7 @@ generated](./media/image40.png)
 8.  Seleccione **dimdate, FactInternetSales**, ingrese el siguiente
     texto y haga clic en el ícono **Submit:**
 
-+++**what are the monthly sales trends for the last year?**+++
+**+++what are the monthly sales trends for the last year?+++**
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image41.png)
@@ -332,7 +332,7 @@ generated](./media/image42.png)
 6.  Seleccione **dimproduct, FactInternetSales**, ingrese el siguiente
     texto y haga clic en el ícono **Submit**:
 
-+++**which product category had the highest average sales price?**+++
+**+++which product category had the highest average sales price?+++**
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image43.png)
@@ -393,28 +393,28 @@ generated](./media/image50.png)
 
 13. Agregue la **pregunta 3** que ha guardado en el bloc de notas:  
       
-	```      
-	SELECT
-	    d.CalendarYear,
-	    d.MonthNumberOfYear,
-	    d.EnglishMonthName,
-	    SUM(f.SalesAmount) AS TotalSales
-	FROM
-	    dbo.factinternetsales f
-	    INNER JOIN dbo.dimdate d ON f.OrderDateKey = d.DateKey
-	WHERE
-	    d.CalendarYear = (
-	        SELECT MAX(CalendarYear)
-	        FROM dbo.dimdate
-	        WHERE DateKey IN (SELECT DISTINCT OrderDateKey FROM dbo.factinternetsales)
-	    )
-	GROUP BY
-	    d.CalendarYear,
-	    d.MonthNumberOfYear,
-	    d.EnglishMonthName
-	ORDER BY
-	    d.MonthNumberOfYear
-	```
+```
+SELECT
+    d.CalendarYear,
+    d.MonthNumberOfYear,
+    d.EnglishMonthName,
+    SUM(f.SalesAmount) AS TotalSales
+FROM
+    dbo.factinternetsales f
+    INNER JOIN dbo.dimdate d ON f.OrderDateKey = d.DateKey
+WHERE
+    d.CalendarYear = (
+        SELECT MAX(CalendarYear)
+        FROM dbo.dimdate
+        WHERE DateKey IN (SELECT DISTINCT OrderDateKey FROM dbo.factinternetsales)
+    )
+GROUP BY
+    d.CalendarYear,
+    d.MonthNumberOfYear,
+    d.EnglishMonthName
+ORDER BY
+    d.MonthNumberOfYear
+```
 > ![A screenshot of a computer Description automatically
 > generated](./media/image51.png)
 
@@ -671,3 +671,4 @@ demostrando la integración de IA de extremo a extremo. Este laboratorio
 le permite hacer que los datos empresariales sean más accesibles,
 utilizables e inteligentes para los usuarios de negocio mediante
 lenguaje natural y tecnologías de IA generativa.
+
