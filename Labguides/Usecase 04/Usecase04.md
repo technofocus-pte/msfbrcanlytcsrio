@@ -357,24 +357,24 @@ incorrect.](./media/image32.png)
 
 CodeCopy
 
-    ```
-    from pyspark.sql.types import *
-    
-    orderSchema = StructType([
-        StructField("SalesOrderNumber", StringType()),
-        StructField("SalesOrderLineNumber", IntegerType()),
-        StructField("OrderDate", DateType()),
-        StructField("CustomerName", StringType()),
-        StructField("Email", StringType()),
-        StructField("Item", StringType()),
-        StructField("Quantity", IntegerType()),
-        StructField("UnitPrice", FloatType()),
-        StructField("Tax", FloatType())
-        ])
-    
-    df = spark.read.format("csv").schema(orderSchema).load("Files/orders/*.csv")
-    display(df)
-    ```
+```
+from pyspark.sql.types import *
+
+orderSchema = StructType([
+    StructField("SalesOrderNumber", StringType()),
+    StructField("SalesOrderLineNumber", IntegerType()),
+    StructField("OrderDate", DateType()),
+    StructField("CustomerName", StringType()),
+    StructField("Email", StringType()),
+    StructField("Item", StringType()),
+    StructField("Quantity", IntegerType()),
+    StructField("UnitPrice", FloatType()),
+    StructField("Tax", FloatType())
+    ])
+
+df = spark.read.format("csv").schema(orderSchema).load("Files/orders/2019.csv")
+display(df)
+```
 > ![](./media/image36.png)
 
 14. 変更したコード セルを実行し、出力を確認します。出力には 2019
@@ -445,11 +445,11 @@ Dataframes
     Code**」をクリックし、以下のコードをコピーして貼り付け、「**Run
     cell**」ボタンをクリックします。
 
-    ```
-    productSales = df.select("Item", "Quantity").groupBy("Item").sum()
-    display(productSales)
-    ```
->
+```
+productSales = df.select("Item", "Quantity").groupBy("Item").sum()
+display(productSales)
+```
+
 > ![](./media/image41.png)
 
 2.  結果には、商品ごとにグループ化された注文数量の合計が表示されています。**groupBy**メソッドは行を*Item*ごとにグループ化し、その後に続くsum集計関数は残りの数値列（この場合は*Quantity*）に適用されます。
@@ -460,13 +460,13 @@ Dataframes
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image42.png)
 
-    ```
-    from pyspark.sql.functions import *
-    
-    yearlySales = df.select(year("OrderDate").alias("Year")).groupBy("Year").count().orderBy("Year")
-    display(yearlySales)
-    ```
->
+```
+from pyspark.sql.functions import *
+
+yearlySales = df.select(year("OrderDate").alias("Year")).groupBy("Year").count().orderBy("Year")
+display(yearlySales)
+```
+
 > ![](./media/image43.png)
 
 4.  結果には年間の販売注文数が表示されています。**select**メソッドには、OrderDateフィールドの年要素を抽出するSQL
@@ -485,22 +485,21 @@ incorrect.](./media/image42.png)
 
 **CodeCopy**
 
-    ```
-    from pyspark.sql.functions import *
-    
-    ## Create Year and Month columns
-    transformed_df = df.withColumn("Year", year(col("OrderDate"))).withColumn("Month", month(col("OrderDate")))
-    
-    # Create the new FirstName and LastName fields
-    transformed_df = transformed_df.withColumn("FirstName", split(col("CustomerName"), " ").getItem(0)).withColumn("LastName", split(col("CustomerName"), " ").getItem(1))
-    
-    # Filter and reorder columns
-    transformed_df = transformed_df["SalesOrderNumber", "SalesOrderLineNumber", "OrderDate", "Year", "Month", "FirstName", "LastName", "Email", "Item", "Quantity", "UnitPrice", "Tax"]
-    
-    # Display the first five orders
-    display(transformed_df.limit(5))
-    ```
+```
+from pyspark.sql.functions import *
 
+## Create Year and Month columns
+transformed_df = df.withColumn("Year", year(col("OrderDate"))).withColumn("Month", month(col("OrderDate")))
+
+# Create the new FirstName and LastName fields
+transformed_df = transformed_df.withColumn("FirstName", split(col("CustomerName"), " ").getItem(0)).withColumn("LastName", split(col("CustomerName"), " ").getItem(1))
+
+# Filter and reorder columns
+transformed_df = transformed_df["SalesOrderNumber", "SalesOrderLineNumber", "OrderDate", "Year", "Month", "FirstName", "LastName", "Email", "Item", "Quantity", "UnitPrice", "Tax"]
+
+# Display the first five orders
+display(transformed_df.limit(5))
+```
 > ![](./media/image44.png)
 
 2.  以下の変換を適用して、元の注文データから新しいデータフレームを作成するコードを**実行します**:
@@ -564,10 +563,10 @@ Spark SQL
     フォルダー内の parquet ファイルから新しいDataframes を読み込みます。
 
 > **CodeCopy**
-    ```
-    orders_df = spark.read.format("parquet").load("Files/transformed_data/orders")
-    display(orders_df)
-    ```
+```
+orders_df = spark.read.format("parquet").load("Files/transformed_data/orders")
+display(orders_df)
+```
 >
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image51.png)
@@ -583,10 +582,10 @@ Spark SQL
 1.  新しいセルを追加し、「+Code」をクリックして以下のコードを入力します。これにより、Dataframes
     が保存され、データが**年**と**月**で分割されます。セルを実行し、データが保存されたことを示すメッセージが表示されるまで待ちます。
 
-    ```
-    orders_df.write.partitionBy("Year","Month").mode("overwrite").parquet("Files/partitioned_data")
-    print ("Transformed data saved!")
-    ```
+```
+orders_df.write.partitionBy("Year","Month").mode("overwrite").parquet("Files/partitioned_data")
+print ("Transformed data saved!")
+```
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image53.png)
 >
@@ -613,10 +612,10 @@ generated](./media/image57.png)
     Code**をクリックして、**orders.parquet**
     ファイルから新しいDataframes を読み込みます。
 
-    ```
-    orders_2021_df = spark.read.format("parquet").load("Files/partitioned_data/Year=2021/Month=*")
-    display(orders_2021_df)
-    ```
+```
+orders_2021_df = spark.read.format("parquet").load("Files/partitioned_data/Year=2021/Month=*")
+display(orders_2021_df)
+```
 
 5.  セルを**実行し**、結果に2021年の売上に関する注文データが表示されていることを確認してください。パスで指定されたパーティショニング列（**年と月**）はデータフレームに含まれていないことに注意してください。
 
@@ -694,9 +693,9 @@ incorrect.](./media/image63.png)
 
 CodeCopy
 
-    ```
-    df.write.format("delta").saveAsTable("external_salesorder", path="<abfs_path>/external_salesorder")
-    ```
+```
+df.write.format("delta").saveAsTable("external_salesorder", path="<abfs_path>/external_salesorder")
+```
 
 ![A screenshot of a computer Description automatically
 generated](./media/image64.png)
@@ -878,17 +877,17 @@ incorrect.](./media/image78.png)
 1.  「**+Code**」をクリックし、以下のコードをコピー＆ペーストしてください。コードを**実行する**と、年間収益を含むSparkDataframes
     が返されることがわかります。
 
-    ```
-    sqlQuery = "SELECT CAST(YEAR(OrderDate) AS CHAR(4)) AS OrderYear, \
-                    SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue \
-                FROM salesorders \
-                GROUP BY CAST(YEAR(OrderDate) AS CHAR(4)) \
-                ORDER BY OrderYear"
-    df_spark = spark.sql(sqlQuery)
-    df_spark.show()
-    ```
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image80.png)
+```
+sqlQuery = "SELECT CAST(YEAR(OrderDate) AS CHAR(4)) AS OrderYear, \
+                SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue \
+            FROM salesorders \
+            GROUP BY CAST(YEAR(OrderDate) AS CHAR(4)) \
+            ORDER BY OrderYear"
+df_spark = spark.sql(sqlQuery)
+df_spark.show()
+```
+ ![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image80.png)
 
 2.  データをグラフとして視覚化するために、まずは**matplotlib**
     Pythonライブラリを使用します。このライブラリは、他の多くのプロットライブラリのベースとなっているコアライブラリであり、グラフ作成において非常に柔軟な機能を提供します。
@@ -897,18 +896,18 @@ incorrect.](./media/image78.png)
 
 **CodeCopy**
 
-    ```
-    from matplotlib import pyplot as plt
-    
-    # matplotlib requires a Pandas dataframe, not a Spark one
-    df_sales = df_spark.toPandas()
-    
-    # Create a bar plot of revenue by year
-    plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'])
-    
-    # Display the plot
-    plt.show()
-    ```
+```
+from matplotlib import pyplot as plt
+
+# matplotlib requires a Pandas dataframe, not a Spark one
+df_sales = df_spark.toPandas()
+
+# Create a bar plot of revenue by year
+plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'])
+
+# Display the plot
+plt.show()
+```
 ![A screenshot of a computer Description automatically
 generated](./media/image81.png)
 
@@ -1035,16 +1034,16 @@ documentation*](https://matplotlib.org/)を参考してください。
 
 1.  「Click on **+ Code** and copy and paste the below code.
 
-    ```
-    import seaborn as sns
-    
-    # Clear the plot area
-    plt.clf()
-    
-    # Create a bar chart
-    ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
-    plt.show()
-    ```
+```
+import seaborn as sns
+
+# Clear the plot area
+plt.clf()
+
+# Create a bar chart
+ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+plt.show()
+```
 
 2.  コードを実行し、seaborn
     ライブラリを使用して、棒グラフが表示されることを確認します。
@@ -1103,35 +1102,35 @@ things（IoT）のシミュレーションシナリオにおいて、Deltaテー
 
 CodeCopy
 
-    ```
-    from notebookutils import mssparkutils
-    from pyspark.sql.types import *
-    from pyspark.sql.functions import *
-    
-    # Create a folder
-    inputPath = 'Files/data/'
-    mssparkutils.fs.mkdirs(inputPath)
-    
-    # Create a stream that reads data from the folder, using a JSON schema
-    jsonSchema = StructType([
-    StructField("device", StringType(), False),
-    StructField("status", StringType(), False)
-    ])
-    iotstream = spark.readStream.schema(jsonSchema).option("maxFilesPerTrigger", 1).json(inputPath)
-    
-    # Write some event data to the folder
-    device_data = '''{"device":"Dev1","status":"ok"}
-    {"device":"Dev1","status":"ok"}
-    {"device":"Dev1","status":"ok"}
-    {"device":"Dev2","status":"error"}
-    {"device":"Dev1","status":"ok"}
-    {"device":"Dev1","status":"error"}
-    {"device":"Dev2","status":"ok"}
-    {"device":"Dev2","status":"error"}
-    {"device":"Dev1","status":"ok"}'''
-    mssparkutils.fs.put(inputPath + "data.txt", device_data, True)
-    print("Source stream created...")
-    ```
+```
+from notebookutils import mssparkutils
+from pyspark.sql.types import *
+from pyspark.sql.functions import *
+
+# Create a folder
+inputPath = 'Files/data/'
+mssparkutils.fs.mkdirs(inputPath)
+
+# Create a stream that reads data from the folder, using a JSON schema
+jsonSchema = StructType([
+StructField("device", StringType(), False),
+StructField("status", StringType(), False)
+])
+iotstream = spark.readStream.schema(jsonSchema).option("maxFilesPerTrigger", 1).json(inputPath)
+
+# Write some event data to the folder
+device_data = '''{"device":"Dev1","status":"ok"}
+{"device":"Dev1","status":"ok"}
+{"device":"Dev1","status":"ok"}
+{"device":"Dev2","status":"error"}
+{"device":"Dev1","status":"ok"}
+{"device":"Dev1","status":"error"}
+{"device":"Dev2","status":"ok"}
+{"device":"Dev2","status":"error"}
+{"device":"Dev1","status":"ok"}'''
+mssparkutils.fs.put(inputPath + "data.txt", device_data, True)
+print("Source stream created...")
+```
 > ![A screenshot of a computer program AI-generated content may be
 > incorrect.](./media/image92.png)
 >
@@ -1146,13 +1145,13 @@ CodeCopy
 
 CodeCopy
 
-    ```
-    # Write the stream to a delta table
-    delta_stream_table_path = 'Tables/iotdevicedata'
-    checkpointpath = 'Files/delta/checkpoint'
-    deltastream = iotstream.writeStream.format("delta").option("checkpointLocation", checkpointpath).start(delta_stream_table_path)
-    print("Streaming to delta sink...")
-    ```
+```
+# Write the stream to a delta table
+delta_stream_table_path = 'Tables/iotdevicedata'
+checkpointpath = 'Files/delta/checkpoint'
+deltastream = iotstream.writeStream.format("delta").option("checkpointLocation", checkpointpath).start(delta_stream_table_path)
+print("Streaming to delta sink...")
+```
 > ![](./media/image94.png)
 
 4.  このコードは、ストリーミングデバイスのデータを差分形式で**iotdevicedata**というフォルダに書き込みます。フォルダのパスは**Tables**フォルダ内にあるため、自動的にテーブルが作成されます。テーブルの横にある水平の省略記号をクリックし、「**Refresh**」をクリックしてください。
@@ -1500,3 +1499,4 @@ lakehouseの作成、分析用データの取り込みのプロセスを解説�
 このラボでは、Fabric
 を使用するために必要なスキルを習得し、ワークスペースの作成と管理、data
 lakehouseの構築、そして効率的なデータ変換を行えるようになります。データフローをパイプラインに組み込むことで、データ処理タスクを自動化し、ワークフローを効率化し、実際のシナリオにおける生産性を向上させる方法を習得できます。クリーンアップ手順に従うことで、不要なリソースを残さず、整理された効率的なワークスペース管理アプローチを実現できます。
+
