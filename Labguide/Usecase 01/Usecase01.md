@@ -623,7 +623,7 @@ from pyspark.sql.types import *
 def loadFullDataFromSource(table_name):
     df = spark.read.format("parquet").load('Files/' + table_name)
     df = df.drop("Photo")
-    df.write.mode("overwrite").format("delta").save("Tables/" + table_name)
+    df.write.mode("overwrite").format("delta").save("Tables/dbo/" + table_name)
 
 full_tables = [
     'dimension_city',
@@ -1104,6 +1104,7 @@ Power BI, con el fin de realizar un análisis de datos eficiente.
 El objetivo principal es ofrecer una experiencia práctica que permita
 comprender cómo utilizar Microsoft Fabric y Power BI para la gestión
 integral de datos y la generación de informes empresariales.
+
 
 
 
