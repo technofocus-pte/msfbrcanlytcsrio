@@ -590,24 +590,19 @@ horizontales del lado izquierdo de **Spark jobs.**
 
 ```
 from pyspark.sql.functions import col, year, month, quarter
-    
+
 table_name = 'fact_sale'
-    
+
 df = spark.read.format("parquet").load('Files/fact_sale_1y_full')
 df = df.withColumn('Year', year(col("InvoiceDateKey")))
 df = df.withColumn('Quarter', quarter(col("InvoiceDateKey")))
 df = df.withColumn('Month', month(col("InvoiceDateKey")))
-    
-df.write.mode("overwrite").format("delta").partitionBy("Year","Quarter").save("Tables/" + table_name)
-```
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image70.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image71.png)
->
-> ![](./media/image72.png)
+df.write.mode("overwrite").format("delta").partitionBy("Year","Quarter").save("Tables/dbo/" + table_name) 
+```
+![A screenshot of a computer Description automatically
+ generated](./media/img2.png)
+
 
 7.  Una vez cargada la tabla, puede continuar con la carga de datos para
     el resto de las dimensiones.  
@@ -622,38 +617,35 @@ df.write.mode("overwrite").format("delta").partitionBy("Year","Quarter").save("T
     de código al notebook e ingrese el siguiente código en ella. Haga
     clic en el botón **▷ Run cell** y revise el resultado.
 
-    ```
-    from pyspark.sql.types import *
-    
-    def loadFullDataFromSource(table_name):
-        df = spark.read.format("parquet").load('Files/' + table_name)
-        df = df.drop("Photo")
-        df.write.mode("overwrite").format("delta").save("Tables/" + table_name)
-    
-    full_tables = [
-        'dimension_city',
-        'dimension_customer',
-        'dimension_date',
-        'dimension_employee',
-        'dimension_stock_item'
-    ]
-    
-    for table in full_tables:
-        loadFullDataFromSource(table)
-    ```
-> ![A screenshot of a computer Description automatically
-> generated](./media/image73.png)
->
-> ![](./media/image74.png)
+```
+from pyspark.sql.types import *
+
+def loadFullDataFromSource(table_name):
+    df = spark.read.format("parquet").load('Files/' + table_name)
+    df = df.drop("Photo")
+    df.write.mode("overwrite").format("delta").save("Tables/" + table_name)
+
+full_tables = [
+    'dimension_city',
+    'dimension_customer',
+    'dimension_date',
+    'dimension_employee',
+    'dimension_stock_item'
+]
+
+for table in full_tables:
+    loadFullDataFromSource(table)
+```
+ ![A screenshot of a computer Description automatically
+ generated](./media/img3.png)
 
 6.  Para validar las tablas creadas, haga clic y seleccione **Refresh**
     en la sección **Tables** del panel Explorer, hasta que todas las
     tablas aparezcan en la lista.
 
-> ![](./media/image75.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image76.png)
+ ![](./media/image75.png)
+ ![A screenshot of a computer Description automatically
+ generated](./media/img9.png)
 
 ### Tarea 2: Transformar datos de negocio para agregación
 
@@ -688,14 +680,14 @@ datos.
     agregar una nueva celda de código al notebook e ingrese el siguiente
     código. Haga clic en **▷ Run cell** y revise el resultado.
 
-    ```
-    df_fact_sale = spark.read.table("wwilakehouse.fact_sale") 
-    df_dimension_date = spark.read.table("wwilakehouse.dimension_date")
-    df_dimension_city = spark.read.table("wwilakehouse.dimension_city")
-    ```
+```
+df_fact_sale = spark.read.format("delta").load("Tables/dbo/fact_sale")
+df_dimension_date = spark.read.format("delta").load("Tables/dbo/dimension_date")
+df_dimension_city = spark.read.format("delta").load("Tables/dbo/dimension_city")
+```
 
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image77.png)
+incorrect.](./media/img4.png)
 
 2.  Haga clic en el ícono **+ Code** que se encuentra debajo del
     resultado de la celda para agregar una nueva celda de código al
@@ -723,8 +715,9 @@ sale_by_date_city = df_fact_sale.alias("sale") \
 
 sale_by_date_city.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_city")
 ```
+
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image78.png)
+incorrect.](./media/img5.png)
 
 **Enfoque \#2 (sale_by_date_employee)**
 
@@ -743,50 +736,38 @@ En esta celda, se crea una vista temporal de Spark uniendo tres tablas,
 se realiza un **group by** y se renombran algunas columnas:
 
 ```
-%%sql
+spark.sql("""
 CREATE OR REPLACE TEMPORARY VIEW sale_by_date_employee
 AS
 SELECT
-       DD.Date, DD.CalendarMonthLabel
- , DD.Day, DD.ShortMonth Month, CalendarYear Year
-      ,DE.PreferredName, DE.Employee
-      ,SUM(FS.TotalExcludingTax) SumOfTotalExcludingTax
-      ,SUM(FS.TaxAmount) SumOfTaxAmount
-      ,SUM(FS.TotalIncludingTax) SumOfTotalIncludingTax
-      ,SUM(Profit) SumOfProfit 
-FROM wwilakehouse.fact_sale FS
-INNER JOIN wwilakehouse.dimension_date DD ON FS.InvoiceDateKey = DD.Date
-INNER JOIN wwilakehouse.dimension_Employee DE ON FS.SalespersonKey = DE.EmployeeKey
+           DD.Date, DD.CalendarMonthLabel
+        , DD.Day, DD.ShortMonth Month, CalendarYear Year
+        , DE.PreferredName, DE.Employee
+        , SUM(FS.TotalExcludingTax) SumOfTotalExcludingTax
+        , SUM(FS.TaxAmount) SumOfTaxAmount
+        , SUM(FS.TotalIncludingTax) SumOfTotalIncludingTax
+        , SUM(FS.Profit) SumOfProfit
+FROM delta.`Tables/dbo/fact_sale` FS
+INNER JOIN delta.`Tables/dbo/dimension_date` DD ON FS.InvoiceDateKey = DD.Date
+INNER JOIN delta.`Tables/dbo/dimension_employee` DE ON FS.SalespersonKey = DE.EmployeeKey
 GROUP BY DD.Date, DD.CalendarMonthLabel, DD.Day, DD.ShortMonth, DD.CalendarYear, DE.PreferredName, DE.Employee
 ORDER BY DD.Date ASC, DE.PreferredName ASC, DE.Employee ASC
-```
+""")
 
- ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image79.png)
-
-8.  Use el ícono **+ Code** debajo del resultado de la celda para
-    agregar una nueva celda de código al notebook e ingrese el siguiente
-    código. Haga clic en **▷ Run cell** y revise el resultado.
-
-En esta celda, se lee desde la vista temporal de Spark creada en la
-celda anterior y, finalmente, se escribe como una tabla Delta en la
-sección **Tables** del lakehouse.
-```
 sale_by_date_employee = spark.sql("SELECT * FROM sale_by_date_employee")
-sale_by_date_employee.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_employee")
+sale_by_date_employee.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/dbo/aggregate_sale_by_date_employee") 
 ```
+ ![A screenshot of a computer AI-generated content may be
+incorrect.](./media/img6.png)
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image80.png)
-
-9.  Para validar las tablas creadas, haga clic y seleccione Refresh en
+8.  Para validar las tablas creadas, haga clic y seleccione Refresh en
     **Tables** hasta que aparezcan las tablas de agregados.
 
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image81.png)
+incorrect.](./media/img7.png)
 
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image82.png)
+incorrect.](./media/img8.png)
 
 Ambos enfoques producen resultados similares. Puede elegir según su
 experiencia y preferencia, minimizando la necesidad de aprender una
@@ -1123,6 +1104,7 @@ Power BI, con el fin de realizar un análisis de datos eficiente.
 El objetivo principal es ofrecer una experiencia práctica que permita
 comprender cómo utilizar Microsoft Fabric y Power BI para la gestión
 integral de datos y la generación de informes empresariales.
+
 
 
 
