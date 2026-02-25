@@ -530,7 +530,7 @@ from pyspark.sql.types import *
 def loadFullDataFromSource(table_name):
     df = spark.read.format("parquet").load('Files/' + table_name)
     df = df.drop("Photo")
-    df.write.mode("overwrite").format("delta").save("Tables/" + table_name)
+    df.write.mode("overwrite").format("delta").save("Tables/dbo/" + table_name)
 
 full_tables = [
     'dimension_city',
@@ -609,7 +609,7 @@ sale_by_date_city = df_fact_sale.alias("sale") \
 .withColumnRenamed("sum(Profit)", "SumOfProfit")\
 .orderBy("date.Date", "city.StateProvince", "city.City")
 
-sale_by_date_city.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_city")
+sale_by_date_city.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/dbo/aggregate_sale_by_date_city")
 ```
 
 ![A screenshot of a computer AI-generated content may be
@@ -942,4 +942,5 @@ DirectQueryとインポートモードの利点を組み合わせながら、そ
 FabricとPower
 BIの必須コンポーネントの設定と構成に焦点を当てています。トライアルの有効化、OneDriveの設定、ワークスペースの作成、lakehouseの設定などタスクが含まれます。また、サンプルデータの取り込み、差分テーブルの最適化、PowerBIでの効果的なデータ分析のためのレポート作成などのタスクも扱います。このラボの目的は、データ管理とレポート作成のためのMicrosoft
 FabricとPower BIの活用方法を実践的に体験してもらうことです。
+
 
