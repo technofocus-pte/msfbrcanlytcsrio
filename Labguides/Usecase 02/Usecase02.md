@@ -605,9 +605,8 @@ generated](./media/image84.png)
 16. **Pipeline expression builder** ダイアログが表示されます。  
     次の式を入力し、「**OK**」を選択します。
 
-> *+++@concat('DI in an Hour Pipeline Succeeded with Pipeline Run Id',
-> pipeline().RunId)+++*
->
++++@concat('DI in an Hour Pipeline Succeeded with Pipeline Run Id', pipeline().RunId)+++
+
 > ![](./media/image91.png)
 
 17. **Body**については、フィールドを再度選択し、テキストエリアの下に表示される「**View
@@ -731,3 +730,4 @@ generated](./media/image110.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image111.png)
+
