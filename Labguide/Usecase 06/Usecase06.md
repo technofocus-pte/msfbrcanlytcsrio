@@ -1,4 +1,6 @@
-**介紹 **
+## 用例06——在Microsoft Fabric中利用文檔智能識別和提取文本
+
+**介紹**
 
 分析結構化數據已經是個容易的過程，但非結構化數據則不然。非結構化數據，如文本、圖片和視頻，更難分析和解讀。然而，隨著先進AI模型的出現，如OpenAI的GPT-3和GPT-4，分析和獲取非結構化數據的洞察變得更容易。
 
@@ -38,7 +40,13 @@ multi-service account**”下。要創建多服務資源，請按照以下說明
 
 ++++https://portal.azure.com/#create/Microsoft.CognitiveServicesAllInOne+++
 
-[TABLE]
+    |Project details | Description |
+    |-----|----|
+    |Subscription|	@lab.CloudSubscription.Name |
+    |Resource group|	@lab.CloudResourceGroup(ResourceGroup1).Name|
+    |Region|	Select the appropriate region for your CognitiveServices. In this lab, we have chosen the East US2 region.|
+    |Name	|Cognitive-service@lab.LabInstance.Id (must be a unique Id)|
+    |Pricing tier	|Standard S0|
 
 2.  在**Create**頁面，提供以下信息:
 
@@ -68,112 +76,7 @@ multi-service account**”下。要創建多服務資源，請按照以下說明
 
 ![](./media/image6.png)
 
-## **任務2： 使用Azure門戶創建密鑰庫**
-
-1.  在 Azure 門戶主頁，點擊 **+ Create Resource**。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image7.png)
-
-2.  在“**Create a resource**”頁面搜索欄中，輸入“**Key
-    vault**”，點擊已出現的**Key vault**。![](./media/image8.png)
-
-3.  點擊 **Key vault** 部分。
-
-> ![](./media/image9.png)
-
-4.  在**“Create a key Vault** ”頁面，提供以下信息，點擊
-    **“Review+create**”按鈕。
-
-[TABLE]
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image10.png)
-
-5.  驗證通過後，點擊 **Create** 按鈕。
-
-> ![](./media/image11.png)
-
-6.  部署完成後，點擊“ **Go to resource** ”按鈕。
-
-> ![](./media/image12.png)
-
-5.  在你的 **fabrickeyvaultXX** 窗口中，從左側菜單點擊 **Access
-    control(IAM)。**
-
-![](./media/image13.png)
-
-6.  在 Access control(IAM) 頁面，點擊+**Add**並選擇**Add role
-    assignments**。
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image14.png)
-
-5.  在 **Job function roles** 中，在搜索框中輸入 +++**Key vault
-    administrator+++**並選擇它。點擊 **Next**
-
-> ![](./media/image15.png)
-
-6.  在“**Add role assignment**”標簽中，選擇“Assign access to User group
-    or service principal”。在“Members”下，點擊 **+Select members**
-
-> ![](./media/image16.png)
-
-7.  在“Select members”標簽頁中，搜索你的Azure
-    OpenAI訂閱並點擊“**Select**”。
-
-![](./media/image17.png)
-
-8.  在“**Add role assignment**”頁面，點擊 **Review +
-    Assign**，角色分配完成後你會收到通知。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image18.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image19.png)
-
-9.  您將看到一個通知——已添加為Azure AI開發者 for Azure-openai-testXX
-
-![A screenshot of a computer Description automatically
-generated](./media/image20.png)
-
-## 任務3：使用 Azure Key Vault 創建秘密
-
-1.  在鑰匙庫左側欄，選擇**“Objects**”，然後選擇**“Secrets**”。
-
-> ![](./media/image21.png)
-
-2.  選擇 **+ Generate/Import**。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image22.png)
-
-3.  在**Create a secret** 頁面，輸入以下信息並點擊 **Create** 按鈕。.
-
-[TABLE]
-
-> ![](./media/image23.png)
-
-4.  選擇 **+ Generate/Import**。
-
-> ![](./media/image24.png)
-
-5.  在 Create a secret 頁面，輸入以下信息並點擊 **Create** 按鈕。
-
-[TABLE]
-
-![](./media/image25.png)
-
-![](./media/image26.png)
-
-6.  在**Key vault**頁面，複製 **Key vault**
-    名稱和**秘密**值，並像下圖所示粘貼到記事本，然後**保存**記事本以便在接下來的任務中使用這些信息。
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image27.png)
-
-## **任務4：在門戶中創建Azure AI搜索服務**
+## **任務2：在門戶中創建Azure AI搜索服務**
 
 1.  在 Azure 門戶主頁，點擊 **+ Create Resource**。
 
@@ -198,7 +101,13 @@ generated](./media/image29.png)
 5.  在“**Create a search
     service**”頁面，輸入以下信息，點擊“**Review+create**”按鈕。
 
-[TABLE]
+|Field	|Description|
+|-----|------|
+|Subscription	|Select the assigned subscription|
+|Resource group	|Select your Resource group|
+|Region|	EastUS 2|
+|Name	|+++mysearchserviceXXXXX+++(XXXXX can be Lab instant ID)|
+|Pricing Tier|	Click on change Price Tire>select Basic|
 
 ![](./media/image31.png)
 
@@ -255,7 +164,11 @@ incorrect.](./media/image34.png)
 6.  在右側的 **Create a workspace**
     面板中，輸入以下細節，然後點擊“**Apply**”按鈕。
 
-[TABLE]
+    |   |   |
+    |----|-----|
+    |Name	|+++Document Intelligence-Fabric@lab.LabInstance.Id+++ (must be a unique Id)|
+    |Advanced|	Select **Fabric Capacity**|
+    |Capacity	|Select the available capacity|
 
 > ![A screenshot of a computer AI-generated content may be
 > incorrect.](./media/image41.png)
@@ -309,19 +222,16 @@ generated](./media/image48.png)
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image49.png)
 
-\# Azure AI Search
-
-AI_SEARCH_NAME = ""
-
-AI_SEARCH_INDEX_NAME = "rag-demo-index"
-
-AI_SEARCH_API_KEY = ""
-
-\# Azure AI Services
-
-AI_SERVICES_KEY = ""
-
-AI_SERVICES_LOCATION = ""
+  ```
+  # Azure AI Search
+  AI_SEARCH_NAME = ""
+  AI_SEARCH_INDEX_NAME = "rag-demo-index"
+  AI_SEARCH_API_KEY = ""
+    
+  # Azure AI Services
+  AI_SERVICES_KEY = ""
+  AI_SERVICES_LOCATION = ""
+  ```
 
 > ![](./media/image50.png)
 
@@ -335,30 +245,24 @@ AI_SERVICES_LOCATION = ""
 
 **Copy**
 
+```
 import requests
-
 import os
 
-url =
-"https://github.com/Azure-Samples/azure-openai-rag-workshop/raw/main/data/support.pdf"
-
+url = "https://github.com/Azure-Samples/azure-openai-rag-workshop/raw/main/data/support.pdf"
 response = requests.get(url)
 
-\# Specify your path here
-
+# Specify your path here
 path = "/lakehouse/default/Files/"
 
-\# Ensure the directory exists
-
+# Ensure the directory exists
 os.makedirs(path, exist_ok=True)
 
-\# Write the content to a file in the specified path
-
-filename = url.rsplit("/")\[-1\]
-
+# Write the content to a file in the specified path
+filename = url.rsplit("/")[-1]
 with open(os.path.join(path, filename), "wb") as f:
-
-f.write(response.content)
+    f.write(response.content)
+```
 
 ![](./media/image51.png)
 
@@ -372,17 +276,13 @@ f.write(response.content)
 
 **Copy**
 
+```
 from pyspark.sql.functions import udf
-
 from pyspark.sql.types import StringType
-
 document_path = f"Files/{filename}"
-
-df =
-spark.read.format("binaryFile").load(document_path).select("\_metadata.file_name",
-"content").limit(10).cache()
-
+df = spark.read.format("binaryFile").load(document_path).select("_metadata.file_name", "content").limit(10).cache()
 display(df)
+```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image52.png)
@@ -398,36 +298,25 @@ incorrect.](./media/image52.png)
 
 **Copy**
 
+```
 from synapse.ml.services import AnalyzeDocument
-
 from pyspark.sql.functions import col
 
 analyze_document = (
-
-AnalyzeDocument()
-
-.setPrebuiltModelId("prebuilt-layout")
-
-.setSubscriptionKey(AI_SERVICES_KEY)
-
-.setLocation(AI_SERVICES_LOCATION)
-
-.setImageBytesCol("content")
-
-.setOutputCol("result")
-
+    AnalyzeDocument()
+    .setPrebuiltModelId("prebuilt-layout")
+    .setSubscriptionKey(AI_SERVICES_KEY)
+    .setLocation(AI_SERVICES_LOCATION)
+    .setImageBytesCol("content")
+    .setOutputCol("result")
 )
 
 analyzed_df = (
-
-analyze_document.transform(df)
-
-.withColumn("output_content", col("result.analyzeResult.content"))
-
-.withColumn("paragraphs", col("result.analyzeResult.paragraphs"))
-
+    analyze_document.transform(df)
+    .withColumn("output_content", col("result.analyzeResult.content"))
+    .withColumn("paragraphs", col("result.analyzeResult.paragraphs"))
 ).cache()
-
+```
 ![A screenshot of a computer code AI-generated content may be
 incorrect.](./media/image53.png)
 
@@ -439,9 +328,10 @@ incorrect.](./media/image53.png)
 
 **Copy**
 
+```
 analyzed_df = analyzed_df.drop("content")
-
 display(analyzed_df)
+```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image54.png)
@@ -458,25 +348,20 @@ incorrect.](./media/image54.png)
 
 **Copy**
 
+```
 from synapse.ml.featurize.text import PageSplitter
 
 ps = (
-
-PageSplitter()
-
-.setInputCol("output_content")
-
-.setMaximumPageLength(4000)
-
-.setMinimumPageLength(3000)
-
-.setOutputCol("chunks")
-
+    PageSplitter()
+    .setInputCol("output_content")
+    .setMaximumPageLength(4000)
+    .setMinimumPageLength(3000)
+    .setOutputCol("chunks")
 )
 
 splitted_df = ps.transform(analyzed_df)
-
 display(splitted_df)
+```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image55.png)
@@ -489,22 +374,18 @@ incorrect.](./media/image55.png)
 
 **Copy**
 
+```
 from pyspark.sql.functions import posexplode, col, concat
 
-\# Each "chunks" column contains the chunks for a single document in an
-array
+# Each "chunks" column contains the chunks for a single document in an array
+# The posexplode function will separate each chunk into its own row
+exploded_df = splitted_df.select("file_name", posexplode(col("chunks")).alias("chunk_index", "chunk"))
 
-\# The posexplode function will separate each chunk into its own row
-
-exploded_df = splitted_df.select("file_name",
-posexplode(col("chunks")).alias("chunk_index", "chunk"))
-
-\# Add a unique identifier for each chunk
-
-exploded_df = exploded_df.withColumn("unique_id",
-concat(exploded_df.file_name, exploded_df.chunk_index))
+# Add a unique identifier for each chunk
+exploded_df = exploded_df.withColumn("unique_id", concat(exploded_df.file_name, exploded_df.chunk_index))
 
 display(exploded_df)
+```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image56.png)
@@ -525,25 +406,21 @@ Spark分布式計算框架的力量，利用OpenAI服務處理大量提示。
 
 **Copy**
 
+```
 from synapse.ml.services import OpenAIEmbedding
 
 embedding = (
-
-OpenAIEmbedding()
-
-.setDeploymentName("text-embedding-ada-002")
-
-.setTextCol("chunk")
-
-.setErrorCol("error")
-
-.setOutputCol("embeddings")
-
+    OpenAIEmbedding()
+    .setDeploymentName("text-embedding-ada-002")
+    .setTextCol("chunk")
+    .setErrorCol("error")
+    .setOutputCol("embeddings")
 )
 
 df_embeddings = embedding.transform(exploded_df)
 
 display(df_embeddings)
+```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image57.png)
@@ -573,107 +450,61 @@ repository](https://github.com/Azure/azure-search-vector-samples/)。 
 
 **Copy**
 
+```
 import requests
-
 import json
 
-\# Length of the embedding vector (OpenAI ada-002 generates embeddings
-of length 1536)
-
+# Length of the embedding vector (OpenAI ada-002 generates embeddings of length 1536)
 EMBEDDING_LENGTH = 1536
 
-\# Define your AI Search index name and API key
-
+# Define your AI Search index name and API key
 AI_SEARCH_INDEX_NAME = " rag-demo-index"
-
 AI_SEARCH_API_KEY = "your_api_key"
 
-\# Create index for AI Search with fields id, content, and contentVector
-
-url =
-f"https://mysearchservice356.search.windows.net/indexes/{AI_SEARCH_INDEX_NAME}?api-version=2024-07-01"
-
+# Create index for AI Search with fields id, content, and contentVector
+url = f"https://mysearchservice356.search.windows.net/indexes/{AI_SEARCH_INDEX_NAME}?api-version=2024-07-01"
 payload = json.dumps(
-
-{
-
-"name": AI_SEARCH_INDEX_NAME,
-
-"fields": \[
-
-{
-
-"name": "id",
-
-"type": "Edm.String",
-
-"key": True,
-
-"filterable": True,
-
-},
-
-{
-
-"name": "content",
-
-"type": "Edm.String",
-
-"searchable": True,
-
-"retrievable": True,
-
-},
-
-{
-
-"name": "contentVector",
-
-"type": "Collection(Edm.Single)",
-
-"searchable": True,
-
-"retrievable": True,
-
-"dimensions": EMBEDDING_LENGTH,
-
-"vectorSearchProfile": "vectorConfig",
-
-},
-
-\],
-
-"vectorSearch": {
-
-"algorithms": \[{"name": "hnswConfig", "kind": "hnsw", "hnswParameters":
-{"metric": "cosine"}}\],
-
-"profiles": \[{"name": "vectorConfig", "algorithm": "hnswConfig"}\],
-
-},
-
-}
-
+    {
+        "name": AI_SEARCH_INDEX_NAME,
+        "fields": [
+            {
+                "name": "id",
+                "type": "Edm.String",
+                "key": True,
+                "filterable": True,
+            },
+            {
+                "name": "content",
+                "type": "Edm.String",
+                "searchable": True,
+                "retrievable": True,
+            },
+            {
+                "name": "contentVector",
+                "type": "Collection(Edm.Single)",
+                "searchable": True,
+                "retrievable": True,
+                "dimensions": EMBEDDING_LENGTH,
+                "vectorSearchProfile": "vectorConfig",
+            },
+        ],
+        "vectorSearch": {
+            "algorithms": [{"name": "hnswConfig", "kind": "hnsw", "hnswParameters": {"metric": "cosine"}}],
+            "profiles": [{"name": "vectorConfig", "algorithm": "hnswConfig"}],
+        },
+    }
 )
-
-headers = {"Content-Type": "application/json", "api-key":
-AI_SEARCH_API_KEY}
+headers = {"Content-Type": "application/json", "api-key": AI_SEARCH_API_KEY}
 
 response = requests.put(url, headers=headers, data=payload)
-
 if response.status_code == 201:
-
-print("Index created!")
-
+    print("Index created!")
 elif response.status_code == 204:
-
-print("Index updated!")
-
+    print("Index updated!")
 else:
-
-print(f"HTTP request failed with status code {response.status_code}")
-
-print(f"HTTP response body: {response.text}")
+    print(f"HTTP request failed with status code {response.status_code}")
+    print(f"HTTP response body: {response.text}")
+```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image58.png)
@@ -690,95 +521,63 @@ incorrect.](./media/image58.png)
 
 **Copy**
 
+```
 import re
 
 from pyspark.sql.functions import monotonically_increasing_id
 
+
 def insert_into_index(documents):
+    """Uploads a list of 'documents' to Azure AI Search index."""
 
-"""Uploads a list of 'documents' to Azure AI Search index."""
+    url = f"https://{AI_SEARCH_NAME}.search.windows.net/indexes/{AI_SEARCH_INDEX_NAME}/docs/index?api-version=2023-11-01"
 
-url =
-f"https://{AI_SEARCH_NAME}.search.windows.net/indexes/{AI_SEARCH_INDEX_NAME}/docs/index?api-version=2023-11-01"
+    payload = json.dumps({"value": documents})
+    headers = {
+        "Content-Type": "application/json",
+        "api-key": AI_SEARCH_API_KEY,
+    }
 
-payload = json.dumps({"value": documents})
+    response = requests.request("POST", url, headers=headers, data=payload)
 
-headers = {
-
-"Content-Type": "application/json",
-
-"api-key": AI_SEARCH_API_KEY,
-
-}
-
-response = requests.request("POST", url, headers=headers, data=payload)
-
-if response.status_code == 200 or response.status_code == 201:
-
-return "Success"
-
-else:
-
-return f"Failure: {response.text}"
+    if response.status_code == 200 or response.status_code == 201:
+        return "Success"
+    else:
+        return f"Failure: {response.text}"
 
 def make_safe_id(row_id: str):
+    """Strips disallowed characters from row id for use as Azure AI search document ID."""
+    return re.sub("[^0-9a-zA-Z_-]", "_", row_id)
 
-"""Strips disallowed characters from row id for use as Azure AI search
-document ID."""
-
-return re.sub("\[^0-9a-zA-Z\_-\]", "\_", row_id)
 
 def upload_rows(rows):
+    """Uploads the rows in a Spark dataframe to Azure AI Search.
+    Limits uploads to 1000 rows at a time due to Azure AI Search API limits.
+    """
+    BATCH_SIZE = 1000
+    rows = list(rows)
+    for i in range(0, len(rows), BATCH_SIZE):
+        row_batch = rows[i : i + BATCH_SIZE]
+        documents = []
+        for row in rows:
+            documents.append(
+                {
+                    "id": make_safe_id(row["unique_id"]),
+                    "content": row["chunk"],
+                    "contentVector": row["embeddings"].tolist(),
+                    "@search.action": "upload",
+                },
+            )
+        status = insert_into_index(documents)
+        yield [row_batch[0]["row_index"], row_batch[-1]["row_index"], status]
 
-"""Uploads the rows in a Spark dataframe to Azure AI Search.
+# Add ID to help track what rows were successfully uploaded
+df_embeddings = df_embeddings.withColumn("row_index", monotonically_increasing_id())
 
-Limits uploads to 1000 rows at a time due to Azure AI Search API limits.
-
-"""
-
-BATCH_SIZE = 1000
-
-rows = list(rows)
-
-for i in range(0, len(rows), BATCH_SIZE):
-
-row_batch = rows\[i : i + BATCH_SIZE\]
-
-documents = \[\]
-
-for row in rows:
-
-documents.append(
-
-{
-
-"id": make_safe_id(row\["unique_id"\]),
-
-"content": row\["chunk"\],
-
-"contentVector": row\["embeddings"\].tolist(),
-
-"@search.action": "upload",
-
-},
-
-)
-
-status = insert_into_index(documents)
-
-yield \[row_batch\[0\]\["row_index"\], row_batch\[-1\]\["row_index"\],
-status\]
-
-\# Add ID to help track what rows were successfully uploaded
-
-df_embeddings = df_embeddings.withColumn("row_index",
-monotonically_increasing_id())
-
-\# Run upload_batch on partitions of the dataframe
-
+# Run upload_batch on partitions of the dataframe
 res = df_embeddings.rdd.mapPartitions(upload_rows)
-
-display(res.toDF(\["start_index", "end_index", "insertion_status"\]))
+display(res.toDF(["start_index", "end_index", "insertion_status"]))
+```
 
 ![](./media/image60.png)
 
@@ -805,13 +604,12 @@ incorrect.](./media/image61.png)
 
 Copy
 
-\# Azure AI Search
-
+```
+# Azure AI Search
 AI_SEARCH_NAME = ''
-
 AI_SEARCH_INDEX_NAME = 'rag-demo-index'
-
 AI_SEARCH_API_KEY = ''
+```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image62.png)
@@ -825,36 +623,24 @@ incorrect.](./media/image62.png)
 
 **Copy**
 
+```
 def gen_question_embedding(user_question):
+    """Generates embedding for user_question using SynapseML."""
+    from synapse.ml.services import OpenAIEmbedding
 
-"""Generates embedding for user_question using SynapseML."""
-
-from synapse.ml.services import OpenAIEmbedding
-
-df_ques = spark.createDataFrame(\[(user_question, 1)\], \["questions",
-"dummy"\])
-
-embedding = (
-
-OpenAIEmbedding()
-
-.setDeploymentName('text-embedding-ada-002')
-
-.setTextCol("questions")
-
-.setErrorCol("errorQ")
-
-.setOutputCol("embeddings")
-
-)
-
-df_ques_embeddings = embedding.transform(df_ques)
-
-row = df_ques_embeddings.collect()\[0\]
-
-question_embedding = row.embeddings.tolist()
-
-return question_embedding
+    df_ques = spark.createDataFrame([(user_question, 1)], ["questions", "dummy"])
+    embedding = (
+        OpenAIEmbedding()
+        .setDeploymentName('text-embedding-ada-002')
+        .setTextCol("questions")
+        .setErrorCol("errorQ")
+        .setOutputCol("embeddings")
+    )
+    df_ques_embeddings = embedding.transform(df_ques)
+    row = df_ques_embeddings.collect()[0]
+    question_embedding = row.embeddings.tolist()
+    return question_embedding
+```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image63.png)
@@ -869,55 +655,36 @@ incorrect.](./media/image63.png)
 
 **Copy**
 
-import json
-
+```
+import json 
 import requests
 
 def retrieve_top_chunks(k, question, question_embedding):
+    """Retrieve the top K entries from Azure AI Search using hybrid search."""
+    url = f"https://{AI_SEARCH_NAME}.search.windows.net/indexes/{AI_SEARCH_INDEX_NAME}/docs/search?api-version=2023-11-01"
 
-"""Retrieve the top K entries from Azure AI Search using hybrid
-search."""
+    payload = json.dumps({
+        "search": question,
+        "top": k,
+        "vectorQueries": [
+            {
+                "vector": question_embedding,
+                "k": k,
+                "fields": "contentVector",
+                "kind": "vector"
+            }
+        ]
+    })
 
-url =
-f"https://{AI_SEARCH_NAME}.search.windows.net/indexes/{AI_SEARCH_INDEX_NAME}/docs/search?api-version=2023-11-01"
+    headers = {
+        "Content-Type": "application/json",
+        "api-key": AI_SEARCH_API_KEY,
+    }
 
-payload = json.dumps({
-
-"search": question,
-
-"top": k,
-
-"vectorQueries": \[
-
-{
-
-"vector": question_embedding,
-
-"k": k,
-
-"fields": "contentVector",
-
-"kind": "vector"
-
-}
-
-\]
-
-})
-
-headers = {
-
-"Content-Type": "application/json",
-
-"api-key": AI_SEARCH_API_KEY,
-
-}
-
-response = requests.request("POST", url, headers=headers, data=payload)
-
-output = json.loads(response.text)
-
-return output
+    response = requests.request("POST", url, headers=headers, data=payload)
+    output = json.loads(response.text)
+    return output
+```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image64.png)
@@ -930,22 +697,19 @@ incorrect.](./media/image64.png)
 
 **Copy**
 
+```
 def get_context(user_question, retrieved_k = 5):
+    # Generate embeddings for the question
+    question_embedding = gen_question_embedding(user_question)
 
-\# Generate embeddings for the question
+    # Retrieve the top K entries
+    output = retrieve_top_chunks(retrieved_k, user_question, question_embedding)
 
-question_embedding = gen_question_embedding(user_question)
+    # concatenate the content of the retrieved documents
+    context = [chunk["content"] for chunk in output["value"]]
 
-\# Retrieve the top K entries
-
-output = retrieve_top_chunks(retrieved_k, user_question,
-question_embedding)
-
-\# concatenate the content of the retrieved documents
-
-context = \[chunk\["content"\] for chunk in output\["value"\]\]
-
-return context
+    return context
+```
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image65.png)
@@ -960,87 +724,57 @@ incorrect.](./media/image65.png)
 
 **Copy**
 
+```
 from pyspark.sql import Row
-
 from synapse.ml.services.openai import OpenAIChatCompletion
 
-def make_message(role, content):
 
-return Row(role=role, content=content, name=role)
+def make_message(role, content):
+    return Row(role=role, content=content, name=role)
 
 def get_response(user_question):
+    context = get_context(user_question)
 
-context = get_context(user_question)
+    # Write a prompt with context and user_question as variables 
+    prompt = f"""
+    context: {context}
+    Answer the question based on the context above.
+    If the information to answer the question is not present in the given context then reply "I don't know".
+    """
 
-\# Write a prompt with context and user_question as variables
+    chat_df = spark.createDataFrame(
+        [
+            (
+                [
+                    make_message(
+                        "system", prompt
+                    ),
+                    make_message("user", user_question),
+                ],
+            ),
+        ]
+    ).toDF("messages")
 
-prompt = f"""
+    chat_completion = (
+        OpenAIChatCompletion()
+        .setDeploymentName("gpt-35-turbo-16k") # deploymentName could be one of {gpt-35-turbo, gpt-35-turbo-16k}
+        .setMessagesCol("messages")
+        .setErrorCol("error")
+        .setOutputCol("chat_completions")
+    )
 
-context: {context}
+    result_df = chat_completion.transform(chat_df).select("chat_completions.choices.message.content")
 
-Answer the question based on the context above.
+    result = []
+    for row in result_df.collect():
+        content_string = ' '.join(row['content'])
+        result.append(content_string)
 
-If the information to answer the question is not present in the given
-context then reply "I don't know".
-
-"""
-
-chat_df = spark.createDataFrame(
-
-\[
-
-(
-
-\[
-
-make_message(
-
-"system", prompt
-
-),
-
-make_message("user", user_question),
-
-\],
-
-),
-
-\]
-
-).toDF("messages")
-
-chat_completion = (
-
-OpenAIChatCompletion()
-
-.setDeploymentName("gpt-35-turbo-16k") \# deploymentName could be one of
-{gpt-35-turbo, gpt-35-turbo-16k}
-
-.setMessagesCol("messages")
-
-.setErrorCol("error")
-
-.setOutputCol("chat_completions")
-
-)
-
-result_df =
-chat_completion.transform(chat_df).select("chat_completions.choices.message.content")
-
-result = \[\]
-
-for row in result_df.collect():
-
-content_string = ' '.join(row\['content'\])
-
-result.append(content_string)
-
-\# Join the list into a single string
-
-result = ' '.join(result)
-
-return result
-
+    # Join the list into a single string
+    result = ' '.join(result)
+    
+    return result
+```
 ![](./media/image66.png)
 
 ![](./media/image67.png)
@@ -1053,11 +787,40 @@ return result
 
 **Copy**
 
+```
+import requests
+
+# Azure Search configuration
+search_service_name = ''
+index_name = 'rag-demo-index'
+api_key = ''
+endpoint = f'https://{search_service_name}.search.windows.net'
+api_version = '2023-07-01-Preview'
+search_url = f"{endpoint}/indexes/{index_name}/docs/search?api-version={api_version}"
+
+headers = {
+    "Content-Type": "application/json",
+    "api-key": api_key
+}
+
+def get_response(user_question, top_k=1):
+    payload = {
+        "search": user_question,
+        "queryType": "simple",   # Can be "semantic" if enabled in your Azure Search
+        "top": top_k
+    }
+    response = requests.post(search_url, headers=headers, json=payload)
+    response.raise_for_status()
+    results = response.json().get('value', [])
+    if not results:
+        return "No answer found in the knowledge base."
+    return results[0].get('content', '').strip()
+
+# Example usage
 user_question = "how do i make a booking?"
-
 response = get_response(user_question)
-
 print(response)
+```
 
 ![](./media/image68.png)
 
@@ -1122,3 +885,4 @@ generated](./media/image79.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image80.png)
+
