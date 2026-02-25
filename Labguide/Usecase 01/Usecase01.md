@@ -699,21 +699,21 @@ anteriormente, se realiza un **group by**, se renombran algunas columnas
 y finalmente se escribe como tabla Delta en **Tables**:
 
 ```
-sale_by_date_city = df_fact_sale.alias("sale") \
-.join(df_dimension_date.alias("date"), df_fact_sale.InvoiceDateKey == df_dimension_date.Date, "inner") \
-.join(df_dimension_city.alias("city"), df_fact_sale.CityKey == df_dimension_city.CityKey, "inner") \
-.select("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", 
- "city.SalesTerritory", "sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")\
-.groupBy("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", 
- "city.SalesTerritory")\
-.sum("sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")\
-.withColumnRenamed("sum(TotalExcludingTax)", "SumOfTotalExcludingTax")\
-.withColumnRenamed("sum(TaxAmount)", "SumOfTaxAmount")\
-.withColumnRenamed("sum(TotalIncludingTax)", "SumOfTotalIncludingTax")\
-.withColumnRenamed("sum(Profit)", "SumOfProfit")\
-.orderBy("date.Date", "city.StateProvince", "city.City")
+sale_by_date_city = (
+   df_fact_sale.alias("sale")
+   .join(df_dimension_date.alias("date"), df_fact_sale.InvoiceDateKey == df_dimension_date.Date, "inner")
+   .join(df_dimension_city.alias("city"), df_fact_sale.CityKey == df_dimension_city.CityKey, "inner")
+   .select("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", "city.SalesTerritory", "sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")
+   .groupBy("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", "city.SalesTerritory")
+   .sum("sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")
+   .withColumnRenamed("sum(TotalExcludingTax)", "SumOfTotalExcludingTax")
+   .withColumnRenamed("sum(TaxAmount)", "SumOfTaxAmount")
+   .withColumnRenamed("sum(TotalIncludingTax)", "SumOfTotalIncludingTax")
+   .withColumnRenamed("sum(Profit)", "SumOfProfit")
+   .orderBy("date.Date", "city.StateProvince", "city.City")
+)
 
-sale_by_date_city.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_city")
+sale_by_date_city.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/dbo/aggregate_sale_by_date_city")
 ```
 
 ![A screenshot of a computer AI-generated content may be
@@ -1104,6 +1104,7 @@ Power BI, con el fin de realizar un análisis de datos eficiente.
 El objetivo principal es ofrecer una experiencia práctica que permita
 comprender cómo utilizar Microsoft Fabric y Power BI para la gestión
 integral de datos y la generación de informes empresariales.
+
 
 
 
