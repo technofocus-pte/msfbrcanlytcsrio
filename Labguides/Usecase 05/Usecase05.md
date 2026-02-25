@@ -708,10 +708,10 @@ T-SQL構文を使用してテーブルのクローンを作成する手順を説
 
 8.  クエリエディターに次のコードを貼り付けます。このT-SQLは**dbo.populate_aggregate_sale_by_city**を実行し、**dbo.aggregate_sale_by_date_city**テーブルを作成します。クエリを実行します。　
 
-    ```
-    --Execute the stored procedure to create the aggregate table.
-    EXEC [dbo].[populate_aggregate_sale_by_city];
-    ```
+   ```
+   --Execute the stored procedure to create the aggregate table.
+   EXEC [dbo].[populate_aggregate_sale_by_city];
+   ```
 > ![A screenshot of a computer Description automatically
 > generated](./media/image79.png)
 >
@@ -1392,3 +1392,4 @@ BIでの地理データ表現を強化するAzure
 Mapsビジュアル統合の有効化で最高潮に達します。その後、詳細な売上データ分析を容易にするために、縦棒グラフ、マップ、テーブルなど、さまざまなPower
 BIレポートが作成されます。最後のタスクでは、OneLakeデータハブからレポートを生成することに焦点を当て、Fabricにおけるデータソースの多様性をさらに強調します。最後に、ラボではリソース管理に関する洞察を提供し、効率的なワークスペースを維持するためのクリーンアップ手順の重要性を強調します。これらのタスク全体を通して、Microsoft
 Fabricにおけるデータのセットアップ、管理、分析に関する包括的な理解が得られます。
+
