@@ -1,3 +1,4 @@
+## 用例05——在Microsoft Fabric中構建Contoso的銷售和地理數據倉庫
 **介紹**
 
 Contoso是一家跨國零售公司，正尋求現代化其數據基礎設施，以提升銷售和地理分析能力。目前，他們的銷售和客戶數據分散在多個系統中，使業務分析師和公民開發者難以獲得洞察。公司計劃將這些數據整合到一個統一平臺，利用
@@ -85,7 +86,12 @@ Microsoft Fabric 用戶體驗、各種體驗及其集成點，以及 Microsoft F
 2.  在“**Create a
     workspace**”**選項卡**中，**輸入**以下詳細信息，然後單擊“**Apply**”按鈕。
 
-[TABLE]
+    |  |  |
+    |----|---|
+    |Name	|+++Warehouse_Fabric@lab.LabInstance.Id+++ (must be a unique Id) |
+    |Description	|+++This workspace contains all the artifacts for the data warehouse+++|
+    |Advanced	Under License mode| select Fabric capacity|
+    |Default storage format	|Small dataset storage format|
 
 > ![](./media/image7.png)
 >
@@ -211,7 +217,11 @@ Microsoft Fabric 用戶體驗、各種體驗及其集成點，以及 Microsoft F
 
 14. 在**“Destination**”標簽頁，輸入以下設置。
 
-[TABLE]
+    |  |  |
+    |---|---|
+    |Connection	|WideWorldImporters|
+    |Table option	|select the Auto create table radio button.|
+    |Table	|•	In the first box enter +++dbo+++<br>•	In the second box enter +++dimension_customer+++|
 
 > **注意：在將連接添加到WideWorldImporters倉庫時，請通過導航從OneLake目錄中添加，以便瀏覽所有選項。**
 >
@@ -260,117 +270,70 @@ Microsoft Fabric 用戶體驗、各種體驗及其集成點，以及 Microsoft F
 
 3.  在查詢編輯器中，粘貼以下代碼，選擇 **Run **以執行查詢
 
-> /\*
->
-> 1\. Drop the dimension_city table if it already exists.
->
-> 2\. Create the dimension_city table.
->
-> 3\. Drop the fact_sale table if it already exists.
->
-> 4\. Create the fact_sale table.
->
-> \*/
->
-> --dimension_city
->
-> DROP TABLE IF EXISTS \[dbo\].\[dimension_city\];
->
-> CREATE TABLE \[dbo\].\[dimension_city\]
->
-> (
->
-> \[CityKey\] \[int\] NULL,
->
-> \[WWICityID\] \[int\] NULL,
->
-> \[City\] \[varchar\](8000) NULL,
->
-> \[StateProvince\] \[varchar\](8000) NULL,
->
-> \[Country\] \[varchar\](8000) NULL,
->
-> \[Continent\] \[varchar\](8000) NULL,
->
-> \[SalesTerritory\] \[varchar\](8000) NULL,
->
-> \[Region\] \[varchar\](8000) NULL,
->
-> \[Subregion\] \[varchar\](8000) NULL,
->
-> \[Location\] \[varchar\](8000) NULL,
->
-> \[LatestRecordedPopulation\] \[bigint\] NULL,
->
-> \[ValidFrom\] \[datetime2\](6) NULL,
->
-> \[ValidTo\] \[datetime2\](6) NULL,
->
-> \[LineageKey\] \[int\] NULL
->
-> );
->
-> --fact_sale
->
-> DROP TABLE IF EXISTS \[dbo\].\[fact_sale\];
->
-> CREATE TABLE \[dbo\].\[fact_sale\]
->
-> (
->
-> \[SaleKey\] \[bigint\] NULL,
->
-> \[CityKey\] \[int\] NULL,
->
-> \[CustomerKey\] \[int\] NULL,
->
-> \[BillToCustomerKey\] \[int\] NULL,
->
-> \[StockItemKey\] \[int\] NULL,
->
-> \[InvoiceDateKey\] \[datetime2\](6) NULL,
->
-> \[DeliveryDateKey\] \[datetime2\](6) NULL,
->
-> \[SalespersonKey\] \[int\] NULL,
->
-> \[WWIInvoiceID\] \[int\] NULL,
->
-> \[Description\] \[varchar\](8000) NULL,
->
-> \[Package\] \[varchar\](8000) NULL,
->
-> \[Quantity\] \[int\] NULL,
->
-> \[UnitPrice\] \[decimal\](18, 2) NULL,
->
-> \[TaxRate\] \[decimal\](18, 3) NULL,
->
-> \[TotalExcludingTax\] \[decimal\](29, 2) NULL,
->
-> \[TaxAmount\] \[decimal\](38, 6) NULL,
->
-> \[Profit\] \[decimal\](18, 2) NULL,
->
-> \[TotalIncludingTax\] \[decimal\](38, 6) NULL,
->
-> \[TotalDryItems\] \[int\] NULL,
->
-> \[TotalChillerItems\] \[int\] NULL,
->
-> \[LineageKey\] \[int\] NULL,
->
-> \[Month\] \[int\] NULL,
->
-> \[Year\] \[int\] NULL,
->
-> \[Quarter\] \[int\] NULL
->
-> );
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image35.png)
->
+    ```
+    /*
+    1. Drop the dimension_city table if it already exists.
+    2. Create the dimension_city table.
+    3. Drop the fact_sale table if it already exists.
+    4. Create the fact_sale table.
+    */
+    
+    --dimension_city
+    DROP TABLE IF EXISTS [dbo].[dimension_city];
+    CREATE TABLE [dbo].[dimension_city]
+        (
+            [CityKey] [int] NULL,
+            [WWICityID] [int] NULL,
+            [City] [varchar](8000) NULL,
+            [StateProvince] [varchar](8000) NULL,
+            [Country] [varchar](8000) NULL,
+            [Continent] [varchar](8000) NULL,
+            [SalesTerritory] [varchar](8000) NULL,
+            [Region] [varchar](8000) NULL,
+            [Subregion] [varchar](8000) NULL,
+            [Location] [varchar](8000) NULL,
+            [LatestRecordedPopulation] [bigint] NULL,
+            [ValidFrom] [datetime2](6) NULL,
+            [ValidTo] [datetime2](6) NULL,
+            [LineageKey] [int] NULL
+        );
+    
+    --fact_sale
+    
+    DROP TABLE IF EXISTS [dbo].[fact_sale];
+    
+    CREATE TABLE [dbo].[fact_sale]
+    
+        (
+            [SaleKey] [bigint] NULL,
+            [CityKey] [int] NULL,
+            [CustomerKey] [int] NULL,
+            [BillToCustomerKey] [int] NULL,
+            [StockItemKey] [int] NULL,
+            [InvoiceDateKey] [datetime2](6) NULL,
+            [DeliveryDateKey] [datetime2](6) NULL,
+            [SalespersonKey] [int] NULL,
+            [WWIInvoiceID] [int] NULL,
+            [Description] [varchar](8000) NULL,
+            [Package] [varchar](8000) NULL,
+            [Quantity] [int] NULL,
+            [UnitPrice] [decimal](18, 2) NULL,
+            [TaxRate] [decimal](18, 3) NULL,
+            [TotalExcludingTax] [decimal](29, 2) NULL,
+            [TaxAmount] [decimal](38, 6) NULL,
+            [Profit] [decimal](18, 2) NULL,
+            [TotalIncludingTax] [decimal](38, 6) NULL,
+            [TotalDryItems] [int] NULL,
+            [TotalChillerItems] [int] NULL,
+            [LineageKey] [int] NULL,
+            [Month] [int] NULL,
+            [Year] [int] NULL,
+            [Quarter] [int] NULL
+        );
+    ```
+![A screenshot of a computer Description automatically
+generated](./media/image35.png)
+
 > ![A screenshot of a computer Description automatically
 > generated](./media/image36.png)
 
@@ -411,26 +374,17 @@ Microsoft Fabric 用戶體驗、各種體驗及其集成點，以及 Microsoft F
 
 2.  在查詢編輯器中， **粘貼** 以下代碼，然後點擊 **Run **以執行查詢。
 
-> --Copy data from the public Azure storage account to the
-> dbo.dimension_city table.
->
-> COPY INTO \[dbo\].\[dimension_city\]
->
-> FROM
-> 'https://fabrictutorialdata.blob.core.windows.net/sampledata/WideWorldImportersDW/tables/dimension_city.parquet'
->
-> WITH (FILE_TYPE = 'PARQUET');
->
-> --Copy data from the public Azure storage account to the dbo.fact_sale
-> table.
->
-> COPY INTO \[dbo\].\[fact_sale\]
->
-> FROM
-> 'https://fabrictutorialdata.blob.core.windows.net/sampledata/WideWorldImportersDW/tables/fact_sale.parquet'
->
-> WITH (FILE_TYPE = 'PARQUET');
->
+    ```
+    --Copy data from the public Azure storage account to the dbo.dimension_city table.
+    COPY INTO [dbo].[dimension_city]
+    FROM 'https://fabrictutorialdata.blob.core.windows.net/sampledata/WideWorldImportersDW/tables/dimension_city.parquet'
+    WITH (FILE_TYPE = 'PARQUET');
+    
+    --Copy data from the public Azure storage account to the dbo.fact_sale table.
+    COPY INTO [dbo].[fact_sale]
+    FROM 'https://fabrictutorialdata.blob.core.windows.net/sampledata/WideWorldImportersDW/tables/fact_sale.parquet'
+    WITH (FILE_TYPE = 'PARQUET');
+    ```
 > ![A screenshot of a computer Description automatically
 > generated](./media/image43.png)
 
@@ -482,15 +436,14 @@ OF](https://learn.microsoft.com/en-us/sql/t-sql/statements/create-table-as-clone
 
 3.  在查詢編輯器中，粘貼以下代碼創建**dbo.dimension_city**和**dbo.fact_sale**表的克隆。
 
-> --Create a clone of the dbo.dimension_city table.
->
-> CREATE TABLE \[dbo\].\[dimension_city1\] AS CLONE OF
-> \[dbo\].\[dimension_city\];
->
-> --Create a clone of the dbo.fact_sale table.
->
-> CREATE TABLE \[dbo\].\[fact_sale1\] AS CLONE OF \[dbo\].\[fact_sale\];
->
+    ```
+    --Create a clone of the dbo.dimension_city table.
+    CREATE TABLE [dbo].[dimension_city1] AS CLONE OF [dbo].[dimension_city];
+    
+    --Create a clone of the dbo.fact_sale table.
+    CREATE TABLE [dbo].[fact_sale1] AS CLONE OF [dbo].[fact_sale];
+    ```
+    
 > ![A screenshot of a computer Description automatically
 > generated](./media/image51.png)
 
@@ -540,8 +493,8 @@ OF](https://learn.microsoft.com/en-us/sql/t-sql/statements/create-table-as-clone
 2.  在 **WideWorldImporter** 倉庫中創建一個名為 **dbo1**
     的新模式。**複製粘貼**並**運行**如下 T-SQL 代碼，如下圖所示:
 
-> CREATE SCHEMA dbo1;
->
+  +++CREATE SCHEMA dbo1+++
+  
 > ![A screenshot of a computer Description automatically
 > generated](./media/image60.png)
 >
@@ -551,15 +504,13 @@ OF](https://learn.microsoft.com/en-us/sql/t-sql/statements/create-table-as-clone
 3.  在查詢編輯器中，刪除現有代碼，粘貼以下內容以創建 **dbo1** 模式中
     **dbo.dimension_city** 和 dbo.**fact_sale tables** 的克隆。
 
-> --Create a clone of the dbo.dimension_city table in the dbo1 schema.
->
-> CREATE TABLE \[dbo1\].\[dimension_city1\] AS CLONE OF
-> \[dbo\].\[dimension_city\];
->
-> --Create a clone of the dbo.fact_sale table in the dbo1 schema.
->
-> CREATE TABLE \[dbo1\].\[fact_sale1\] AS CLONE OF
-> \[dbo\].\[fact_sale\];
+    ```
+    --Create a clone of the dbo.dimension_city table in the dbo1 schema.
+    CREATE TABLE [dbo1].[dimension_city1] AS CLONE OF [dbo].[dimension_city];
+    
+    --Create a clone of the dbo.fact_sale table in the dbo1 schema.
+    CREATE TABLE [dbo1].[fact_sale1] AS CLONE OF [dbo].[fact_sale];
+    ```
 
 4.  選擇 **Run** 以執行查詢。查詢執行需要幾秒鐘。
 
@@ -610,95 +561,54 @@ OF](https://learn.microsoft.com/en-us/sql/t-sql/statements/create-table-as-clone
 
 2.  在查詢編輯器中，**粘貼**以下代碼以創建存儲過程**dbo.populate_aggregate_sale_by_city**。該存儲過程將在後續步驟創建並加載**dbo.aggregate_sale_by_date_city**表。
 
-> --Drop the stored procedure if it already exists.
->
-> DROP PROCEDURE IF EXISTS \[dbo\].\[populate_aggregate_sale_by_city\]
->
-> GO
->
-> --Create the populate_aggregate_sale_by_city stored procedure.
->
-> CREATE PROCEDURE \[dbo\].\[populate_aggregate_sale_by_city\]
->
-> AS
->
-> BEGIN
->
-> --If the aggregate table already exists, drop it. Then create the
-> table.
->
-> DROP TABLE IF EXISTS \[dbo\].\[aggregate_sale_by_date_city\];
->
-> CREATE TABLE \[dbo\].\[aggregate_sale_by_date_city\]
->
-> (
->
-> \[Date\] \[DATETIME2\](6),
->
-> \[City\] \[VARCHAR\](8000),
->
-> \[StateProvince\] \[VARCHAR\](8000),
->
-> \[SalesTerritory\] \[VARCHAR\](8000),
->
-> \[SumOfTotalExcludingTax\] \[DECIMAL\](38,2),
->
-> \[SumOfTaxAmount\] \[DECIMAL\](38,6),
->
-> \[SumOfTotalIncludingTax\] \[DECIMAL\](38,6),
->
-> \[SumOfProfit\] \[DECIMAL\](38,2)
->
-> );
->
-> --Reload the aggregated dataset to the table.
->
-> INSERT INTO \[dbo\].\[aggregate_sale_by_date_city\]
->
-> SELECT
->
-> FS.\[InvoiceDateKey\] AS \[Date\],
->
-> DC.\[City\],
->
-> DC.\[StateProvince\],
->
-> DC.\[SalesTerritory\],
->
-> SUM(FS.\[TotalExcludingTax\]) AS \[SumOfTotalExcludingTax\],
->
-> SUM(FS.\[TaxAmount\]) AS \[SumOfTaxAmount\],
->
-> SUM(FS.\[TotalIncludingTax\]) AS \[SumOfTotalIncludingTax\],
->
-> SUM(FS.\[Profit\]) AS \[SumOfProfit\]
->
-> FROM \[dbo\].\[fact_sale\] AS FS
->
-> INNER JOIN \[dbo\].\[dimension_city\] AS DC
->
-> ON FS.\[CityKey\] = DC.\[CityKey\]
->
-> GROUP BY
->
-> FS.\[InvoiceDateKey\],
->
-> DC.\[City\],
->
-> DC.\[StateProvince\],
->
-> DC.\[SalesTerritory\]
->
-> ORDER BY
->
-> FS.\[InvoiceDateKey\],
->
-> DC.\[StateProvince\],
->
-> DC.\[City\];
->
-> END
->
+    ```
+    --Drop the stored procedure if it already exists.
+    DROP PROCEDURE IF EXISTS [dbo].[populate_aggregate_sale_by_city]
+    GO
+    
+    --Create the populate_aggregate_sale_by_city stored procedure.
+    CREATE PROCEDURE [dbo].[populate_aggregate_sale_by_city]
+    AS
+    BEGIN
+        --If the aggregate table already exists, drop it. Then create the table.
+        DROP TABLE IF EXISTS [dbo].[aggregate_sale_by_date_city];
+        CREATE TABLE [dbo].[aggregate_sale_by_date_city]
+            (
+                [Date] [DATETIME2](6),
+                [City] [VARCHAR](8000),
+                [StateProvince] [VARCHAR](8000),
+                [SalesTerritory] [VARCHAR](8000),
+                [SumOfTotalExcludingTax] [DECIMAL](38,2),
+                [SumOfTaxAmount] [DECIMAL](38,6),
+                [SumOfTotalIncludingTax] [DECIMAL](38,6),
+                [SumOfProfit] [DECIMAL](38,2)
+            );
+    
+        --Reload the aggregated dataset to the table.
+        INSERT INTO [dbo].[aggregate_sale_by_date_city]
+        SELECT
+            FS.[InvoiceDateKey] AS [Date], 
+            DC.[City], 
+            DC.[StateProvince], 
+            DC.[SalesTerritory], 
+            SUM(FS.[TotalExcludingTax]) AS [SumOfTotalExcludingTax], 
+            SUM(FS.[TaxAmount]) AS [SumOfTaxAmount], 
+            SUM(FS.[TotalIncludingTax]) AS [SumOfTotalIncludingTax], 
+            SUM(FS.[Profit]) AS [SumOfProfit]
+        FROM [dbo].[fact_sale] AS FS
+        INNER JOIN [dbo].[dimension_city] AS DC
+            ON FS.[CityKey] = DC.[CityKey]
+        GROUP BY
+            FS.[InvoiceDateKey],
+            DC.[City], 
+            DC.[StateProvince], 
+            DC.[SalesTerritory]
+        ORDER BY 
+            FS.[InvoiceDateKey], 
+            DC.[StateProvince], 
+            DC.[City];
+    END
+    ```
 > ![A screenshot of a computer Description automatically
 > generated](./media/image71.png)
 >
@@ -740,10 +650,11 @@ OF](https://learn.microsoft.com/en-us/sql/t-sql/statements/create-table-as-clone
     **dbo.populate_aggregate_sale_by_city** 以創建
     **dbo.aggregate_sale_by_date_city** 表。運行查詢。
 
-> --Execute the stored procedure to create the aggregate table.
->
-> EXEC \[dbo\].\[populate_aggregate_sale_by_city\];
->
+    ```
+    --Execute the stored procedure to create the aggregate table.
+    EXEC [dbo].[populate_aggregate_sale_by_city];
+    ```
+    
 > ![A screenshot of a computer Description automatically
 > generated](./media/image79.png)
 >
@@ -787,36 +698,23 @@ generated](./media/image85.png)
 2.  在查詢編輯器中，粘貼以下代碼創建視圖 Top10CustomerView。選擇
     **Run** 以執行查詢。
 
-CREATE VIEW dbo.Top10CustomersView
-
-AS
-
-SELECT TOP (10)
-
-    FS.\[CustomerKey\],
-
-    DC.\[Customer\],
-
-    SUM(FS.TotalIncludingTax) AS TotalSalesAmount
-
-FROM
-
-    \[dbo\].\[dimension_customer\] AS DC
-
-INNER JOIN
-
-    \[dbo\].\[fact_sale\] AS FS ON DC.\[CustomerKey\] =
-FS.\[CustomerKey\]
-
-GROUP BY
-
-    FS.\[CustomerKey\],
-
-    DC.\[Customer\]
-
-ORDER BY
-
-    TotalSalesAmount DESC;
+    ```
+    CREATE VIEW dbo.Top10CustomersView
+    AS
+    SELECT TOP (10)
+        FS.[CustomerKey],
+        DC.[Customer],
+        SUM(FS.TotalIncludingTax) AS TotalSalesAmount
+    FROM
+        [dbo].[dimension_customer] AS DC
+    INNER JOIN
+        [dbo].[fact_sale] AS FS ON DC.[CustomerKey] = FS.[CustomerKey]
+    GROUP BY
+        FS.[CustomerKey],
+        DC.[Customer]
+    ORDER BY
+        TotalSalesAmount DESC;
+    ```
 
 ![A screenshot of a computer Description automatically
 generated](./media/image87.png)
@@ -849,14 +747,12 @@ generated](./media/image92.png)
 7.  在查詢編輯器中，粘貼以下代碼。這將**TotalIncludingTax**列值更新為**20000000000**，適用於**SaleKey**
     值為**22632918**的記錄**。** 選擇 **Run** 以執行查詢。
 
-/\*Update the TotalIncludingTax value of the record with SaleKey value
-of 22632918\*/
-
-UPDATE \[dbo\].\[fact_sale\]
-
-SET TotalIncludingTax = 200000000
-
-WHERE SaleKey = 22632918;
+    ```
+    /*Update the TotalIncludingTax value of the record with SaleKey value of 22632918*/
+    UPDATE [dbo].[fact_sale]
+    SET TotalIncludingTax = 200000000
+    WHERE SaleKey = 22632918;
+    ```
 
 ![A screenshot of a computer Description automatically
 generated](./media/image93.png)
@@ -867,7 +763,9 @@ generated](./media/image94.png)
 8.  在查詢編輯器中，粘貼以下代碼。CURRENT_TIMESTAMP T-SQL 函數返回當前
     UTC 時間戳為**datetime**。選擇**Run**以執行查詢。
 
-SELECT CURRENT_TIMESTAMP;
+    ```
+    SELECT CURRENT_TIMESTAMP;
+    ```
 
 ![](./media/image95.png)
 
@@ -884,13 +782,12 @@ generated](./media/image96.png)
 12. 以下示例返回了按**TotalIncludingTax**排名前十的客戶列表，包括**SaleKey
     22632918**的新值。替換現有代碼，粘貼以下代碼，選擇**Run**以執行查詢。
 
-/\*View of Top10 Customers as of today after record updates\*/
-
-SELECT \*
-
-FROM \[WideWorldImporters\].\[dbo\].\[Top10CustomersView\]
-
-OPTION (FOR TIMESTAMP AS OF '2025-06-09T06:16:08.807');
+    ```
+    /*View of Top10 Customers as of today after record updates*/
+    SELECT *
+    FROM [WideWorldImporters].[dbo].[Top10CustomersView]
+    OPTION (FOR TIMESTAMP AS OF '2025-06-09T06:16:08.807');
+    ```
 
 ![A screenshot of a computer Description automatically
 generated](./media/image97.png)
@@ -899,13 +796,12 @@ generated](./media/image97.png)
     在**TotalIncludingTax**更新**SaleKey**
     **22632918**前的十大客戶名單。選擇**Run**以執行查詢。
 
-/\*View of Top10 Customers as of today before record updates\*/
-
-SELECT \*
-
-FROM \[WideWorldImporters\].\[dbo\].\[Top10CustomersView\]
-
-OPTION (FOR TIMESTAMP AS OF '2024-04-24T20:49:06.097');
+    ```
+    /*View of Top10 Customers as of today before record updates*/
+    SELECT *
+    FROM [WideWorldImporters].[dbo].[Top10CustomersView]
+    OPTION (FOR TIMESTAMP AS OF '2024-04-24T20:49:06.097');
+    ```
 
 ![A screenshot of a computer Description automatically
 generated](./media/image98.png)
@@ -1193,23 +1089,16 @@ SQL 端點之間運行 T-SQL 查詢是多麼容易 。你可以像 SQL Server
 2.  在查詢編輯器中，複製粘貼以下 T-SQL
     代碼。選擇**Run**按鈕來執行查詢。查詢完成後，你會看到結果。
 
-> SQLCopy
->
-> SELECT Sales.StockItemKey,
->
-> Sales.Description,
->
-> SUM(CAST(Sales.Quantity AS int)) AS SoldQuantity,
->
-> c.Customer
->
-> FROM \[dbo\].\[fact_sale\] AS Sales,
->
-> \[ShortcutExercise\].\[dbo\].\[dimension_customer\] AS c
->
-> WHERE Sales.CustomerKey = c.CustomerKey
->
-> GROUP BY Sales.StockItemKey, Sales.Description, c.Customer;
+    ```
+    SELECT Sales.StockItemKey, 
+    Sales.Description, 
+    SUM(CAST(Sales.Quantity AS int)) AS SoldQuantity, 
+    c.Customer
+    FROM [dbo].[fact_sale] AS Sales,
+    [ShortcutExercise].[dbo].[dimension_customer] AS c
+    WHERE Sales.CustomerKey = c.CustomerKey
+    GROUP BY Sales.StockItemKey, Sales.Description, c.Customer;
+    ```
 
 ![](./media/image138.png)
 
@@ -1417,3 +1306,4 @@ Blob存儲中的數據傳輸到指定的表中。後續任務涉及數據管理�
 BI中的地理數據表示。隨後，創建了一系列Power
 BI報告，包括柱狀圖、地圖和表格，以促進深入的銷售數據分析。最後一項任務是從OneLake數據中心生成報告，進一步強調Fabric中數據源的多樣性。最後，實驗室還提供了資源管理的見解，強調清理程序對於保持高效工作環境的重要性。這些任務綜合起來，提供了對在
 Microsoft Fabric 中設置、管理和分析數據的全面理解。
+
