@@ -470,26 +470,21 @@ Pool。这意味着创建笔记本时，您无需担心指定任何 Spark
 
 **注意**：如果你看不到輸出，請點擊**Spark**作業左側的水平線。
 
-    ```
-    from pyspark.sql.functions import col, year, month, quarter
-    
-    table_name = 'fact_sale'
-    
-    df = spark.read.format("parquet").load('Files/fact_sale_1y_full')
-    df = df.withColumn('Year', year(col("InvoiceDateKey")))
-    df = df.withColumn('Quarter', quarter(col("InvoiceDateKey")))
-    df = df.withColumn('Month', month(col("InvoiceDateKey")))
-    
-    df.write.mode("overwrite").format("delta").partitionBy("Year","Quarter").save("Tables/" + table_name)
-    ```
+```
+from pyspark.sql.functions import col, year, month, quarter
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image70.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image71.png)
->
-> ![](./media/image72.png)
+table_name = 'fact_sale'
+
+df = spark.read.format("parquet").load('Files/fact_sale_1y_full')
+df = df.withColumn('Year', year(col("InvoiceDateKey")))
+df = df.withColumn('Quarter', quarter(col("InvoiceDateKey")))
+df = df.withColumn('Month', month(col("InvoiceDateKey")))
+
+df.write.mode("overwrite").format("delta").partitionBy("Year","Quarter").save("Tables/dbo/" + table_name) 
+```
+
+ ![A screenshot of a computer Description automatically
+ generated](./media/img2.png)
 
 7.  表格加載完成後，你可以繼續加載其餘尺寸的數據。接下來的單元格創建一個函數，用於讀取
     lakehouse
@@ -499,36 +494,34 @@ Pool。这意味着创建笔记本时，您无需担心指定任何 Spark
     Code**圖標，向筆記本添加一個新的代碼單元格，並輸入以下代碼。点击 **▷
     Run cell**  按钮，查看输出结果。
 
-    ```
-    from pyspark.sql.types import *
-    
-    def loadFullDataFromSource(table_name):
-        df = spark.read.format("parquet").load('Files/' + table_name)
-        df = df.drop("Photo")
-        df.write.mode("overwrite").format("delta").save("Tables/" + table_name)
-    
-    full_tables = [
-        'dimension_city',
-        'dimension_customer',
-        'dimension_date',
-        'dimension_employee',
-        'dimension_stock_item'
-    ]
-    
-    for table in full_tables:
-        loadFullDataFromSource(table)
-    ```
-> ![A screenshot of a computer Description automatically
-> generated](./media/image73.png)
->
-> ![](./media/image74.png)
+```
+from pyspark.sql.types import *
+
+def loadFullDataFromSource(table_name):
+    df = spark.read.format("parquet").load('Files/' + table_name)
+    df = df.drop("Photo")
+    df.write.mode("overwrite").format("delta").save("Tables/" + table_name)
+
+full_tables = [
+    'dimension_city',
+    'dimension_customer',
+    'dimension_date',
+    'dimension_employee',
+    'dimension_stock_item'
+]
+
+for table in full_tables:
+    loadFullDataFromSource(table)
+```
+ ![A screenshot of a computer Description automatically
+ generated](./media/img3.png)
 
 6.  要验证已创建的表，请在**Explorer**面板的“**Tables**”中点击并选择刷新，直到所有表都出现在列表中。
 
 > ![](./media/image75.png)
 >
 > ![A screenshot of a computer Description automatically
-> generated](./media/image76.png)
+> generated](./media/img9.png)
 
 ### **任務2：整合業務數據以實現聚合**
 
@@ -556,14 +549,14 @@ SQL或T-SQL），他們都處理同一份數據。Fabric使這些經驗和偏好
 在這個單元格中，你創建三個不同的 Spark
 數據幀，每個數據幀都引用一個已有的 delta 表。
 
-    ```
-    df_fact_sale = spark.read.table("wwilakehouse.fact_sale") 
-    df_dimension_date = spark.read.table("wwilakehouse.dimension_date")
-    df_dimension_city = spark.read.table("wwilakehouse.dimension_city")
-    ```
+```
+df_fact_sale = spark.read.format("delta").load("Tables/dbo/fact_sale")
+df_dimension_date = spark.read.format("delta").load("Tables/dbo/dimension_date")
+df_dimension_city = spark.read.format("delta").load("Tables/dbo/dimension_city")
+```
 
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image77.png)
+incorrect.](./media/img4.png)
 
 2.  使用單元格輸出下方的 **+
     Code**圖標，向筆記本添加一個新的代碼單元格，並輸入以下代碼。点击 **▷
@@ -572,26 +565,26 @@ incorrect.](./media/image77.png)
 在這個單元格裡，你用之前創建的數據幀連接這些表，進行分組生成聚合，重命名幾列，最後在
 lakehouse 的**表格**部分寫成一個delta表。
 
-    ```
-    sale_by_date_city = df_fact_sale.alias("sale") \
-    .join(df_dimension_date.alias("date"), df_fact_sale.InvoiceDateKey == df_dimension_date.Date, "inner") \
-    .join(df_dimension_city.alias("city"), df_fact_sale.CityKey == df_dimension_city.CityKey, "inner") \
-    .select("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", 
-     "city.SalesTerritory", "sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")\
-    .groupBy("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", 
-     "city.SalesTerritory")\
-    .sum("sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")\
-    .withColumnRenamed("sum(TotalExcludingTax)", "SumOfTotalExcludingTax")\
-    .withColumnRenamed("sum(TaxAmount)", "SumOfTaxAmount")\
-    .withColumnRenamed("sum(TotalIncludingTax)", "SumOfTotalIncludingTax")\
-    .withColumnRenamed("sum(Profit)", "SumOfProfit")\
-    .orderBy("date.Date", "city.StateProvince", "city.City")
-    
-    sale_by_date_city.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_city")
-    ```
+```
+sale_by_date_city = df_fact_sale.alias("sale") \
+.join(df_dimension_date.alias("date"), df_fact_sale.InvoiceDateKey == df_dimension_date.Date, "inner") \
+.join(df_dimension_city.alias("city"), df_fact_sale.CityKey == df_dimension_city.CityKey, "inner") \
+.select("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", 
+ "city.SalesTerritory", "sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")\
+.groupBy("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", 
+ "city.SalesTerritory")\
+.sum("sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")\
+.withColumnRenamed("sum(TotalExcludingTax)", "SumOfTotalExcludingTax")\
+.withColumnRenamed("sum(TaxAmount)", "SumOfTaxAmount")\
+.withColumnRenamed("sum(TotalIncludingTax)", "SumOfTotalIncludingTax")\
+.withColumnRenamed("sum(Profit)", "SumOfProfit")\
+.orderBy("date.Date", "city.StateProvince", "city.City")
+
+sale_by_date_city.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_city")
+```
 
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image78.png)
+incorrect.](./media/img5.png)
 
 **Approach \#2 (sale_by_date_employee)**
 
@@ -608,51 +601,38 @@ Spark 視圖，進行分組生成聚合，並重命名部分列。最后，你�
 在這個單元格裡，你通過連接三個表創建臨時 Spark
 視圖，進行分組生成聚合，並重命名部分列。
 
-    ```
-    %%sql
-    CREATE OR REPLACE TEMPORARY VIEW sale_by_date_employee
-    AS
-    SELECT
+```
+spark.sql("""
+CREATE OR REPLACE TEMPORARY VIEW sale_by_date_employee
+AS
+SELECT
            DD.Date, DD.CalendarMonthLabel
-     , DD.Day, DD.ShortMonth Month, CalendarYear Year
-          ,DE.PreferredName, DE.Employee
-          ,SUM(FS.TotalExcludingTax) SumOfTotalExcludingTax
-          ,SUM(FS.TaxAmount) SumOfTaxAmount
-          ,SUM(FS.TotalIncludingTax) SumOfTotalIncludingTax
-          ,SUM(Profit) SumOfProfit 
-    FROM wwilakehouse.fact_sale FS
-    INNER JOIN wwilakehouse.dimension_date DD ON FS.InvoiceDateKey = DD.Date
-    INNER JOIN wwilakehouse.dimension_Employee DE ON FS.SalespersonKey = DE.EmployeeKey
-    GROUP BY DD.Date, DD.CalendarMonthLabel, DD.Day, DD.ShortMonth, DD.CalendarYear, DE.PreferredName, DE.Employee
-    ORDER BY DD.Date ASC, DE.PreferredName ASC, DE.Employee ASC
-    ```
+        , DD.Day, DD.ShortMonth Month, CalendarYear Year
+        , DE.PreferredName, DE.Employee
+        , SUM(FS.TotalExcludingTax) SumOfTotalExcludingTax
+        , SUM(FS.TaxAmount) SumOfTaxAmount
+        , SUM(FS.TotalIncludingTax) SumOfTotalIncludingTax
+        , SUM(FS.Profit) SumOfProfit
+FROM delta.`Tables/dbo/fact_sale` FS
+INNER JOIN delta.`Tables/dbo/dimension_date` DD ON FS.InvoiceDateKey = DD.Date
+INNER JOIN delta.`Tables/dbo/dimension_employee` DE ON FS.SalespersonKey = DE.EmployeeKey
+GROUP BY DD.Date, DD.CalendarMonthLabel, DD.Day, DD.ShortMonth, DD.CalendarYear, DE.PreferredName, DE.Employee
+ORDER BY DD.Date ASC, DE.PreferredName ASC, DE.Employee ASC
+""")
 
+sale_by_date_employee = spark.sql("SELECT * FROM sale_by_date_employee")
+sale_by_date_employee.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/dbo/aggregate_sale_by_date_employee") 
+```
  ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image79.png)
+incorrect.](./media/img6.png)
 
-8.  使用單元格輸出下方的 **+
-    Code**圖標，向筆記本添加一個新的代碼單元格，並輸入以下代碼。点击 **▷
-    Run cell** 按钮，查看输出结果
-
-在这个单元格中，你从前一个单元创建的临时 Spark
-视图读取数据，最后将其写成 Lakehouse 的 **Tables** 部分的 delta 表。
-
-sale_by_date_employee = spark.sql("SELECT \* FROM
-sale_by_date_employee")
-
-sale_by_date_employee.write.mode("overwrite").format("delta").option("overwriteSchema",
-"true").save("Tables/aggregate_sale_by_date_employee")
+8.  要驗證已創建的**表**，請點擊並選擇“refresh”，直到匯總表出現。
 
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image80.png)
-
-9.  要驗證已創建的**表**，請點擊並選擇“refresh”，直到匯總表出現。
+incorrect.](./media/img7.png)
 
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image81.png)
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image82.png)
+incorrect.](./media/img8.png)
 
 這兩種方法的結果相似。你可以根據自己的背景和偏好選擇，以減少學習新技術或在性能上做出妥協。
 
@@ -907,3 +887,4 @@ BI中設置和配置數據管理與報告所需的關鍵組件。它包括激活
 OneDrive、創建工作區和設置湖屋等任務。實驗室還涵蓋採樣數據的導入、優化差異表以及在
 Power BI 中構建報告以實現有效數據分析等任務。目标旨在提供使用Microsoft
 Fabric和Power BI进行数据管理和报告目的的实践经验
+
