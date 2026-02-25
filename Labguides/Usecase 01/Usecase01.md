@@ -502,26 +502,21 @@ Pool が数秒で起動し、Spark
 **注記**: 出力が表示されない場合は、**Spark
 jobs**の左側にある水平線をクリックします。
 
-    ```
-    from pyspark.sql.functions import col, year, month, quarter
-    
-    table_name = 'fact_sale'
-    
-    df = spark.read.format("parquet").load('Files/fact_sale_1y_full')
-    df = df.withColumn('Year', year(col("InvoiceDateKey")))
-    df = df.withColumn('Quarter', quarter(col("InvoiceDateKey")))
-    df = df.withColumn('Month', month(col("InvoiceDateKey")))
-    
-    df.write.mode("overwrite").format("delta").partitionBy("Year","Quarter").save("Tables/" + table_name)
-    ```
+```
+from pyspark.sql.functions import col, year, month, quarter
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image70.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image71.png)
->
-> ![](./media/image72.png)
+table_name = 'fact_sale'
+
+df = spark.read.format("parquet").load('Files/fact_sale_1y_full')
+df = df.withColumn('Year', year(col("InvoiceDateKey")))
+df = df.withColumn('Quarter', quarter(col("InvoiceDateKey")))
+df = df.withColumn('Month', month(col("InvoiceDateKey")))
+
+df.write.mode("overwrite").format("delta").partitionBy("Year","Quarter").save("Tables/dbo/" + table_name) 
+```
+
+ ![A screenshot of a computer Description automatically
+ generated](./media/img2.png)
 
 7.  テーブルがロードされたら、残りのディメンションのデータのロードに進むことができます。次のセルは、パラメータとして渡されたテーブル名ごとに、Lakehouseの**Files** セクションから生データを読み取る関数を作成します。次に、ディメンションテーブルのリストを作成します。最後に、テーブルのリストをループ処理し、入力パラメータから読み取ったテーブル名ごとに差分テーブルを作成します。
 
@@ -529,29 +524,27 @@ jobs**の左側にある水平線をクリックします。
     Code** 」アイコンを使用してノートブックに新しいコードセルを追加し、そこに以下のコードを入力します。**▷
     Run cell** ボタンをクリックして出力を確認します。　
 
-    ```
-    from pyspark.sql.types import *
-    
-    def loadFullDataFromSource(table_name):
-        df = spark.read.format("parquet").load('Files/' + table_name)
-        df = df.drop("Photo")
-        df.write.mode("overwrite").format("delta").save("Tables/" + table_name)
-    
-    full_tables = [
-        'dimension_city',
-        'dimension_customer',
-        'dimension_date',
-        'dimension_employee',
-        'dimension_stock_item'
-    ]
-    
-    for table in full_tables:
-        loadFullDataFromSource(table)
-    ```
-> ![A screenshot of a computer Description automatically
-> generated](./media/image73.png)
->
-> ![](./media/image74.png)
+```
+from pyspark.sql.types import *
+
+def loadFullDataFromSource(table_name):
+    df = spark.read.format("parquet").load('Files/' + table_name)
+    df = df.drop("Photo")
+    df.write.mode("overwrite").format("delta").save("Tables/" + table_name)
+
+full_tables = [
+    'dimension_city',
+    'dimension_customer',
+    'dimension_date',
+    'dimension_employee',
+    'dimension_stock_item'
+]
+
+for table in full_tables:
+    loadFullDataFromSource(table)
+```
+ ![A screenshot of a computer Description automatically
+ generated](./media/img3.png)
 
 6.  作成されたテーブルを検証するには、すべてのテーブルがリストに表示されるまで、**Explorer** パネルの**Tables** をクリックして更新を選択します。
 
@@ -585,14 +578,14 @@ byを使用して集計を生成し、いくつかの列の名前を変更し、
 このセルでは、それぞれ既存のデルタ テーブルを参照する 3 つの異なる Spark
 データフレームを作成します。
 
-    ```
-    df_fact_sale = spark.read.table("wwilakehouse.fact_sale") 
-    df_dimension_date = spark.read.table("wwilakehouse.dimension_date")
-    df_dimension_city = spark.read.table("wwilakehouse.dimension_city")
-    ```
+```
+df_fact_sale = spark.read.format("delta").load("Tables/dbo/fact_sale")
+df_dimension_date = spark.read.format("delta").load("Tables/dbo/dimension_date")
+df_dimension_city = spark.read.format("delta").load("Tables/dbo/dimension_city")
+```
 
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image77.png)
+incorrect.](./media/img4.png)
 
 2.  セル出力の下にある「+ Code
     」アイコンを使用してノートブックに新しいコードセルを追加し、次のコードを入力します。▷
@@ -601,26 +594,26 @@ incorrect.](./media/image77.png)
 このセルでは、先ほど作成したデータフレームを使用してこれらのテーブルを結合し、グループ化して集計を生成し、いくつかの列の名前を変更し、最後にLakehouseの**Tables** セクションにデルタ
 テーブルとして書き込みます。
 
-    ```
-    sale_by_date_city = df_fact_sale.alias("sale") \
-    .join(df_dimension_date.alias("date"), df_fact_sale.InvoiceDateKey == df_dimension_date.Date, "inner") \
-    .join(df_dimension_city.alias("city"), df_fact_sale.CityKey == df_dimension_city.CityKey, "inner") \
-    .select("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", 
-     "city.SalesTerritory", "sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")\
-    .groupBy("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", 
-     "city.SalesTerritory")\
-    .sum("sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")\
-    .withColumnRenamed("sum(TotalExcludingTax)", "SumOfTotalExcludingTax")\
-    .withColumnRenamed("sum(TaxAmount)", "SumOfTaxAmount")\
-    .withColumnRenamed("sum(TotalIncludingTax)", "SumOfTotalIncludingTax")\
-    .withColumnRenamed("sum(Profit)", "SumOfProfit")\
-    .orderBy("date.Date", "city.StateProvince", "city.City")
-    
-    sale_by_date_city.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_city")
-    ```
+```
+sale_by_date_city = df_fact_sale.alias("sale") \
+.join(df_dimension_date.alias("date"), df_fact_sale.InvoiceDateKey == df_dimension_date.Date, "inner") \
+.join(df_dimension_city.alias("city"), df_fact_sale.CityKey == df_dimension_city.CityKey, "inner") \
+.select("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", 
+ "city.SalesTerritory", "sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")\
+.groupBy("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", 
+ "city.SalesTerritory")\
+.sum("sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")\
+.withColumnRenamed("sum(TotalExcludingTax)", "SumOfTotalExcludingTax")\
+.withColumnRenamed("sum(TaxAmount)", "SumOfTaxAmount")\
+.withColumnRenamed("sum(TotalIncludingTax)", "SumOfTotalIncludingTax")\
+.withColumnRenamed("sum(Profit)", "SumOfProfit")\
+.orderBy("date.Date", "city.StateProvince", "city.City")
+
+sale_by_date_city.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_city")
+```
 
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image78.png)
+incorrect.](./media/img5.png)
 
 **アプローチ 2 (sale_by_date_employee)**
 
@@ -635,50 +628,39 @@ byを使用して集計を生成し、いくつかの列の名前を変更しま
 このセルでは、3 つのテーブルを結合して一時的な Spark
 ビューを作成し、グループ化を実行して集計を生成し、いくつかの列の名前を変更します。
 
-    ```
-    %%sql
-    CREATE OR REPLACE TEMPORARY VIEW sale_by_date_employee
-    AS
-    SELECT
+```
+spark.sql("""
+CREATE OR REPLACE TEMPORARY VIEW sale_by_date_employee
+AS
+SELECT
            DD.Date, DD.CalendarMonthLabel
-     , DD.Day, DD.ShortMonth Month, CalendarYear Year
-          ,DE.PreferredName, DE.Employee
-          ,SUM(FS.TotalExcludingTax) SumOfTotalExcludingTax
-          ,SUM(FS.TaxAmount) SumOfTaxAmount
-          ,SUM(FS.TotalIncludingTax) SumOfTotalIncludingTax
-          ,SUM(Profit) SumOfProfit 
-    FROM wwilakehouse.fact_sale FS
-    INNER JOIN wwilakehouse.dimension_date DD ON FS.InvoiceDateKey = DD.Date
-    INNER JOIN wwilakehouse.dimension_Employee DE ON FS.SalespersonKey = DE.EmployeeKey
-    GROUP BY DD.Date, DD.CalendarMonthLabel, DD.Day, DD.ShortMonth, DD.CalendarYear, DE.PreferredName, DE.Employee
-    ORDER BY DD.Date ASC, DE.PreferredName ASC, DE.Employee ASC
-    ```
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image79.png)
+        , DD.Day, DD.ShortMonth Month, CalendarYear Year
+        , DE.PreferredName, DE.Employee
+        , SUM(FS.TotalExcludingTax) SumOfTotalExcludingTax
+        , SUM(FS.TaxAmount) SumOfTaxAmount
+        , SUM(FS.TotalIncludingTax) SumOfTotalIncludingTax
+        , SUM(FS.Profit) SumOfProfit
+FROM delta.`Tables/dbo/fact_sale` FS
+INNER JOIN delta.`Tables/dbo/dimension_date` DD ON FS.InvoiceDateKey = DD.Date
+INNER JOIN delta.`Tables/dbo/dimension_employee` DE ON FS.SalespersonKey = DE.EmployeeKey
+GROUP BY DD.Date, DD.CalendarMonthLabel, DD.Day, DD.ShortMonth, DD.CalendarYear, DE.PreferredName, DE.Employee
+ORDER BY DD.Date ASC, DE.PreferredName ASC, DE.Employee ASC
+""")
 
-8.  セル出力の下にある「**+ Code**
-    」アイコンを使用してノートブックに新しいコードセルを追加し、次のコードを入力します。**▷
-    Run cell**ボタンをクリックして出力を確認します。
+sale_by_date_employee = spark.sql("SELECT * FROM sale_by_date_employee")
+sale_by_date_employee.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/dbo/aggregate_sale_by_date_employee") 
+```
+ ![A screenshot of a computer AI-generated content may be
+incorrect.](./media/img6.png)
 
-このセルでは、前のセルで作成された一時的な Spark
-ビューから読み取り、最終的にそれをLakehouseの**Tables** セクションにデルタ
-テーブルとして書き込みます。
 
-    ```
-    sale_by_date_employee = spark.sql("SELECT * FROM sale_by_date_employee")
-    sale_by_date_employee.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_employee")
-    ```
+8.  作成されたテーブルを検証するには、集計テーブルが表示されるまで**テーブル**をクリックして更新を選択します。
 
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image80.png)
-
-9.  作成されたテーブルを検証するには、集計テーブルが表示されるまで**テーブル**をクリックして更新を選択します。
+incorrect.](./media/img7.png)
 
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image81.png)
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image82.png)
+incorrect.](./media/img8.png)
 
 どちらのアプローチも結果は同様です。ご自身のバックグラウンドや好みに合わせて選択することで、新しい技術の習得やパフォーマンスの妥協を最小限に抑えることができます。
 
@@ -960,3 +942,4 @@ DirectQueryとインポートモードの利点を組み合わせながら、そ
 FabricとPower
 BIの必須コンポーネントの設定と構成に焦点を当てています。トライアルの有効化、OneDriveの設定、ワークスペースの作成、lakehouseの設定などタスクが含まれます。また、サンプルデータの取り込み、差分テーブルの最適化、PowerBIでの効果的なデータ分析のためのレポート作成などのタスクも扱います。このラボの目的は、データ管理とレポート作成のためのMicrosoft
 FabricとPower BIの活用方法を実践的に体験してもらうことです。
+
