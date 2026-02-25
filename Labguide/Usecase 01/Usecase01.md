@@ -75,7 +75,7 @@ pasos.
 
 ## Ejercicio 1: Configurar un escenario de Lakehouse de extremo a extremo
 
-### Tarea 1: Iniciar sesión en la cuenta de Power BI y registrarse en la prueba gratuita de Microsoft Fabric
+### Tarea 1: Iniciar sesión en la cuenta de Power BI 
 
 1.  Abra su navegador, vaya a la barra de direcciones y escriba o pegue
     la siguiente URL:+++https://app.fabric.microsoft.com/+++ y luego
@@ -1104,6 +1104,7 @@ Power BI, con el fin de realizar un análisis de datos eficiente.
 El objetivo principal es ofrecer una experiencia práctica que permita
 comprender cómo utilizar Microsoft Fabric y Power BI para la gestión
 integral de datos y la generación de informes empresariales.
+
 
 
 
