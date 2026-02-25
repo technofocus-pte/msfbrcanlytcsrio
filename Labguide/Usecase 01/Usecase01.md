@@ -600,7 +600,7 @@ for table in full_tables:
     in the list.
 
 > ![](./media/image75.png)
->
+
 > ![A screenshot of a computer Description automatically
 > generated](./media/img9.png)
 
@@ -1048,6 +1048,7 @@ The lab also covers tasks related to ingesting sample data, optimizing
 delta tables, and building reports in Power BI for effective data
 analysis. The objectives aim to provide hands-on experience in utilizing
 Microsoft Fabric and Power BI for data management and reporting purpo
+
 
 
 
