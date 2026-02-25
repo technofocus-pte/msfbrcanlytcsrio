@@ -374,10 +374,10 @@ incorrect.](./media/image45.png)
 
 5.  On newly created data factory pipeline
     i.e., **IngestDataFromSourceToLakehouse**, select **Copy data**
-    dropdown and choose **Add to canvas** option.
+    dropdown and choose **Add copy data activity** option.
 
 > ![A screenshot of a computer Description automatically
-> generated](./media/image47.png)
+> generated](./media/img1.png)
 
 6.  With the **copy data** being selected, navigate to **Source** tab.
 
@@ -1065,5 +1065,6 @@ The lab also covers tasks related to ingesting sample data, optimizing
 delta tables, and building reports in Power BI for effective data
 analysis. The objectives aim to provide hands-on experience in utilizing
 Microsoft Fabric and Power BI for data management and reporting purpo
+
 
 
