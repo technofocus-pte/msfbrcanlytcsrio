@@ -64,7 +64,7 @@ analysis.
 
 ## Exercise 1: Setup Lakehouse end-to-end scenario
 
-### Task 1: Sign in to Power BI account and sign up for the free Microsoft Fabric trial
+### Task 1: Sign in to Power BI account 
 
 1.  Open your browser, navigate to the address bar, and type or paste
     the following URL:+++https://app.fabric.microsoft.com/+++ then press
@@ -1048,6 +1048,7 @@ The lab also covers tasks related to ingesting sample data, optimizing
 delta tables, and building reports in Power BI for effective data
 analysis. The objectives aim to provide hands-on experience in utilizing
 Microsoft Fabric and Power BI for data management and reporting purpo
+
 
 
 
