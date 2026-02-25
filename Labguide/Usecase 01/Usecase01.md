@@ -402,7 +402,7 @@ incorrect.](./media/image45.png)
     **Copy data** y elija la opción **Add copy data activity**.
 
 > ![A screenshot of a computer Description automatically
-> generated](./media/image47.png)
+> generated](./media/img1.png)
 
 6.  Con **Copy data** seleccionado, navegue a la pestaña **Source**.
 
@@ -1123,6 +1123,7 @@ Power BI, con el fin de realizar un análisis de datos eficiente.
 El objetivo principal es ofrecer una experiencia práctica que permita
 comprender cómo utilizar Microsoft Fabric y Power BI para la gestión
 integral de datos y la generación de informes empresariales.
+
 
 
 
