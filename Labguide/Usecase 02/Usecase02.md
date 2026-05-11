@@ -89,57 +89,122 @@ que tenga habilitada la versión de prueba de Fabric.
 
 ## Tarea 2: Crear un lakehouse e ingerir datos de ejemplo
 
-1.  En la página del espacio de trabajo **Data-FactoryXX**, navegue y
-    haga clic en el botón **+New item.**
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image10.png)
-
-2.  Haga clic en el recuadro **Lakehouse**.
+1.  En la página del espacio de trabajo **Data-FactoryXX**, navegar y
+    hacer clic en el botón **+New item**.
 
 ![A screenshot of a computer Description automatically
-generated](./media/image11.png)
+generated](./media/img1.png)
 
-3.  En el cuadro de diálogo **New lakehouse**, ingrese
-    +++**DataFactoryLakehouse**+++ en el campo **Name**, haga clic en
-    **Create** y abra el nuevo lakehouse.
+2.  Hacer clic en el recuadro **Lakehouse**.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image12.png)
+![A screenshot of a computer Description automatically
+generated](./media/img2.png)
+
+3.  En el cuadro de diálogo **New lakehouse**, ingresar
+    **+++DataFactoryLakehouse+++** en el campo **Name**, deseleccionar
+    los lakehouses schemas. Hacer clic en el botón **Create** y abrir el
+    nuevo lakehouse.
+
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/img3.png)
+
+![](./media/image4.png)
+
+4.  Hacer clic en **Get data** y seleccionar **Upload files** para
+    cargar archivos locales en el Lakehouse.
+
+![](./media/img5.png)
+
+5.  En la pestaña **Upload files**, hacer clic en la carpeta bajo
+    **Files**.
+
+![](./media/img6.png)
+
+6.  Navegar a la carpeta **C:\LabFiles\NYCTaxi** en la máquina virtual,
+    seleccionar **todos** los archivos y hacer clic en el botón
+    **Open**.
+
+![](./media/img7.png)
+
+7.  Hacer clic en el botón **Upload** y cerrar.
+
+![](./media/img8.png)
+
+8.  **Cerrar** el panel Upload files.
+
+![](./media/img9.png)
+
+9.  Hacer clic y seleccionar **refresh** en **Files**. El archivo
+    aparece.
+
+![](./media/img10.png)
+
+10. En la página del **Lakehouse**, navegar y hacer clic en **Open
+    notebook** en la barra de comandos, luego seleccionar **New
+    notebook**.
+
+> ![](./media/img11.png)
+
+11. Actualizar el código en la **celda** con el siguiente código y hacer
+    clic en **▷ Run cell**, que aparece a la izquierda de la celda al
+    pasar el cursor.
+
+```
+df = spark.read.parquet (
+"Files/part-00000-93b796dc-08a7-425c-a8a7-f91632812ae9-c000.snappy.parquet"
+）
+
+df.write.mode ( "overwrite" ). saveAsTable (
+「green_ripdata_2022」
+）
+```
+
+> ![](./media/img12.png)
 >
-> ![](./media/image13.png)
+> ![](./media/img13.png)
 
-4.  En la página principal del **lakehouse**, seleccione **Start with
-    sample data** para abrir la opción de copiar datos de ejemplo.
+12. Usar el ícono **+ Code** debajo del resultado de la celda para
+    agregar una nueva celda de código al notebook e ingresar el
+    siguiente código. Hacer clic en **▷ Run cell** y revisar el
+    resultado:
 
-> ![](./media/image14.png)
+```
+df = spark.read.parquet (
+"Files/part-00000-8601e1f7-764e-4adb-908e-55bb04c295bf-c000.snappy.parquet"
+）
 
-5.  Se mostrará el cuadro de diálogo **Use a sample**, seleccione el
-    recuadro de datos de ejemplo **NYCTaxi**.
+df.write.mode ( "overwrite" ). saveAsTable (
+「green_ripdata_2021」
+）
+```
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image15.png)
->
-> ![](./media/image16.png)
->
-> ![](./media/image17.png)
+![](./media/image14.png)
 
-6.  Para cambiar el nombre de la tabla, haga clic derecho sobre la
-    pestaña **green_tripdata_2022** justo encima del editor y seleccione
-    **Rename.**
+13. En el menú izquierdo, seleccionar el ícono **workspace** y luego
+    seleccionar el lakehouse **DataFactoryLakehouse**.
+
+![](./media/img15.png)
+
+![](./media/img16.png)
+
+14. Para cambiar el nombre de la tabla, hacer clic derecho en la pestaña
+    **green_tripdata_2022** justo encima del editor y seleccionar
+    **Rename**.
+
+![](./media/img17.png)
+
+![](./media/image18.png)
+
+![](./media/img19.png)
+
+7.  En el cuadro de diálogo **Rename**, en el campo **Name**, ingresar
+    **+++Bronze+++** para cambiar el nombre de la tabla. Luego, hacer
+    clic en el botón **Rename**.
 
 ![A screenshot of a computer Description automatically
-generated](./media/image18.png)
+generated](./media/img20.png)
 
-7.  En el cuadro de diálogo **Rename**, en el campo **Name**, ingrese
-    +++**Bronze**+++ para cambiar el nombre de la tabla. Luego, haga
-    clic en **Rename**.
-
-![A screenshot of a computer Description automatically
-generated](./media/image19.png)
-
-![A screenshot of a computer Description automatically
-generated](./media/image20.png)
+![](./media/img21.png)
 
 **Ejercicio 2: Transformar datos con un dataflow en Data Factory**
 
