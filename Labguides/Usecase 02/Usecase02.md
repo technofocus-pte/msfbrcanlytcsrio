@@ -81,57 +81,113 @@ Fabric でデータを操作する前に、Fabric
 > ![A screenshot of a computer Description automatically
 > generated](./media/image9.png)
 
-## タスク 2: Lakehouseを作成し、サンプルデータを取り込む
+## タスク2：レイクハウスを作成し、サンプルデータを取り込む
 
-1.  **Data-FactoryXX** ワークスペースページで、**+New item**
-     ボタンに移動してクリックします。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image10.png)
-
-2.  「**Lakehouse**」タイルをクリックします。
+1.  **Data- FactoryXX**ワークスペースページで、移動して**「+New
+    item」**ボタンをクリックします。
 
 ![A screenshot of a computer Description automatically
-generated](./media/image11.png)
+generated](./media/img1.png)
 
-3.  **New lakehouse** ダイアログボックスで、**Name** フィールドに
-    +++**DataFactoryLakehouse+++**と入力します。**Create**ボタンをクリックして、新しいLakehouseを開きます。
-    　
+2.  「**Lakehouse**」のタイルをクリックしてください。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image12.png)
+![A screenshot of a computer Description automatically
+generated](./media/img2.png)
+
+3.  **「New lakehouse** **」**ダイアログボックスで、 **「Name」**に「+++
+    **DataFactoryLakehouse +++」**と入力します**。** 「
+    lakehouses」スキーマの選択を解除します。「**Create」**ボタンをクリックして、新しいレイクハウスを開きます。
+
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/img3.png)
+
+![](./media/img4.png)
+
+4.  **「Get data」**をクリックし、 **「Upload
+    files」**を選択して、ローカルファイルをレイクハウスにアップロードします。
+
+![](./media/img5.png)
+
+5.  「Upload files」タブで、
+    「Files」の下にある**フォルダー(folder)**をクリックします**。**
+
+![](./media/img6.png)
+
+6.  VM上の**C:\LabFiles\NYCTaxi**フォルダを参照し、**すべての**ファイルを選択して**「Open」**ボタンをクリックします。
+
+![](./media/img7.png)
+
+7.  次に、**Upload**ボタンをクリックして閉じます。
+
+![](./media/img8.png)
+
+8.  Upload files画面を閉じます**。**
+
+![](./media/img9.png)
+
+9.  **「Files」**をクリックして「更新(Refresh)」を選択すると、ファイルが表示されます。
+
+![](./media/img10.png)
+
+10. **Lakehouseページ**で、コマンド バーの**\[Open
+    notebook\]**ドロップをクリックし、 **\[New
+    notebook\]**を選択します。
+
+> ![](./media/img11.png)
+
+11. **セル**内のコードを以下のコードに更新し、マウスカーソルをセルの左側に重ねると表示される\[**▷セルの実行\]**ボタンをクリックします**。
+```
+df = spark.read.parquet (
+"Files/part-00000-93b796dc-08a7-425c-a8a7-f91632812ae9-c000.snappy.parquet"
+）
+
+df.write.mode ( "overwrite" ). saveAsTable (
+「green_ripdata_2022」
+）
+```
+
+> ![](./media/img12.png)
 >
-> ![](./media/image13.png)
+> ![](./media/img13.png)
 
-4.  Lakehouseのホームページで、「**Start with sample
-    data**」を選択して、サンプルデータのコピーを開きます。
+12. セル出力の下にある**「+Code」**アイコンを使用してノートブックに新しいコードセルを追加し、そこに以下のコードを入力します。
+    **「▷セルを実行」**ボタンをクリックして出力を確認してください。
 
-> ![](./media/image14.png)
+```
+df = spark.read.parquet (
+"Files/part-00000-8601e1f7-764e-4adb-908e-55bb04c295bf-c000.snappy.parquet"
+）
 
-5.  \[**Use a sample** \] ダイアログが表示されたら、**NYCTaxi**サンプル
-    データ タイルを選択します。
+df.write.mode ( "overwrite" ). saveAsTable (
+「green_ripdata_2021」
+）
+```
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image15.png)
->
-> ![](./media/image16.png)
->
-> ![](./media/image17.png)
+![](./media/img14.png)
 
-6.  テーブルの名前を変更するには、エディターのすぐ上にある
-    **green_tripdata_2022** タブを右クリックし、\[**Rename**\]
-    を選択します。
+13. 左側のメニューからワークスペースアイコンを選択し、次に**DataFactoryLakehouse**を選択します**。**
+    レイクハウスの名前。
+
+![](./media/img15.png)
+
+![](./media/img16.png)
+
+14. テーブルの名前を変更するには、エディターのすぐ上にある**green_tripdata_2022タブ**を右クリックして、
+    **\[Rename\]**を選択します。
+
+![](./media/img17.png)
+
+![](./media/img18.png)
+
+![](./media/img19.png)
+
+7.  **\[Rename\]**ダイアログボックスの**「Name」**フィールドに**「+++Bronze+++」**と入力して、**テーブル**名を変更します。次に、「**Rename」**ボタンをクリックします。
 
 ![A screenshot of a computer Description automatically
-generated](./media/image18.png)
+generated](./media/img20.png)
 
-7.  名前の変更ダイアログボックスの「**Name** 」フィールドに「**+++Bronze+++**」と入力してテーブル名を変更します。次に、「**Rename** 」ボタンをクリックします。
+![](./media/img21.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image19.png)
-
-![A screenshot of a computer Description automatically
-generated](./media/image20.png)
 
 **演習 2: Data Factory のDataflowを使用してデータを変換する**
 
