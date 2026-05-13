@@ -113,9 +113,9 @@ incorrect.](./media/img3.png)
 
 ![](./media/img6.png)
 
-6.  VM上の**C:\LabFiles\NYCTaxi**フォルダを参照し、**すべての**ファイルを選択して**「Open」**ボタンをクリックします。
-
-![](./media/img7.png)
+6.  次の URL にアクセスしてください:
++++https://github.com/technofocus-pte/Fabric-Labfiles/tree/main/Labfile+++
+NYCTaxi.zip ファイルを VM にダウンロードし、解凍します。その後、解凍されたすべてのファイルを選択し、［Open］ボタンをクリックしてください。
 
 7.  次に、**Upload**ボタンをクリックして閉じます。
 
