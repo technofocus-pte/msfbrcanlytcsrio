@@ -1,3 +1,14 @@
+---
+lab:
+  title: 'Usecase 02: Data Factory solution for moving and transforming data with dataflows and data pipelines'
+  description: This lab helps you accelerate the evaluation process for Data Factory in Microsoft Fabric by providing a step-by-step guidance for a full data integration scenario within one hour. By the end of this tutorial, you understand the value and key capabilities of Data Factory and know how to complete a common end-to-end data integration scenario.
+  duration: 5 minutes
+  level: 300
+  islab: true
+  primarytopics:
+    - Microsoft Fabric
+---
+
 # Usecase 02: Data Factory solution for moving and transforming data with dataflows and data pipelines
 
 **Introduction**
