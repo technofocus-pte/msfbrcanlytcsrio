@@ -1,3 +1,14 @@
+---
+lab:
+  title: Usecase 03- Chat with your data using Fabric Data Agent
+  description: In this lab, you learned how to unlock the power of conversational analytics using Microsoft Fabric’s Data Agent. You configured a Fabric workspace, ingested structured data into a lakehouse, and set up an AI skill to translate natural language questions into SQL queries. You also enhanced the AI agent’s capabilities by providing instructions and examples to refine query generation. Finally, you called the agent programmatically from a Fabric notebook, demonstrating end-to-end AI integration. This lab empowers you to make enterprise data more accessible, usable, and intelligent for business users through natural language and generative AI technologies.
+  duration: 5 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Microsoft Fabric
+---
+
 # Usecase 03- Chat with your data using Fabric Data Agent
 
 **Introduction:**
