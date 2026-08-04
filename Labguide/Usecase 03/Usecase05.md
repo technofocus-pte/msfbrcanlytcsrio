@@ -1,3 +1,16 @@
+---
+lab:
+  title: 'Exercise 1: Create a Microsoft Fabric workspace'
+  description: In this lab, you’ll assume the role of a data engineer at Contoso tasked with designing and implementing a data warehouse solution using Microsoft Fabric. You will start by setting up a Fabric workspace, creating a data warehouse, loading data from Azure Blob Storage, and performing analytical tasks to deliver insights to Contoso's decision-makers.
+  duration: 5 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Azure
+    - Azure Blob Storage
+    - Microsoft Fabric
+---
+
 ## **Use case 03-Building a Sales and Geography Data Warehouse for Contoso in Microsoft Fabric** 
 
 **Introduction**
