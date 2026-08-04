@@ -1,3 +1,12 @@
+---
+lab:
+  title: Install fixed version of packages
+  description: select Create. When provisioning is complete, the lakehouse explorer page is shown.
+  duration: 5 minutes
+  level: 300
+  islab: true
+---
+
 ## Use Case 04 - Perform Sentiment analysis and Text translation with AI functions in Microsoft Fabric
 
 **Introduction**
