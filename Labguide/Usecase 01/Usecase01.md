@@ -1,3 +1,12 @@
+---
+lab:
+  title: 'Usecase 1: Creating a Lakehouse, ingesting sample data and building a report'
+  description: In this exercise, you ingest additional dimensional and fact tables from the Wide World Importers (WWI) into the lakehouse.
+  duration: 5 minutes
+  level: 300
+  islab: true
+---
+
 # Usecase 1: Creating a Lakehouse, ingesting sample data and building a report
 
 **Introduction**
