@@ -1,3 +1,15 @@
+---
+lab:
+  title: 'Use case 06: Identifying and extracting text with Document Intelligence in Microsoft Fabric'
+  description: Azure AI Search using the Azure AI Search REST API. This code creates an index with fields for the unique identifier of each document, the text content of the document, and the vector embedding of the text content.
+  duration: 5 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Azure
+    - Microsoft Fabric
+---
+
 # Use case 06: Identifying and extracting text with Document Intelligence in Microsoft Fabric
 
 **Introduction**
