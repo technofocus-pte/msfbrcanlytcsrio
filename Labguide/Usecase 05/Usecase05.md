@@ -1,4 +1,4 @@
-# Usecase 05-Building a Sales and Geography Data Warehouse for Contoso in Microsoft Fabric
+# Usecase 04-Building a Sales and Geography Data Warehouse for Contoso in Microsoft Fabric
 
 **Introduction**
 
