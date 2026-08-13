@@ -86,7 +86,10 @@ then skip to step \#5.
 2.  In the **Microsoft Fabric** window, enter your credentials, and
     click on the **Submit** button.
 
-[TABLE]
+| Credential | Value |
+|---|---|
+| Username | +++@lab.CloudPortalCredential(User1).Username+++ |
+| Password | +++@lab.CloudPortalCredential(User1).Password+++ |
 
 > ![](./media/image2.png)
 
@@ -115,7 +118,12 @@ then skip to step \#5.
 2.  In the **Create a workspace tab, enter** the following details and
     click on the **Apply** button.
 
-[TABLE]
+| Field | Value |
+|---|---|
+| Name | +++Warehouse_Fabric@lab.LabInstance.Id+++ (must be a unique Id) |
+| Description | +++This workspace contains all the artifacts for the data warehouse+++ |
+| Advanced Under License mode | Fabric |
+| Default storage format | Small dataset storage format |
 
 ![](./media/image7.png)
 
@@ -253,16 +261,13 @@ generated](./media/image11.png)
 3.  In the query editor, paste the following code. The code creates a
     clone of the dimension_city table and the fact_sale table.
 
-> **--Create a clone of the dbo.dimension_city table.**
->
-> **CREATE TABLE \[dbo\].\[dimension_city1\] AS CLONE OF
-> \[dbo\].\[dimension_city\];**
->
-> **--Create a clone of the dbo.fact_sale table.**
->
-> **CREATE TABLE \[dbo\].\[fact_sale1\] AS CLONE OF
-> \[dbo\].\[fact_sale\];**
->
+```
+--Create a clone of the dbo.dimension_city table.
+ CREATE TABLE [dbo].[dimension_city1] AS CLONE OF [dbo].[dimension_city];
+
+ --Create a clone of the dbo.fact_sale table.
+ CREATE TABLE [dbo].[fact_sale1] AS CLONE OF [dbo].[fact_sale];
+```
 > ![](./media/image29.png)
 
 4.  To execute the query, on the query designer ribbon, select **Run**.
@@ -275,7 +280,9 @@ generated](./media/image11.png)
     The CURRENT_TIMESTAMP T-SQL function returns the current UTC
     timestamp as a **datetime**. Select **Run** to execute the query.
 
-> SELECT CURRENT_TIMESTAMP;
+```
+SELECT CURRENT_TIMESTAMP;
+```
 
 ![](./media/image32.png)
 
@@ -284,17 +291,13 @@ generated](./media/image11.png)
     statements**. The code creates a clone of the dimension_city table
     and the fact_sale table at a certain point in time. Run the query.
 
-> **--Create a clone of the dbo.dimension_city table at a specific point
-> in time.**
->
-> **CREATE TABLE \[dbo\].\[dimension_city2\] AS CLONE OF
-> \[dbo\].\[dimension_city\] AT '2025-01-01T10:00:00.000';**
->
-> **--Create a clone of the dbo.fact_sale table at a specific point in
-> time.**
->
-> **CREATE TABLE \[dbo\].\[fact_sale2\] AS CLONE OF
-> \[dbo\].\[fact_sale\] AT '2025-01-01T10:00:00.000';**
+```
+--Create a clone of the dbo.dimension_city table at a specific point in time.   
+CREATE TABLE [dbo].[dimension_city2] AS CLONE OF [dbo].[dimension_city] AT '2025-01-01T10:00:00.000';
+
+ --Create a clone of the dbo.fact_sale table at a specific point in time.
+CREATE TABLE [dbo].[fact_sale2] AS CLONE OF [dbo].[fact_sale] AT '2025-01-01T10:00:00.000';
+```
 
 ![](./media/image33.png)
 
@@ -320,22 +323,17 @@ warehouse.
     schema and then creates clones of the **fact_sale** and
     **dimension_city** tables in the new schema. Run the query.
 
-> **--Create a new schema within the warehouse named dbo1.**
->
-> **CREATE SCHEMA dbo1;**
->
-> **GO**
->
-> **--Create a clone of dbo.fact_sale table in the dbo1 schema.**
->
-> **CREATE TABLE \[dbo1\].\[fact_sale1\] AS CLONE OF
-> \[dbo\].\[fact_sale\];**
->
-> **--Create a clone of dbo.dimension_city table in the dbo1 schema.**
->
-> **CREATE TABLE \[dbo1\].\[dimension_city1\] AS CLONE OF
-> \[dbo\].\[dimension_city\];**
->
+```
+--Create a new schema within the warehouse named dbo1.
+ CREATE SCHEMA dbo1;
+ GO
+
+ --Create a clone of dbo.fact_sale table in the dbo1 schema.
+ CREATE TABLE [dbo1].[fact_sale1] AS CLONE OF [dbo].[fact_sale];
+
+ --Create a clone of dbo.dimension_city table in the dbo1 schema.
+ CREATE TABLE [dbo1].[dimension_city1] AS CLONE OF [dbo].[dimension_city];
+```
 > ![](./media/image38.png)
 
 3.  When execution completes, preview the data loaded into
@@ -349,16 +347,13 @@ warehouse.
     the **dimension_city** table and the **fact_sale** table at certain
     points in time in the new schema. Run the query.
 
-> --Create a clone of the dbo.dimension_city table in the dbo1 schema.
->
-> CREATE TABLE \[dbo1\].\[dimension_city2\] AS CLONE OF
-> \[dbo\].\[dimension_city\] AT '2025-01-01T10:00:00.000';
->
-> --Create a clone of the dbo.fact_sale table in the dbo1 schema.
->
-> CREATE TABLE \[dbo1\].\[fact_sale2\] AS CLONE OF \[dbo\].\[fact_sale\]
-> AT '2025-01-01T10:00:00.000';
->
+```
+--Create a clone of the dbo.dimension_city table in the dbo1 schema.
+CREATE TABLE [dbo1].[dimension_city2] AS CLONE OF [dbo].[dimension_city] AT '2025-01-01T10:00:00.000';
+
+--Create a clone of the dbo.fact_sale table in the dbo1 schema.
+CREATE TABLE [dbo1].[fact_sale2] AS CLONE OF [dbo].[fact_sale] AT '2025-01-01T10:00:00.000';
+```
 > ![](./media/image40.png)
 
 5.  When execution completes, preview the data loaded into
@@ -391,104 +386,62 @@ in a warehouse table.
     a group-by query that joins
     the **fact_sale** and **dimension_city** tables.
 
-> --Drop the stored procedure if it already exists.
->
-> DROP PROCEDURE IF EXISTS \[dbo\].\[populate_aggregate_sale_by_city\];
->
-> GO
->
-> --Create the populate_aggregate_sale_by_city stored procedure.
->
-> CREATE PROCEDURE \[dbo\].\[populate_aggregate_sale_by_city\]
->
-> AS
->
-> BEGIN
->
-> --Drop the aggregate table if it already exists.
->
-> DROP TABLE IF EXISTS \[dbo\].\[aggregate_sale_by_date_city\];
->
-> --Create the aggregate table.
->
-> CREATE TABLE \[dbo\].\[aggregate_sale_by_date_city\]
->
-> (
->
-> \[Date\] \[DATETIME2\](6),
->
-> \[City\] \[VARCHAR\](8000),
->
-> \[StateProvince\] \[VARCHAR\](8000),
->
-> \[SalesTerritory\] \[VARCHAR\](8000),
->
-> \[SumOfTotalExcludingTax\] \[DECIMAL\](38,2),
->
-> \[SumOfTaxAmount\] \[DECIMAL\](38,6),
->
-> \[SumOfTotalIncludingTax\] \[DECIMAL\](38,6),
->
-> \[SumOfProfit\] \[DECIMAL\](38,2)
->
-> );
->
-> --Load aggregated data into the table.
->
-> INSERT INTO \[dbo\].\[aggregate_sale_by_date_city\]
->
-> SELECT
->
-> FS.\[InvoiceDateKey\] AS \[Date\],
->
-> DC.\[City\],
->
-> DC.\[StateProvince\],
->
-> DC.\[SalesTerritory\],
->
-> SUM(FS.\[TotalExcludingTax\]) AS \[SumOfTotalExcludingTax\],
->
-> SUM(FS.\[TaxAmount\]) AS \[SumOfTaxAmount\],
->
-> SUM(FS.\[TotalIncludingTax\]) AS \[SumOfTotalIncludingTax\],
->
-> SUM(FS.\[Profit\]) AS \[SumOfProfit\]
->
-> FROM \[dbo\].\[fact_sale\] AS FS
->
-> INNER JOIN \[dbo\].\[dimension_city\] AS DC
->
-> ON FS.\[CityKey\] = DC.\[CityKey\]
->
-> GROUP BY
->
-> FS.\[InvoiceDateKey\],
->
-> DC.\[City\],
->
-> DC.\[StateProvince\],
->
-> DC.\[SalesTerritory\]
->
-> ORDER BY
->
-> FS.\[InvoiceDateKey\],
->
-> DC.\[StateProvince\],
->
-> DC.\[City\];
->
-> END;
->
+```
+--Drop the stored procedure if it already exists.
+ DROP PROCEDURE IF EXISTS [dbo].[populate_aggregate_sale_by_city];
+ GO
+
+ --Create the populate_aggregate_sale_by_city stored procedure.
+ CREATE PROCEDURE [dbo].[populate_aggregate_sale_by_city]
+ AS
+ BEGIN
+     --Drop the aggregate table if it already exists.
+     DROP TABLE IF EXISTS [dbo].[aggregate_sale_by_date_city];
+     --Create the aggregate table.
+     CREATE TABLE [dbo].[aggregate_sale_by_date_city]
+     (
+        [Date] [DATETIME2](6),
+        [City] [VARCHAR](8000),
+        [StateProvince] [VARCHAR](8000),
+        [SalesTerritory] [VARCHAR](8000),
+        [SumOfTotalExcludingTax] [DECIMAL](38,2),
+        [SumOfTaxAmount] [DECIMAL](38,6),
+        [SumOfTotalIncludingTax] [DECIMAL](38,6),
+        [SumOfProfit] [DECIMAL](38,2)
+     );
+
+     --Load aggregated data into the table.
+     INSERT INTO [dbo].[aggregate_sale_by_date_city]
+     SELECT
+        FS.[InvoiceDateKey] AS [Date], 
+        DC.[City], 
+        DC.[StateProvince], 
+        DC.[SalesTerritory], 
+        SUM(FS.[TotalExcludingTax]) AS [SumOfTotalExcludingTax], 
+        SUM(FS.[TaxAmount]) AS [SumOfTaxAmount], 
+        SUM(FS.[TotalIncludingTax]) AS [SumOfTotalIncludingTax], 
+        SUM(FS.[Profit]) AS [SumOfProfit]
+     FROM [dbo].[fact_sale] AS FS
+     INNER JOIN [dbo].[dimension_city] AS DC
+        ON FS.[CityKey] = DC.[CityKey]
+     GROUP BY
+        FS.[InvoiceDateKey],
+        DC.[City], 
+        DC.[StateProvince], 
+        DC.[SalesTerritory]
+     ORDER BY 
+        FS.[InvoiceDateKey], 
+        DC.[StateProvince], 
+        DC.[City];
+ END;
+```
 > ![](./media/image45.png)
 
 3.  To execute the query, on the query designer ribbon, select **Run**
 
 > ![](./media/image46.png)
 
-4.  When execution completes, rename the query as +++**Create Aggregate
-    Procedure**+++.
+4.  When execution completes, rename the query as +++**Create Aggregate Procedure**+++.
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image47.png)
@@ -514,14 +467,14 @@ data in a warehouse table.
     the **populate_aggregate_sale_by_city** stored procedure. Run the
     query.
 
+```
 --Execute the stored procedure to create and load aggregated data.
-
-EXEC \[dbo\].\[populate_aggregate_sale_by_city\];
+ EXEC [dbo].[populate_aggregate_sale_by_city];
+```
 
 ![](./media/image51.png)
 
-3.  When execution completes, rename the query as +++**Run Aggregate
-    Procedure+++**.
+3.  When execution completes, rename the query as +++**Run Aggregate Procedure+++**.
 
 > ![](./media/image52.png)
 >
@@ -551,39 +504,25 @@ queries.
     view named Top10Customers. The view uses a query to retrieve the top
     10 customers based on sales. Select **Run** to execute the query.
 
-> --Create the Top10Customers view.
->
-> CREATE VIEW \[dbo\].\[Top10Customers\]
->
-> AS
->
-> SELECT TOP(10)
->
-> FS.\[CustomerKey\],
->
-> DC.\[Customer\],
->
-> SUM(FS.\[TotalIncludingTax\]) AS \[TotalSalesAmount\]
->
-> FROM
->
-> \[dbo\].\[dimension_customer\] AS DC
->
-> INNER JOIN \[dbo\].\[fact_sale\] AS FS
->
-> ON DC.\[CustomerKey\] = FS.\[CustomerKey\]
->
-> GROUP BY
->
-> FS.\[CustomerKey\],
->
-> DC.\[Customer\]
->
-> ORDER BY
->
-> \[TotalSalesAmount\] DESC;
->
-> ![](./media/image56.png)
+```
+--Create the Top10Customers view.
+CREATE VIEW [dbo].[Top10Customers]
+AS
+SELECT TOP(10)
+    FS.[CustomerKey],
+    DC.[Customer],
+    SUM(FS.[TotalIncludingTax]) AS [TotalSalesAmount]
+FROM
+    [dbo].[dimension_customer] AS DC
+    INNER JOIN [dbo].[fact_sale] AS FS
+        ON DC.[CustomerKey] = FS.[CustomerKey]
+GROUP BY
+    FS.[CustomerKey],
+    DC.[Customer]
+ORDER BY
+    [TotalSalesAmount] DESC;
+```
+![](./media/image56.png)
 
 3.  When execution completes, rename the query as +++**Create Top 10
     Customer View**+++.
@@ -608,21 +547,16 @@ queries.
     deliberately inflate its total sales. It also retrieves the current
     timestamp.
 
-> --Update the TotalIncludingTax for a single fact row to deliberately
-> inflate its total sales.
->
-> UPDATE \[dbo\].\[fact_sale\]
->
-> SET \[TotalIncludingTax\] = 200000000
->
-> WHERE \[SaleKey\] = 22632918; --For customer 'Tailspin Toys (Muir,
-> MI)'
->
-> GO
->
-> --Retrieve the current (UTC) timestamp.
->
-> SELECT CURRENT_TIMESTAMP;
+```
+--Update the TotalIncludingTax for a single fact row to deliberately inflate its total sales.
+ UPDATE [dbo].[fact_sale]
+ SET [TotalIncludingTax] = 200000000
+ WHERE [SaleKey] = 22632918; --For customer 'Tailspin Toys (Muir, MI)'
+ GO
+
+ --Retrieve the current (UTC) timestamp.
+ SELECT CURRENT_TIMESTAMP;
+```
 
 ![](./media/image61.png)
 
@@ -656,13 +590,12 @@ queries.
 11. Replace YOUR_TIMESTAMP with the timestamp you copied to the
     clipboard.
 
-> --Retrieve the top 10 customers as of now.
->
-> SELECT \*
->
-> FROM \[dbo\].\[Top10Customers\]
->
-> OPTION (FOR TIMESTAMP AS OF 'YOUR_TIMESTAMP');
+```
+--Retrieve the top 10 customers as of now.
+ SELECT *
+ FROM [dbo].[Top10Customers]
+ OPTION (FOR TIMESTAMP AS OF 'YOUR_TIMESTAMP');
+```
 
 ![](./media/image65.png)
 
@@ -975,34 +908,22 @@ of *database.schema.table* to reference objects.
 2.  In the query editor, paste the following code. The code retrieves an
     aggregate of quantity sold by stock item, description, and customer.
 
---Retrieve an aggregate of quantity sold by stock item, description, and
-customer.
-
+```
+--Retrieve an aggregate of quantity sold by stock item, description, and customer.
 SELECT
-
-Sales.StockItemKey,
-
-Sales.Description,
-
-c.Customer,
-
-SUM(CAST(Sales.Quantity AS int)) AS SoldQuantity
-
+    Sales.StockItemKey,
+    Sales.Description,
+    c.Customer,
+    SUM(CAST(Sales.Quantity AS int)) AS SoldQuantity
 FROM
-
-\[dbo\].\[fact_sale\] AS Sales
-
-INNER JOIN \[Shortcut_Exercise\].\[dbo\].\[dimension_customer\] AS c
-
-ON Sales.CustomerKey = c.CustomerKey
-
+    [dbo].[fact_sale] AS Sales
+    INNER JOIN [Shortcut_Exercise].[dbo].[dimension_customer] AS c
+        ON Sales.CustomerKey = c.CustomerKey
 GROUP BY
-
-Sales.StockItemKey,
-
-Sales.Description,
-
-c.Customer;
+    Sales.StockItemKey,
+    Sales.Description,
+    c.Customer;
+```
 
 3.  **Run** the query, and review the query result.
 
@@ -1057,11 +978,12 @@ incorrect.](./media/image120.png)
 ![](./media/image122.png)
 
 12. On the **Sales Model** page, to edit **Manage Relationships**,
-    change the mode from **Viewing** to **Editing**![A screenshot of a
-    computer AI-generated content may be
+    change the mode from **Viewing** to **Editing**
+    ![A screenshot of a
+       computer AI-generated content may be
     incorrect.](./media/image123.png)
 
-13. To create a relationship, in the model designer, on
+14. To create a relationship, in the model designer, on
     the **Home** ribbon, select **Manage relationships**.
 
 ![](./media/image124.png)
