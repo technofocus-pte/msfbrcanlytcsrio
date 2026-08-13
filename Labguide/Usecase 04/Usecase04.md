@@ -1,4 +1,4 @@
-# Usecase 04: Analyze data with Apache Spark
+# Usecase 02: Analyze data with Apache Spark
 
 **Introduction**
 
@@ -70,193 +70,186 @@ enterprise.
 
 - Remove the workspace and associated elements to conclude the exercise.
 
-# Exercise 1: Create a workspace, lakehouse, notebook and load data into dataframe 
+## Exercise 1: Create a workspace, lakehouse, notebook and load data into dataframe
 
-## Task 1: Create a workspace 
-
-Before working with data in Fabric, create a workspace with the Fabric
-trial enabled.
+### Task 1: Create a workspace
 
 1.  Open your browser, navigate to the address bar, and type or paste
-    the following URL: +++https://app.fabric.microsoft.com/+++ then
-    press the **Enter** button.
+    the following URL: +++https://app.fabric.microsoft.com/+++ then
+    press the **Enter** button.
 
-> **Note**: If you are directed to Microsoft Fabric Home page, then skip
-> steps from \#2 to \#4.
->
-> ![](./media/image1.png)
+\[!note\]**Note**: If you are directed to Microsoft Fabric Home page,
+then skip to step \#5.
 
-2.  In the **Microsoft Fabric** window, enter your credentials, and
-    click on the **Submit** button.
-    |   |   |
-    |---|---|
-    | Username | +++@lab.CloudPortalCredential(User1).Username+++ |
-    | Password | +++@lab.CloudPortalCredential(User1).Password+++ |
+![](./media/image1.png)
+
+2.  In the **Microsoft Fabric** window, enter your credentials, and
+    click on the **Submit** button.
+
+| Credential | Value |
+|---|---|
+| Username | +++@lab.CloudPortalCredential(User1).Username+++ |
+| Password | +++@lab.CloudPortalCredential(User1).Password+++ |
 
 > ![](./media/image2.png)
 
-3.  Then, In the **Microsoft** window enter the password and click on
-    the **Sign in** button**.**
+3.  Then, In the **Microsoft** window enter the password and click on
+    the **Sign in** button.
 
-> ![A login screen with a red box and blue text Description
-> automatically generated](./media/image3.png)
+> ![](./media/image3.png)
 
-4.  In **Stay signed in?** window, click on the **Yes** button.
+4.  In **Stay signed in?** window, click on the **Yes** button.
 
-> ![A screenshot of a computer error Description automatically
-> generated](./media/image4.png)
+5.  If PowerBI opens by default , please folllow the below steps , other
+    wise skip this step
 
-5.  Fabric home page, select **+New workspace** tile.
+- Click on PowerBI
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image5.png)
+![](./media/image4.png)
 
-6.  In the **Create a workspace tab**, enter the following details and
-    click on the **Apply** button.
+- Select Fabric from the option
 
-    |  |  |
-    |-----|----|
-    |Name|	+++dp_Fabric@lab.LabInstance.Id+++ (must be a unique Id)| 
-    |Description|	This workspace contains Analyze data with Apache Spark|
-    |Advanced|	Under License mode, select Fabric capacity|
-    |Default storage format	|Small dataset storage format|
+![](./media/image5.png)
+
+6.  Fabric home page, select **+New workspace** tile.
+
+![](./media/image6.png)
+
+7.  In the **Create a workspace tab**, enter the following details and
+    click on the **Apply** button.
+
+| Setting | Value |
+|---|---|
+| Name | +++dp_Fabric@lab.LabInstance.Id+++ (must be a unique ID) |
+| Description | `This workspace contains Analyze data with Apache Spark` |
+| Advanced | Under **License mode**, select **Fabric** |
+| Default storage format | **Small dataset storage format** |
 
 > ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image6.png)
+> incorrect.](./media/image7.png)
 >
-> ![](./media/image7.png)
+> ![](./media/image8.png)
 
-7.  Wait for the deployment to complete. It takes 2-3 minutes to
+8.  Wait for the deployment to complete. It takes 2-3 minutes to
     complete. When your new workspace opens, it should be empty.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image8.png)
-
-## Task 2: Create a lakehouse and upload files
-
-Now that you have a workspace, it’s time to switch to the *Data
-engineering* experience in the portal and create a data lakehouse for
-the data files you’re going to analyze.
-
-1.  Create a new Eventhouse by clicking on the **+New item** button in
-    the navigation bar.
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image9.png)
 
-2.  Click on the "**Lakehouse**" tile.
+### Task 2: Create a lakehouse and upload files
 
-![A screenshot of a computer Description automatically
-generated](./media/image10.png)
+Now that you have a workspace, it's time to switch to the *Data
+engineering* experience in the portal and create a data lakehouse for
+the data files you're going to analyze.
+
+1.  Create a new Eventhouse by clicking on the **+ New item** button in
+    the navigation bar.
+
+> ![](./media/image10.png)
+
+2.  Filter by, and select, the **Lakehouse** tile.
+
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image11.png)
 
 3.  In the **New lakehouse** dialog box,
     enter **+++Fabric_lakehouse+++** in the **Name** field, click on
     the **Create** button and open the new lakehouse.
 
-![A screenshot of a computer Description automatically
-generated](./media/image11.png)
+![](./media/image12.png)
 
-4.  After a minute or so, a new empty lakehouse will be created. You
-    need to ingest some data into the data lakehouse for analysis.
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image12.png)
-
-5.  You will see a notification stating **Successfully created SQL
-    endpoint**.
+\[!note\]**Note**: After a minute or so, a new empty lakehouse will be
+created. You need to ingest some data into the data lakehouse for
+analysis.
 
 ![](./media/image13.png)
 
-6.  In the **Explorer** section, under the **fabric_lakehouse**, hover
-    your mouse beside **Files folder**, then click on the horizontal
-    ellipses **(…)** menu. Navigate and click on **Upload**, then click
-    on the **Upload folder** as shown in the below image.
+You will see a notification stating **Successfully created SQL
+endpoint**.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image14.png)
+![](./media/image14.png)
 
-7.  On the **Upload folder** pane that appears on the right side, select
-    the **folder icon** under the **Files/** and then browse to
-    **C:\LabFiles** and then select the **orders** folder and click on
-    the **Upload** button.
+4.  In the **Explorer** section, under the **fabric_lakehouse**, hover
+    your mouse beside **Files folder**, then click on the horizontal
+    ellipses **(…)** menu. Navigate and click on **Upload**, then click
+    on the **Upload folder** as shown in the below image.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image15.png)
+![](./media/image15.png)
 
-8.  In case, the **Upload 3 files to this site?** dialog box appears,
-    then click on **Upload** button.
+5.  On the **Upload folder** pane that appears on the right side, select
+    the **folder icon** under the **Files/** and then browse
+    to **C:\LabFiles\LabFiles** and then select the **orders** folder
+    and click on the **Upload** button.
 
 ![](./media/image16.png)
 
-9.  In the Upload folder pane, click on the **Upload** button.
+6.  In case, the **Upload 3 files to this site?** dialog box appears,
+    then click on **Upload** button.
 
-> ![](./media/image17.png)
+![](./media/image17.png)
 
-10. After the files have been uploaded **close** the **Upload folder**
-    pane.
+7.  In the Upload folder pane, click on the **Upload** button.
 
-![A screenshot of a computer Description automatically
-generated](./media/image18.png)
+![](./media/image18.png)
 
-11. Expand **Files** and select the **orders** folder and verify that
+8.  After the files have been uploaded **close** the **Upload
+    folder** pane.
+
+![](./media/image19.png)
+
+9.  Expand **Files** and select the **orders** folder and verify that
     the CSV files have been uploaded.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image19.png)
+![](./media/image20.png)
 
-## Task 3: Create a notebook
+### Task 3: Create a notebook
 
 To work with data in Apache Spark, you can create a *notebook*.
 Notebooks provide an interactive environment in which you can write and
 run code (in multiple languages), and add notes to document it.
 
-1.  On the **Home** page while viewing the contents of
-    the **orders** folder in your datalake, in the **Open
-    notebook** menu, select **New notebook**.
+1.  In the **Fabric** page, navigate and click on **Import** drop in the
+    command bar, then select **New notebook\> From this computer**.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image20.png)
+![](./media/image21.png)
 
 2.  After a few seconds, a new notebook containing a single *cell* will
     open. Notebooks are made up of one or more cells that can
     contain *code* or *markdown* (formatted text).
 
-![](./media/image21.png)
+![](./media/image22.png)
 
 3.  Select the first cell (which is currently a *code* cell), and then
-    in the dynamic tool bar at its top-right, use the **M↓** button to
-    **convert the cell to a markdown cell**.
+    in the dynamic tool bar at its top-right, use the **M↓** button
+    to **convert the cell to a markdown cell**.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image22.png)
+![](./media/image23.png)
 
 4.  When the cell changes to a markdown cell, the text it contains is
     rendered.
 
 ![A screenshot of a computer Description automatically
-generated](./media/image23.png)
+generated](./media/image24.png)
 
 5.  Use the **🖉** (Edit) button to switch the cell to editing mode,
     replace all the text then modify the markdown as follows:
 
-    ```
-    # Sales order data exploration
-    
-    Use the code in this notebook to explore sales order data.
-    ```
+> +++# Sales order data exploration+++
 
-![](./media/image24.png)
+6.  Use the code in this notebook to explore sales order data.
+
+![](./media/image25.png)
 
 ![A screenshot of a computer Description automatically
-generated](./media/image25.png)
+generated](./media/image26.png)
 
 6.  Click anywhere in the notebook outside of the cell to stop editing
     it and see the rendered markdown.
 
 ![A screenshot of a computer Description automatically
-generated](./media/image26.png)
+generated](./media/image27.png)
 
-## Task 4: Load data into a dataframe
+### Task 4: Load data into a dataframe
 
 Now you’re ready to run code that loads the data into a *dataframe*.
 Dataframes in Spark are similar to Pandas dataframes in Python, and
@@ -271,25 +264,24 @@ used languages on Spark and is the default language in Fabric notebooks.
     the **orders** folder so that the CSV files are listed next to the
     notebook editor.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image27.png)
+![A screenshot of a computer Description automatically
+generated](./media/image28.png)
 
 2.  Now, hover your mouse to 2019.csv file. Click on the horizontal
-    ellipses **(…)** beside 2019.csv. Navigate and click on **Load
+    ellipses **(…)** beside 2019.csv. Navigate and click on **Load
     data**, then select **Spark**. A new code cell containing the
     following code will be added to the notebook:
+```
+df = spark.read.format("csv").option("header","true").load("Files/orders/2019.csv")
+# df now is a Spark DataFrame containing CSV data from "Files/orders/2019.csv".
+display(df)
+```
 
-    ```
-    df = spark.read.format("csv").option("header","true").load("Files/orders/2019.csv")
-    # df now is a Spark DataFrame containing CSV data from "Files/orders/2019.csv".
-    display(df)
-    ```
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image28.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image29.png)
+![A screenshot of a computer Description automatically
+generated](./media/image29.png)
+
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image30.png)
 
 **Tip**: You can hide the Lakehouse explorer panes on the left by using
 their **«** icons. Doing
@@ -299,7 +291,7 @@ so will help you focus on the notebook.
 3.  Use the **▷ Run cell** button on the left of the cell to run it.
 
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image30.png)
+incorrect.](./media/image31.png)
 
 **Note**: Since this is the first time you’ve run any Spark code, a
 Spark session must be started. This means that the first run in the
@@ -309,8 +301,7 @@ quicker.
 4.  When the cell command has completed, review the output below the
     cell, which should look similar to this:
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image31.png)
+![](./media/image32.png)
 
 5.  The output shows the rows and columns of data from the 2019.csv
     file. However, note that the column headers don’t look right. The
@@ -319,49 +310,46 @@ incorrect.](./media/image31.png)
     case the CSV file just includes the data with no header information.
 
 6.  Modify the code to set the **header** option to **false**. Replace
-    all the code in the **cell** with the following code and click on
-    **▷ Run cell** button and review the output
+    all the code in the **cell** with the following code and click
+    on **▷ Run cell** button and review the output
 
-    ```
-    df = spark.read.format("csv").option("header","false").load("Files/orders/2019.csv")
-    # df now is a Spark DataFrame containing CSV data from "Files/orders/2019.csv".
-    display(df)
-    ```
+```
+df = spark.read.format("csv").option("header","false").load("Files/orders/2019.csv")
+# df now is a Spark DataFrame containing CSV data from "Files/orders/2019.csv".
+display(df)
+```
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image32.png)
+![](./media/image33.png)
 
 7.  Now the dataframe correctly includes first row as data values, but
     the column names are auto-generated and not very helpful. To make
     sense of the data, you need to explicitly define the correct schema
     and data type for the data values in the file.
 
-8.  Replace all the code in the **cell** with the following code and
-    click on **▷ Run cell** button and review the output
+8.  Replace all the code in the **cell** with the following code and
+    click on **▷ Run cell** button and review the output
+```
+from pyspark.sql.types import *
 
-    ```
-    from pyspark.sql.types import *
-    
-    orderSchema = StructType([
-        StructField("SalesOrderNumber", StringType()),
-        StructField("SalesOrderLineNumber", IntegerType()),
-        StructField("OrderDate", DateType()),
-        StructField("CustomerName", StringType()),
-        StructField("Email", StringType()),
-        StructField("Item", StringType()),
-        StructField("Quantity", IntegerType()),
-        StructField("UnitPrice", FloatType()),
-        StructField("Tax", FloatType())
-        ])
-    
-    df = spark.read.format("csv").schema(orderSchema).load("Files/orders/2019.csv")
-    display(df)
-    ```
- 
-> ![](./media/image33.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image34.png)
+orderSchema = StructType([
+    StructField("SalesOrderNumber", StringType()),
+    StructField("SalesOrderLineNumber", IntegerType()),
+    StructField("OrderDate", DateType()),
+    StructField("CustomerName", StringType()),
+    StructField("Email", StringType()),
+    StructField("Item", StringType()),
+    StructField("Quantity", IntegerType()),
+    StructField("UnitPrice", FloatType()),
+    StructField("Tax", FloatType())
+    ])
+
+df = spark.read.format("csv").schema(orderSchema).load("Files/orders/2019.csv")
+display(df)
+```
+
+![](./media/image34.png)
+
+![](./media/image35.png)
 
 9.  Now the dataframe includes the correct column names (in addition to
     the **Index**, which is a built-in column in all dataframes based on
@@ -373,13 +361,12 @@ incorrect.](./media/image32.png)
     the dataframe.
 
 11. Use the **+ Code** icon below the cell output to add a new code cell
-    to the notebook, and enter the following code in it. Click on **▷
+    to the notebook, and enter the following code in it. Click on **▷
     Run cell** button and review the output
 
-    ```
-    display(df)
-    ```
-> ![](./media/image35.png)
++++display(df)+++
+
+![](./media/image36.png)
 
 12. The dataframe includes only the data from the **2019.csv** file.
     Modify the code so that the file path uses a \* wildcard to read the
@@ -388,54 +375,53 @@ incorrect.](./media/image32.png)
 13. Use the **+ Code** icon below the cell output to add a new code cell
     to the notebook, and enter the following code in it.
 
-    ```
-    from pyspark.sql.types import *
-    
-    orderSchema = StructType([
-        StructField("SalesOrderNumber", StringType()),
-        StructField("SalesOrderLineNumber", IntegerType()),
-        StructField("OrderDate", DateType()),
-        StructField("CustomerName", StringType()),
-        StructField("Email", StringType()),
-        StructField("Item", StringType()),
-        StructField("Quantity", IntegerType()),
-        StructField("UnitPrice", FloatType()),
-        StructField("Tax", FloatType())
-        ])
-    
-    df = spark.read.format("csv").schema(orderSchema).load("Files/orders/*.csv")
-    display(df)
-    ```
-> ![](./media/image36.png)
+```
+from pyspark.sql.types import *
+
+orderSchema = StructType([
+    StructField("SalesOrderNumber", StringType()),
+    StructField("SalesOrderLineNumber", IntegerType()),
+    StructField("OrderDate", DateType()),
+    StructField("CustomerName", StringType()),
+    StructField("Email", StringType()),
+    StructField("Item", StringType()),
+    StructField("Quantity", IntegerType()),
+    StructField("UnitPrice", FloatType()),
+    StructField("Tax", FloatType())
+    ])
+
+df = spark.read.format("csv").schema(orderSchema).load("Files/orders/*.csv")
+display(df)
+```
+
+![](./media/image37.png)
 
 14. Run the modified code cell and review the output, which should now
     include sales for 2019, 2020, and 2021.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image37.png)
+![](./media/image38.png)
 
 **Note**: Only a subset of the rows is displayed, so you may not be able
 to see examples from all years.
 
-# Exercise 2: Explore data in a dataframe
+## Exercise 2: Explore data in a dataframe
 
 The dataframe object includes a wide range of functions that you can use
 to filter, group, and otherwise manipulate the data it contains.
 
-## Task 1: Filter a dataframe
+### Task 1: Filter a dataframe
 
 1.  Use the **+ Code** icon below the cell output to add a new code cell
     to the notebook, and enter the following code in it.
 
-    ```
-    customers = df['CustomerName', 'Email']
-    print(customers.count())
-    print(customers.distinct().count())
-    display(customers.distinct())
-    ```
-> ![](./media/image38.png)
+```
+customers = df['CustomerName', 'Email']
+print(customers.count())
+print(customers.distinct().count())
+display(customers.distinct())
+```
 
-2.  **Run** the new code cell, and review the results. Observe the
+2.  **Run** the new code cell, and review the results. Observe the
     following details:
 
     - When you perform an operation on a dataframe, the result is a new
@@ -452,39 +438,36 @@ to filter, group, and otherwise manipulate the data it contains.
       use **select** method, so the first line of the code above could
       be written as customers = df.select("CustomerName", "Email")
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image39.png)
+![](./media/image39.png)
 
-3.  Modify the code, replace all the code in the **cell** with the
-    following code and click on **▷ Run cell** button as follows:
+3.  Modify the code, replace all the code in the **cell** with the
+    following code and click on **▷ Run cell** button as follows:
+```
+customers = df.select("CustomerName", "Email").where(df['Item']=='Road-250 Red, 52')
+print(customers.count())
+print(customers.distinct().count())
+display(customers.distinct())
+```
 
-    ```
-    customers = df.select("CustomerName", "Email").where(df['Item']=='Road-250 Red, 52')
-    print(customers.count())
-    print(customers.distinct().count())
-    display(customers.distinct())
-    ```
-
-4.  **Run** the modified code to view the customers who have purchased
+4.  **Run** the modified code to view the customers who have purchased
     the ***Road-250 Red, 52* product**. Note that you can “**chain**”
     multiple functions together so that the output of one function
     becomes the input for the next - in this case, the dataframe created
     by the **select** method is the source dataframe for
     the **where** method that is used to apply filtering criteria.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image40.png)
+![](./media/image40.png)
 
-## Task 2: Aggregate and group data in a dataframe
+### Task 2: Aggregate and group data in a dataframe
 
-1.  Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
+1.  Click on **+ Code** and copy and paste the below code and then click
+    on **Run cell** button.
 
-    ```
-    productSales = df.select("Item", "Quantity").groupBy("Item").sum()
-    display(productSales)
-    ```
->
+```
+productSales = df.select("Item", "Quantity").groupBy("Item").sum()
+display(productSales)
+```
+
 > ![](./media/image41.png)
 
 2.  Note that the results show the sum of order quantities grouped by
@@ -492,19 +475,17 @@ to filter, group, and otherwise manipulate the data it contains.
     subsequent **sum** aggregate function is applied to all of the
     remaining numeric columns (in this case, *Quantity*)
 
-3.  Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
+3.  Click on **+ Code** and copy and paste the below code and then click
+    on **Run cell** button.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image42.png)
+```
+from pyspark.sql.functions import *
 
-    ```
-    from pyspark.sql.functions import *
-    
-    yearlySales = df.select(year("OrderDate").alias("Year")).groupBy("Year").count().orderBy("Year")
-    display(yearlySales)
-    ```
-> ![](./media/image43.png)
+yearlySales = df.select(year("OrderDate").alias("Year")).groupBy("Year").count().orderBy("Year")
+display(yearlySales)
+```
+
+![](./media/image42.png)
 
 4.  Note that the results show the number of sales orders per year. Note
     that the **select** method includes a SQL **year** function to
@@ -516,35 +497,33 @@ incorrect.](./media/image42.png)
     group is calculated before finally the **orderBy** method is used to
     sort the resulting dataframe.
 
-# Exercise 3: Use Spark to transform data files
+## Exercise 3: Use Spark to transform data files
 
 A common task for data engineers is to ingest data in a particular
 format or structure, and transform it for further downstream processing
 or analysis.
 
-## Task 1: Use dataframe methods and functions to transform data
+### Task 1: Use dataframe methods and functions to transform data
 
 1.  Click on + Code and copy and paste the below code
 
-    ```
-    from pyspark.sql.functions import *
-    
-    ## Create Year and Month columns
-    transformed_df = df.withColumn("Year", year(col("OrderDate"))).withColumn("Month", month(col("OrderDate")))
-    
-    # Create the new FirstName and LastName fields
-    transformed_df = transformed_df.withColumn("FirstName", split(col("CustomerName"), " ").getItem(0)).withColumn("LastName", split(col("CustomerName"), " ").getItem(1))
-    
-    # Filter and reorder columns
-    transformed_df = transformed_df["SalesOrderNumber", "SalesOrderLineNumber", "OrderDate", "Year", "Month", "FirstName", "LastName", "Email", "Item", "Quantity", "UnitPrice", "Tax"]
-    
-    # Display the first five orders
-    display(transformed_df.limit(5))
-    ```
+```
+from pyspark.sql.functions import *
 
-> ![](./media/image44.png)
+## Create Year and Month columns
+transformed_df = df.withColumn("Year", year(col("OrderDate"))).withColumn("Month", month(col("OrderDate")))
 
-2.  **Run** the code to create a new dataframe from the original order
+# Create the new FirstName and LastName fields
+transformed_df = transformed_df.withColumn("FirstName", split(col("CustomerName"), " ").getItem(0)).withColumn("LastName", split(col("CustomerName"), " ").getItem(1))
+
+# Filter and reorder columns
+transformed_df = transformed_df["SalesOrderNumber", "SalesOrderLineNumber", "OrderDate", "Year", "Month", "FirstName", "LastName", "Email", "Item", "Quantity", "UnitPrice", "Tax"]
+
+# Display the first five orders
+display(transformed_df.limit(5))
+```
+
+2.  **Run** the code to create a new dataframe from the original order
     data with the following transformations:
 
     - Add **Year** and **Month** columns based on
@@ -556,13 +535,12 @@ or analysis.
     - Filter and reorder the columns, removing
       the **CustomerName** column.
 
-> ![](./media/image45.png)
+![](./media/image43.png)
 
 3.  Review the output and verify that the transformations have been made
     to the data.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image46.png)
+![](./media/image44.png)
 
 You can use the full power of the Spark SQL library to transform the
 data by filtering rows, deriving, removing, renaming columns, and
@@ -572,113 +550,97 @@ applying any other required data modifications.
 documentation*](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/dataframe.html) to
 learn more about the methods of the Dataframe object.
 
-## Task 2: Save the transformed data
+### Task 2: Save the transformed data
 
-1.  **Add a new cell** with the following code to save the transformed
+1.  **Add a new cell** with the following code to save the transformed
     dataframe in Parquet format (Overwriting the data if it already
-    exists). **Run** the cell and wait for the message that the data has
+    exists). **Run** the cell and wait for the message that the data has
     been saved.
 
-    ```
-    transformed_df.write.mode("overwrite").parquet('Files/transformed_data/orders')
-    print ("Transformed data saved!")
-    ```
->
-> **Note**: Commonly, *Parquet* format is preferred for data files that
-> you will use for further analysis or ingestion into an analytical
-> store. Parquet is a very efficient format that is supported by most
-> large scale data analytics systems. In fact, sometimes your data
-> transformation requirement may simply be to convert data from another
-> format (such as CSV) to Parquet!
->
-> ![](./media/image47.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image48.png)
+```
+transformed_df.write.mode("overwrite").parquet('Files/transformed_data/orders')
+print ("Transformed data saved!")
+```
+
+**Note**: Commonly, *Parquet* format is preferred for data files that
+you will use for further analysis or ingestion into an analytical store.
+Parquet is a very efficient format that is supported by most large scale
+data analytics systems. In fact, sometimes your data transformation
+requirement may simply be to convert data from another format (such as
+CSV) to Parquet!
+
+![](./media/image45.png)
 
 2.  Then, in the **Lakehouse explorer** pane on the left, in
     the **…** menu for the **Files** node, select **Refresh**.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image49.png)
+![](./media/image46.png)
 
-3.  Click on the **transformed_data** folder to verify that it contains
-    a new folder named **orders**, which in turn contains one or more
-    **Parquet files**.
+3.  Click on the **transformed_data** folder to verify that it contains
+    a new folder named **orders**, which in turn contains one or
+    more **Parquet files**.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image50.png)
+![](./media/image47.png)
 
-4.  Click on **+ Code** following code to load a new dataframe from the
+4.  Click on **+ Code** following code to load a new dataframe from the
     parquet files in the **transformed_data -\> orders** folder:
 
-    ```
-    orders_df = spark.read.format("parquet").load("Files/transformed_data/orders")
-    display(orders_df)
-    ```
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image51.png)
+```
+orders_df = spark.read.format("parquet").load("Files/transformed_data/orders")
+display(orders_df)
+```
 
-5.  **Run** the cell and verify that the results show the order data
+5.  **Run** the cell and verify that the results show the order data
     that has been loaded from the parquet files.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image52.png)
+![](./media/image48.png)
 
-## Task 3: Save data in partitioned files
+### Task 3: Save data in partitioned files
 
-1.  Add a new cell, Click on **+ Code** with the following code; which
+1.  Add a new cell, Click on **+ Code** with the following code; which
     saves the dataframe, partitioning the data
-    by **Year** and **Month**. **Run** the cell and wait for the message
+    by **Year** and **Month**. **Run** the cell and wait for the message
     that the data has been saved
+```
+orders_df.write.partitionBy("Year","Month").mode("overwrite").parquet("Files/partitioned_data")
+print ("Transformed data saved!")
+```
 
-    ```
-    orders_df.write.partitionBy("Year","Month").mode("overwrite").parquet("Files/partitioned_data")
-    print ("Transformed data saved!")
-    ```
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image53.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image54.png)
+![](./media/image49.png)
 
 2.  Then, in the **Lakehouse explorer** pane on the left, in
     the **…** menu for the **Files** node, select **Refresh.**
 
-![A screenshot of a computer Description automatically
-generated](./media/image55.png)
+![](./media/image50.png)
 
 3.  Expand the **partitioned_orders** folder to verify that it contains
     a hierarchy of folders named **Year=*xxxx***, each containing
     folders named **Month=*xxxx***. Each month folder contains a parquet
     file with the orders for that month.
 
-![A screenshot of a computer Description automatically
-generated](./media/image56.png)
+![](./media/image51.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image57.png)
+![](./media/image52.png)
 
-> Partitioning data files is a common way to optimize performance when
-> dealing with large volumes of data. This technique can significant
-> improve performance and make it easier to filter data.
+Partitioning data files is a common way to optimize performance when
+dealing with large volumes of data. This technique can significant
+improve performance and make it easier to filter data.
 
-4.  Add a new cell, click on **+ Code** with the following code to load
+4.  Add a new cell, click on **+ Code** with the following code to load
     a new dataframe from the **orders.parquet** file:
 
-    ```
-    orders_2021_df = spark.read.format("parquet").load("Files/partitioned_data/Year=2021/Month=*")
-    display(orders_2021_df)
-    ```
+```
+orders_2021_df = spark.read.format("parquet").load("Files/partitioned_data/Year=2021/Month=*")
+display(orders_2021_df)
+```
 
-5.  **Run** the cell and verify that the results show the order data for
+5.  **Run** the cell and verify that the results show the order data for
     sales in 2021. Note that the partitioning columns specified in the
     path (**Year** and **Month**) are not included in the dataframe.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image58.png)
+![](./media/image53.png)
 
-# **Exercise 3: Work with tables and SQL**
+## Exercise 4: Work with tables and SQL
 
 As you’ve seen, the native methods of the dataframe object enable you to
 query and analyze data from a file quite effectively. However, many data
@@ -691,7 +653,7 @@ flexibility of a data lake with the structured data schema and SQL-based
 queries of a relational data warehouse - hence the term “data
 lakehouse”.
 
-## Task 1: Create a managed table
+### Task 1: Create a managed table
 
 Tables in a Spark metastore are relational abstractions over files in
 the data lake. tables can be *managed* (in which case the files are
@@ -699,17 +661,16 @@ managed by the metastore) or *external* (in which case the table
 references a file location in the data lake that you manage
 independently of the metastore).
 
-1.  Add a new code, click on **+ Code** cell to the notebook and enter
+1.  Add a new code, click on **+ Code** cell to the notebook and enter
     the following code, which saves the dataframe of sales order data as
     a table named **salesorders**:
+```
+# Create a new table
+df.write.format("delta").saveAsTable("salesorders")
 
-    ```
-    # Create a new table
-    df.write.format("delta").saveAsTable("salesorders")
-    
-    # Get the table description
-    spark.sql("DESCRIBE EXTENDED salesorders").show(truncate=False)
-    ```
+# Get the table description
+spark.sql("DESCRIBE EXTENDED salesorders").show(truncate=False)
+```
 
 **Note**: It’s worth noting a couple of things about this example.
 Firstly, no explicit path is provided, so the files for the table will
@@ -721,43 +682,38 @@ including support for transactions, row versioning, and other useful
 features. Creating tables in delta format is preferred for data
 lakehouses in Fabric.
 
-2.  **Run** the code cell and review the output, which describes the
+2.  **Run** the code cell and review the output, which describes the
     definition of the new table.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image59.png)
+![](./media/image54.png)
 
-3.  In the **Lakehouse** **explorer** pane, in the **…** menu for
-    the **Tables** folder, select **Refresh.**
+3.  In the **Lakehouse** **explorer** pane, in the **…** menu for
+    the **Tables** folder, select **Refresh.**
 
-![A screenshot of a computer Description automatically
-generated](./media/image60.png)
+![](./media/image55.png)
 
 4.  Then, expand the **Tables** node and verify that
-    the **salesorders** table has been created under the **dbo** schema.
+    the **salesorders** table has been created under the **dbo** schema.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image61.png)
+![](./media/image56.png)
 
-5.  Hover your mouse beside **salesorders** table, then click on the
-    horizontal ellipses (…). Navigate and click on **Load data**, then
-    select **Spark**.
+5.  Hover your mouse beside **salesorders** table, then click on the
+    horizontal ellipses (…). Navigate and click on **Load data**, then
+    select **Spark**.
 
-> ![](./media/image62.png)
+![](./media/image57.png)
 
-6.  Click on **▷ Run cell** button and which uses the Spark SQL library
+6.  Click on **▷ Run cell** button and which uses the Spark SQL library
     to embed a SQL query against the **salesorder** table in PySpark
     code and load the results of the query into a dataframe.
 
-    ```
-    df = spark.sql("SELECT * FROM [your_lakehouse].salesorders LIMIT 1000")
-    display(df)
-    ```
+```
+df = spark.sql("SELECT * FROM [your_lakehouse].salesorders LIMIT 1000")
+display(df)
+```
+![](./media/image58.png)
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image63.png)
-
-## Task 2: Create an external table
+### Task 2: Create an external table
 
 You can also create *external* tables for which the schema metadata is
 defined in the metastore for the lakehouse, but the data files are
@@ -767,97 +723,91 @@ stored in an external location.
     Code** button to add a new code cell if one doesn’t already exist.
     Then enter the following code in the new cell.
 
-    ```
-    df.write.format("delta").saveAsTable("external_salesorder", path="<abfs_path>/external_salesorder")
-    ```
+```
+df.write.format("delta").saveAsTable("external_salesorder", path="<abfs_path>/external_salesorder")
+```
 
-![A screenshot of a computer Description automatically
-generated](./media/image64.png)
+![](./media/image59.png)
 
 2.  In the **Lakehouse explorer** pane, in the **…** menu for
-    the **Files** folder, select **Copy ABFS path** in the notepad.
+    the **Files** folder, select **Copy ABFS path** in the notepad.
 
-> The ABFS path is the fully qualified path to the **Files** folder in
-> the OneLake storage for your lakehouse - similar to this:
+The ABFS path is the fully qualified path to the **Files** folder in the
+OneLake storage for your lakehouse - similar to this:
 
-abfss://dp_Fabric29@onelake.dfs.fabric.microsoft.com/Fabric_lakehouse.Lakehouse/Files/external_salesorder
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image65.png)
-
-3.  Now, move into the code cell, replace **\<abfs_path\>** with the
-    **path** you copied to the notepad so that the code saves the
-    dataframe as an external table with data files in a folder named
-    **external_salesorder** in your **Files** folder location. The full
-    path should look similar to this
-
-abfss://dp_Fabric29@onelake.dfs.fabric.microsoft.com/Fabric_lakehouse.Lakehouse/Files/external_salesorder
-
-4.  Use the **▷ (*Run cell*)** button on the left of the cell to run it.
+abfss://<dp_Fabric29@onelake.dfs.fabric.microsoft.com>/Fabric_lakehouse.Lakehouse/Files/external_salesorder
 
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image66.png)
+incorrect.](./media/image60.png)
+
+3.  Now, move into the code cell, replace **\<abfs_path\>** with
+    the **path** you copied to the notepad so that the code saves the
+    dataframe as an external table with data files in a folder
+    named **external_salesorder** in your **Files** folder location. The
+    full path should look similar to this
+
+abfss://<dp_Fabric29@onelake.dfs.fabric.microsoft.com>/Fabric_lakehouse.Lakehouse/Files/external_salesorder
+
+4.  Use the **▷ (*Run cell*)** button on the left of the cell to run it.
+
+![](./media/image61.png)
 
 5.  In the **Lakehouse explorer** pane, in the **…** menu for
-    the **Tables** folder, select the **Refresh**.
+    the **Tables** folder, select the **Refresh**.
 
-![A screenshot of a computer Description automatically
-generated](./media/image67.png)
+![](./media/image62.png)
 
 6.  Then expand the **Tables** node and verify that
     the **external_salesorder** table has been created.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image68.png)
+![](./media/image63.png)
 
 7.  In the **Lakehouse explorer** pane, in the **…** menu for
     the **Files** folder, select **Refresh**.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image69.png)
+![](./media/image64.png)
 
 8.  Then expand the **Files** node and verify that
     the **external_salesorder** folder has been created for the table’s
     data files.
 
-![](./media/image70.png)
+![](./media/image65.png)
 
-## Task 3: Compare managed and external tables
+### Task 3: Compare managed and external tables
 
 Let’s explore the differences between managed and external tables.
 
 1.  Under the results returned by the code cell, use the **+
     Code** button to add a new code cell. Copy the code below into the
-    Code cell and use the **▷ (*Run cell*)** button on the left of the
+    Code cell and use the **▷ (*Run cell*)** button on the left of the
     cell to run it.
-    ```
-    %%sql
-    
-    DESCRIBE FORMATTED salesorders;
-    ```
->
-> ![](./media/image71.png)
+
+```
+%%sql
+
+DESCRIBE FORMATTED salesorders;
+```
+
+![](./media/image66.png)
 
 2.  In the results, view the **Location** property for the table, which
     should be a path to the OneLake storage for the lakehouse ending
     with **/Tables/salesorders** (you may need to widen the **Data
     type** column to see the full path).
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image72.png)
+> ![](./media/image67.png)
 
 3.  Modify the **DESCRIBE** command to show the details of
     the **external_saleorder** table as shown here.
 
 4.  Under the results returned by the code cell, use the **+
     Code** button to add a new code cell. Copy the below code and use
-    the **▷ (*Run cell*)** button on the left of the cell to run it.
+    the **▷ (*Run cell*)** button on the left of the cell to run it.
+```
+%%sql
 
-    ```
-    %%sql
-    
-    DESCRIBE FORMATTED external_salesorder;
-    ```
+DESCRIBE FORMATTED external_salesorder;
+```
 
 5.  In the results, view the **Location** property for the table, which
     should be a path to the OneLake storage for the lakehouse ending
@@ -865,16 +815,16 @@ incorrect.](./media/image72.png)
     type** column to see the full path).
 
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image73.png)
+incorrect.](./media/image68.png)
 
-## Task 4: Run SQL code in a cell
+### Task 4: Run SQL code in a cell
 
 While it’s useful to be able to embed SQL statements into a cell
 containing PySpark code, data analysts often just want to work directly
 in SQL.
 
-1.  Click on **+ Code** cell to the notebook, and enter the following
-    code in it. Click on **▷ Run cell** button and review the results.
+1.  Click on **+ Code** cell to the notebook, and enter the following
+    code in it. Click on **▷ Run cell** button and review the results.
     Observe that:
 
     - The %%sql line at the beginning of the cell (called a *magic*)
@@ -887,23 +837,20 @@ in SQL.
     - The output from the SQL query is automatically displayed as the
       result under the cell
 
-      ```
-      %%sql
-      SELECT YEAR(OrderDate) AS OrderYear,
-             SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue
-      FROM salesorders
-      GROUP BY YEAR(OrderDate)
-      ORDER BY OrderYear;
-      ```
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image74.png)
+```
+%%sql
+SELECT YEAR(OrderDate) AS OrderYear,
+       SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue
+FROM salesorders
+GROUP BY YEAR(OrderDate)
+ORDER BY OrderYear;
+```
+![](./media/image69.png)
 
 **Note**: For more information about Spark SQL and dataframes, see
-the [*Spark SQL
-documentation*](https://spark.apache.org/docs/2.2.0/sql-programming-guide.html).
+the [**Spark SQL documentation**](https://spark.apache.org/docs/2.2.0/sql-programming-guide.html).
 
-# Exercise 4: Visualize data with Spark
+## Exercise 4: Visualize data with Spark
 
 A picture is proverbially worth a thousand words, and a chart is often
 better than a thousand rows of data. While notebooks in Fabric include a
@@ -912,94 +859,92 @@ SQL query, it is not designed for comprehensive charting. However, you
 can use Python graphics libraries like **matplotlib** and **seaborn** to
 create charts from data in dataframes.
 
-## Task 1: View results as a chart
+### Task 1: View results as a chart
 
-1.  Click on **+ Code** cell to the notebook, and enter the following
-    code in it. Click on **▷ Run cell** button and observe that it
+1.  Click on **+ Code** cell to the notebook, and enter the following
+    code in it. Click on **▷ Run cell** button and observe that it
     returns the data from the **salesorders** view you created
     previously.
 
-    ```
-    %%sql
-    SELECT * FROM salesorders
-    ```
+```
+%%sql
+SELECT * FROM salesorders
+```
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image75.png)
+![](./media/image70.png)
 
 2.  In the results section beneath the cell, change the **View** option
     from **Table** to **+New chart**.
 
-![](./media/image76.png)
+![](./media/image71.png)
 
 3.  Use the **Start editing** button at the top right of the chart to
     display the options pane for the chart. Then set the options as
     follows and select **Apply**:
 
-    - **Chart type**: Bar chart
+    - Chart type: Bar chart
 
-    - **Key**: Item
+    - X-axis: Item
 
-    - **Values**: Quantity
+    - Y-axis: Quantity
 
-    - **Series Group**: *leave blank*
+    - Series Group: –None–
 
-    - **Aggregation**: Sum
+    - Aggregation: Sum
 
-    - **Stacked**: *Unselected*
+    - Missing and NULL values: Display as 0
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image77.png)
+    - Stacked: Unselected
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image78.png)
+![](./media/image72.png)
+
+![](./media/image73.png)
+
+![](./media/image74.png)
 
 4.  Verify that the chart looks similar to this
 
-> ![](./media/image79.png)
+![](./media/image75.png)
 
-## Task 2: Get started with matplotlib
+### Task 2: Get started with matplotlib
 
-1.  Click on **+ Code** and copy and paste the below code. **Run** the
+1.  Click on **+ Code** and copy and paste the below code. **Run** the
     code and observe that it returns a Spark dataframe containing the
     yearly revenue.
 
-    ```
-    sqlQuery = "SELECT CAST(YEAR(OrderDate) AS CHAR(4)) AS OrderYear, \
-                    SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue \
-                FROM salesorders \
-                GROUP BY CAST(YEAR(OrderDate) AS CHAR(4)) \
-                ORDER BY OrderYear"
-    df_spark = spark.sql(sqlQuery)
-    df_spark.show()
-    ```
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image80.png)
+```
+sqlQuery = "SELECT CAST(YEAR(OrderDate) AS CHAR(4)) AS OrderYear, \
+                SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue \
+            FROM salesorders \
+            GROUP BY CAST(YEAR(OrderDate) AS CHAR(4)) \
+            ORDER BY OrderYear"
+df_spark = spark.sql(sqlQuery)
+df_spark.show()
+```
+
+![](./media/image76.png)
 
 2.  To visualize the data as a chart, we’ll start by using
     the **matplotlib** Python library. This library is the core plotting
     library on which many others are based, and provides a great deal of
     flexibility in creating charts.
 
-3.  Click on **+ Code** and copy and paste the below code.
+3.  Click on **+ Code** and copy and paste the below code.
 
-    ```
-    from matplotlib import pyplot as plt
-    
-    # matplotlib requires a Pandas dataframe, not a Spark one
-    df_sales = df_spark.toPandas()
-    
-    # Create a bar plot of revenue by year
-    plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'])
-    
-    # Display the plot
-    plt.show()
-    ```
+```
+from matplotlib import pyplot as plt
 
-![A screenshot of a computer Description automatically
-generated](./media/image81.png)
+# matplotlib requires a Pandas dataframe, not a Spark one
+df_sales = df_spark.toPandas()
 
-5.  Click on the **Run cell** button and review the results, which
+# Create a bar plot of revenue by year
+plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'])
+
+# Display the plot
+plt.show()
+```
+
+4.  Click on the **Run cell** button and review the results, which
     consist of a column chart with the total gross revenue for each
     year. Note the following features of the code used to produce this
     chart:
@@ -1015,120 +960,113 @@ generated](./media/image81.png)
     - The default settings result in a usable chart, but there’s
       considerable scope to customize it
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image82.png)
+![](./media/image77.png)
 
-6.  Modify the code to plot the chart as follows, replace all the code
-    in the **cell** with the following code and click on **▷ Run
+![](./media/image78.png)
+
+5.  Modify the code to plot the chart as follows, replace all the code
+    in the **cell** with the following code and click on **▷ Run
     cell** button and review the output
 
-    ```
-    from matplotlib import pyplot as plt
-    
-    # Clear the plot area
-    plt.clf()
-    
-    # Create a bar plot of revenue by year
-    plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
-    
-    # Customize the chart
-    plt.title('Revenue by Year')
-    plt.xlabel('Year')
-    plt.ylabel('Revenue')
-    plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)
-    plt.xticks(rotation=45)
-    
-    # Show the figure
-    plt.show()
-    ```
- 
-> ![A screenshot of a computer program AI-generated content may be
-> incorrect.](./media/image83.png)
->
-> ![A graph with orange bars AI-generated content may be
-> incorrect.](./media/image84.png)
+```
+from matplotlib import pyplot as plt
 
-7.  The chart now includes a little more information. A plot is
+# Clear the plot area
+plt.clf()
+
+# Create a bar plot of revenue by year
+plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
+
+# Customize the chart
+plt.title('Revenue by Year')
+plt.xlabel('Year')
+plt.ylabel('Revenue')
+plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)
+plt.xticks(rotation=45)
+
+# Show the figure
+plt.show()
+```
+
+![](./media/image79.png)
+
+![](./media/image80.png)
+
+6.  The chart now includes a little more information. A plot is
     technically contained with a **Figure**. In the previous examples,
     the figure was created implicitly for you; but you can create it
     explicitly.
 
-8.  Modify the code to plot the chart as follows, replace all the code
-    in the **cell** with the following code.
+7.  Modify the code to plot the chart as follows, replace all the code
+    in the **cell** with the following code.
 
-    ```
-    from matplotlib import pyplot as plt
-    
-    # Clear the plot area
-    plt.clf()
-    
-    # Create a Figure
-    fig = plt.figure(figsize=(8,3))
-    
-    # Create a bar plot of revenue by year
-    plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
-    
-    # Customize the chart
-    plt.title('Revenue by Year')
-    plt.xlabel('Year')
-    plt.ylabel('Revenue')
-    plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)
-    plt.xticks(rotation=45)
-    
-    # Show the figure
-    plt.show()
-    ```
+```
+from matplotlib import pyplot as plt
 
-9.  **Re-run** the code cell and view the results. The figure determines
+# Clear the plot area
+plt.clf()
+
+# Create a Figure
+fig = plt.figure(figsize=(8,3))
+
+# Create a bar plot of revenue by year
+plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
+
+# Customize the chart
+plt.title('Revenue by Year')
+plt.xlabel('Year')
+plt.ylabel('Revenue')
+plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)
+plt.xticks(rotation=45)
+
+# Show the figure
+plt.show()
+```
+
+8.  **Re-run** the code cell and view the results. The figure determines
     the shape and size of the plot.
 
-> A figure can contain multiple subplots, each on its own *axis*.
->
-> ![A screenshot of a computer program AI-generated content may be
-> incorrect.](./media/image85.png)
->
-> ![A screenshot of a graph AI-generated content may be
-> incorrect.](./media/image86.png)
+A figure can contain multiple subplots, each on its own *axis*.
 
-10. Modify the code to plot the chart as follows. **Re-run** the code
+![](./media/image81.png)
+
+![](./media/image82.png)
+
+9. Modify the code to plot the chart as follows. **Re-run** the code
     cell and view the results. The figure contains the subplots
     specified in the code.
 
-    ```
-    from matplotlib import pyplot as plt
-    
-    # Clear the plot area
-    plt.clf()
-    
-    # Create a figure for 2 subplots (1 row, 2 columns)
-    fig, ax = plt.subplots(1, 2, figsize = (10,4))
-    
-    # Create a bar plot of revenue by year on the first axis
-    ax[0].bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
-    ax[0].set_title('Revenue by Year')
-    
-    # Create a pie chart of yearly order counts on the second axis
-    yearly_counts = df_sales['OrderYear'].value_counts()
-    ax[1].pie(yearly_counts)
-    ax[1].set_title('Orders per Year')
-    ax[1].legend(yearly_counts.keys().tolist())
-    
-    # Add a title to the Figure
-    fig.suptitle('Sales Data')
-    
-    # Show the figure
-    plt.show()
-    ```
-> ![A screenshot of a computer program AI-generated content may be
-> incorrect.](./media/image87.png)
->
-> ![A screenshot of a computer screen AI-generated content may be
-> incorrect.](./media/image88.png)
+```
+# Clear the plot area
+plt.clf()
+
+# Create a figure for 2 subplots (1 row, 2 columns)
+fig, ax = plt.subplots(1, 2, figsize = (10,4))
+
+# Create a bar plot of revenue by year on the first axis
+ax[0].bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
+ax[0].set_title('Revenue by Year')
+
+# Create a pie chart of yearly order counts on the second axis
+yearly_counts = df_sales['OrderYear'].value_counts()
+ax[1].pie(yearly_counts)
+ax[1].set_title('Orders per Year')
+ax[1].legend(yearly_counts.keys().tolist())
+
+# Add a title to the Figure
+fig.suptitle('Sales Data')
+
+# Show the figure
+plt.show()
+```
+![](./media/image83.png)
+
+![](./media/image84.png)
 
 **Note**: To learn more about plotting with matplotlib, see
 the [*matplotlib documentation*](https://matplotlib.org/).
 
-## Task 3: Use the seaborn library
+### Task 3: Use the seaborn library
 
 While **matplotlib** enables you to create complex charts of multiple
 types, it can require some complex code to achieve the best results. For
@@ -1136,197 +1074,192 @@ this reason, over the years, many new libraries have been built on the
 base of matplotlib to abstract its complexity and enhance its
 capabilities. One such library is **seaborn**.
 
-1.  Click on **+ Code** and copy and paste the below code.
+1.  Click on **+ Code** and copy and paste the below code.
 
-    ```
-    import seaborn as sns
-    
-    # Clear the plot area
-    plt.clf()
-    
-    # Create a bar chart
-    ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
-    plt.show()
-    ```
-2.  **Run** the code and observe that it displays a bar chart using the
+```
+import seaborn as sns
+
+# Clear the plot area
+plt.clf()
+
+# Create a bar chart
+ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+plt.show()
+```
+
+2.  **Run** the code and observe that it displays a bar chart using the
     seaborn library.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image89.png)
+![](./media/image85.png)
 
-3.  **Modify** the code as follows. **Run** the modified code and note
+![](./media/image86.png)
+
+3.  **Modify** the code as follows. **Run** the modified code and note
     that seaborn enables you to set a consistent color theme for your
     plots.
-    ```
-    import seaborn as sns
-    
-    # Clear the plot area
-    plt.clf()
-    
-    # Set the visual theme for seaborn
-    sns.set_theme(style="whitegrid")
-    
-    # Create a bar chart
-    ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
-    plt.show()
-    ```
-> ![A screenshot of a graph AI-generated content may be
-> incorrect.](./media/image90.png)
+```
+import seaborn as sns
 
-4.  **Modify** the code again as follows. **Run** the modified code to
+# Clear the plot area
+plt.clf()
+
+# Set the visual theme for seaborn
+sns.set_theme(style="whitegrid")
+
+# Create a bar chart
+ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+plt.show()
+```
+![](./media/image87.png)
+
+![](./media/image88.png)
+
+4.  **Modify** the code again as follows. **Run** the modified code to
     view the yearly revenue as a line chart.
 
-    ```
-    import seaborn as sns
-    
-    # Clear the plot area
-    plt.clf()
-    
-    # Create a bar chart
-    ax = sns.lineplot(x="OrderYear", y="GrossRevenue", data=df_sales)
-    plt.show()
-    ```
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image91.png)
+```
+import seaborn as sns
+
+# Clear the plot area
+plt.clf()
+
+# Create a bar chart
+ax = sns.lineplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+plt.show()
+```
+
+![](./media/image89.png)
+
+![](./media/image90.png)
 
 **Note**: To learn more about plotting with seaborn, see the [*seaborn
 documentation*](https://seaborn.pydata.org/index.html).
 
-## Task 4: Use delta tables for streaming data
+### Task 4: Use delta tables for streaming data
 
 Delta lake supports streaming data. Delta tables can be a *sink* or
 a *source* for data streams created using the Spark Structured Streaming
 API. In this example, you’ll use a delta table as a sink for some
 streaming data in a simulated internet of things (IoT) scenario.
 
-1.  Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
+1.  Click on **+ Code** and copy and paste the below code and then click
+    on **Run cell** button.
 
-    ```
-    from notebookutils import mssparkutils
-    from pyspark.sql.types import *
-    from pyspark.sql.functions import *
-    
-    # Create a folder
-    inputPath = 'Files/data/'
-    mssparkutils.fs.mkdirs(inputPath)
-    
-    # Create a stream that reads data from the folder, using a JSON schema
-    jsonSchema = StructType([
-    StructField("device", StringType(), False),
-    StructField("status", StringType(), False)
-    ])
-    iotstream = spark.readStream.schema(jsonSchema).option("maxFilesPerTrigger", 1).json(inputPath)
-    
-    # Write some event data to the folder
-    device_data = '''{"device":"Dev1","status":"ok"}
-    {"device":"Dev1","status":"ok"}
-    {"device":"Dev1","status":"ok"}
-    {"device":"Dev2","status":"error"}
-    {"device":"Dev1","status":"ok"}
-    {"device":"Dev1","status":"error"}
-    {"device":"Dev2","status":"ok"}
-    {"device":"Dev2","status":"error"}
-    {"device":"Dev1","status":"ok"}'''
-    mssparkutils.fs.put(inputPath + "data.txt", device_data, True)
-    print("Source stream created...")
-    ```
-> ![A screenshot of a computer program AI-generated content may be
-> incorrect.](./media/image92.png)
->
-> ![A screenshot of a computer program AI-generated content may be
-> incorrect.](./media/image93.png)
+```
+from notebookutils import mssparkutils
+from pyspark.sql.types import *
+from pyspark.sql.functions import *
+
+# Create a folder
+inputPath = 'Files/data/'
+mssparkutils.fs.mkdirs(inputPath)
+
+# Create a stream that reads data from the folder, using a JSON schema
+jsonSchema = StructType([
+StructField("device", StringType(), False),
+StructField("status", StringType(), False)
+])
+iotstream = spark.readStream.schema(jsonSchema).option("maxFilesPerTrigger", 1).json(inputPath)
+
+# Write some event data to the folder
+device_data = '''{"device":"Dev1","status":"ok"}
+{"device":"Dev1","status":"ok"}
+{"device":"Dev1","status":"ok"}
+{"device":"Dev2","status":"error"}
+{"device":"Dev1","status":"ok"}
+{"device":"Dev1","status":"error"}
+{"device":"Dev2","status":"ok"}
+{"device":"Dev2","status":"error"}
+{"device":"Dev1","status":"ok"}'''
+mssparkutils.fs.put(inputPath + "data.txt", device_data, True)
+print("Source stream created...")
+```
+![](./media/image91.png)
 
 2.  Ensure the message ***Source stream created…*** is printed. The code
     you just ran has created a streaming data source based on a folder
     to which some data has been saved, representing readings from
     hypothetical IoT devices.
 
-3.  Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
+3.  Click on **+ Code** and copy and paste the below code and then click
+    on **Run cell** button.
 
-    ```
-    # Write the stream to a delta table
-    delta_stream_table_path = 'Tables/iotdevicedata'
-    checkpointpath = 'Files/delta/checkpoint'
-    deltastream = iotstream.writeStream.format("delta").option("checkpointLocation", checkpointpath).start(delta_stream_table_path)
-    print("Streaming to delta sink...")
-    ```
-> ![](./media/image94.png)
+```
+# Write the stream to a delta table
+delta_stream_table_path = 'Tables/dbo/iotdevicedata'
+checkpointpath = 'Files/delta/checkpoint'
+deltastream = iotstream.writeStream.format("delta").option("checkpointLocation", checkpointpath).start(delta_stream_table_path)
+print("Streaming to delta sink...")
+```
+![](./media/image92.png)
 
 4.  This code writes the streaming device data in delta format to a
     folder named **iotdevicedata**. Because the path for the folder
     location is in the **Tables** folder, a table will automatically be
     created for it. Click on the horizontal ellipses beside table, then
-    click on **Refresh**.
+    click on **Refresh**.
+
+![](./media/image93.png)
+
+![](./media/image94.png)
+
+5.  Click on **+ Code** and copy and paste the below code and then click
+    on **Run cell** button.
+
+```
+%%sql
+SELECT * FROM dbo.iotdevicedata;
+```
 
 ![](./media/image95.png)
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image96.png)
-
-5.  Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
-
-    ```
-    %%sql
-    
-    SELECT * FROM IotDeviceData;
-    ```
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image97.png)
 
 6.  This code queries the **IotDeviceData** table, which contains the
     device data from the streaming source.
 
-7.  Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
+7.  Click on **+ Code** and copy and paste the below code and then click
+    on **Run cell** button.
 
-    ```
-    # Add more data to the source stream
-    more_data = '''{"device":"Dev1","status":"ok"}
-    {"device":"Dev1","status":"ok"}
-    {"device":"Dev1","status":"ok"}
-    {"device":"Dev1","status":"ok"}
-    {"device":"Dev1","status":"error"}
-    {"device":"Dev2","status":"error"}
-    {"device":"Dev1","status":"ok"}'''
-    
-    mssparkutils.fs.put(inputPath + "more-data.txt", more_data, True)
-    ```
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image98.png)
+```
+# Add more data to the source stream
+more_data = '''{"device":"Dev1","status":"ok"}
+{"device":"Dev1","status":"ok"}
+{"device":"Dev1","status":"ok"}
+{"device":"Dev1","status":"ok"}
+{"device":"Dev1","status":"error"}
+{"device":"Dev2","status":"error"}
+{"device":"Dev1","status":"ok"}'''
+
+mssparkutils.fs.put(inputPath + "more-data.txt", more_data, True)
+```
+![](./media/image96.png)
 
 8.  This code writes more hypothetical device data to the streaming
     source.
 
-9.  Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
+9.  Click on **+ Code** and copy and paste the below code and then click
+    on **Run cell** button.
 
-    ```
-    %%sql
-    
-    SELECT * FROM IotDeviceData;
-    ```
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image99.png)
+```
+%%sql
+SELECT * FROM dbo.iotdevicedata;
+```
+
+![](./media/image97.png)
 
 10. This code queries the **IotDeviceData** table again, which should
     now include the additional data that was added to the streaming
     source.
 
-11. Click on **+ Code** and copy and paste the below code and then click
-    on **Run cell** button.
+11. Click on **+ Code** and copy and paste the below code and then click
+    on **Run cell** button.
 
-    ```
-    deltastream.stop()
-    ```
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image100.png)
++++deltastream.stop()+++
+
+![](./media/image98.png)
 
 12. This code stops the stream.
 
-## Task 5: Save the notebook and end the Spark session
+### Task 5: Save the notebook and end the Spark session
 
 Now that you’ve finished working with the data, you can save the
 notebook with a meaningful name and end the Spark session.
@@ -1334,243 +1267,22 @@ notebook with a meaningful name and end the Spark session.
 1.  In the notebook menu bar, use the ⚙️ **Settings** icon to view the
     notebook settings.
 
-![A screenshot of a computer Description automatically
-generated](./media/image101.png)
+![](./media/image99.png)
 
 2.  Set the **Name** of the notebook to +++**Explore Sales Orders+++**,
     and then close the settings pane.
 
-![A screenshot of a computer Description automatically
-generated](./media/image102.png)
+![](./media/image100.png)
 
 3.  On the notebook menu, select **Stop session** to end the Spark
     session.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image103.png)
+![](./media/image101.png)
 
 ![A screenshot of a computer Description automatically
-generated](./media/image104.png)
+generated](./media/image102.png)
 
-# Exercise 5: Create a Dataflow (Gen2) in Microsoft Fabric
-
-In Microsoft Fabric, Dataflows (Gen2) connect to various data sources
-and perform transformations in Power Query Online. They can then be used
-in Data Pipelines to ingest data into a lakehouse or other analytical
-store, or to define a dataset for a Power BI report.
-
-This exercise is designed to introduce the different elements of
-Dataflows (Gen2), and not create a complex solution that may exist in an
-enterprise
-
-## Task 1: Create a Dataflow (Gen2) to ingest data
-
-Now that you have a lakehouse, you need to ingest some data into it. One
-way to do this is to define a dataflow that encapsulates an *extract,
-transform, and load* (ETL) process.
-
-1.  Now, click on **Fabric_lakehouse** on the left-sided navigation
-    pane.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image105.png)
-
-2.  In the **Fabric_lakehouse** home page, click on the drop-down arrow
-    in the **Get data** and select **New Dataflow Gen2.** The Power
-    Query editor for your new dataflow opens.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image106.png)
-
-5.  In the **New Dataflow Gen2** dialog box,
-    enter **+++Gen2_Dataflow+++** in the **Name** field, click on
-    the **Create** button and open the new Dataflow Gen2.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image107.png)
-
-3.  In the **Power Query** pane under the **Home tab**, click on
-    **Import from a Text/CSV file**.
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image108.png)
-
-4.  In the **Connect to data source** pane, under **Connection
-    settings**, select **Link to file (Preview)** radio button
-
-- **Link to file**: *Selected*
-
-- **File path or
-  URL**: +++https://raw.githubusercontent.com/MicrosoftLearning/dp-data/main/orders.csv+++
-
-   ![](./media/image109.png)
-
-5.  In the **Connect to data source** pane, under **Connection
-    credentials,** enter the following details and click on the **Next**
-    button.
-
-- **Connection**: Create new connection
-
-- **Connection name**: Orders
-
-- **data gateway**: (none)
-
-- **Authentication kind**: Anonymous
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image110.png)
-
-6.  In **Preview file data** pane, click on **Create** to create the
-    data source. ![A screenshot of a computer Description automatically
-    generated](./media/image111.png)
-
-7.  The **Power Query** editor shows the data source and an initial set
-    of query steps to format the data.
-
-![](./media/image112.png)
-
-8.  On the toolbar ribbon, select the **Add column** tab. Then,
-    select **Custom column.**
-
-> ![](./media/image113.png) 
-
-9.  Set the New column name to +++**MonthNo+++** , set the Data type to
-    **Whole Number** and then add the following
-    formula:+++**Date.Month(\[OrderDate\])+++** under **Custom column
-    formula**. Select **OK**.
-
-> ![](./media/image114.png)
-
-10. Notice how the step to add the custom column is added to the query.
-    The resulting column is displayed in the data pane.
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image115.png)
-
-**Tip:** In the Query Settings pane on the right side, notice
-the **Applied Steps** include each transformation step. At the bottom,
-you can also toggle the **Diagram flow** button to turn on the Visual
-Diagram of the steps.
-
-Steps can be moved up or down, edited by selecting the gear icon, and
-you can select each step to see the transformations apply in the preview
-pane.
-
-## **Task 2: Add data destination for Dataflow**
-
-1.  On the **Power Query** toolbar ribbon, select the **Home** tab. Then
-    in the D**ata destination** drop-down menu, select **Lakehouse**(if
-    not selected already).
-
-![](./media/image116.png)
-
-![](./media/image117.png)
-
-**Note:** If this option is grayed out, you may already have a data
-destination set. Check the data destination at the bottom of the Query
-settings pane on the right side of the Power Query editor. If a
-destination is already set, you can change it using the gear.
-
-2.  The **Lakehouse** destination is indicated as an **icon** in the
-    **query** in the Power Query editor.
-
-![A screenshot of a computer Description automatically
-generated](./media/image118.png)
-
-![A screenshot of a computer Description automatically
-generated](./media/image119.png)
-
-3.  On the Home window, select **Save & run** and click on **Save &
-    run** button
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image120.png)
-
-4.  On the left navigation select ***dp_Fabric-XXXXX workspace icon***,
-    as shown in the image below
-
-![](./media/image121.png)
-
-## Task 3: Add a dataflow to a pipeline
-
-You can include a dataflow as an activity in a pipeline. Pipelines are
-used to orchestrate data ingestion and processing activities, enabling
-you to combine dataflows with other kinds of operation in a single,
-scheduled process. Pipelines can be created in a few different
-experiences, including Data Factory experience.
-
-1.  In the Synapse Data Engineering Home page , Under **dp_FabricXX**
-    pane, select **+New item** -\> P**ipeline**
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image122.png)
-
-2.  In the **New pipeline** dialog box, enter +++**Load data+++** in
-    the **Name** field, click on the **Create** button to open the new
-    pipeline.
-
-![A screenshot of a computer Description automatically
-generated](./media/image123.png)
-
-3.  The pipeline editor opens.
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image124.png)
->
-> **Tip**: If the Copy Data wizard opens automatically, close it!
-
-4.  Select **Pipeline activity**, and add a **Dataflow** activity to the
-    pipeline.
-
-![A screenshot of a computer Description automatically
-generated](./media/image125.png)
-
-5.  With the new **Dataflow1** activity selected, on
-    the **Settings** tab, in the **Dataflow** drop-down list,
-    select **Gen2_Dataflow** (the data flow you created previously)
-
-![A screenshot of a computer Description automatically
-generated](./media/image126.png)
-
-6.  On the **Home** tab, save the pipeline using the **🖫 (*Save*)**
-    icon.
-
-![A screenshot of a computer Description automatically
-generated](./media/image127.png)
-
-7.  Use the **▷ Run** button to run the pipeline, and wait for it to
-    complete. It may take a few minutes.
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image128.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image129.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image130.png)
-
-8.  From the top bar, select **Fabric_lakehouse** tab.
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image131.png)
-
-9.  In **Explorer** pane, select the **…** menu for **Tables**,
-    select **refresh**. Then expand **Tables** and select
-    the **orders** table, which has been created by your dataflow.
-
-![A screenshot of a computer Description automatically
-generated](./media/image132.png)
-
-![](./media/image133.png)
-
-**Tip**: Use the Power BI Desktop *Dataflows connector* to connect
-directly to the data transformations done with your dataflow.
-
-You can also make additional transformations, publish as a new dataset,
-and distribute with intended audience for specialized datasets.
-
-## Task 4: Clean up resources
+### Task 6: Clean up resources
 
 In this exercise, you’ve learned how to use Spark to work with data in
 Microsoft Fabric.
@@ -1581,27 +1293,27 @@ workspace you created for this exercise.
 1.  In the bar on the left, select the icon for your workspace to view
     all of the items it contains.
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image134.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image103.png)
 
 2.  In the **…** menu on the toolbar, select **Workspace settings**.
 
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image135.png)
+incorrect.](./media/image104.png)
 
-3.  Select **General** and click on **Remove this workspace.**
+3.  Select **General** and click on **Remove this workspace.**
 
 ![A screenshot of a computer settings Description automatically
-generated](./media/image136.png)
+generated](./media/image105.png)
 
-4.  In the **Delete workspace?** dialog box, click on the **Delete**
-    button.
+4.  In the **Delete workspace?** dialog box, click on
+    the **Delete** button.
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image137.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image138.png)
+![A screenshot of a computer Description automatically
+generated](./media/image106.png)
+
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image107.png)
 
 **Summary**
 
@@ -1621,23 +1333,3 @@ using Python libraries like matplotlib and seaborn. The exercises aim to
 provide a comprehensive understanding of utilizing Microsoft Fabric for
 data analysis, and incorporating delta tables for streaming data in an
 IoT context.
-
-This use case guides you through the process of setting up a Fabric
-workspace, creating a data lakehouse, and ingesting data for analysis.
-It demonstrates how to define a dataflow to handle ETL operations and
-configure data destinations for storing the transformed data.
-Additionally, you'll learn how to integrate the dataflow into a pipeline
-for automated processing. Finally, you'll be provided with instructions
-to clean up resources once the exercise is complete.
-
-This lab equips you with essential skills for working with Fabric,
-enabling you to create and manage workspaces, establish data lakehouses,
-and perform data transformations efficiently. By incorporating dataflows
-into pipelines, you'll learn how to automate data processing tasks,
-streamlining your workflow and enhancing productivity in real-world
-scenarios. The cleanup instructions ensure you leave no unnecessary
-resources, promoting an organized and efficient workspace management
-approach.
-
-
-
