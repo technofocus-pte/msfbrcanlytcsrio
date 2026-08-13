@@ -1,4 +1,4 @@
-# Usecase 02: Analyze data with Apache Spark
+# Usecase 03: Analyze data with Apache Spark
 
 **Introduction**
 
