@@ -1,4 +1,4 @@
-# Usecase 1: Implement a data engineering solution for moving and transforming data with Fabric Data Factory
+# Usecase 1: Create a Lakehouse, ingest sample data and build a report​
 
 **Scenario**
 
