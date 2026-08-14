@@ -1,3 +1,14 @@
+---
+lab:
+  title: 'Use Case 02: Analyze data with Apache Spark'
+  description: In this exercise, you’ve learned how to use Spark to work with data in Microsoft Fabric.
+  duration: 5 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Microsoft Fabric
+---
+
 # Use Case 02: Analyze data with Apache Spark
 
 **Introduction**
