@@ -1,909 +1,644 @@
-## 用例05——在Microsoft Fabric中構建Contoso的銷售和地理數據倉庫
-**介紹**
+# 用例04——在Microsoft Fabric中构建Contoso的销售和地理Data Warehouse
 
-Contoso是一家跨國零售公司，正尋求現代化其數據基礎設施，以提升銷售和地理分析能力。目前，他們的銷售和客戶數據分散在多個系統中，使業務分析師和公民開發者難以獲得洞察。公司計劃將這些數據整合到一個統一平臺，利用
-Microsoft Fabric 實現交叉查詢、銷售分析和地理報告。
+**简介**
 
-在本實驗室中，你將扮演Contoso的數據工程師角色，負責設計和實施使用Microsoft
-Fabric的數據倉庫解決方案。您將首先搭建 Fabric 工作區，創建數據倉庫，從
-Azure Blob Storage 加載數據，並執行分析任務，向 Contoso
-的決策者提供洞察。
+Contoso是一家跨国零售公司，正寻求现代化其
+data基础设施，以提升销售和地理分析能力。目前，他们的销售和客户
+data分散在多个系统中，使业务分析师和公民开发者难以获得洞察。公司计划将这些
+data整合到一个统一平台，利用 Microsoft Fabric
+实现交叉查询、销售分析和地理报告。
 
-雖然Microsoft
-Fabric中的許多概念對數據和分析專業人士來說可能很熟悉，但在新環境中應用這些概念可能具有挑戰性。本實驗室旨在逐步帶領從數據採集到數據消耗的端到端場景，建立對
-Microsoft Fabric 用戶體驗、各種體驗及其集成點，以及 Microsoft Fabric
-專業和公民開發者體驗的基本理解。
+在本实验室中，你将扮演Contoso的data
+engineer角色，负责设计和实施使用Microsoft Fabric的data
+warehouse解决方案。您将首先搭建 Fabric 工作区，创建data warehouse，从
+Azure Blob Storage 加载 data，并执行分析任务，向 Contoso
+的决策者提供洞察。
 
-**目標**
+虽然Microsoft Fabric中的许多概念对
+data和分析专业人士来说可能很熟悉，但在新环境中应用这些概念可能具有挑战性。本实验室旨在逐步带领从
+data采集到 data消耗的端到端场景，建立对 Microsoft Fabric
+用户体验、各种体验及其集成点，以及 Microsoft Fabric
+专业和公民开发者体验的基本理解。
 
-- 搭建一個啟用試用版的Fabric工作區。
+**目标**
 
-- 在 Microsoft Fabric 中建立一個名為 WideWorldImporters 的新倉庫。
+- 搭建一个启用试用版的Fabric工作区。
 
-- 通過數據工廠流水線將數據加載到Warehouse_FabricXX工作區。
+- 在 Microsoft Fabric 中建立一个名为 WideWorldImporters 的新Warehouse。
 
-- 在數據倉庫中生成dimension_city和fact_sale表。
+- 通过Data Factory pipeline将 data加载到Warehouse_FabricXX工作区。
 
-- 用Azure Blob Storage的數據填充dimension_city和fact_sale表。
+- 在data warehouse中生成dimension_city和fact_sale表。
 
-- 在倉庫裡創建dimension_city和fact_sale的桌子克隆。
+- 用Azure Blob Storage的 data填充dimension_city和fact_sale表。
 
-- 將 Tables dimension_city 和 Tables fact_sale 克隆到 dbo1 架構中。
+- 在Warehouse里创建dimension_city和fact_sale的桌子clones。
 
-- 開發一個存儲過程來轉換數據並創建aggregate_sale_by_date_city表。
+- 将 Tables dimension_city 和 Tables fact_sale Clone到 dbo1 架构中。
 
-- 使用可視化查詢構建器生成查詢，以合併和聚合數據。
+- 开发一个存储过程来转换data并创建aggregate_sale_by_date_city表。
 
-- 使用筆記本查詢和分析dimension_customer表中的數據。
+- 使用可视化查询构建器生成查询，以合并和聚合data。
 
-- 包含WideWorldImporters和ShortcutExercise倉庫以便交叉查詢。
+- 使用notebook查询和分析dimension_customer表中的data。
 
-- 在 WideWorldImporters 和 ShortcutExercise 倉庫之間執行 T-SQL 查詢。
+- 包含WideWorldImporters和ShortcutExercise warehouses以便交叉查询。
 
-- 在管理門戶中啟用 Azure Maps 可視化集成。
+- 在 WideWorldImporters 和 ShortcutExercise 仓库之间执行 T-SQL 查询。
 
-- 生成銷售分析報告的柱狀圖、地圖和表格可視化。
+- 在管理门户中启用 Azure Maps 可视化集成。
 
-- 利用OneLake數據中心中的WideWorldImporters數據集中的數據創建報告。
+- 生成销售分析报告的柱状图、地图和表格可视化。
 
-- 移除工作區及其相關項目。
+- 利用OneLake data中心中的WideWorldImporters dataset中的data hub建报告。
 
-# **練習一： 創建 Microsoft Fabric 工作區**
+- 移除工作区及其相关项目。
 
-## **任務1：登錄Power BI賬戶並註冊免費[Microsoft Fabric試用版](https://learn.microsoft.com/en-us/fabric/get-started/fabric-trial)**
+## 练习1：创建 Microsoft Fabric 工作区
 
-1.  打開瀏覽器，進入地址欄，輸入或粘貼以下URL：+++https://app.fabric.microsoft.com/+++，
-    然後按下 **Enter** 鍵。
+### 任务1：创建一个工作区
 
-> ![](./media/image1.png)
+1.  打开浏览器，进入地址栏，输入或粘贴以下URL：+++https://app.fabric.microsoft.com/+++，然后按下**Enter **键。
 
-2.  在 **Microsoft Fabric** 窗口中，輸入已分配的憑證，然後點擊
-    **Submit** 按鈕。
+\[！note\]**注意**：如果你被引导到Microsoft Fabric主页，请跳到步骤#5。
+
+![](./media/image1.png)
+
+2.  在 **Microsoft Fabric**
+    窗口中，输入你的凭证，然后点击**Submit**按钮。
+
+| Credential | Value |
+|---|---|
+| Username | +++@lab.CloudPortalCredential(User1).Username+++ |
+| Password | +++@lab.CloudPortalCredential(User1).Password+++ |
 
 > ![](./media/image2.png)
 
-3.  然後，在 **Microsoft** 窗口輸入密碼，點擊 **Sign in** 按鈕**。**
+3.  然后，在 **Microsoft** 窗口输入密码，点击**Sign in **按钮。
 
 > ![](./media/image3.png)
 
-4.  在 **Stay signed in?** 窗口，點擊“**Yes**”按鈕。
+4.  在 **Stay signed in? **窗口，点击**“Yes”**按钮。
 
-> ![](./media/image4.png)
+5.  如果 PowerBI 默认打开，请按照以下步骤操作，否则跳过这一步
 
-5.  你將被引導到Power BI主頁。
+- 点击 PowerBI
 
-> ![](./media/image5.png)
+![](./media/image4.png)
 
-## 任務2：創建一個工作區
+- 从选项中选择Fabric
 
-在處理Fabric數據之前，先創建一個啟用Fabric試用區的工作區。
+![](./media/image5.png)
 
-1.  在工作區面板中選擇 **+** **New workspace**。
+6.  Fabric主页，选择 **+New workspace **瓷砖。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image6.png)
+![](./media/image6.png)
 
-2.  在“**Create a
-    workspace**”**選項卡**中，**輸入**以下詳細信息，然後單擊“**Apply**”按鈕。
+7.  在“**Create a
+    workspace”**标签中**，**输入以下信息，点击**“Apply**”按钮。
 
-    |  |  |
-    |----|---|
-    |Name	|+++Warehouse_Fabric@lab.LabInstance.Id+++ (must be a unique Id) |
-    |Description	|+++This workspace contains all the artifacts for the data warehouse+++|
-    |Advanced	Under License mode| select Fabric capacity|
-    |Default storage format	|Small dataset storage format|
+| Field | Value |
+|---|---|
+| Name | +++Warehouse_Fabric@lab.LabInstance.Id+++ (must be a unique Id) |
+| Description | +++This workspace contains all the artifacts for the data warehouse+++ |
+| Advanced Under License mode | Fabric |
+| Default storage format | Small dataset storage format |
 
-> ![](./media/image7.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image8.png)
+![](./media/image7.png)
 
-3.  等待部署完成。完成大約需要1-2分鐘。
-    當你的新工作區開放時，應該是空的。
+![](./media/image8.png)
 
-> ![](./media/image9.png)
+![](./media/image9.png)
 
-## 任務3：在 Microsoft Fabric 中創建倉庫
+3.  等待部署完成。完成大约需要1-2分钟。当你的新工作区开放时，应该是空的。
 
-1.  在 **Fabric** 頁面，選擇  **+ New item**  創建
-    **lakehouse**，然後選擇 **Warehouse**
+![](./media/image10.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image10.png)
+### 任务2：在 Microsoft Fabric 中创建一个Warehouse
 
-2.  在“**New warehouse** ”對話框中，輸入
-    +++**WideWorldImporters+++** 並點擊“**Create**”按鈕。
+1.  在**Fabric**页面，选择 **+ New
+    item **创建lakehouse，然后选择**Warehouse**
 
-> ![](./media/image11.png)
+![A screenshot of a computer Description automatically
+generated](./media/image11.png)
 
-3.  配置完成後，會出現 **WideWorldImporters** 倉庫的登陸頁面。
+2.  在“**New warehouse**”对话框中，输入
+    +++**WideWorldImporters+++** 并点击**“Create**”按钮。
 
-> ![](./media/image12.png)
+![](./media/image12.png)
 
-# **練習2：在Microsoft Fabric中將數據導入倉庫**
+3.  配置完成后，会出现**WideWorldImporters** warehouse 的登陆页面。
 
-## 任務1：將數據導入倉庫
+![](./media/image13.png)
 
-1.  在**WideWorldImporters**倉庫的落地頁面，選擇左側導航菜單中的
-    **Warehouse_FabricXX**返回工作區物品列表。
+## 练习2：在Microsoft Fabric中将 data导入Warehouse
 
-> ![](./media/image13.png)
+### 任务1：将 data导入Warehouse
 
-2.  在 **Warehouse_FabricXX** 頁面，選擇 +**New item**。然後，點擊
-    **“Pipeline**”，在“獲取數據”下查看所有可用項目的完整列表。
+1.  在 **WideWorldImporters**
+    仓库着陆页，左侧导航菜单中选择**Warehouse_FabricXX**返回工作区物品列表。
 
-> ![](./media/image14.png)
+![](./media/image14.png)
 
-3.  在“**New** **pipeline**”對話框的 **Name** 字段中，輸入 +++**Load
-    Customer Data+++**並點擊**Create**按鈕。
+2.  在**Warehouse_FabricXX**页面，选择 +**New item**。然后，点击**Copy
+    job**，查看“Get data”下的完整可用项目列表。
 
-> ![](./media/image15.png)
+![](./media/image15.png)
 
-4.  在“**Load Customer Data**”頁面中，導航至“**Start building your data
-    pipeline** ”部分，然後單擊“**Pipeline activity**”。
+3.  在**“New copy job**”窗口的**Name** 框中，输入 +++**Load Customer Data**+++。选择**Create**
 
 > ![](./media/image16.png)
 
-5.  在“**Move &** **transform**”部分下，導航並選擇“**Copy data**”。
+4.  当复**Copy job** 页面打开时，配置就完成了。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image17.png)
+> ![](./media/image17.png)
 
-6.  從設計畫布中選擇新創建的**“Copy data 1**”活動進行配置。
+5.  在**Copy job** 窗口的第一页 ，从该页面的菜单栏选择**“Sample
+    data**”。本教程中使用了**Retail Data Model from Wide World
+    Importers** 样本。选择此选项以导航至下一页
 
-> **注意**：在設計畫布中拖動橫線，可以完整查看各種特徵。
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image18.png)
+> ![](./media/image18.png)
 
-7.  在“**General**”選項卡上的“**Name**”字段中，輸入+++**CD Load
-    dimension_customer+++**
+6.  样本data的预览加载。在**“Choose
+    data**”页面，您可以预览所选dataset。查看数据后，选择**“Next**”。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image19.png)
+![](./media/image19.png)
 
-8.  在“**Source**”頁面上，選擇“**Connection**”下拉菜單。選擇“**Browse
-    all**”以查看所有可供選擇的數據源。
+5.  Choose data
+    destination的地页面允许您配置商品类型。在OneLake目录中，选择你的
+    **Wide World Importers** 仓库，然后选择 **“Next”。**
 
 > ![](./media/image20.png)
 
-9.  在“**Get data**”窗口中，搜索 +++**Azure Blobs+++**，然後點擊 **Azure
-    Blob Storage** 按鈕。 
+6.  **Choose copy job mode**页面，选择**Full copy** 并选择**Next**。
 
 > ![](./media/image21.png)
 
-10. 在右側出現的“**Connection
-    settings**”窗格中，配置以下設置，然後單擊“**Connect**”按鈕。
+7.  输入以下目标表，然后选择 **“Next**”。
 
-- 在 **Account name or URL**中輸入
-  +++**https://fabrictutorialdata.blob.core.windows.net/sampledata/+++**
+- dbo.dimension_city
 
-- 在**Connection
-  credentials**部分，點擊**Connection**下的下拉菜單，然後選擇**Create
-  new connection**。 
+- dbo.dimension_customer
 
-- 在 **Connection name** 字段中輸入 +++**Wide World Importers Public
-  Sample+++**.
+- dbo.dimension_date
 
-- 將**Authentication kind**設置為**Anonymous**。
+- dbo.dimension_employee
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image22.png)
+- dbo.dimension_stock_item
 
-11. 在複製活動的 Source 頁上更改剩餘設置如下，以訪問
-    **https：//fabrictutorialdata.blob.core.windows.net/sampledata/WideWorldImportersDW/parquet/full/dimension_customer/\*.parquet**
-    中的 .parquet 文件
+- dbo.fact_sale
 
-12. 在 **File path** 文本框中，提供:
+> ![](./media/image22.png)
 
-- **容器:** +++**sampledata+++**
+8.  在**“Review + save**”页面，查看**Source** 和**Destination**。
 
-- **文件路徑 - 目錄:** +++**WideWorldImportersDW/tables+++**
+![](./media/image23.png)
 
-- **文件路徑- 文件名:** +++**dimension_customer.parquet+++**
+9.  使用**Results** 标签来监控复Copy job的执行情况。
 
-- 在“**File
-  format**”下拉菜單中，選擇**Parquet**（如果看不到**Parquet**，請在搜索框中輸入並選擇它）
+![](./media/image24.png)
 
-> ![](./media/image23.png)
+10. 完成后，**Copy
+    job** 将发送**“Succeeded**”通知和状态。你现在会在仓库中看到来自Wide
+    World Importers dataset的六张新表格。
 
-13. 點擊 **File path** 設置右側的“**Preview
-    data**”，確保沒有錯誤，然後點擊“**close**”。 
+![](./media/image25.png)
 
-> ![](./media/image24.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image25.png)
-
-14. 在**“Destination**”標簽頁，輸入以下設置。
-
-    |  |  |
-    |---|---|
-    |Connection	|WideWorldImporters|
-    |Table option	|select the Auto create table radio button.|
-    |Table	|•	In the first box enter +++dbo+++<br>•	In the second box enter +++dimension_customer+++|
-
-> **注意：在將連接添加到WideWorldImporters倉庫時，請通過導航從OneLake目錄中添加，以便瀏覽所有選項。**
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image26.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image27.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image28.png)
-
-15. 從色帶中選擇**“Run**”。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image29.png)
-
-16. 在 **Save and run?** 對話框，點擊“**Save and run**”按鈕。
-
-> ![](./media/image30.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image31.png)
-
-17. 在輸**Output**面監控複製活動的進度 ，等待它完成。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image32.png)
-
-# 練習3：在數據倉庫中創建表格
-
-## 任務1：在數據倉庫中創建表格
-
-1.  在 **Load Customer Data**
-    頁面，點擊左側導航欄**Warehouse_FabricXX**工作區，選擇**WideWorldImporters**
+11. 在**Load Customer Data** 页面，点击
+    左侧导航栏**Warehouse_FabricXX** 工作区，选择**WideWorldImporters**
     Warehouse。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image33.png)
+> ![](./media/image26.png)
 
-2.  在 **WideWorldImporters** 頁面，進入**Home**頁標簽，從下拉菜單選擇
-    **SQL**，然後點擊“**New SQL query**”。 
+12. 在 **WideWorldImporters** warehouse 中，展开 **Schemas \> dbo\>
+    Tables**，并验证表（**dimension_city**、**dimension_customer**、**dimension_date**、**dimension_employee**、**dimension_stock_item**
+    和 **fact_sale**）是否已成功创建。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image34.png)
+![](./media/image27.png)
 
-3.  在查詢編輯器中，粘貼以下代碼，選擇 **Run **以執行查詢
+## 练习3： **在Warehouse中用T-SQL克隆表**
 
-    ```
-    /*
-    1. Drop the dimension_city table if it already exists.
-    2. Create the dimension_city table.
-    3. Drop the fact_sale table if it already exists.
-    4. Create the fact_sale table.
-    */
-    
-    --dimension_city
-    DROP TABLE IF EXISTS [dbo].[dimension_city];
-    CREATE TABLE [dbo].[dimension_city]
-        (
-            [CityKey] [int] NULL,
-            [WWICityID] [int] NULL,
-            [City] [varchar](8000) NULL,
-            [StateProvince] [varchar](8000) NULL,
-            [Country] [varchar](8000) NULL,
-            [Continent] [varchar](8000) NULL,
-            [SalesTerritory] [varchar](8000) NULL,
-            [Region] [varchar](8000) NULL,
-            [Subregion] [varchar](8000) NULL,
-            [Location] [varchar](8000) NULL,
-            [LatestRecordedPopulation] [bigint] NULL,
-            [ValidFrom] [datetime2](6) NULL,
-            [ValidTo] [datetime2](6) NULL,
-            [LineageKey] [int] NULL
-        );
-    
-    --fact_sale
-    
-    DROP TABLE IF EXISTS [dbo].[fact_sale];
-    
-    CREATE TABLE [dbo].[fact_sale]
-    
-        (
-            [SaleKey] [bigint] NULL,
-            [CityKey] [int] NULL,
-            [CustomerKey] [int] NULL,
-            [BillToCustomerKey] [int] NULL,
-            [StockItemKey] [int] NULL,
-            [InvoiceDateKey] [datetime2](6) NULL,
-            [DeliveryDateKey] [datetime2](6) NULL,
-            [SalespersonKey] [int] NULL,
-            [WWIInvoiceID] [int] NULL,
-            [Description] [varchar](8000) NULL,
-            [Package] [varchar](8000) NULL,
-            [Quantity] [int] NULL,
-            [UnitPrice] [decimal](18, 2) NULL,
-            [TaxRate] [decimal](18, 3) NULL,
-            [TotalExcludingTax] [decimal](29, 2) NULL,
-            [TaxAmount] [decimal](38, 6) NULL,
-            [Profit] [decimal](18, 2) NULL,
-            [TotalIncludingTax] [decimal](38, 6) NULL,
-            [TotalDryItems] [int] NULL,
-            [TotalChillerItems] [int] NULL,
-            [LineageKey] [int] NULL,
-            [Month] [int] NULL,
-            [Year] [int] NULL,
-            [Quarter] [int] NULL
-        );
-    ```
-![A screenshot of a computer Description automatically
-generated](./media/image35.png)
+### 任务1：**在同一模式内克隆一个表**
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image36.png)
+1.  在 **WideWorldImporters** 页面，进入**Home** 标签，从 下拉菜单选择
+    **SQL**，然后点击“**New SQL query**”。
 
-4.  要保存此查詢，請右鍵單擊編輯器上方的 **SQL query
-    1**選項卡，然後選擇“**Rename**”。
+![](./media/image28.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image37.png)
+3.  在查询编辑器中，粘贴以下代码。代码创建了dimension_city表和
+    fact_sale表的克隆。
 
-5.  在“**Rename**”對話框中，在 **Name** 字段中輸入 +++**Create
-    Tables+++**以更改 **SQL query
-    1**的名稱。然後，點擊“**Rename**”按鈕。
+```
+--Create a clone of the dbo.dimension_city table.
+ CREATE TABLE [dbo].[dimension_city1] AS CLONE OF [dbo].[dimension_city];
 
-> ![](./media/image38.png)
+ --Create a clone of the dbo.fact_sale table.
+ CREATE TABLE [dbo].[fact_sale1] AS CLONE OF [dbo].[fact_sale];
+```
+
+> ![](./media/image29.png)
+
+4.  要执行查询，在查询设计功能区上选择 **Run**。
+
+![](./media/image30.png)
+
+![](./media/image31.png)
+
+5.  在查询编辑器中，粘贴以下代码。CURRENT_TIMESTAMP T-SQL 函数返回当前
+    UTC 时间戳为**datetime**。选择**Run** 以执行查询。
+
+```
+SELECT CURRENT_TIMESTAMP;
+```
+
+![](./media/image32.png)
+
+6.  要创建一个*past point in
+    time*的表克隆，在查询编辑器中粘贴以下代码**替换现有语句**。代码在某个时间点创建了dimension_city表和
+    fact_sale 表的克隆。运行查询。
+
+```
+--Create a clone of the dbo.dimension_city table at a specific point in time.   
+CREATE TABLE [dbo].[dimension_city2] AS CLONE OF [dbo].[dimension_city] AT '2025-01-01T10:00:00.000';
+
+ --Create a clone of the dbo.fact_sale table at a specific point in time.
+CREATE TABLE [dbo].[fact_sale2] AS CLONE OF [dbo].[fact_sale] AT '2025-01-01T10:00:00.000';
+```
+
+![](./media/image33.png)
+
+![](./media/image34.png)
+
+7.  将查询重命名为 +++**Clone Tables+++**。
+
+> ![](./media/image35.png)
 >
-> ![A screenshot of a computer Description automatically
-> generated](./media/image39.png)
+> ![](./media/image36.png)
 
-6.  通過選擇功能區上的**刷新圖標**按鈕驗證表已成功創建。
+### 任务2：在同一仓库内跨模式克隆表
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image40.png)
+在这个任务中，学习如何在同一仓库内跨模式克隆一个表。
 
-7.  在**Explorer**面板中，你會看到**fact_sale**表和**dimension_city**表。
+1.  要创建新查询，在**Home** 功能区选择 **New SQL query**。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image41.png)
+> ![](./media/image37.png)
 
-## 任務2：使用T-SQL加載數據
+2.  在查询编辑器中，粘贴以下代码。代码创建一个模式，然后在新模式中创建
+    **fact_sale**和**dimension_city**表的克隆。运行查询。
 
-既然你已經知道如何構建數據倉庫、加載表和生成報告，接下來是時候通過探索其他加載數據的方法來擴展解決方案了。
+```
+--Create a new schema within the warehouse named dbo1.
+ CREATE SCHEMA dbo1;
+ GO
 
-1.  在 **WideWorldImporters** 頁面，進入**主**頁標簽，從下拉菜單中選擇
-    **SQL**，然後點擊“**New SQL query**”。
+ --Create a clone of dbo.fact_sale table in the dbo1 schema.
+ CREATE TABLE [dbo1].[fact_sale1] AS CLONE OF [dbo].[fact_sale];
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image42.png)
+ --Create a clone of dbo.dimension_city table in the dbo1 schema.
+ CREATE TABLE [dbo1].[dimension_city1] AS CLONE OF [dbo].[dimension_city];
+```
+> ![](./media/image38.png)
 
-2.  在查詢編輯器中， **粘貼** 以下代碼，然後點擊 **Run **以執行查詢。
+3.  执行完成后，预览 **dbo1**
+    模式中加载到**dimension_city1**表中的data。
 
-    ```
-    --Copy data from the public Azure storage account to the dbo.dimension_city table.
-    COPY INTO [dbo].[dimension_city]
-    FROM 'https://fabrictutorialdata.blob.core.windows.net/sampledata/WideWorldImportersDW/tables/dimension_city.parquet'
-    WITH (FILE_TYPE = 'PARQUET');
-    
-    --Copy data from the public Azure storage account to the dbo.fact_sale table.
-    COPY INTO [dbo].[fact_sale]
-    FROM 'https://fabrictutorialdata.blob.core.windows.net/sampledata/WideWorldImportersDW/tables/fact_sale.parquet'
-    WITH (FILE_TYPE = 'PARQUET');
-    ```
-> ![A screenshot of a computer Description automatically
-> generated](./media/image43.png)
+> ![](./media/image39.png)
 
-3.  查詢完成後，查看消息，顯示**dimension_city**表中**fact_sale**行的數量。
+4.  要创建*previous point in
+    time*的表克隆，在查询编辑器中粘贴以下代码**替换现有语句**。代码在新模式的某些时间点创建**了dimension_city**表和**fact_sale**表的克隆。运行查询。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image44.png)
+```
+--Create a clone of the dbo.dimension_city table in the dbo1 schema.
+CREATE TABLE [dbo1].[dimension_city2] AS CLONE OF [dbo].[dimension_city] AT '2025-01-01T10:00:00.000';
 
-4.  在 **Explorer**
-    中的**fact_sale**表中選擇，加載數據預覽以驗證已加載的數據。
+--Create a clone of the dbo.fact_sale table in the dbo1 schema.
+CREATE TABLE [dbo1].[fact_sale2] AS CLONE OF [dbo].[fact_sale] AT '2025-01-01T10:00:00.000';
+```
+> ![](./media/image40.png)
 
+5.  执行完成后，预览加载到**dbo1**模式中**fact_sale2**表中的data。
+
+> ![](./media/image41.png)
+
+6.  将查询重命名为 +++**Clone Tables Across Schemas**+++。
+
+> ![](./media/image42.png)
+>
+> ![](./media/image43.png)
+
+## 练习4：使用存储过程转换data
+
+### 任务1：创建存储过程
+
+在此任务中，学习如何创建存储过程以转换仓库表中的 data。
+
+1.  在 **WideWorldImporters** 页面，进入**Home** 标签，从下拉菜单中选择
+    **SQL**，然后点击“**New SQL query**”。
+
+![](./media/image44.png)
+
+2.  在查询编辑器中，粘贴以下代码。代码会丢弃存储过程（如果存在的话），然后创建一个名为
+    **populate_aggregate_sale_by_city** 的存储过程。存储过程逻辑创建名为
+    **aggregate_sale_by_date_city** 的表，并通过按组查询插入 data，连接
+    **fact_sale** 和 **dimension_city** 表。
+
+```
+--Drop the stored procedure if it already exists.
+ DROP PROCEDURE IF EXISTS [dbo].[populate_aggregate_sale_by_city];
+ GO
+
+ --Create the populate_aggregate_sale_by_city stored procedure.
+ CREATE PROCEDURE [dbo].[populate_aggregate_sale_by_city]
+ AS
+ BEGIN
+     --Drop the aggregate table if it already exists.
+     DROP TABLE IF EXISTS [dbo].[aggregate_sale_by_date_city];
+     --Create the aggregate table.
+     CREATE TABLE [dbo].[aggregate_sale_by_date_city]
+     (
+        [Date] [DATETIME2](6),
+        [City] [VARCHAR](8000),
+        [StateProvince] [VARCHAR](8000),
+        [SalesTerritory] [VARCHAR](8000),
+        [SumOfTotalExcludingTax] [DECIMAL](38,2),
+        [SumOfTaxAmount] [DECIMAL](38,6),
+        [SumOfTotalIncludingTax] [DECIMAL](38,6),
+        [SumOfProfit] [DECIMAL](38,2)
+     );
+
+     --Load aggregated data into the table.
+     INSERT INTO [dbo].[aggregate_sale_by_date_city]
+     SELECT
+        FS.[InvoiceDateKey] AS [Date], 
+        DC.[City], 
+        DC.[StateProvince], 
+        DC.[SalesTerritory], 
+        SUM(FS.[TotalExcludingTax]) AS [SumOfTotalExcludingTax], 
+        SUM(FS.[TaxAmount]) AS [SumOfTaxAmount], 
+        SUM(FS.[TotalIncludingTax]) AS [SumOfTotalIncludingTax], 
+        SUM(FS.[Profit]) AS [SumOfProfit]
+     FROM [dbo].[fact_sale] AS FS
+     INNER JOIN [dbo].[dimension_city] AS DC
+        ON FS.[CityKey] = DC.[CityKey]
+     GROUP BY
+        FS.[InvoiceDateKey],
+        DC.[City], 
+        DC.[StateProvince], 
+        DC.[SalesTerritory]
+     ORDER BY 
+        FS.[InvoiceDateKey], 
+        DC.[StateProvince], 
+        DC.[City];
+ END;
+```
 > ![](./media/image45.png)
 
-5.  重新命名查詢。在 **Explorer** 中右鍵點擊**SQL query
-    1** ，然後選擇“**Rename**”。
+3.  要执行查询，在查询设计功能区选择**Run**
 
 > ![](./media/image46.png)
 
-6.  在“**Rename**”對話框中，在 **Name** 字段下輸入 +++**Load
-    Tables+++**。然後，點擊“**Rename**”按鈕。
+4.  执行完成后，将查询重命名为 +++**Create Aggregate Procedure**+++。
 
 > ![A screenshot of a computer Description automatically
 > generated](./media/image47.png)
 >
-> ![A screenshot of a computer Description automatically
-> generated](./media/image48.png)
+> ![](./media/image48.png)
 
-7.  點擊**主**頁標簽下方命令欄中的**刷新**圖標。
+5.  在**Explorer** 面板中，从**dbo**模式的**Stored
+    Procedures** 文件夹中确认**aggregate_sale_by_date_city**存储过程是否存在。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image49.png)
+![](./media/image49.png)
 
-# 練習4：在Microsoft Fabric中使用T-SQL克隆表
+### 任务2：运行存储过程
 
-## 任務1：在倉庫中創建同一模式內的表克隆
+在此任务中，学习如何执行存储过程以转换仓库表中的 data。
 
-這個任務會引導你在 Microsoft Fabric 的 Warehouse 中創建 [table
-clone](https://learn.microsoft.com/en-in/fabric/data-warehouse/clone-table)，使用“[CREATE
-TABLE AS CLONE
-OF](https://learn.microsoft.com/en-us/sql/t-sql/statements/create-table-as-clone-of-transact-sql?view=fabric&preserve-view=true)”語法。 
+1.  在**WideWorldImporters** 页面，进入**Home** 标签，从下拉菜单中选择
+    **SQL**，然后点击“**New SQL query**”。
 
-1.  在倉庫中創建同一模式內的表克隆。
+> ![](./media/image50.png)
 
-2.  在 **WideWorldImporters** 頁面，進入**主**頁標簽，從下拉菜單中選擇
-    **SQL**，然後點擊“**New SQL query**”。
+2.  在查询编辑器中，粘贴以下代码。该代码执行**populate_aggregate_sale_by_city**存储过程。运行查询。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image50.png)
+```
+--Execute the stored procedure to create and load aggregated data.
+ EXEC [dbo].[populate_aggregate_sale_by_city];
+```
 
-3.  在查詢編輯器中，粘貼以下代碼創建**dbo.dimension_city**和**dbo.fact_sale**表的克隆。
+![](./media/image51.png)
 
-    ```
-    --Create a clone of the dbo.dimension_city table.
-    CREATE TABLE [dbo].[dimension_city1] AS CLONE OF [dbo].[dimension_city];
-    
-    --Create a clone of the dbo.fact_sale table.
-    CREATE TABLE [dbo].[fact_sale1] AS CLONE OF [dbo].[fact_sale];
-    ```
-    
-> ![A screenshot of a computer Description automatically
-> generated](./media/image51.png)
+3.  执行完成后，将查询重命名为 +++**Run Aggregate Procedure+++**。
 
-4.  選擇**運行**以執行查詢。查詢執行需要幾秒鐘。查詢完成後，會創建表克隆
-    的 **dimension_city1** 和 **fact_sale1** 。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image52.png)
+> ![](./media/image52.png)
 >
-> ![A screenshot of a computer Description automatically
-> generated](./media/image53.png)
+> ![](./media/image53.png)
 
-5.  在 **Explorer**
-    中的**dimension_city1**表中選擇，加載數據預覽以驗證已加載的數據。
+4.  要预览汇总数据，请在 **Explorer** 面板中选择
+    **aggregate_sale_by_date_city** 表。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image54.png)
+> ![](./media/image54.png)
 
-6.  右鍵點擊你創建的 **SQL query**，在 **Explorer** 中克隆表，然後選擇
-    **Rename**。
+** 注意：**如果表格未出现，选择 **Tables** 文件夹中的省略号（...），
+然后选择**Refresh**。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image55.png)
+##  练习5：在语句层面使用T-SQL进行时间旅行
 
-7.  在“**Rename**”對話框中，在“**Name**”字段下輸入 +++**Clone
-    Table+++**，然後點擊“**Rename**”按鈕。
+### 任务1：处理时间旅行查询
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image56.png)
+在这个任务中，学习如何创建销售额排名前十的客户视图。你将在下一个任务中使用视图来运行时间旅行查询。
+
+1.  在 **WideWorldImporters** 页面，进入**Home**标签，从下拉菜单中选择
+    **SQL**，然后点击“**New SQL query**”。
+
+![](./media/image55.png)
+
+2.  在查询编辑器中，粘贴以下代码。代码创建了一个名为 Top10Customers
+    的视图。该视图通过查询检索基于销售额的前10名客户。选择**Run **以执行查询。
+
+```
+--Create the Top10Customers view.
+CREATE VIEW [dbo].[Top10Customers]
+AS
+SELECT TOP(10)
+    FS.[CustomerKey],
+    DC.[Customer],
+    SUM(FS.[TotalIncludingTax]) AS [TotalSalesAmount]
+FROM
+    [dbo].[dimension_customer] AS DC
+    INNER JOIN [dbo].[fact_sale] AS FS
+        ON DC.[CustomerKey] = FS.[CustomerKey]
+GROUP BY
+    FS.[CustomerKey],
+    DC.[Customer]
+ORDER BY
+    [TotalSalesAmount] DESC;
+```
+> ![](./media/image56.png)
+
+3.  执行完成后，将查询重命名为 +++Create Top 10 Customer View+++。
+
+![](./media/image57.png)
+
+![](./media/image58.png)
+
+3.  在**Explorer**中，通过在dbo
+    **schema**下展开**View**节点，确认你能看到新创建的视图
+    **Top10CustomersView**。
+
+![](./media/image59.png)
+
+4.  创建一个类似步骤1的新查询。在功能区的**Home** 标签中，选择 **New SQL
+    query**。
+
+> ![](./media/image60.png)
+
+5.  在查询编辑器中，粘贴以下代码。该代码会更新单个事实行的
+    **TotalIncludingTax**值，故意膨胀其总销售额。它还会检索当前时间戳。
+
+```
+--Update the TotalIncludingTax for a single fact row to deliberately inflate its total sales.
+ UPDATE [dbo].[fact_sale]
+ SET [TotalIncludingTax] = 200000000
+ WHERE [SaleKey] = 22632918; --For customer 'Tailspin Toys (Muir, MI)'
+ GO
+
+ --Retrieve the current (UTC) timestamp.
+ SELECT CURRENT_TIMESTAMP;
+```
+
+![](./media/image61.png)
+
+6.  把返回的时间戳值复制到你的剪贴板上。
+
+![](./media/image62.png)
+
+**注意：** 目前，你只能使用 Coordinated Universal Time (UTC)
+时区进行时间旅行.
+
+7.  执行完成后，将查询重命名为 +++**Time Travel+++**。
+
+![](./media/image63.png)
+
+![](./media/image64.png)
+
+8.  将以下代码粘贴到查询编辑器中，并将时间戳值替换为前一步获得的时间戳值。时间戳语法格式为
+    **YYYY-MM-DDTHH:MM:SS\[.FFF\]。**
+
+9.  去掉尾部的零，例如：**2026-07-27T06：20：55.823**。
+
+&nbsp;
+
+10. 要检索*now*排名前十的客户，请在新的查询编辑器中粘贴以下语句。该代码通过使用“FOR
+    TIMESTAM AS OF”查询提示来获取前10名客户。
+
+11. 用你复制到剪贴板的时间戳替换YOUR_TIMESTAMP。
+
+```
+--Retrieve the top 10 customers as of now.
+ SELECT *
+ FROM [dbo].[Top10Customers]
+ OPTION (FOR TIMESTAMP AS OF 'YOUR_TIMESTAMP');
+```
+
+![](./media/image65.png)
+
+12. 将查询重命名为 **+++Time Travel Now+++**
+
+> ![](./media/image66.png)
 >
-> ![A screenshot of a computer Description automatically
-> generated](./media/image57.png)
-
-8.  點擊**主**頁標簽下方命令欄中的**刷新**圖標。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image58.png)
-
-## 任務2：在同一倉庫內創建跨模式的表克隆
-
-1.  在 **WideWorldImporters** 頁面，進入**主**頁標簽，從下拉菜單中選擇
-    **SQL**，然後點擊“**New SQL query**”。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image59.png)
-
-2.  在 **WideWorldImporter** 倉庫中創建一個名為 **dbo1**
-    的新模式。**複製粘貼**並**運行**如下 T-SQL 代碼，如下圖所示:
-
-  +++CREATE SCHEMA dbo1+++
-  
-> ![A screenshot of a computer Description automatically
-> generated](./media/image60.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image61.png)
-
-3.  在查詢編輯器中，刪除現有代碼，粘貼以下內容以創建 **dbo1** 模式中
-    **dbo.dimension_city** 和 dbo.**fact_sale tables** 的克隆。
-
-    ```
-    --Create a clone of the dbo.dimension_city table in the dbo1 schema.
-    CREATE TABLE [dbo1].[dimension_city1] AS CLONE OF [dbo].[dimension_city];
-    
-    --Create a clone of the dbo.fact_sale table in the dbo1 schema.
-    CREATE TABLE [dbo1].[fact_sale1] AS CLONE OF [dbo].[fact_sale];
-    ```
-
-4.  選擇 **Run** 以執行查詢。查詢執行需要幾秒鐘。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image62.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image63.png)
-
-5.  查詢完成後，**dbo1** 模式中會創建克隆 **dimension_city1** 和
-    **fact_sale1**。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image64.png)
-
-6.  在 **Explorer** 的 **dbo1** 模式下，在 **dimension_city1**
-    表中選擇，加載數據預覽以驗證已加載的數據。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image65.png)
-
-7.  **重命名**查詢語句以便後續引用。在 **Explorer** 中右鍵單擊 **SQL
-    query 1**，然後選擇“**Rename**”。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image66.png)
-
-8.  在“**Rename**”對話框的“**Name**”字段下，輸入+++**Clone Table in
-    another schema+++**。然後，單擊“**Rename**”按鈕。
-
 > ![](./media/image67.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image68.png)
 
-9.  點擊**主**頁標簽下方命令欄中的**刷新**圖標。
+13. 注意，Tailspin Toys(Muir, MI)的**CustomerKey**排名第二大值是**49**。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image69.png)
+> ![](./media/image68.png)
 
-# **練習5：使用存儲過程轉換數據**
+14. 通过从时间戳*中**subtracting one
+    minute，***将时间戳值修改为更早的时间
 
-學習如何創建和保存新的存儲過程以轉換數據。
+15. 再次运行查询，注意到 **Wingtip Toys (Sarversville, PA)** 的
+    **CustomerKey 前数值是 381。**
 
-1.  在 **WideWorldImporters** 頁面，進入**主**頁標簽，從下拉菜單中選擇
-    **SQL**，然後點擊“**New SQL query**”。![A screenshot of a computer
-    Description automatically generated](./media/image70.png)
+## 练习6：在Warehouse中使用可视化查询构建器创建查询
 
-2.  在查詢編輯器中，**粘貼**以下代碼以創建存儲過程**dbo.populate_aggregate_sale_by_city**。該存儲過程將在後續步驟創建並加載**dbo.aggregate_sale_by_date_city**表。
+### 任务1：使用可视化查询构建器
 
-    ```
-    --Drop the stored procedure if it already exists.
-    DROP PROCEDURE IF EXISTS [dbo].[populate_aggregate_sale_by_city]
-    GO
-    
-    --Create the populate_aggregate_sale_by_city stored procedure.
-    CREATE PROCEDURE [dbo].[populate_aggregate_sale_by_city]
-    AS
-    BEGIN
-        --If the aggregate table already exists, drop it. Then create the table.
-        DROP TABLE IF EXISTS [dbo].[aggregate_sale_by_date_city];
-        CREATE TABLE [dbo].[aggregate_sale_by_date_city]
-            (
-                [Date] [DATETIME2](6),
-                [City] [VARCHAR](8000),
-                [StateProvince] [VARCHAR](8000),
-                [SalesTerritory] [VARCHAR](8000),
-                [SumOfTotalExcludingTax] [DECIMAL](38,2),
-                [SumOfTaxAmount] [DECIMAL](38,6),
-                [SumOfTotalIncludingTax] [DECIMAL](38,6),
-                [SumOfProfit] [DECIMAL](38,2)
-            );
-    
-        --Reload the aggregated dataset to the table.
-        INSERT INTO [dbo].[aggregate_sale_by_date_city]
-        SELECT
-            FS.[InvoiceDateKey] AS [Date], 
-            DC.[City], 
-            DC.[StateProvince], 
-            DC.[SalesTerritory], 
-            SUM(FS.[TotalExcludingTax]) AS [SumOfTotalExcludingTax], 
-            SUM(FS.[TaxAmount]) AS [SumOfTaxAmount], 
-            SUM(FS.[TotalIncludingTax]) AS [SumOfTotalIncludingTax], 
-            SUM(FS.[Profit]) AS [SumOfProfit]
-        FROM [dbo].[fact_sale] AS FS
-        INNER JOIN [dbo].[dimension_city] AS DC
-            ON FS.[CityKey] = DC.[CityKey]
-        GROUP BY
-            FS.[InvoiceDateKey],
-            DC.[City], 
-            DC.[StateProvince], 
-            DC.[SalesTerritory]
-        ORDER BY 
-            FS.[InvoiceDateKey], 
-            DC.[StateProvince], 
-            DC.[City];
-    END
-    ```
-> ![A screenshot of a computer Description automatically
-> generated](./media/image71.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image72.png)
+在这个任务中，学习如何使用可视化查询构建器创建查询。
 
-3.  右鍵點擊你創建的SQL查詢，在資源管理器中克隆表，然後選擇 **Rename**。
+1.  在**Home** 功能区，打开 **New SQL query** 下拉列表，然后选择 **New
+    visual query**。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image73.png)
+![](./media/image69.png)
 
-4.  在“**Rename**”對話框中，在**Name**字段下方輸入 +++**Create Aggregate
-    Procedure+++**，然後點擊**Rename**按鈕。
+2.  从**Explorer** 面板，从dbo schema
+    **Tables**文件夹，将**fact_sale**表拖 到可视化查询canvas。
 
-> ![A screenshot of a computer screen Description automatically
-> generated](./media/image74.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image75.png)
+![](./media/image70.png)
 
-5.  點擊**主**頁標簽下方的**刷新圖標**。
+3.  点击“**Reduce rows**”下拉菜单，然后点击“**Keep top
+    rows**”，如下图所示，导航到查询设计窗**transformations
+    ribbon** 并限制dataset大小。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image76.png)
+![](./media/image71.png)
 
-6.  在 **Explorer** 標簽頁中，通過在**dbo**
-    schema下展開**存儲過程**節點，確認你能看到新創建的存儲過程。
+4.  在“**Keep top rows**”对话框中，输入**+++10000+++**并选择**OK**。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image77.png)
+![](./media/image72.png)
 
-7.  在 **WideWorldImporters** 頁面，進入**主**頁標簽，從下拉菜單中選擇
-    **SQL**，然後點擊“**New SQL query**”。
+![](./media/image73.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image78.png)
+5.  从**Explorer** 面板，从dbo schema
+    **Tables**文件夹，将**dimension_city**表拖 到可视化查询canvas。
 
-8.  在查詢編輯器中，粘貼以下代碼。該 T-SQL 執行
-    **dbo.populate_aggregate_sale_by_city** 以創建
-    **dbo.aggregate_sale_by_date_city** 表。運行查詢。
+6.  右键点击**dimension_city**，选择 **Insert into canvas**
 
-    ```
-    --Execute the stored procedure to create the aggregate table.
-    EXEC [dbo].[populate_aggregate_sale_by_city];
-    ```
-    
-> ![A screenshot of a computer Description automatically
-> generated](./media/image79.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image80.png)
+> ![](./media/image74.png)
 
-9.  要保存此查詢以備後續參考，請右鍵點擊編輯器上方的查詢標簽，選擇
-    **Rename。**
+![](./media/image75.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image81.png)
+6.  在变换功能区中，选择“**Combine**”旁边的下拉菜单
+    ，并如下图所示选择**“Merge queries as new”**。
 
-10. 在**Rename**對話框中，在**Name**字段下方輸入 +++**Run** **Create
-    Aggregate Procedure+++**，然後點擊**Rename**按鈕。
+![](./media/image76.png)
+
+7.  在**Merge **设置页面输入以下信息。
+
+- 在**Left table for merge**下拉菜单中，选择**dimension_city**
+
+-  在**Right table for
+  merge** 中，选择**fact_sale**（使用横向和纵向滚动条）
+
+-  在**dimension_city**表中选择头部列名以表示连接列，选择**CityKey**字段。
+
+-  在**fact_sale**表中选择 **CityKey** 字段
+  ，方法是在头部行中选择列名，表示连接列。
+
+-  在“**Join kind**”选择中，选择**“Inner**”并点击**“Ok**”按钮。
+
+![](./media/image77.png)
+
+![](./media/image78.png)
+
+8.  选中**Merge** 步骤后，如下图所示，选择
+    data网格头部**fact_sale**旁的**“Expand**”按钮，然后选择**TaxAmount, Profit,
+    TotalIncludingTax** 列，选择**Ok。**
+
+![](./media/image79.png)
+
+![](./media/image80.png)
+
+![](./media/image81.png)
+
+9.  在**transformations
+    ribbon，**点击“**Transform**”旁边的下拉菜单，然后选择**“Group
+    by”。**
 
 ![](./media/image82.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image83.png)
+10. 在“**Group by**”页面输入以下信息。
 
-11. 選擇 功能區上的**刷新**圖標。
+- 选择**Advanced **单选按钮。
 
-![A screenshot of a computer Description automatically
-generated](./media/image84.png)
-
-12. 在 **Object Explorer**
-    標簽頁中，加載數據預覽以驗證已加載的數據，方法是在 **Explorer**
-    的**aggregate_sale_by_city**表中選擇。
-
-![A screenshot of a computer Description automatically
-generated](./media/image85.png)
-
-# 練習6：在語句層面使用T-SQL進行時間旅行
-
-1.  在 **WideWorldImporters** 頁面，進入**主**頁標簽，從下拉菜單中選擇
-    **SQL**，然後點擊“**New SQL query**”。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image86.png)
-
-2.  在查詢編輯器中，粘貼以下代碼創建視圖 Top10CustomerView。選擇
-    **Run** 以執行查詢。
-
-    ```
-    CREATE VIEW dbo.Top10CustomersView
-    AS
-    SELECT TOP (10)
-        FS.[CustomerKey],
-        DC.[Customer],
-        SUM(FS.TotalIncludingTax) AS TotalSalesAmount
-    FROM
-        [dbo].[dimension_customer] AS DC
-    INNER JOIN
-        [dbo].[fact_sale] AS FS ON DC.[CustomerKey] = FS.[CustomerKey]
-    GROUP BY
-        FS.[CustomerKey],
-        DC.[Customer]
-    ORDER BY
-        TotalSalesAmount DESC;
-    ```
-
-![A screenshot of a computer Description automatically
-generated](./media/image87.png)
-
-![A screenshot of a computer Description automatically
-generated](./media/image88.png)
-
-3.  在 **Explorer** 中，通過在**dbo
-    schema**下展開**View**節點**，**確認你能看到新創建的視圖**Top10CustomersView**。
-
-![](./media/image89.png)
-
-4.  要保存此查詢以備後續參考，請右鍵點擊編輯器上方的查詢標簽，選擇
-    **Rename。**
-
-![A screenshot of a computer Description automatically
-generated](./media/image90.png)
-
-5.  在“**Rename**”對話框中，在“**Name**”字段下輸入
-    +++**Top10CustomersView+++**，然後點擊“**Rename**”按鈕。
-
-![](./media/image91.png)
-
-6.  創建一個類似步驟1的新查詢。在 功能區的**主**頁標簽中，選擇 **New SQL
-    query**。
-
-![A screenshot of a computer Description automatically
-generated](./media/image92.png)
-
-7.  在查詢編輯器中，粘貼以下代碼。這將**TotalIncludingTax**列值更新為**20000000000**，適用於**SaleKey**
-    值為**22632918**的記錄**。** 選擇 **Run** 以執行查詢。
-
-    ```
-    /*Update the TotalIncludingTax value of the record with SaleKey value of 22632918*/
-    UPDATE [dbo].[fact_sale]
-    SET TotalIncludingTax = 200000000
-    WHERE SaleKey = 22632918;
-    ```
-
-![A screenshot of a computer Description automatically
-generated](./media/image93.png)
-
-![A screenshot of a computer Description automatically
-generated](./media/image94.png)
-
-8.  在查詢編輯器中，粘貼以下代碼。CURRENT_TIMESTAMP T-SQL 函數返回當前
-    UTC 時間戳為**datetime**。選擇**Run**以執行查詢。
-
-    ```
-    SELECT CURRENT_TIMESTAMP;
-    ```
-
-![](./media/image95.png)
-
-9.  把返回的時間戳值複製到你的剪貼板上。
-
-![A screenshot of a computer Description automatically
-generated](./media/image96.png)
-
-10. 將以下代碼粘貼到查詢編輯器中，並將時間戳值替換為前一步獲得的時間戳值。時間戳語法格式為
-    **YYYY-MM-DDTHH：MM：SS\[。**真是太棒了。
-
-11. 例如，去除尾部的零: **2025-06-09T06:16:08.807**。
-
-12. 以下示例返回了按**TotalIncludingTax**排名前十的客戶列表，包括**SaleKey
-    22632918**的新值。替換現有代碼，粘貼以下代碼，選擇**Run**以執行查詢。
-
-    ```
-    /*View of Top10 Customers as of today after record updates*/
-    SELECT *
-    FROM [WideWorldImporters].[dbo].[Top10CustomersView]
-    OPTION (FOR TIMESTAMP AS OF '2025-06-09T06:16:08.807');
-    ```
-
-![A screenshot of a computer Description automatically
-generated](./media/image97.png)
-
-13. 將以下代碼粘貼到查詢編輯器中，並將時間戳值替換為執行更新腳本以更新**TotalIncludingTax**值之前的時間。這將返回
-    在**TotalIncludingTax**更新**SaleKey**
-    **22632918**前的十大客戶名單。選擇**Run**以執行查詢。
-
-    ```
-    /*View of Top10 Customers as of today before record updates*/
-    SELECT *
-    FROM [WideWorldImporters].[dbo].[Top10CustomersView]
-    OPTION (FOR TIMESTAMP AS OF '2024-04-24T20:49:06.097');
-    ```
-
-![A screenshot of a computer Description automatically
-generated](./media/image98.png)
-
-# 練習7：使用可視化查詢構建器創建查詢
-
-## 任務1：使用可視化查詢構建器
-
-在 Microsoft Fabric 門戶中使用可視化查詢構建器創建並保存查詢。
-
-1.  在 **WideWolrdImporters** 頁面，從 功能區的**主**頁選項卡中，選擇
-    **New visual query。**
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image99.png)
-
-2.  右鍵點擊 **fact_sale** ，選擇 **Insert into canvas**
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image100.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image101.png)
-
-3.  導航至查詢設計窗格 **transformations ribbon**，單擊“**Reduce
-    rows**”下拉列表限制數據集大小，然後單擊“**Keep top
-    rows** ”，如下圖所示。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image102.png)
-
-4.  在“**Keep top rows** ”對話框中，輸入**10000**並選擇 **OK**。
-
-> ![](./media/image103.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image104.png)
-
-5.  右鍵點擊 **dimension_city**，選擇 **Insert into canvas**
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image105.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image106.png)
-
-6.  在變換功能區中，選擇“**Combine**”旁邊的下拉菜單，並如下圖所示選擇“**Merge
-    queries as new**”。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image107.png)
-
-7.  在 **Merge **設置頁面輸入以下信息。
-
-- 在**左側表格中的合併下**拉菜單中，選擇**dimension_city**
-
-&nbsp;
-
-- 在**右側合併下**拉菜單中，選擇**fact_sale** （使用橫向和縱向滾動條）
-
-&nbsp;
-
-- 在**dimension_city**表中選擇 **CityKey**
-  字段，方法是在頭部行的列名中選擇 CityKey 字段，以表示連接列。
-
-&nbsp;
-
-- 在**fact_sale**表中選擇 **CityKey** 字段，方法是在頭部行的列名中選擇
-  **CityKey** 字段，以表示連接列。
-
-&nbsp;
-
-- 在 **Join kind** 圖選擇中，選擇**“ Inner**”並點擊**“Ok**”按鈕。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image108.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image109.png)
-
-8.  選擇 **Merge**
-    步驟後，如下圖所示，選擇數據網格頭部**fact_sale**旁的“**Expand**”按鈕，然後選擇“**TaxAmount, Profit,
-    TotalIncludingTax**”列，選擇 **Ok**。 
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image110.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image111.png)
-
-9.  在**transformations
-    ribbon**，點擊“**Transform**”旁邊的下拉菜單，然後選擇“**Group
-    by**”。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image112.png)
-
-10. 在“**Group by** ”頁面輸入以下信息。
-
-- 選擇 **Advanced** 單選按鈕。
-
-- 在 **“Group by** **”**下選擇以下內容:
+- 在**“Group by”**下选择以下内容:
 
   1.  **Country**
 
@@ -911,399 +646,411 @@ generated](./media/image98.png)
 
   3.  **City**
 
-- 在 **New column name** 中，在 **Operation**
-  欄字段輸入**SumOfTaxAmount**，選擇**Sum**，然後在**Column**字段下選擇**TaxAmount**。點擊“**Add
-  aggregation** ”以添加更多匯總列和作。
+- 在**New column name**中，在**Operation** 栏字段
+  输入**SumOfTaxAmount**，选择**Sum**，然后在**Column** 字段下选择**TaxAmount。**
+  点击**“Add aggregation**”以添加更多汇总列和操作。
 
-- 在**New column name**中，在 **Operation**
-  欄字段輸入**SumOfProfit**，選擇
-  SumOfProfit，然後在**Column**字段下選擇**Profit**。點擊“**Add
-  aggregation**”以添加更多匯總列和作。
+- 在**New column name**中**，**在**Operation** 栏字段
+  输入**SumOfProfit**，选择**SumOfProfit**，然后在**Column** 字段下选择**Profit**。点击**“Add
+  aggregation**”以添加更多汇总列和操作。
 
-- 在**New column name**中，在作欄字段輸入
-  **SumOfTotalIncludingTax**，選擇 **Sum**，然後在**Column**字段下選
-  **TotalIncludingTax**。
+- 在**New column name**中，在**Operation** 栏字段输入
+  **SumOfTotalIncludingTax**，选择 **Sum**，然后在**列**字段下选
+  **TotalIncludingTax。**
 
-- 點擊 **OK** 按鈕
+- 点击**OK**按钮
+
+![](./media/image83.png)
+
+![](./media/image84.png)
+
+11. 在资源管理器中，进入**Queries**，右键点击查询中的 **Visual query
+    1** 。然后，选择**Rename**。
+
+![](./media/image85.png)
+
+12. 输入 +++**Sales Summary+++** 以更改查询名称。按
+    键盘**Enter** 键或选择标签页外的任意位置保存更改。
+
+![](./media/image86.png)
+
+13. 点击**Home**标签下方的**Refresh** 图标。
+
+![A screenshot of a computer Description automatically
+generated](./media/image87.png)
+
+## 练习7：用notebook分析data
+
+### 任务1：创建T-SQL notebook
+
+在这个任务中，学习如何创建T-SQL notebook。
+
+1.  在**Home** 功能区，打开 **New SQL query** 下拉列表，然后选择
+    notebook中的 **New SQL query** 
+
+> ![](./media/image88.png)
+
+2.  在**Explorer** 面板中，选择**Warehouses** 以显示**Wide World
+    Importers** 仓库的物品。
+
+3.  要生成用于探索
+    data的SQL模板，在**dimension_city**表右侧，选择**省略号（...），**然后选择**“SELECT
+    TOP 100**”。
+
+> ![](./media/image89.png)
+
+4.  要在该单元格中运行 T-SQL 代码，选择该代码单元格的“**Run
+    cell**”按钮。
+
+> ![](./media/image90.png)
+
+5.  查看结果面板中的查询结果。
+
+> ![](./media/image91.png)
+
+### 任务2：创建一个lakehouse快捷方式，并用notebook分析data
+
+在这个任务中，学习如何创建lakehouse捷径并用notebook分析 data。
+
+1.  在左侧菜单中，选择 **Warehouse_Fabric65897@lab.labinstance.id**
+    工作区图标，然后选择工作区名称。
+
+> ![](./media/image92.png)
+
+2.  选择** + New Item **以显示所有可用商品类型的完整列表。
+
+3.  在列表中，在**“Store data**”部分，选择**Lakehouse**项目类型。
+
+> ![](./media/image93.png)
+
+4.  配置完成后，lakehouse将
+    +++**Shortcut_Exercise**+++作为lakehouse名称，并取消选择
+    lakehouse的模式。选择**Create**。
+     ![](./media/image94.png)
+
+> ![](./media/image95.png)
+
+5.  当新 lakehouse打开后，在登陆页面选择**“New shortcut**”选项。
+
+> ![](./media/image96.png)
+
+6.  在“** New shortcut**”窗口中，选择 **Microsoft OneLake** 选项。
+
+> ![](./media/image97.png)
+
+7.  在“**Select a data source type**”窗口中，选择“**Wide World
+    Importers** warehouse”，然后选择**“Next**”。
+
+> ![](./media/image98.png)
+
+8.  点击连接
+
+> ![](./media/image99.png)
+
+9.  在 **OneLake object**浏览器中，展开**Tables**，展开 **dbo**
+    模式，然后选择 **dimension_customer** 表的复选框。选择**Next**。
+
+> ![](./media/image100.png)
+
+10. 选择**Create**。
+
+> ![](./media/image101.png)
+
+11. 在**Explorer** 面板中，选择**dimension_customer**表预览data，然后查看从仓库dimension_customer表检索到的
+    data。
+
+> ![](./media/image102.png)
+
+12. 在 **dimension_customer** 表格页面，点击 **“Analyze data
+    with**”，选择 **“Notebook**”，然后选择 **“New notebook** ”创建新的
+    Spark notebook 进行 data 分析
+
+> ![](./media/image103.png)
+
+13. 在**Explorer** 面板中，选择**Lakehouses**。
+
+14. 把**dimension_customer**桌拖到打开的notebook单元。
+
+> ![](./media/image104.png)
+
+15. 注意笔记本单元格中添加了**PySpark**查询。该查询获取
+    **Shortcut_Exercise.dimension_customer** 快捷方式中的前 **1,000 行**
+    。这种笔记本体验类似于Visual Studio Code Jupyter
+    notebook体验。你也可以用VS Code打开notebook。
+
+> ![](./media/image105.png)
+
+16. 在**Home**功能区，选择**“Run all**”按钮。
+
+> ![](./media/image106.png)
+>
+> ![](./media/image107.png)
+
+## 练习8：使用SQL查询编辑器创建跨仓库查询
+
+### 任务1：向Explorer添加多个仓库
+
+在本任务中，学习如何轻松地使用SQL查询编辑器在多个仓库中创建和执行T-SQL查询，包括将Microsoft
+Fabric中的SQL Endpoint和仓库的 data合并在一起。
+
+1.  从 **Notebook2** 页面，点击左侧导航菜单中的 **WideWorldImporters**
+    工作区。
+
+> ![](./media/image108.png)
+
+2.  在**Explorer** 面板中，选择 **+ Warehouses**。
+
+![](./media/image109.png)
+
+3.  在 **OneLake 目录**窗口中，选择 **Shortcut_Exercise** SQL 分析
+    endpoint。选择**Confirm**。
+
+![](./media/image110.png)
+
+4.  在**Explorer** 面板中，注意**Shortcut_Exercise**
+    SQL分析endpoint可用。
+
+![](./media/image111.png)
+
+### 任务2：运行跨仓库查询
+
+在这个任务中，学习如何运行跨仓库查询。具体来说，你将运行一个查询，将
+Wide World Importers 仓库连接到 Shortcut_Exercise SQL 分析endpoint。
+
+** 注意：**跨
+database查询使用*database.schema.table*的三部分命名来引用对象。
+
+1.  在功能区的**Home** 标签中，选择 **New SQL query**。
+
+![](./media/image112.png)
+
+2.  在查询编辑器中，粘贴以下代码。该代码检索了按库存商品、描述和客户销售数量的总量。
+
+```
+--Retrieve an aggregate of quantity sold by stock item, description, and customer.
+SELECT
+    Sales.StockItemKey,
+    Sales.Description,
+    c.Customer,
+    SUM(CAST(Sales.Quantity AS int)) AS SoldQuantity
+FROM
+    [dbo].[fact_sale] AS Sales
+    INNER JOIN [Shortcut_Exercise].[dbo].[dimension_customer] AS c
+        ON Sales.CustomerKey = c.CustomerKey
+GROUP BY
+    Sales.StockItemKey,
+    Sales.Description,
+    c.Customer;
+```
+3.  **运行** 查询，并查看查询结果。
 
 ![](./media/image113.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image114.png)
+![](./media/image114.png)
 
-11. 在資源管理器中，進入**Queries**，右鍵點擊 **Queries** 中的**Visual
-    query 1**。然後，選擇 **Rename**。
+3.  将查询重命名以便参考。在**Explorer** 中右键点击**SQL
+    query**，选择**“Rename**”。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image115.png)
+> ![](./media/image115.png)
 
-12. 輸入 +++**Sales Summary+++** 以更改查詢名稱。按鍵盤上的
-    **Enter**鍵或選擇選項卡外的任意位置以保存更改。 
+![](./media/image116.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image116.png)
+4.  在“**Rename**”对话框中，在**“Name**”字段下输入 +++**Cross-warehouse
+    query+++**，然后点击**Rename**按钮。
 
-13. 點擊**主**頁標簽下方的**刷新**圖標。
+> ![](./media/image117.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image117.png)
+## 练习9：创建Direct Lake semantic模型和Power BI报告
 
-# **練習8：用筆記本分析數據**
+### 任务1：创建一个semantic模型
 
-## 任務1：創建一個湖邊小屋快捷方式，並用筆記本分析數據
+在此任务中，学习如何基于Wide World Importers仓库创建Direct Lake
+semantic模型。
 
-在這個任務中，學習如何一次性保存數據，然後將其用於其他多種服務。還可以為存儲在
-Azure Data Lake Storage 和 S3
-中的數據創建快捷方式，使您可以直接訪問外部系統的 delta 表。
-
-首先，我們建造一個新的 lakehouse。在您的 Microsoft Fabric
-工作區創建新的lakehouse:
-
-1.  在**WideWorldImportes**頁面，點擊
-    左側導航菜單**Warehouse_FabricXX**工作區。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image118.png)
-
-2.  在**Synapse Data Engineering Warehouse_FabricXX** 主頁，**Warehouse_FabricXX** 
-    窗格下點擊**+New item**，然後在 **Stored data** 中選擇**Lakehouse**
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image119.png)
-
-3.  在**Name**字段中輸入
-    +++**ShortcutExercise+++**並點擊“**Create**”按鈕。 
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image120.png)
-
-4.  新的 lakehouse 加載完畢後，**Explorer** 視圖打開，其中包含“**Get
-    data in your lakehouse**”菜單。在“**Load data in your
-    lakehouse**”下，選擇 **New shortcut** 按鈕。 view opens up, with
-    the  menu. Under , select the  button.
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image121.png)
-
-5.  在**“New shortcut**”窗口中，選擇 **Microsoft OneLake**。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image122.png)
-
-6.  在“**Select a data source type** ”窗口中，仔細點擊你之前創建的名為
-    **WideWorldImporters** 的**Warehouse**，然後點擊“**Next**”按鈕。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image123.png)
-
-7.  在 **OneLake** 對象瀏覽器中，展開“**Tables**”，然後展開 **dbo**
-    模式，選擇**dimension_customer**旁邊的單選按鈕。選擇“**Next**”按鈕。
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image124.png)
-
-8.  在 **New shortcut** 窗口中，點擊 **“Create** ”按鈕，點擊 **Close**
-    按鈕
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image125.png)
->
-> ![](./media/image126.png)
-
-9.  等一會兒，然後點擊 **刷新**圖標。
-
-10. 然後，在 **Table** 列表中選擇 **dimension_customer**
-    以預覽數據。請注意，lakehouse顯示的是倉庫中 **dimension_customer**
-    表的數據。
-
-> ![](./media/image127.png)
-
-11. 接下來，創建一個新的筆記本來查詢**dimension_customer**表。在“**Home**”功能區中，選擇“**Open
-    notebook** ”下拉菜單，然後選擇“**New notebook**”。
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image128.png)
-
-12. 選擇後，將**Tables**列表中的**dimension_customer** 拖曳到打開的筆記本單元格中。你可以看到已經寫了一個
-    **PySpark** 查詢，用於查詢
-    **ShortcutExercise.dimension_customer**上的所有數據。這種筆記本體驗類似於Visual
-    Studio Code Jupyter筆記本體驗。你也可以用VS Code打開筆記本。
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image129.png)
-
-13. 在**主**頁功能區，選擇“**Run
-    all** ”按鈕。查詢完成後，你會發現可以輕鬆用 PySpark 查詢倉庫表！ 
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image130.png)
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image131.png)
-
-# **練習9：使用SQL查詢編輯器創建跨倉庫查詢**
-
-## 任務1：向Explorer添加多個倉庫
-
-在本任務中，學習如何輕鬆地使用SQL查詢編輯器在多個倉庫中創建和執行T-SQL查詢，包括將Microsoft
-Fabric中的SQL端點和倉庫的數據合併在一起。
-
-1.  從**Notebook1**頁面，在
-    左側導航菜單中點擊**Warehouse_FabricXX**工作區。
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image132.png)
-
-2.  在 **Warehouse_FabricXX** 視圖中，選擇**WideWorldImporters**倉庫。
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image133.png)
-
-3.  在**WideWorldImporters**頁面的**Explorer**標簽下，選擇**Warehouse**
-    按鈕。
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image134.png)
-
-4.  在添加倉庫窗口中，選擇 **ShortcutExercise** ，點擊 **Confirm**
-    按鈕。這兩種倉庫經驗都會被添加到查詢中。
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image135.png)
-
-5.  你選中的倉庫現在顯示的是相同的**Explorer**面板。
-
-![](./media/image136.png)
-
-## 任務2：執行跨倉庫查詢
-
-在這個例子中，你可以看到在 WideWorldImporters 倉庫和 ShortcutExercise
-SQL 端點之間運行 T-SQL 查詢是多麼容易 。你可以像 SQL Server
-一樣，使用三部分命名來引用 database.schema.table 來寫跨數據庫查詢。
-
-1.  在功能區的**主**頁標簽中，選擇 **New SQL query**。
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image137.png)
-
-2.  在查詢編輯器中，複製粘貼以下 T-SQL
-    代碼。選擇**Run**按鈕來執行查詢。查詢完成後，你會看到結果。
-
-    ```
-    SELECT Sales.StockItemKey, 
-    Sales.Description, 
-    SUM(CAST(Sales.Quantity AS int)) AS SoldQuantity, 
-    c.Customer
-    FROM [dbo].[fact_sale] AS Sales,
-    [ShortcutExercise].[dbo].[dimension_customer] AS c
-    WHERE Sales.CustomerKey = c.CustomerKey
-    GROUP BY Sales.StockItemKey, Sales.Description, c.Customer;
-    ```
-
-![](./media/image138.png)
-
-3.  將查詢重命名以便參考。在 **Explorer** 中右鍵點擊 **SQL
-    query**，選擇“**Rename**”。
-
-> ![](./media/image139.png)
-
-4.  在“**Rename**”對話框中，在“**Name**”字段下輸入 +++**Cross-warehouse
-    query+++**，然後點擊**Rename** 按鈕。
-
-> ![](./media/image140.png)
-
-# 練習10：創建Power BI報告
-
-## 任務1：創建一個 semantic 模型
-
-在這個任務中，我們學習如何創建和保存多種類型的 Power BI 報告。
-
-1.  在 **WideWorldImportes** 頁面的 **Home** 標簽下，選擇 **New semantic
+1.  在 **WideWorldImportes** 页面的 **Home**标签下，选择**New semantic
     model**。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image141.png)
+![](./media/image118.png)
 
-2.  在“**New semantic model”** 窗口中，在 **Direct Lake semantic model
-    name** 框中輸入 +++**Sales Model+++**
+2.  在**New semantic model** 窗口中，在 **Direct Lake semantic model
+    name**框中输入 +++**Sales Model+++**
 
-3.  展開dbo模式，打開**Tables**文件夾，然後檢查**dimension_city**和**fact_sale**表。選擇
-    **Confirm**。
+3.  展开dbo模式，打开**Tables**文件夹，然后检查**dimension_city**和**fact_sale**表。选择**Confirm**。
 
-> ![](./media/image142.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image143.png)
+> ![](./media/image119.png)
 
-9.  從左側導航選擇 ***Warehouse_FabricXXXXX***，如下圖所示
+9.  从左侧导航选择***Warehouse_FabricXXXXX***，如下图所示
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image144.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image120.png)
 
-10. 要打開語義模型，返回工作區著陸頁，然後選擇 **Sales
-    Model** 語義模型。
+10. 要打开semantic模型，返回工作区着陆页，然后选择 **Sales
+    Model **semantic模型。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image145.png)
+![](./media/image121.png)
 
-11. 要打開模型設計器，在菜單中選擇**“Open data model**”。
+![](./media/image122.png)
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image146.png)
->
-> ![](./media/image147.png)
-
-12. 在 **Sales Model** 頁面，要編輯“**Manage
-    Relationships**”，請將模式從“**Viewing**”改為“**Editing”**![A
+12. 在**Sales Model** 页面，要编辑**“Manage
+    Relationships”**，请将模式从**“Viewing**”改为**“Editing”**![A
     screenshot of a computer AI-generated content may be
-    incorrect.](./media/image148.png)
+    incorrect.](./media/image123.png)
 
-13. 要創建關係，在模型設計器中，在**主**功能區選擇**“Manage
+13. 要创建关系，在模型设计器中，在 **Home**功能区选择**“Manage
     relationships**”。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image149.png)
+![](./media/image124.png)
 
-14. 在**New relationship窗口**中，完成以下步驟創建關係:
+14. 在**Manage relationship** 窗口中，选择 **+ New relationship**。
 
-&nbsp;
+![](./media/image125.png)
 
-1)  在“**From table”**下拉菜單中，選擇dimension_city表。
+14. 在**“New relationship window”**窗口中，完成以下步骤创建关系：
 
-2)  在**“To table** ”下拉列表中，選擇fact_sale表。
+-  在“**From table”**下拉列表中，选择**dimension_city**表。
 
-3)  在**Cardinality** 下拉列表中，選擇 **One to many (1:\*)。**
+- 在**“To 表**”下拉列表中，选择**fact_sale**表。
 
-4)  在 **Cross-filter direction** 下拉菜單中，選擇 **Single**。
+- 在**Cardinality** 下拉列表中，选择 **One to many (1:\*)。**
 
-5)  勾選**“Assume referential integrity** ”框。
+- 在**Cross-filter direction** 下拉菜单中，选择**Single**。
 
-6)  選擇 **Save**。
+- 勾选**“Assume referential integrity**”框。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image150.png)
->
-> ![](./media/image151.png)
->
-> ![](./media/image152.png)
+- 选择**Save**。
 
-15. 在 **Manage relationship** 窗口中，選擇 **Close**。
+![](./media/image126.png)
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image153.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image154.png)
+![](./media/image127.png)
 
-## 任務2：創建Power BI報告
+15. 在**Manage relationship** 窗口中，选择**Close**。
 
-在這個任務中，學習如何基於你在任務中創建的語義模型創建Power BI報告 。
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image128.png)
 
-1.  在 **File** 功能區，選擇 **Create new report**。
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image129.png)
 
-> ![](./media/image155.png)
+### 任务2：创建Power BI报告
 
-2.  在報告設計器中，完成以下步驟創建柱狀圖表可視化:
+在这个任务中，学习如何基于你在任务中创建的语义模型创建Power BI报告。
 
-&nbsp;
+1.  在**File**功能区，选择**Create new report**。
 
-1)  在 **Data**面板中，展開**fact_sale**表，然後勾選利潤字段。
+![](./media/image130.png)
 
-2)  在 **Data**
-    面板中，展開dimension_city表，然後勾選SalesTerritory字段。
+2.  在报表设计器中，完成以下步骤以创建柱状图可视化：
 
-> ![](./media/image156.png)
+-  在**Data** 面板中，展开**fact_sale**表，然后勾选Profit 字段。
 
-3.  在**Visualizations**面板中，選擇 **Azure Map** 可視化。
+- 在**Data**面板中，展开dimension_city表，然后勾选SalesTerritory字段。
 
-> ![](./media/image157.png)
+![](./media/image131.png)
 
-4.  在 **Data** 面板中，從dimension_city表內，將 StateProvince 字段拖到
-    **Visualizations**  面板的 **Location** 井中。 
+3.  在**Visualizations**面板中，选择 **Azure Map** 可视化。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image158.png)
+![](./media/image132.png)
 
-5.  在**Data **面板中，從fact_sale表內部，檢查利潤字段，將其添加到地圖可視化的**尺寸**井中。
+4.  在“**Data**”窗格中，从 dimension_city 表中，将 StateProvince
+    字段拖到“**Visualizations**”窗格中的“**Location**”区域。
 
-6.  在 **Visualizations** 面板中，選擇 **Table**可視化。
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image133.png)
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image159.png)
+5.  在“**Data**”窗格中，从 fact_sale
+    表中选中“Profit”字段，将其添加到地图可视化“**Size**”区域。
 
-7.  在 **Data** 面板中，勾選以下字段:
+6.  在**Visualizations **面板中，选择**Table **可视化。
 
-&nbsp;
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image134.png)
 
-1)  dimension_city表中的SalesTerritory
+7.  在**Data**面板中，勾选以下字段：
 
-2)  來自 dimension_city 表的 StateProvince
+-  dimension_city表中的SalesTerritory
 
-3)  fact_sale表的利潤
+- dimension_city表中的StateProvince
 
-4)  從fact_sale表中剔除的TotalExcludingTax
+- fact_sale表的Profit 
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image160.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image161.png)
+- 从fact_sale表中的TotalExcludingTax
 
-8.  請核實報告頁面的完成設計是否與以下圖片相似。
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image135.png)
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image162.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image136.png)
 
-9.  要保存報告，請在首頁功能區選擇“**File** \> **Save**”。
+8.  请核实报告页面的完成设计是否与以下图片相似。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image163.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image137.png)
 
-10. 在“保存您的報告”窗口，在“輸入報告名稱”框中，輸入+++**Sales
-    Analysis**+++，然後選擇 **Save**
+9.  要保存报告，在**Home** 功能区选择**“File** \> **Save**”。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image164.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image165.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image166.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image138.png)
 
-## 任務3：清理資源
+10. 在“Save your report”窗口，在“Enter a name for your
+    report”框中，输入+++**Sales Analysis**+++，然后选择**Save**
 
-你可以刪除單個報表、管道、倉庫和其他項目，或者刪除整個工作區。在這個教程中，你將清理工作區、單個報告、管道、倉庫以及你作為實驗室一部分創建的其他項目。
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image139.png)
 
-1.  在導航菜單中選擇**Warehouse_FabricXX**返回工作區的項目列表。
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image140.png)
 
-> ![](./media/image167.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image141.png)
 
-2.  在工作區頭的菜單中，選擇 **Workspace settings**。
+### 任务3：清理资源
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image168.png)
+你可以删除单个报表、pipelines、仓库和其他项目，或者删除整个工作区。在这个教程中，你将清理工作区、单个报告、pipelines、仓库以及你作为实验室一部分创建的其他项目。
 
-3.  在 **Workspace settings**
-    對話框中，選擇“**General**”，然後選擇“**Remove this workspace**”。
+1.  在导航菜单中选择**Warehouse_FabricXX**返回工作区的项目列表。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image169.png)
+![](./media/image142.png)
 
-4.  在 **Delete workspace?** 對話框，點擊 **Delete**
-    按鈕。![](./media/image170.png)
+2.  在工作区头的菜单中，选择**Workspace settings**。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image171.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image143.png)
+
+3.  在工作**Workspace
+    settings** 对话框中，选择“**General**”，然后选择**“Remove this
+    workspace**”。
+
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image144.png)
+
+4.  在 **Delete workspace?** 对话框，点击**Delete** 按钮。
+    ![](./media/image145.png)
+
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image146.png)
 
 **摘要**
 
-這個綜合實驗室介紹了一系列旨在在 Microsoft Fabric
-中建立功能性數據環境的任務。它從創建一個工作區開始，這對數據作至關重要，並確保試驗的啟用。隨後，在
-Fabric 環境中建立了名為 WideWorldImporters
-的倉庫，作為數據存儲和處理的中央倉庫。隨後，通過實現數據工廠流水線，詳細說明瞭Warehouse_FabricXX工作區中的數據攝取過程。該過程涉及從外部來源獲取數據並將其無縫集成到工作區中。關鍵表、關鍵表、dimension_city和fact_sale在數據倉庫中被創建，作為數據分析的基礎結構。數據加載過程繼續使用T-SQL進行，將Azure
-Blob存儲中的數據傳輸到指定的表中。後續任務涉及數據管理和作領域。演示了克隆表，為數據複製和測試提供了寶貴的技術。此外，克隆過程被擴展到同一倉庫內的不同模式（dbo1），展示了結構化的數據組織方法。實驗室推進到數據轉換，引入了存儲過程以高效聚合銷售數據。隨後轉為可視化查詢構建，為複雜數據查詢提供直觀的界面。接著是對筆記本的探索，展示了它們在查詢和分析dimension_customer表數據方面的實用性。隨後，展示了多倉庫查詢功能，使工作空間內不同倉庫之間能夠無縫檢索數據。實驗室最終實現了Azure地圖可視化集成，增強了Power
-BI中的地理數據表示。隨後，創建了一系列Power
-BI報告，包括柱狀圖、地圖和表格，以促進深入的銷售數據分析。最後一項任務是從OneLake數據中心生成報告，進一步強調Fabric中數據源的多樣性。最後，實驗室還提供了資源管理的見解，強調清理程序對於保持高效工作環境的重要性。這些任務綜合起來，提供了對在
-Microsoft Fabric 中設置、管理和分析數據的全面理解。
-
+这个综合实验室介绍了一系列旨在在 Microsoft Fabric 中建立功能性
+data环境的任务。它从创建一个工作区开始，这对
+data操作至关重要，并确保试验的启用。 随后，在 Fabric 环境中建立了名为
+WideWorldImporters 的仓库，作为
+data存储和处理的中央仓库。随后，通过实现Data Factory
+pipeline，详细说明了Warehouse_FabricXX工作区中的data ingestion过程。
+该过程涉及从外部来源获取
+data并将其无缝集成到工作区中。关键表、关键表、dimension_city和fact_sale在
+data仓库中被创建，作为
+data分析的基础结构。Data加载过程继续使用T-SQL进行，将Azure
+Blob存储中的data传输到指定的表中。 后续任务涉及
+data管理和操作领域。演示了克隆表，为
+data复制和测试提供了宝贵的技术。此外，克隆过程被扩展到同一仓库内的不同模式（dbo1），展示了结构化的
+data组织方法。实验室推进到 data转换，引入了存储过程以高效聚合销售
+data。随后转为可视化查询构建，为复杂 data查询提供直观的界面。
+接着是对笔记本的探索，展示了它们在查询和分析dimension_customer表
+data方面的实用性。随后，展示了多仓库查询功能，使工作空间内不同仓库之间能够无缝检索
+data。实验室最终实现了Azure地图可视化集成，增强了Power BI中的地理
+data表示。随后，创建了一系列Power
+BI报告，包括柱状图、地图和表格，以促进深入的销售
+data分析。最后一项任务是从OneLake数据中心生成报告，进一步强调Fabric中
+data源的多样性。最后，实验室还提供了资源管理的见解，强调清理程序对于保持高效工作环境的重要性。这些任务综合起来，提供了对在
+Microsoft Fabric 中设置、管理和分析 data的全面理解。
