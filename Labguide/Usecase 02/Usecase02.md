@@ -1,658 +1,668 @@
-# 用例02：數據工廠解決方案，用於通過數據流和數據管道移動和轉換數據
+# 用例02：Data Factory解决方案，用于通过dataflows和data pipelines移动和转换data
 
-**介紹**
+**简介**
 
-本實驗室通過在一小時內提供完整的數據集成場景的逐步指導，幫助您加快Microsoft
-Fabric中Data
-Factory的評估流程。完成本教程後，你將理解數據工廠的價值和關鍵能力，並知道如何完成常見的端到端數據集成場景。
+本实验室通过在一小时内提供完整的data集成场景的逐步指导，帮助您加快Microsoft
+Fabric中Data Factory的评估流程。完成本教程後，你將理解Data
+Factory的價值和關鍵能力，並知道如何完成常見的端到端data集成場景。
 
-**目标**
+**目標**
 
-实验室分为三个e-xercises:
+實驗分為三個練習：
 
-- **练习1:** 用 Data Factory 创建一个流水线，将原始数据从 Blob
-  存储导入到 Data Lakehouse 中的 Bronze 表。
+- **练习1：**用Data Factory创建一个流水线，将原始 data从Blob
+  storage导入到Data Lakehouse中的青铜表。
 
-- **练习2：** 在Data
-  Factory中用数据流转换数据，处理青铜表的原始数据，并将其迁移到Data
-  Lakehouse中的Gold表。
+- **练习2：**在Data Factory中用dataflow转换 data，处理bronze表的原始
+  data，并将其迁移到Data Lakehouse中的Gold表。
 
-- **練習3：** 用Data
+- **練習3：**用Data
   Factory自動發送通知，發送郵件通知所有作業完成後通知你，最後將整個流程設置為定時運行。
 
-# 練習 1：用數據工廠創建流水線
+## 练习1：用Data Factory创建 pipeline
 
-## 任務1：創建一個工作區
+### 任务1：创建Fabric工作区
 
-在處理Fabric數據之前，先創建一個啟用Fabric試用區的工作區。
+在处理Fabric data之前，先创建一个启用Fabric试用区的工作区。
 
-1.  打开浏览器，进入地址栏，输入或粘贴以下URL：+++https://app.fabric.microsoft.com/+++
-    ，然后按下 **Enter** 键。
+1.  打开浏览器，进入地址栏，输入或粘贴以下URL：+++[https://app.fabric.microsoft.com/+++，](https://app.fabric.microsoft.com/+++)然后按下**Enter** 键。
 
-> **注意**：如果你被引导到Microsoft Fabric主页，请跳过#2到#4的步骤。
->
-> ![](./media/image1.png)
+**注意**：如果你被引导到Microsoft Fabric Home页，请跳过#2到#4的步骤。
 
-2.  在 **Microsoft Fabric** 窗口中，输入你的凭证，然后点击 **Submit**
-    按钮。
+![](./media/image1.png)
 
-> ![](./media/image2.png)
+2.  在 **Microsoft Fabric**
+    窗口中，输入你的凭证，然后点击**Submit** 按钮。
 
-3.  然后，在 **Microsoft** 窗口输入密码，点击 **Sign in** 按钮**。**
+![](./media/image2.png)
 
-> ![A login screen with a red box and blue text AI-generated content may
-> be incorrect.](./media/image3.png)
+3.  然后，在 **Microsoft** 窗口输入密码，点击**Sign in** 按钮。
 
-4.  留在 **Stay signed in?** 窗口，点击**“Yes”**按钮。
+![A login screen with a red box and blue text AI-generated content may
+be incorrect.](./media/image3.png)
 
-> ![A screenshot of a computer error AI-generated content may be
-> incorrect.](./media/image4.png)
->
-> ![](./media/image5.png)
+4.  在 **Stay signed in?** 窗口，点击**“Yes”**按钮。
 
-5.  在 **Microsoft Fabric 主页**，选择 **“New workspace**”选项。
+![A screenshot of a computer error AI-generated content may be
+incorrect.](./media/image4.png)
 
-> ![](./media/image6.png)
+5.  你将被引导到Power BI主页。
 
-6.  在“**Create a workspace**”标签中，输入以下信息，点击 **“Apply应用**
-    ”按钮。
+![](./media/image5.png)
 
-	|   |   |
-	|----|----|
-	|Name	| Data-FactoryXXXX (XXXX can be a unique number) |
-	|Advanced|	Under License mode, select Fabric capacity|
-	|Default storage format|	Small semantic model storage format|
+6.  选择屏幕左下角的默认 Power BI 图标，然后选择 **Fabric**。
 
-> ![](./media/image7.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image8.png)
+![](./media/image6.png)
 
-7.  等待部署完成。大約需要2-3分鐘。
+![](./media/image7.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image9.png)
+![](./media/image8.png)
 
-## 任務2：創建一個lakehouse並導入樣本數據
+7.  在 Microsoft **Fabric 主页**，选择**“New workspace**”选项。
 
-1.  在 **Data-FactoryXX** 工作区页面，点击 **+New item** 按钮
+![](./media/image9.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image10.png)
+8.  在“**Create a
+    workspace**”标签中，输入以下信息，点击**“Apply**”按钮。
+
+| Setting | Value |
+|---|---|
+| Name | +++Data-FactoryXXXX+++ (XXXX can be a unique number) |
+| Advanced | Under **License mode**, select **Fabric** |
+| Default storage format | **Small semantic model storage format** |
+
+![](./media/image10.png)
+
+![](./media/image11.png)
+
+9.  等待部署完成。大約需要2-3分鐘。
+
+![A screenshot of a computer Description automatically
+generated](./media/image12.png)
+
+### 任务2：创建一个lakehouse并导入样本 data
+
+1.  在**Data-FactoryXX**工作区页面，点击 **+New item **按钮
+
+![A screenshot of a computer Description automatically
+generated](./media/image13.png)
 
 2.  点击“**Lakehouse**”瓷砖。
 
 ![A screenshot of a computer Description automatically
-generated](./media/image11.png)
+generated](./media/image14.png)
 
-3.  在“**New
-    lakehouse** ”对话框中，在“**Name**”字段中输入**+++DataFactoryLakehouse+++**，单击“**Create**”按钮，打开新的lakehouse。
+3.  在**“New lakehouse**”对话框中，在**Name** 字段输入
+    +++**DataFactoryLakehouse+++** ，并**取消选择**lakehouses的模式。点击**“Create**”按钮，打开新的lakehouse。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image12.png)
->
-> ![](./media/image13.png)
+> ![](./media/image15.png)
 
-4.  在 **Lakehouse** 主页中，选择 **Start with sample
-    data** 以打开复制样本数据
+![](./media/image16.png)
 
-> ![](./media/image14.png)
+4.  进入Lakehouse，右键点击文件文件夹，选择 Upload \> Upload
+    files以添加文件
 
-5.  显示“**Use a sample**”对话框，选择 **NYCTaxi** 样本数据瓷砖。
+![](./media/image17.png)
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image15.png)
->
-> ![](./media/image16.png)
->
-> ![](./media/image17.png)
+5.  在“Upload files”标签页中，点击Files下的**folder**
 
-6.  要重命名表，右键点击 编辑器上方的 **green_tripdata_2022** 标签，选择
-    **Rename**。
+![](./media/image18.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image18.png)
+6.  在VM上浏览到 **C：\LabFiles**，然后选择
+    /Labfiles/**NYCTaxi/part-00000-907cea6d-0f54-4639-9a14-042dc04185ef-c000.snappy.parquet**
+    文件，点击**Open** 按钮。
 
-7.  在“**Rename**”对话框的“**Name**”字段中，输入**+++Bronze+++**以更改**表**名称。然后，单击“**Rename**”按钮。
+![](./media/image19.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image19.png)
+7.  然後點擊**Upload**按鈕並關閉
 
-![A screenshot of a computer Description automatically
-generated](./media/image20.png)
+![](./media/image20.png)
 
-**練習2：在數據工廠中通過數據流轉換數據**
+![](./media/image21.png)
 
-## 任務1：從Lakehouse表獲取數據
+![](./media/image22.png)
 
-1.  現在，點擊
-    [左側導航窗格中的工作區](mailto:Data%20Factory-@lab.LabInstance.Id)
-    [**Data
-    Factory-@lab.LabInstance.Id**](mailto:Data%20Factory-@lab.LabInstance.Id)。
+8.  在工具栏中，选择使用下拉菜单 **Analyze data**，指向
+    **Notebook**，然后选择**“New notebook**”。
+
+![](./media/image23.png)
+
+9.  添加以下 PySpark 代码创建 Spark 会话，读取从 Lakehouse
+    文件文件夹上传的 Parquet 文件，将 data写入名为 *Bronze*
+    的表，覆盖表中已有的 data。
+
+```
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.appName("LoadParquet").getOrCreate()
+# Read the green_tripdata_2017 parquet file
+df2 = spark.read.format("parquet").load("Files/part-00000-907cea6d-0f54-4639-9a14-042dc04185ef-c000.snappy.parquet")
+
+# Write to table
+df2.write.mode("overwrite").saveAsTable("Bronze")
+```
+
+![](./media/image24.png)
+
+![](./media/image25.png)
+
+7.  要验证已创建的表，请在资源管理器中右键点击 **DataFactoryLakehouse**
+    lakehouse，然后选择**Refresh**。表格出现了。
+
+![](./media/image26.png)
+
+![](./media/image27.png)
+
+![](./media/image28.png)
+
+## 练习2：在Data Factory中通过dataflow转换 data
+
+### 任务1：从Lakehouse表获取 data
+
+1.  現在，點擊左側導航窗格中的工作區 **Data
+    Factory-@lab.LabInstance.Id** 。
 
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image21.png)
+incorrect.](./media/image29.png)
 
-2.  点击导航栏中的 **+New item** 按钮，创建新的 Dataflow
-    Gen2。从可用项目列表中选择**Dataflow Gen2**项目
+2.  点击导航栏中的 **+New item** 按钮，创建新的Dataflow Gen2
+    。从可用项目列表中选择**Dataflow Gen2**项目
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image22.png)
+![](./media/image30.png)
 
 3.  提供一个新的 Dataflow Gen2 名称为
-    **+++nyc_taxi_data_with_discounts+++**，然后选择创建。
+    +++**nyc_taxi_data_with_discounts+++**，然后选择**Create**。
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image23.png)
+![](./media/image31.png)
 
-4.  在新数据流菜单中，在 **Power Query** 面板下点击“**Get
-    data**”**下拉菜单**，然后选择 **More**......
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image24.png)
-
-5.  在“**Choose data source**”标签中，搜索框搜索类型
-    +++**Lakehouse+++**，然后点击 **Lakehouse** 连接器。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image25.png)
-
-6.  会弹出“**Connect to data
-    source** ”对话框，并根据当前登录用户自动为你创建一个新的连接。选择
-    **Next**。 
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image26.png)
-
-7.  会显示“**Choose data**”对话框。使用导航面板找到 **workspace-
-    Data-FactoryXX** 并展开它。然后，展开你在上一个模块中为目的地创建的
-    **Lakehouse** - **DataFactoryLakehouse**，从列表中选择 **Bronze**
-    表，然后点击**Create**按钮。  
+4.  在新dataflow菜单中，在 **Power Query** 窗格下点击“**Get
+    data”下拉菜单**，然后选择**“More...**.**”**。
 
 ![A screenshot of a computer Description automatically
-generated](./media/image27.png)
+generated](./media/image32.png)
 
-8.  你會看到畫布現在已經被填滿了數據。
-
-![A screenshot of a computer Description automatically
-generated](./media/image28.png)
-
-## 任務2：轉換從Lakehouse導入的數據
-
-1.  在第二列的列頭中選擇數據類型圖標，**IpepPickupDatetime**，顯示下拉菜單，並從菜單中選擇數據類型，將列從
-    **Date/Time** 轉換為**Date**。
+5.  在**“Choose data source**”标签中，搜索框搜索类型
+    **+++Lakehouse+++**，然后点击 **Lakehouse** 连接器。
 
 ![A screenshot of a computer Description automatically
-generated](./media/image29.png)
+generated](./media/image33.png)
 
-2.  在色带的“**Home**”标签页，从“**Choose columns** ”组中选择“**Manage
-    columns** ”选项。 
+6.  会弹出**“Connect to data
+    source**”对话框，并根据当前登录用户自动为你创建一个新的连接。选择**Next**。
 
 ![A screenshot of a computer Description automatically
-generated](./media/image30.png)
+generated](./media/image34.png)
 
-3.  在“**Choose
-    columns** ”对话框中，取消选中这里列出的一些列，然后选择**OK**。
+7.  会显示**“Choose data**”对话框。使用导航面板找到 **workspace-
+    Data-FactoryXX** 并展开它。然后，展开 你在上一个模块中为目的地创建的
+    **Lakehouse** - **DataFactoryLakehouse** ，从列表中选择**Bronze**表，然后点击
+    **Create**按钮。
 
-    - lpepDropoffDatetime
+![](./media/image35.png)
 
-    &nbsp;
-
-    - DoLocationID
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image31.png)
-
-4.  選擇**storeAndFwdFlag**列的篩選並排序下拉菜單。（如果您发现警告
-    **List may be incomplete**，请选择“**Load more**”以查看所有数据。）
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image32.png)
-
-5.  選擇“**Y”** 只顯示應用了折扣的行，然後選擇 **OK**。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image33.png)
-
-6.  选择**Ipep_Pickup_Datetime**列排序和筛选下拉菜单，然后选择**Date
-    filters**，最后选择 **Between...** 。提供日期和日期/时间类型的筛选。
-
-![](./media/image34.png)
-
-7.  在“**Filter rows**”对话框中，选择 **2022 年 1 月 1** **日**至 **2022
-    年 1 月 31 日**之间的日期，然后选择“**OK**”。
-
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image35.png)
-
-## 任務3：連接包含折扣數據的CSV文件
-
-現在，在行程數據到位後，我們想加載包含每天相應折扣和供應商ID的數據，並在與行程數據合併前準備好這些數據。
-
-1.  在數據流編輯器菜單的**主頁**標簽中，選擇“**Get
-    data** ”選項，然後選擇“**Text/CSV**”。
+8.  你會看到畫布現在已經被填滿了 data。
 
 > ![](./media/image36.png)
 
-2.  在“**Connect to data
-    source**”面板中，在**Connection设置**下，选择“**Link to
-    file**”单选按钮，然后输入
-    +++https://raw.githubusercontent.com/ekote/azure-architect/master/Generated-NYC-Taxi-Green-Discounts.csv+++，再输入连接名称为
-    **+++dfconnection+++**，确保**认证类型**设置为**匿名**。点击“**Next**”按钮。
+### 任务2：转换从Lakehouse导入的 data
+
+1.  在第二列的列头中选择
+    data类型图标，**IpepPickupDatetime**，显示下拉菜单，并从菜单中选择
+    data类型，将列从 **Date/Time** 转换为**Date**。
+
+![](./media/image37.png)
+
+2.  在色带的**“Home**”标签页，从**“Manage columns”Choose
+    columns**“选择列”选项 。
+
+![](./media/image38.png)
+
+3.  在**“Choose
+    columns”**对话框中，**取消选中**这里列出的一些列，然后选择**OK**。
+
+    - lpepDropoffDatetime
+
+    -  DoLocationID
+
+![](./media/image39.png)
+
+4.  選擇**storeAndFwdFlag**列的篩選並排序下拉菜單。（如果你看到警告
+    **List may be incomplete**，选择**“Load more**”以查看所有 data。）
+
+![](./media/image40.png)
+
+5.  選擇“**Y”**只顯示應用了折扣的行，然後選擇**OK**。
+
+![](./media/image41.png)
+
+6.  选择**Ipep_Pickup_Datetime**列排序和筛选下拉菜单，然后选择**Date
+    filters，**再选择**“Between...** **”。**
+    提供日期和日期/时间类型的筛选。
+
+![](./media/image42.png)
+
+7.  在**Filter
+    rows**對話框中，選擇**2017年1月1日**至**2017年1月31日**之間的日期，然後選擇**OK**。
+
+![](./media/image43.png)
+
+![](./media/image44.png)
+
+### 任務3：連接包含折扣data的CSV文件
+
+现在，在行程 data到位后，我们想加载包含每天相应折扣和 VendorID的
+data，并在与行程 data合并前准备好这些 data。
+
+1.  在 dataflow编辑器菜单的**Home**标签中，选择“**Get
+    data**”选项，然后选择“**Text/CSV**”。
+
+![](./media/image45.png)
+
+2.  在“**Connect to data source**”面板中，在**Connection
+    settings**下，选择**“Link to file**”单选按钮，然后输入
+    +++https://raw.githubusercontent.com/ekote/azure-architect/master/Generated-NYC-Taxi-Green-Discounts.csv+++，并将连接名称输入为
+    +++**dfconnection**+++，确保**authentication** **kind** 设置为**Anonymous**。点击**“Next**”按钮。
 
 ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image37.png)
+incorrect.](./media/image46.png)
 
-3.  在**Preview file data**对话框中，选择 **Create**。
-
-![A screenshot of a computer Description automatically
-generated](./media/image38.png)
-
-## 任务4：转换贴现数据
-
-1.  查看數據時，我們發現頭似乎在第一行。通过在预览网格区域左上角的表格右键菜单中选择**“Use
-    first row as headers”，**将其升级为头部。
-
-> ![](./media/image39.png)
->
-> ***注意：**推廣標題後，你會在數據流編輯器頂部的**“Applied
-> steps**”面板中看到新增一個步驟，針對你列的數據類型。*
->
-> ![](./media/image40.png)
-
-2.  右鍵點擊 **VendorID** 列，從顯示的右鍵菜單中選擇“**Unpivot other
-    columns**”選項。這允許你將列轉換為屬性-值對，列變為行。
-
-![A screenshot of a computer Description automatically
-generated](./media/image41.png)
-
-3.  在表格未進行轉向後，雙擊**屬性**列和**值列**，並將**屬性**改為**+++Date+++**，**值改**為**+++Discount+++**，重命名它們。
-
-![A screenshot of a computer Description automatically
-generated](./media/image42.png)
-
-![A screenshot of a computer Description automatically
-generated](./media/image43.png)
-
-4.  通過選擇列名左側的數據類型菜單並選擇
-    **Date**，來更改**Date**列的數據類型。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image44.png)
-
-5.  选择**Discount**栏，然后在菜单中选择“**Transform**”标签。选择**Number
-    列**，然后从子菜单中选择**Standard** 数值变换，再选择**Divide**。 
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image45.png)
-
-6.  在**Divide **對話框中輸入值 +++100+++，然後點擊 **ok** 按鈕。
-
-![A screenshot of a computer Description automatically
-generated](./media/image46.png)
+3.  在**Preview file data** 对话框中，选择**Create**。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image47.png)
 
-**任務7：合併行程和折扣數據**
+![](./media/image48.png)
 
-下一步是將兩張表合併成一個表，列出應應用於行程的折扣和調整後的總額。
+### 任務4：轉換貼現data
 
-1.  首先，切换“**Diagram view**”按钮，这样你可以看到两个查询。
-
-![A screenshot of a computer Description automatically
-generated](./media/image48.png)
-
-2.  选择**Bronze**查询，在**主页**标签中选择合并菜单，选择 **Merge
-    queries**，然后选择 **Merge queries as new**。
+1.  查看
+    data時，我們發現頭似乎在第一行。通过在预览网格区域左上角的表格右键菜单中选择**“Use
+    first row as headers”，**将其升级为头部。
 
 ![](./media/image49.png)
 
-3.  在“**Merge**”对话框中，从“**Right table for
-    merge** ”下拉列表中选择“**Generated-NYC-Taxi-Green-Discounts**”，然后选择对话框右上角的“**light
-    bulb**”图标，即可查看三个表格之间建议的列映射。 
+***注意：**推广标题后，你会在dataflow编辑器顶部的**“Applied
+steps**”面板中看到新增一个步骤，针对你列的 data类型。*
 
-4.  依次選擇兩種建議的列映射，分別映射兩個表中的VendorID和日期列。當兩個映射都被添加時，匹配的列頭會在每個表中被高亮顯示。
+![](./media/image50.png)
 
-> ![](./media/image50.png)
+2.  右键点击 **VendorID** 列，从显示的右键菜单中选择“**Unpivot other
+    columns**”选项。这允许你将列转换为属性-值对，列变为行。
 
-5.  會顯示一條提示，要求你允許將多個數據源的數據合併以查看結果。选择
-    **OK** 
+![](./media/image51.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image51.png)
+3.  在表格未进行转向后，
+    双击**Attribute** 列和**Value**列，并将**Attribute** 改为
+    +++**Date+++** ，**Value** 改为**+++Discount+++**，重命名它们。
+
+![](./media/image52.png)
+
+4.  通过选择列名左侧的 data类型菜单并选择**Date**，来更改**Date**列的
+    data类型。
+
+![](./media/image53.png)
+
+5.  选择**Discount** 栏，然后在菜单中选择**“Transform**”标签。选择**Number列**，然后从子菜单中选择**Standard** 数值变换，再选择**Divide**。
+
+![](./media/image54.png)
+
+6.  在**Divide** 对话框中输入值 +++100+++，然后点击**OK** 按钮。
+
+![A screenshot of a computer Description automatically
+generated](./media/image55.png)
+
+![](./media/image56.png)
+
+### 任务7：合并行程和折扣data
+
+下一步是将两张表合并成一个表，列出应应用于行程的折扣和调整后的总额。
+
+1.  首先，切换“**Diagram view**”按钮，这样你可以看到两个查询。
+
+![](./media/image57.png)
+
+2.  选择**Bronze** 查询，在**Home** 标签中选择**合并**菜单，选择**Combine** 查询，选择**Merge
+    queries**然后选择**Merge queries as new**。
+
+![](./media/image58.png)
+
+3.  在**Merge** 对话框中，从 右侧表格选择
+    **Generated-NYC-Taxi-Green-Discounts** 进行合并下拉，然后选择对话框右上角的“**light
+    bulb**”图标，查看三表之间建议的列映射。
+
+4.  依次选择两种建议的列映射，映射两个表中的VendorID和日期列。当两个映射都被添加时，匹配的列头会在每个表中被高亮显示。
+
+![](./media/image59.png)
+
+5.  会显示一条提示，要求你允许将多个data源的data合并以查看结果。选择**OK** 
+
+![](./media/image60.png)
 
 6.  在表格区域，你会看到一个警告：“The evaluation was canceled because
     combining data from multiple sources may reveal data from one source
     to another. Select continue if the possibility of revealing data is
-    okay.”选择“**Continue**”以显示合并数据。
-
-> ![](./media/image52.png)
-
-7.  在“Privacy Levels”对话框中，选择“**check box :Ignore Privacy Levels
-    checks for this document. Ignoring privacy Levels could expose
-    sensitive or confidential data to an unauthorized
-    person**，点击“**Save**”按钮。
-
-> ![A screenshot of a computer screen Description automatically
-> generated](./media/image53.png)
->
-> ![](./media/image54.png)
-
-8.  注意在圖中新建查詢，顯示新合併查詢與你之前創建的兩個查詢之間的關係。查看編輯器的表格窗格，向“合併查詢列”列表右側滾動，可以看到一個帶有表值的新列。这是“**Generated
-    NYC Taxi-Green-Discounts**”栏，类型为**\[Table\]**。
-
-在列頭有一個圖標，上面有兩個相反方向的箭頭，方便你從表格中選擇列。取消選中除**折扣**以外的所有列，然後選擇**OK**。
-
-![](./media/image55.png)
-
-9.  現在貼現值定在行級，我們可以創建一個新列來計算折現後的總金額。要做到这一点，请在编辑器顶部选择“**Add
-    column** ”标签，然后从“**General** ”组中选择“**Custom column** ”。
-
-> ![](./media/image56.png)
-
-10. 在“**Custom column**”对话框中，您可以使用 Power Query
-    公式语言（也称为 M 语言）来定义新列的计算方式。在**New column
-    name**中输入
-    +++**TotalAfterDiscount+++** ，在数据类型中选择“**Currency**”，并在**Custom
-    column formula**中提供以下 M 表达式。:
-
- +++if [total_amount] > 0 then [total_amount] * ( 1 -[Discount] ) else [total_amount]
-
-然后选择**OK**。
-
-![](./media/image57.png)
-
-![A screenshot of a computer Description automatically
-generated](./media/image58.png)
-
-11. 选择新创建的......**TotalAfterDiscount** 列，然后在编辑器窗口顶部选择“**Transform**”标签。在**Number
-    column** 组中，选择“**Round...**.”下拉菜单，然后选择“**Rounding**”
-
-**注意：**如果找不到**rounding**选项，请展开菜单查看**Number column**。
-
-![](./media/image59.png)
-
-12. 在“**Round**”對話框中，輸入 **2** 作為小數位數，然後選擇“**OK**”。
-
-![A screenshot of a computer Description automatically
-generated](./media/image60.png)
-
-13. 将 **IpepPickupDatetime** 的数据类型从 **Date**
-    更改为**Date/Time**。
+    okay.”选择**“Continue**”以显示合并 data。
 
 ![](./media/image61.png)
 
-14. 最后，如果编辑器右侧的“**Query
-    settings** ”窗格尚未展开，请将其展开，并将查询名称从“**Merge** ”重命名为+++**Output+++**”。 
+7.  在“Privacy Levels”对话框中，选择**“check box :Ignore Privacy Levels
+    checks for this document. Ignoring privacy Levels could expose
+    sensitive or confidential data to an unauthorized
+    person**”，点击**“Save**”按钮。
 
-![A screenshot of a computer Description automatically
-generated](./media/image62.png)
+![](./media/image62.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image63.png)
+![](./media/image63.png)
 
-**任務8：將輸出查詢加載到Lakehouse中的表中**
+8.  注意在圖中新建查詢，顯示新Merge
+    query與你之前創建的兩個查詢之間的關係。查看編輯器的表格窗格，向
+    “Merge
+    query”列表右側滾動，可以看到一個帶有表值的新列。这是“**Generated NYC
+    Taxi-Green-Discounts**”栏，类型为**\[Table\]。**
 
-當輸出查詢完全準備好並準備輸出數據後，我們可以定義查詢的輸出目的地。
-
-1.  選擇之前創建的 **Output** 合併查詢。然后选择 **+ icon** ，将**data
-    destination** 添加到该数据流中。
-
-2.  在数据目的地列表中，选择 **“New destination”**下的 Lakehouse 选项。
+在列头有一个图标，上面有两个相反方向的箭头，方便你从表格中选择列。取消选中除**Discount**以外的所有列，然后选择**OK**。
 
 ![](./media/image64.png)
 
-3.  在“**Connect to data
-    destination** ”对话框中，你的连接应该已经被选中了。选择“**Next**”继续。
+9.  现在贴现值定在行级，我们可以创建一个新列来计算折现后的总金额。要做到这一点，请在编辑器顶部选择**“Add
+    column**”标签，然后 **从**“**General”**组中选择“**Custom column**”。
 
-![A screenshot of a computer Description automatically
-generated](./media/image65.png)
+![](./media/image65.png)
 
-4.  在“**Choose destination target**”对话框中，浏览到
-    Lakehouse，然后再次选择“**Next**”。 
+10. 在**Custom column**对话框中，您可以使用 Power Query 公式语言（也称为
+    M）来定义新列的计算方式。输入 +++**TotalAfterDiscount+++** 作为**New
+    column name**，选择 **Currency** 作为**Data type**，并为**Custom
+    column formula**提供以下 M 表达式：
+
++++if [total_amount] > 0 then [total_amount] * ( 1 -[Discount] ) else [total_amount]+++
+
+然后选择**OK**。
 
 ![](./media/image66.png)
 
-5.  在“**Choose destination
-    settings**”对话框中，保留默认的**Replace**更新方法，再次确认列是否正确映射，然后选择**Save
-    settings**。
-
 ![](./media/image67.png)
 
-6.  回到主编辑器窗口，确认你在输出表的**Query
-    settings**窗格中看到**Output**目的地为
-    **Lakehouse**，然后从主页选项卡中选择“**Save and Run**”选项。
+11. 选择新创建的**TotalAfterDiscount**列，然后在编辑器窗口顶部选择
+    “**Transform**”标签。在**Number
+    column**组中，选择**“Rounding**”下拉菜单，然后选择**“Round...**.**”**。
 
-> ![](./media/image68.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image69.png)
+**注意**：如果找不到**rounding** 选项，请展开菜单查看**Number column**。
 
-9.  现在，点击左侧导航窗格上的 **Data Factory-XXXX workspace** 。
+![](./media/image68.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image70.png)
+12. 在**Round** 对话框中输入**2**，输入小数点位数，然后选择**OK**。
 
-10. 在 **Data_FactoryXX** 窗格中， 选择 **DataFactoryLakehouse**
-    查看加载到那里的新表。
+![](./media/image69.png)
+
+13. 将 I**pepPickupDatetime** 的 data类型从 **Date** 更改为
+    **Date/Time**。
+
+![](./media/image70.png)
+
+14. 最后，如果编辑器右侧还没有展开**Query
+    settings** 窗格，并将查询重命名從**Merge** 作為 **+++Output+++**。
 
 ![](./media/image71.png)
 
-11. 确认**Output **表是否出现在 **dbo** 模式下。
-
 ![](./media/image72.png)
 
-# 練習3：用數據工廠自動化並發送通知
+### 任务8：将输出查询加载到Lakehouse中的表中
 
-## 任务1：将Office 365 Outlook活动添加到你的管道中
+当输出查询完全准备好并准备输出data后，我们可以定义查询的输出目的地。
 
-1.  在左侧导航菜单中点击**Data_FactoryXX**工作区。
+1.  选择之前创建的**Output** 合并查询。然后选择 **+ icon**，将**data
+    destination** 添加到该Dataflow中。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image73.png)
+2.  在data destination列表中，选择**“**New
+    destination”下的**Lakehouse** 选项。
 
-2.  在工作区页面选择**+ New item**选项，然后选择“**Pipeline**”
+![](./media/image73.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image74.png)
+3.  在“**Connect to data
+    destination**”对话框中，你的连接应该已经被选中了。选择**“Next**”继续。
 
-3.  提供一个流水线名称为 +++First_Pipeline1+++，然后选择 **Create**。
+![A screenshot of a computer Description automatically
+generated](./media/image74.png)
 
-> ![](./media/image75.png)
+4.  在“**Choose destination
+    target”**对话框中，浏览到Lakehouse，然后再次选择**“Next**”。
 
-4.  在管道编辑器中选择“**Home**”标签，找到“**Add to canvas”**活动。
+![](./media/image75.png)
 
-> ![](./media/image76.png)
+5.  在**“Choose destination
+    settings**”对话框中，再次确认你的列是否正确映射，然后选择**Save
+    settings**。
 
-5.  在“**Source**”标签页，输入以下设置，点击**Test connection**
+![](./media/image76.png)
 
-	|     |    |
-	|------|------|
-	|Connection|	dfconnection User-XXXX|
-	|Connection Type|	select HTTP.|
-	|File format	|Delimited Text|
+6.  回到主编辑器窗口，确认你在**Output** 表的**Query
+    settings**窗格中看到输出目的地为
+    **Lakehouse**，然后从主页选项卡中选择**“Save and Run**”选项。
 
-> ![](./media/image77.png)
+![](./media/image77.png)
 
-6.  在**“Destination**”标签页，输入以下设置。
+![](./media/image78.png)
 
-	|    |    |
-	|-----|----|
-	|Connection	|**Lakehouse**|
-	|Lakehouse|	Select **DataFactoryLakehouse**|
-	|Root Folder	|select the **Table** radio button.|
-	|Table|	• Select New, enter +++Generated-NYC-Taxi-Green-Discounts+++ and click on Create button|
+![](./media/image79.png)
 
-> ![](./media/image78.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image79.png)
+9.  现在，点击左侧导航窗格上的 **Data Factory-XXXX workspace**。
 
-7.  从色带中选择**“Run**”。
+![A screenshot of a computer Description automatically
+generated](./media/image80.png)
 
-> ![](./media/image80.png)
+10. 在**Data_FactoryXX**窗格中，选择 **DataFactoryLakehouse**
+    查看新加载的表。
 
-8.  在**“Save and run?”**对话框，点击**“Save and run**”按钮。
+![](./media/image81.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image81.png)
->
-> ![](./media/image82.png)
+11. 确认**Output** 表是否出现在**dbo**模式下。
 
-9.  在管道编辑器中选择“**Activities**”标签，找到 **Office Outlook**
-    活动。 
+![](./media/image82.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image83.png)
+## 练习3：用Data Factory自动化并发送通知
 
-10. 從你的複製活動中選擇並拖動“成功”路徑（在管道畫布活動右上角的綠色複選框）到你的新的Office
-    365 Outlook活動。
+### 任务1：将Office 365 Outlook活动添加到你的pipeline中
+
+1.  在左侧导航菜单中点击**Data_FactoryXX** 工作区。
+
+![A screenshot of a computer Description automatically
+generated](./media/image83.png)
+
+2.  在工作区页面选择 **+ New item** 选项，然后选择**“Pipeline”**
 
 ![A screenshot of a computer Description automatically
 generated](./media/image84.png)
 
-11. 从管道画布中选择Office 365
-    Outlook活动，然后选择画布下方属性区域的**Settings**标签来配置邮件。点击**Connection**下拉菜单，选择**Browse
-    all**。 
+3.  提供一个管道名称 +++**First_Pipeline1+++**，然后选择**Create**。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image85.png)
+![](./media/image85.png)
 
-12. 在“choose a data source”窗口中，选择 **Office 365 Email** 件源。
+4.  在pipeline editor中选择“**Home**”标签，找到“**Add copy data
+    activity”**的选项。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image86.png)
+> ![](./media/image86.png)
 
-13. 用你想發送郵件的賬戶登錄。你可以用已經登錄的賬戶使用現有連接。
+5.  在“**Source**”标签页，输入以下设置，点击**Test connection**
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image87.png)
+| Setting | Value |
+|---|---|
+| Connection | +++dfconnection User-XXXX+++ |
+| Connection Type | Select **HTTP** |
+| File format | **Delimited Text** |
 
-14. 点击 **Connect** 以继续。
+![](./media/image87.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image88.png)
+6.  在**“Destination**”标签页，输入以下设置。
 
-15. 在管道画布中选择Office 365 Outlook活动，在 画布下方属性区域的
-    **Settings** 标签中选择该邮件。
+| Setting | Value |
+|---|---|
+| Connection | **Lakehouse** |
+| Lakehouse | Select **DataFactoryLakehouse** |
+| Root Folder | Select the **Table** radio button |
+| Table | Select **New**, enter `+++Generated-NYC-Taxi-Green-Discounts+++`, and select **Create**. |
 
-    - 在“**收件人”**欄輸入您的電子郵件地址
-      。如果你想使用多個地址，請使用 **;** 把他們分開。
+![](./media/image88.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image89.png)
+![A screenshot of a computer Description automatically
+generated](./media/image89.png)
 
-- 对于**Subject**，选择该字段，使“**Add dynamic
-  content** ”选项出现，然后选择它以显示流水线表达式构建画布。
+7.  从色带中选择**“Run**”。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image90.png)
+![](./media/image90.png)
 
-16. 会显示 **Pipeline expression builder**
-    对话框。输入以下表达式，然后选择**OK** :
+8.  在**“Save and run?”**对话框，点击**“Save and run**”按钮。
 
-+++@concat('DI in an Hour Pipeline Succeeded with Pipeline Run Id', pipeline().RunId)+++
+![A screenshot of a computer Description automatically
+generated](./media/image91.png)
 
-> ![](./media/image91.png)
+![](./media/image92.png)
 
-17. 对于正文，再次选择字段，并在文本区域下方出现时选择“**View in
-    expression builder**”选项。在出现的 **Pipeline expression
-    builder** 对话框中再次添加以下表达式，然后选择**OK**  :
+9.  在pipeline编辑器中选择**“Activities**”标签，找到 **Office Outlook**
+    活动。
 
-+++@concat('RunID = ', pipeline().RunId, ' ; ', 'Copied rows ', activity('Copy data1').output.rowsCopied, ' ; ','Throughput ', activity('Copy data1').output.throughput)+++
+![](./media/image93.png)
 
-> ![](./media/image92.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image93.png)
+10. 从你的复制活动中选择并拖动“Success”路径（在管道画布活动右上角的绿色复选框）到你的新的Office
+    365 Outlook活动。
 
-**  注意：**将 **Copy data1** 替换为你自己的管道复制活动名称。
+![A screenshot of a computer Description automatically
+generated](./media/image94.png)
 
-18. 最後，選擇管道編輯器頂部的“**Home**”選項卡，然後選擇“**Run**”。接着，在确认对话框中选择“**Save
-    and run**”以执行这些操作。 
+11. 从pipeline canvas中选择Office 365 Outlook活动，然后选择
+    canvas下方属性区域的**Settings** 标签来配置邮件。点击**“Connection**”下拉菜单，选择**“Browse
+    all”。**
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image94.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image95.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image96.png)
+![A screenshot of a computer Description automatically
+generated](./media/image95.png)
 
-19. 管道成功運行後，查看你的電子郵件，查找管道發送的確認郵件。
+12. 在“choose a data source”窗口中，选择**Office 365 Email**源。
 
-![](./media/image97.png)
+![A screenshot of a computer Description automatically
+generated](./media/image96.png)
 
-**任務2：調度流水線執行**
+13. 用你想发送邮件的账户登录。你可以用已经登录的账户使用现有连接。
 
-一旦你完成了流程的開發和測試，就可以安排它自動執行。
+![A screenshot of a computer Description automatically
+generated](./media/image97.png)
 
-1.  在 管道编辑器窗口的**Home** 标签中，选择“**Schedule**”。
+14. 点击**Connect** 以继续。
 
 ![A screenshot of a computer Description automatically
 generated](./media/image98.png)
 
-2.  根據需要配置時間表。這裡的示例安排了流水線每天晚上8點執行，直到年底。
+15. 在pipeline canvas中选择Office 365
+    Outlook活动，在canvas下方属性区域的**Settings** 标签中选择该邮件。
 
-![A screenshot of a schedule Description automatically
+    - 在“**To”**栏输入您的电子邮件地址 。如果你想使用多个地址，请使用
+      **;** 把他们分开。
+
+![A screenshot of a computer Description automatically
 generated](./media/image99.png)
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image100.png)
+- 对于**Subject**，选择该字段，使“**Add dynamic
+  content**”选项出现，然后选择它以显示pipeline表达式构建canvas。
 
-![A screenshot of a schedule AI-generated content may be
-incorrect.](./media/image101.png)
+![A screenshot of a computer Description automatically
+generated](./media/image100.png)
 
-**任務3：向管道添加數據流活動**
+16. 会显示**Pipeline expression
+    builder** 对话框。输入以下表达式，然后选择**OK**：
 
-1.  将鼠标悬停在连接流水线画布上 **Copy activity** 和 **Office 365
-    Outlook**活动的绿色线上，选择**+**按钮插入新活动。
++++@concat('DI in an Hour Pipeline Succeeded with Pipeline Run Id', pipeline().RunId)+++
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image102.png)
+![](./media/image101.png)
 
-2.  從出現的菜單中選擇**Dataflow** 。
+17. 对于**Body**，再次选择字段，并在文本区域下方出现时选择“**View in
+    expression builder**”选项。在出现的**Pipeline expression
+    builder** 对话框中再次添加以下表达式，然后选择**OK**：
+
++++@concat('RunID = ', pipeline().RunId, ' ; ', 'Copied rows ', activity('Copy data1').output.rowsCopied, ' ; ','Throughput ', activity('Copy data1').output.throughput)+++
+
+![](./media/image102.png)
 
 ![A screenshot of a computer Description automatically
 generated](./media/image103.png)
 
-3.  新創建的數據流活動會插入複製活動和Office 365
-    Outlook活動之間，並自動選擇，在畫布下方區域顯示其屬性。在屬性區域選擇**Settings **標簽，然後選擇你在**練習2：在數據工廠中用數據流轉換數據時創建**的數據流。
+\*\* 注意：\*\* 将 **Copy data1** 替换为你自己的pipeline复制活动名称。
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image104.png)
-
-4.  選擇管道編輯器頂部的“**Home**”選項卡，然後選擇“**Run**”。接着在确认对话框中选择“**Save
+18. 最後，在管道編輯器頂部選擇**“Home**”標簽，然後選擇**Run**。然后在确认对话框中选择“**Save
     and run**”以执行这些活动。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image105.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image106.png)
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image107.png)
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image108.png)
-
-## 任務四：清理資源
-
-你可以刪除單個報表、管道、倉庫和其他項目，或者刪除整個工作區。請按照以下步驟刪除你為本教程創建的工作區。
-
-1.  在左側導航菜單中選擇您的工作區，即**Data-FactoryXX**。它會打開工作區的物品視圖。
-
-![](./media/image109.png)
-
-2.  在右上角的工作区页面选择 **Workspace settings** 选项。
+![A screenshot of a computer Description automatically
+generated](./media/image104.png)
 
 ![A screenshot of a computer Description automatically
+generated](./media/image105.png)
+
+![](./media/image106.png)
+
+![](./media/image107.png)
+
+19. Pipeline成功运行后，查看你的电子邮件，查找pipeline发送的确认邮件。
+
+![](./media/image108.png)
+
+### 任务2：调度pipeline执行
+
+一旦你完成了pipeline的开发和测试，就可以安排它自动执行。
+
+1.  在pipeline editor窗口的**Home** 标签中**，**选择**“Schedule”。**
+
+![A screenshot of a computer Description automatically
+generated](./media/image109.png)
+
+2.  根据需要配置时间表。这里的示例安排了pipeline每天晚上8点执行，直到年底。
+
+![A screenshot of a schedule Description automatically
 generated](./media/image110.png)
 
-3.  选择**General标签**并**Remove this workspace**。
+![](./media/image111.png)
+
+![](./media/image112.png)
+
+### 任务3：向 pipeline添加Dataflow活动
+
+1.  将鼠标悬停在连接pipeline canvas上**Copy activity**和**Office 365
+    Outlook**活动的绿色线上，选择 **+** 按钮插入新活动。
+
+![](./media/image113.png)
+
+2.  从出现的菜单中选择**Dataflow** 。
+
+![](./media/image114.png)
+
+3.  新创建的Dataflow活动会插入复制活动和Office 365
+    Outlook活动之间，并自动选择，在canvas下方区域显示其属性。在属性区域选择**Settings** 标签，然后选择你在**练习2：在Data
+    Factory中用dataflow转换 data时创建**的dataflow。
+
+![](./media/image115.png)
+
+4.  选择pipeline
+    editor顶部的**“Home**”标签，然后选择**Run**。然后在确认对话框中选择“**Save
+    and run**”以执行这些活动。
+
+![](./media/image116.png)
+
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image117.png)
+
+![](./media/image118.png)
+
+![](./media/image119.png)
+
+### 任务四：清理资源
+
+你可以删除单个报表、pipelines、仓库和其他项目，或者删除整个工作区。请按照以下步骤删除你为本教程创建的工作区。
+
+1.  在左侧导航菜单中选择您的工作区，即**Data-FactoryXX** 。它会打开工作区的物品视图。
 
 ![A screenshot of a computer Description automatically
-generated](./media/image111.png)
+generated](./media/image83.png)
+
+2.  在右上角的工作区页面选择**Workspace settings** 选项。
+
+![](./media/image120.png)
+
+3.  选择**General标签**并 **Remove this workspace。**
+
+![](./media/image121.png)
