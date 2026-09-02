@@ -1,890 +1,763 @@
-# 用例1：創建Lakehouse，導入樣本數據並生成報告
+# 用例01——创建Lakehouse，导入样本 data并构建报告
 
-**介紹**
+**剧情**
 
-本實驗室將帶你從數據採集到數據消費的全流程。它幫助你建立對Fabric的基本理解，包括不同的體驗及其集成方式，以及在該平臺上工作所帶來的專業和公民開發者的體驗。本實驗室並非旨在作為參考架構、詳盡的功能和功能列表，或推薦具體的最佳實踐。
+**Wide World Importers（WWI）**
+是一家全球零售组织，在多个地区运营数百家门店。客户信息来自各种运营系统，包括point-of-sale（POS）应用、客户关系管理平台和电子商务渠道。Data以CSV文件形式存储，每天从不同业务单元接收。
 
-傳統上，組織一直在構建現代數據倉庫以滿足其交易型和結構化數據分析需求。以及用於大數據（半結構化/非結構化）數據分析需求的數據lakehouse。這兩個系統並行運行，造成了silos、數據重複和增加的總擁有成本。
+公司分析團隊目前花費大量時間手動導入文件、驗證 data質量以及準備 data
+集以供報告。這些人工流程導致客戶洞察生成延遲，並使業務用戶難以獲取一致可靠的信息。
 
-Fabric通過統一數據存儲和Delta
-Lake格式的標準化，幫助你消除數據silos，消除數據重複性，並大幅降低總擁有成本。
+为了现代化其分析平台，Wide World Importers 采用了 **Microsoft Fabric**
+作为其统一 data平台。Data engineering团队的任务是利用 **Microsoft Fabric
+Data Factory** 和 **Lakehouse** 实现可扩展解决方案，以集中客户
+data，实现高效的 data 管理，简化报告。
 
-借助Fabric提供的靈活性，你可以實現lakehouse或數據倉庫架構，或者將它們結合起來，通過簡單的實現實現實現兩者的最佳優勢。在本教程中，你將以一家零售企業為例，從頭到尾建造其lakehouse別墅。
-它採用[了 medallion
-架構](https://learn.microsoft.com/en-us/azure/databricks/lakehouse/medallion)，青銅層有原始數據，銀層有驗證和去重的數據，金層有高度精煉的數據。你也可以用同樣的方法為任何行業的組織實施lakehouse。
+作为Data
+Engineer，你的职责是创建Fabric工作区，配置Lakehouse，将客户数据导入OneLake，将源文件转换为托管的Delta表，使用SQL
+Analytics Endpoint验证导入 data，创建Direct Lake
+semantic模型，并生成Power
+BI报告，使业务利益相关者能够以最小延迟分析客户信息。
 
-本实验室解释了虚构的Wide World
-Importers公司零售领域的开发者如何完成以下步骤。
+通过实施该解决方案，Wide World Importers 可以消除手动 data
+准备，提供客户分析的单一真实来源，并利用 Microsoft Fabric 实现更快速、
+data驱动的业务决策。
+
+**简介**
+
+在此用例中，您将通过使用 **Microsoft Fabric Data Factory** 和 **Fabric
+Lakehouse** 构建完整的data engineering解决方案。从新的 Fabric
+工作区开始，你将将 data导入 Lakehouse，将文件转换为托管的 Delta 表，使用
+SQL analytics endpoints查询 data，创建语义模型，并生成交互式 Power BI
+报告。
+
+在整个实验室过程中，你将探索 Microsoft Fabric 如何将
+data集成、存储、转换、分析和报告整合到单一的Software-as-a-Service（SaaS）平台中。通过完成此实践练习，您将理解现代data
+engineering工作流程如何通过Fabric Data Factory实现，同时遵循行业最佳
+data采集、管理和分析实践。
 
 **目标**:
 
-1\. 登录 Power BI 账户，启动免费的 Microsoft Fabric 试用。
+- 创建并配置一个 Microsoft Fabric 工作空间。
 
-2\. 在Power BI中启动Microsoft Fabric（预览版）试用。
+- 建造并配置Fabric Lakehouse。
 
-3\. 配置 Microsoft 365 管理中心的 OneDrive 注册功能。
+- 将源data导入OneLake。
 
-4\. 为组织构建并实施端到端的lakehouse，包括创建Fabric工作区和lakehouse。
+- 將文件加載到託管的Delta表中。
 
-5\. 将样本数据导入湖屋，并为后续处理做准备。
+- 使用 SQL Analytics Endpoint 查询 Lakehouse data。
 
-6\. 用Python/PySpark和SQL笔记本转换和准备数据。
+- 创建一个Direct Lake semantic模型。
 
-7\. 用不同的方法創建業務匯總表。
+- 从Fabric data生成并探索Power BI报告。
 
-8\. 建立表格間的關係，以實現無縫報告。
+- 了解Fabric Data Factory如何将data
+  engineering和分析整合到一个统一平台中。
 
-9\. 基於準備好的數據構建帶有可視化的Power BI報告。
+## 练习 1：搭建 Microsoft Fabric Data Engineering 环境 
 
-10\. 保存並存儲已創建的報告，以便未來參考和分析。
+在构建 data engineering 解决方案之前，你需要先准备好Microsoft
+Fabric环境。在此练习中，您将登录 Microsoft
+Fabric，创建专用工作区，并配置一个Lakehouse，作为分析解决方案的集中存储。
 
-## 练习 1：搭建 Lakehouse 端到端场景
-
-### 任务1：登录Power BI账户并注册免费Microsoft Fabric试用版
+### 任务1：登录 Power BI 账户
 
 1.  打开浏览器，进入地址栏，输入或粘贴以下URL：+++https：//app.fabric.microsoft.com/+++，然后按下**Enter **键。
 
-> ![](./media/image1.png)
+![](./media/image1.png)
 
-2.  在 **Microsoft Fabric**
-    窗口中，输入你的凭证，然后点击**Submit** 按钮。
+2.  在 **Microsoft Fabric** 窗口中，输入你的凭证，然后点击
+    **Submit**按钮。
 
-    |   |   |
-    |---|---|
-    | Username | +++@lab.CloudPortalCredential(User1).Username+++ |
-    | Password | +++@lab.CloudPortalCredential(User1).Password+++ |
+| Credential | Value |
+|---|---|
+| Username | +++@lab.CloudPortalCredential(User1).Username+++ |
+| Password | +++@lab.CloudPortalCredential(User1).Password+++ |
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image2.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image2.png)
 
-3.  然后，在 **Microsoft** 窗口输入密码，点击**Sign in** 按钮。
+3.  然后，在 **Microsoft** 窗口输入密码，点击**Sign in**按钮。
 
 > ![A login screen with a red box and blue text AI-generated content may
 > be incorrect.](./media/image3.png)
 
-4.  在 **Stay signed in?**  窗口，点击“**Yes**”按钮。
-
-> ![](./media/image4.png) 
+4.  在 **Stay signed in?** 窗口，点击**“Yes”**按钮。
 
 5.  你将被引导到Power BI主页。
 
+> ![](./media/image4.png)
+
+6.  选择屏幕左下角的默认 Power BI 图标，然后选择 **Fabric**。
+
 > ![](./media/image5.png)
+>
+> ![](./media/image6.png)
 
-## 練習 2：為您的組織構建並實施一個完整的lakehouse項目
-
-### 任務1：創建Fabric工作區
+### 任務 2：創建Fabric工作區
 
 在這個任務中，你需要創建一個Fabric工作區。工作区包含了本 lakehouse
-教程所需的所有内容，包括 lakehouse、数据流、Data Factory
-管道、笔记本、Power BI 数据集和报表。
+教程所需的所有内容，包括 lakehouse、dataflows、Data Factory
+pipelines、笔记本、Power BI data集和报表。
 
 1.  Fabric主页，选择**+New workspace**瓷砖。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image6.png)
+![](./media/image7.png)
 
-2.  在右侧的**Create a
-    workspace**面板中，输入以下细节，然后点击“**Apply** ”按钮。 
+2.  在右侧的 ** Create a
+    workspace**面板中，输入以下细节，然后点击**“Apply**”按钮。
 
-    | Property  | Value  |
-    |-------|-----|
-    |Name|	+++Fabric Lakehouse Tutorial-@lab.LabInstance.Id+++ (must be a unique Id)|
-    |Advanced	|Under License mode, select Fabric capacity|
-    |Default	storage format| Small dataset storage format|
-    |Template apps	|Check the Develop template apps|
+| Property | Value |
+|---|---|
+| Name | !!Fabric Dataengineering-DataFactoryXXXXXX!! |
+| Advanced | Under License mode, select Fabric |
+| Default storage format | Small dataset storage format |
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image7.png)
+![](./media/image8.png)
 
-注意：要查找您的實驗室即時ID，請選擇“Help”並複製即時ID。
+注意：要查找您的实验室 instant ID，请选择“Help”并复制 instant ID。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image8.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image9.png)
+![A screenshot of a computer Description automatically
+generated](./media/image9.png)
+
+![](./media/image10.png)
+
+![](./media/image11.png)
 
 3.  等待部署完成。完成大約需要2-3分鐘。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image10.png)
+![](./media/image12.png)
 
-### 任务 2: 创建 lakehouse
+### 任务 3：建造 lakehouse
 
-1.  点击导航栏中的**+New item**按钮创建新lakehouse。
+1.  点击导航栏中的 **+New item **按钮创建新lakehouse。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image11.png)
+![](./media/image13.png)
 
 2.  点击“**Lakehouse**”瓷砖。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image12.png)
+![](./media/image14.png)
 
-3.  在“**New lakehouse** ”对话框中，输入“**Name** ”栏的
-    +++**wwilakehouse+++** ，点击“**Create**”按钮，打开新湖屋。 
+3.  在**“New lakehouse**”对话框中，在名称字段输入 +++**wwilakehouse+++**
+    并**取消选择**lakehouses的模式。点击**“Create** ”按钮，打开新的lakehouse。
 
-> **注意：**确保在**wwilakehouse**之前清空。
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image13.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image14.png)
+**注意：**确保在**wwilakehouse**之前清空。
 
-4.  你会看到一条通知，提示**Successfully created SQL endpoint**。
+![](./media/image15.png)
 
-> ![](./media/image15.png)
+4.  你会看到一条通知，提示**Successfully created SQL endpoint。**
 
-### 任务3：导入样本数据
+![](./media/image16.png)
 
-1.  In th在**wwilakehouse**页面，点击“**Get data in your
-    lakehouse** ”部分，点击**Upload files as shown in the below image**
-    。
+### 任務4： **導入樣本data**
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image16.png)
+1.  在**wwilakehouse**页面，点击**“Get data in your
+    lakehouse**”部分，点击“**Upload files**”，如下图所示。
 
-2.  在“Upload files”标签页中，点击文件下的文件夹
+![](./media/image17.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image17.png)
+2.  在“Upload files”标签页中，点击Files下的文件夹
+
+![](./media/image18.png)
 
 3.  在虚拟机上浏览到
-    **C：\LabFiles**，然后选择**dimension_customer.csv**文件，点击**Open**按钮。
+    **C：\LabFiles**，然后选择**dimension_customer.csv**文件，点击**Open **按钮。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image18.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image19.png)
 
 4.  然後點擊**Upload **按鈕並關閉
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image19.png)
+![](./media/image20.png)
 
-5.  **关闭** 上传文件面板。
+5.  **关闭**上传文件面板。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image20.png)
+![](./media/image21.png)
 
-6.  點擊並選擇Files刷新。文件出现了。
+6.  點擊並選擇**Files**刷新。文件出现了。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image21.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image22.png)
+![](./media/image22.png)
 
-7.  在**Lakehouse**頁面，在資源管理器面板下選擇“文件”。不過，現在你的鼠標可以**dimension_customer.csv**文件。點擊**dimension_customer.csv**旁邊的水平省略號**（...）。**點擊“**Load
-    Table**”，然後選擇“**New table**”。
+7.  在**Lakehouse**页面，在Explorer面板下选择“Files”。不过，现在，你的鼠标可以选择文件**dimension_customer.csv**。点击水平椭圆**（...）**
+    旁边**dimension_customer**.csv。点击**“Load Table**”，然后选择**“New
+    table**”。
 
-> ![](./media/image23.png)
-
-8.  在“**Load file to new table** ”对话框中，点击**Load** 按钮。
+![](./media/image23.png)
 
 > ![](./media/image24.png)
 
-9.  现在**dimension_customer**表已经成功创建。
+8.  在**“Load file to new table**”对话框中，点击**Load**按钮。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image25.png)
+![](./media/image25.png)
 
-10. 选择 **dbo** 模式下的 **dimension_customer** 表。
+9.  现在 表格**dimension_customer**成功创建。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image26.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image27.png)
+![](./media/image26.png)
 
-11. 你也可以用lakehouse的SQL端点用SQL语句查询数据。在屏幕右上角的
-    **Lakehouse** 下拉菜单中选择 **SQL analytics endpoint** 。
+10. 在表格下选择**dimension_customer**表。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image28.png)
+![](./media/image27.png)
+
+11. 您还可以使用 Lakehouse 的 SQL endpoint，通过 SQL
+    语句查询data。从屏幕右上角的使用以下方式 **Analyze data
+    with** 下拉菜单中选择 **SQL analytics endpoint**。
+
+![](./media/image28.png)
 
 12. 在 **wwilakehouse** 页面，在 Explorer 下选择 **dimension_customer**
-    表预览其数据，并选择 **New SQL query **来写你的 SQL 语句。
+    表预览其 data，并选择 **New SQL query** 来写你的 SQL 语句。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image29.png)
+![](./media/image29.png)
 
-13. 以下示例查詢基於**dimension_customer**表的**BuyingGroup列**匯總行數
-    。SQL查詢文件會自動保存以供未來參考，你可以根據需要重命名或刪除這些文件。按照下圖所示粘貼代碼，然後點擊播放圖標**運行**
-    腳本:
+13. 以下示例查询基于**dimension_customer**表的**BuyingGroup**列汇总行数
+    。SQL
+    query文件会自动保存以供未来参考，你可以根据需要重命名或删除这些文件。按照下圖所示粘貼代碼，然後點擊播放圖標**Run**
+    腳本：
 
-    ```
-    SELECT BuyingGroup, Count(*) AS Total
-    FROM dimension_customer
-    GROUP BY BuyingGroup
-    ```
-> ![A screenshot of a computer Description automatically
-> generated](./media/image30.png)
+```
+SELECT BuyingGroup, Count(*) AS Total
+FROM dimension_customer
+GROUP BY BuyingGroup
+```
+
+![](./media/image30.png)
 
 **注意**：如果你在腳本執行過程中遇到錯誤，請交叉檢查腳本語法，確保沒有不必要的空格。
 
-14. 此前，所有lakehouse表和視圖都會自動添加到語義模型中。根據最近的更新，對於新的lakehouse，你必須手動將表格添加到語義模型中。
+14. 此前，所有lakehouse表和視圖都會自動添加到語義模型中。根据最近的更新，对于新的lakehouse，你必须手动将表格添加到semantic模型中。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image31.png)
+15. 在lakehouse **Home**标签中，选择**“New semantic
+    model**”，选择你想添加到semantic模型中的表格。
 
-15. 在lakehouse **主页**标签中，选择“**New semantic
-    model** ”，选择你想添加到语义模型中的表格。
+> ![](./media/image31.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image32.png)
+16. 在**“New semantic model**”对话框中输入
+    +++**wwwsemanticmodel**+++，然后从表列表中选择**dimension_customer**表，选择**Confirm**以创建新模型。
 
-16. 在“**New semantic model** ”对话框中输入
-    +++wwilakehouse+++，然后从表列表中选择**dimension_customer**表，选择**Confirm** 以创建新模型。
+![](./media/image32.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image33.png)
+### 任务5：制作报告
 
-### 任务4：制作报告
+1.  在左侧导航窗格中，选择 **Fabric Dataengineering-DataFactory-XX。**
 
-1.  现在，点击 左侧导航面板上的 **Fabric Lakehouse Tutorial-XX** 。
+![](./media/image33.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image34.png)
+2.  在你的工作区里，找到你创建的语义模型，选择**......**（省略号）菜单，然后选择
+    **Auto-create report**。
 
-2.  在 **Fabric Lakehouse Tutorial-XX** 视图中，选择类型**Semantic
-    model**的 **wwilakehouse**。
+![](./media/image34.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image35.png)
+![](./media/image35.png)
 
-3.  從語義模型窗格中，你可以查看所有表格。你可以選擇從零創建報告、分頁報告，或者讓
-    Power BI 根據你的數據自動生成報告。在本教程中，在“**Explore this
-    data**”中，选择“**Auto-create a report**”，如下图所示。
+4.  报告准备好后，点击“**View report now**”以打开并查看。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image36.png)
+> ![](./media/image36.png)
 
-4.  报告准备好后，点击“ **View report now** ”以打开并查看。![A
-    screenshot of a computer AI-generated content may be
-    incorrect.](./media/image37.png)
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image38.png)
+![](./media/image37.png)
 
 5.  由於表格是一個維度，裡面沒有測量值，Power BI
     會為行數創建一個度量，並在不同列中匯總，並生成不同的圖表，如下圖所示。
 
 6.  通過從頂部的色帶選擇**“Save**”，將此報告保存以備將來使用。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image39.png)
+![](./media/image38.png)
 
-7.  在“**Save your report** ”对话框中，输入你的报告名称为
-    +++dimension_customer-report+++，然后选择**Save**。
+7.  在**“Save your report**”对话框中，输入报告名称
+    +++dimension_customer-report+++，然后选择 **Save。**
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image40.png)
+![](./media/image39.png)
 
 8.  你会看到一条通知，说“**Report saved**”。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image41.png)
+![](./media/image40.png)
 
-# 練習2：將數據導入lakehouse
+## 练习2：在Fabric Lakehouse中导入和管理Data
 
-在這個練習中，你會將來自世界大戰（WWI）的額外維度和事實表導入lakehouse。
+在这个练习中，你会将来自Wide World
+Importers（WWI）的额外维度和事实表导入 lakehouse。
 
-### 任务1：数据导入
+### 任务1：Data导入
 
-1.  现在，点击 左侧导航面板上的 **Fabric Lakehouse Tutorial-XX**。
+1.  在左侧导航窗格中，选择 **Fabric Dataengineering-DataFactory-XX。**
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image42.png)
+![](./media/image41.png)
 
-2.  同樣，選擇工作區名稱。
+2.  在 **Fabric Dataengineering-DataFactory-XX** 工作区页面，点击 **+New
+    item** 按钮，然后选择**Pipeline**。
 
-![A screenshot of a computer screen Description automatically
-generated](./media/image43.png)
+![](./media/image42.png)
 
-3.  在 **Fabric Lakehouse Tutorial-XX** 工作区页面，点击 **+New
-    item** 按钮，然后选择**Pipeline**。
+3.  在“New pipeline”对话框中，将名称指定为
+    **+++IngestDataFromSourceToLakehouse+++**，并选择 **Create。**
+    创建一个新的 data 工厂流水线并被创建。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image44.png)
+![](./media/image43.png)
 
-4.  在“New pipeline”对话框中，将名称指定为
-    **+++IngestDataFromSourceToLakehouse+++**，并选择**Create。**
-    创建一个新的数据工厂流水线并被创建。
+![](./media/image44.png)
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image45.png)
+4.  在new pipeline的**Home** 页标签中，选择 **Pipeline
+    activity** \> **Copy data**。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image46.png)
+![](./media/image45.png)
 
-5.  在新建的数据工厂流水线（即
-    **IngestDataFromSourceToLakehouse**）中，选择“**Copy
-    data**”下拉菜单，并选择“**Add to canvas**”选项。
+5.  從畫布中選擇新的**Copy
+    data** 活動。活动属性显示在画布下方的一个窗格中，分布在包括**General**,
+    **Source**, **Destination**, **Mapping**
+    和**Settings**等标签页中。你可能需要通过拖动顶部边缘来向上扩展面板。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image47.png)
+![](./media/image46.png)
 
-6.  选择**copy data**后，导航到**Source**签页。
+6.  在“**General**”标签页，在**Name** 字段输入 +++**Data Copy to
+    Lakehouse+++**。其他字段保持默认值。
+
+![](./media/image47.png)
+
+7.  在“**Source**”标签下，选择**Connection**下拉菜单，然后选择“**Browse
+    all**”。
 
 ![](./media/image48.png)
 
-7.  选择**Connection**下拉菜单，选择“**Browse all**”选项。
+8.  在“**Choose a data source to get started”**页面中，搜索并选择**Azure
+    blobs**。
 
 ![](./media/image49.png)
 
-8.  从左侧窗格选择“**Sample data**”，并选择**Retail Data Model from Wide
-    World Importers**。
+9.  请在“**Connect data source**”页面输入以下详细信息
+    。然后选择**Connect**，创建与 data
+    源的连接。在本教程中，所有示例data都存放在 Azure blob
+    storage的公共容器中。你连接到这个容器以复制 data。
+
+| Property | Value |
+|---|---|
+| Account name or URL | !!https://fabrictutorialdata.blob.core.windows.net/sampledata/!! |
+| Connection | Create new connection |
+| Connection name | !!wwisampledata!! |
+| Authentication kind | Anonymous |
 
 ![](./media/image50.png)
 
-9.  在“**Connect to data source**”窗口中，选择“**Retail Data Model from
-    Wide World Importers** ”数据预览并选择**OK**。
+10. 在**Source **標簽頁中，默認選擇新創建的連接。在進入目的地設置前，請先指定以下屬性。
 
-> ![](./media/image51.png)
+| Property | Value |
+|---|---|
+| Connection | wwisampledata |
+| File path type | File path |
+| File path | Container name (first text box): !!sampledata!!<br>Directory name (second text box): !!WideWorldImportersDW/parquet!! |
+| Recursively | Checked |
+| File format | Binary |
 
-10. 選擇數據源連接作為樣本數據。
+![](./media/image51.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image52.png)
+11. 在**“Destination**”标签页中，指定以下属性：
 
-11. 现在，导航到**destination**标签页。
+| Property | Value |
+|---|---|
+| Connection | wwilakehouse (choose your lakehouse if you named it differently) |
+| Root folder | Files |
+| File path | Directory name (first text box): !!wwi-raw-data!! |
+| File format | Binary |
+
+![](./media/image52.png)
+
+12. 点击**“Run”**以运行复制 data。
 
 ![](./media/image53.png)
 
-12. 在目标标签页，点击**connection**下拉菜单，选择“**Browse**
-    **all**”选项。
+13. 点击“**Save and run**”按钮，这样该流程就会被保存并运行。
 
-![](./media/image54.png)
+> ![](./media/image54.png)
 
-13. 在选择目的地窗口时，从左侧窗格选择**OneLake
-    catalog**，然后选择**wwilakehouse**。
+14. Data複製過程大約需要1-2分鐘完成。
 
-> ![](./media/image55.png)
+![](./media/image55.png)
 
-14. 目的地现定为Lakehouse。将**Root
-    Folder**指定为**Files**，并确保文件格式为**Parquet**。
+15. 在输出标签下，选择**“Data Copy to Lakehouse**”以查看
+    data传输的详细信息。看到**Status**为**Succeeded**后，点击**Close** 按钮。
 
-![A screenshot of a computer Description automatically
-generated](./media/image56.png)
+![](./media/image56.png)
 
-8.  點擊 **“Run”** 以運行複製數據。
+![](./media/image57.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image57.png)
+16. 管道成功执行后，进入你的lakehouse（**wwilakehouse**）打开资源管理器查看导入的
+    data。
 
-9.  点击“**Save and run**”按钮，这样该流程就会被保存并运行。
+![](./media/image58.png)
 
-> ![A screenshot of a computer error Description automatically
-> generated](./media/image58.png)
+17. 刷新**Files** 部分以查看已导入的data。文件部分会出现一个新的文件夹
+    **wwi-raw-data** **，**Azure Blob表中的data会被复制到那里。
+    ![](./media/image59.png)
 
-10. 數據複製過程大約需要1-3分鐘完成。
+## 练习3：准备并转换lakehouse中的 data
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image59.png)
+### 任務1：轉換data並加載為銀色Delta表
+
+1.  在左侧导航窗格中，选择 **Fabric Dataengineering-DataFactory-XX。**
+
+![](./media/image60.png)
+
+2.  在**Fabric**页面，点击命令栏的**“Import**”下注，然后选择 **New
+    notebook\> From this computer**。
+
+![](./media/image61.png)
+
+3.  从屏幕右侧打开的**Import status** 面板中选择**Upload** 。
+
+> ![](./media/image62.png)
+
+4.  在虚拟机上浏览到 **C：\LabFiles**，然后选择**“Prepare and transform
+    data – PySpark**” 笔记本，点击**Open**按钮。
+
+> ![](./media/image63.png)
 >
-> ![A screenshot of a computer Description automatically
-> generated](./media/image60.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image61.png)
+> ![](./media/image64.png)
 
-11. 在輸出標簽下，選擇 **Copy
-    data1** 查看數據傳輸的詳細信息。看到**Status** 为**Succeeded**后，点击**Close** 按钮。
+5.  选择**wwilakehouse**
+    lakehouse来打开它，这样你接下来打开的笔记本就会关联到它。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image62.png)
->
-> ![A screenshot of a computer Description automatically
-> generated](./media/image63.png)
+![](./media/image65.png)
 
-12. 管道成功執行後，進入你的湖屋（**wwilakehouse**）打開資源管理器查看導入的數據。
+6.  在工具栏中，选择用下拉菜单**Analyze
+    data**，指向**Notebook**，然后选择**“Existing notebook**”。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image64.png)
+> ![](./media/image66.png)
 
-13. 验证所有 **WideWorldImporters
-    文件夹**是否都存在于资源**Explorer** 视图中，并且包含所有表的数据。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image65.png)
-
-# 練習3：準備並轉換lakehouse中的數據
-
-### 任務1：轉換數據並加載為銀色Delta表
-
-1.  在 **wwilakehouse** 页面，点击命令栏的“**Open
-    notebook** ”下拉，然后选择 **New notebook**。
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image66.png)
-
-2.  在**Lakehouse
-    explorer**中的打开笔记本中，你会发现笔记本已经与你打开的lakehouse关联。
+7.  选择导入的notebook，准备 **Prepare and transform data –
+    PySpark**，然后点击 **Open。**
 
 > ![](./media/image67.png)
-
-\[！note\] **注意**：Fabric 提供
-[**V-order**](https://learn.microsoft.com/en-us/fabric/data-engineering/delta-optimization-and-v-order)功能，用于写入优化的三角洲湖文件。V-order通常能将压缩率提升三到四倍，性能加速高达十倍，而这些文件则是未优化的Delta
-Lake文件。Fabric中的Spark動態優化分區，生成默認大小為128
-MB的文件。目標文件大小可根據工作負載需求通過配置進行調整。
-通過[**優化寫**](https://learn.microsoft.com/en-us/fabric/data-engineering/delta-optimization-and-v-order#what-is-optimized-write)入功能，Apache
-Spark引擎減少寫入文件數量，並旨在增加寫入數據的單個文件大小。
-
-3.  在你將數據寫入湖屋的**表**部分為三角湖表之前，你需要使用Fabric的兩個功能（**V-order**和**優化寫入**）來優化數據寫入並提升讀取性能。要在會話中啟用這些功能，請在筆記本的第一個單元格中設置這些配置。
-
-4.  用以下代碼更新該**單元格**的代碼 ，並點擊懸停時左側出現的**▷ Run
-    cell**。
-
-    ```
-    # Copyright (c) Microsoft Corporation.
-    # Licensed under the MIT License.
-    spark.conf.set("spark.sql.parquet.vorder.enabled", "true")
-    spark.conf.set("spark.microsoft.delta.optimizeWrite.enabled", "true")
-    spark.conf.set("spark.microsoft.delta.optimizeWrite.binSize", "1073741824")
-    ```
-
-\[!note\]注意：运行单元格时，您无需指定底层 Spark 池或集群的详细信息，
-
-![A screenshot of a computer Description automatically
-generated](./media/image68.png)
-
-![A screenshot of a computer Description automatically
-generated](./media/image69.png)
-
-因为 Fabric 通过 Live Pool 提供这些资源。每个 Fabric
-工作区都自带一个默认的 Spark 池，称为 Live
-Pool。这意味着创建笔记本时，您无需担心指定任何 Spark
-配置或集群详细信息。執行第一個筆記本命令後，Live Pool
-會在幾秒鐘內啟動並運行。Spark
-會話建立後，代碼便開始執行。在此筆記本中，只要 Spark
-會話處於活動狀態，後續代碼的執行幾乎是瞬間完成的。
-
-5.  接下來，你從 lakehouse 的**文件**部分讀取原始數據
-    ，並在轉換過程中為不同日期部分添加更多列。你使用 partitionBy Spark
-    API 对数据进行分区，然后再根据新创建的数据部分列（年度和季度）写成
-    delta 表。
-
-6.  使用單元格輸出下方的 **+ Code**
-    圖標，向筆記本添加一個新的代碼單元格，並輸入以下代碼。点击**▷ Run
-    cell**按钮，查看输出结果
-
-**注意**：如果你看不到輸出，請點擊**Spark**作業左側的水平線。
-
-```
-from pyspark.sql.functions import col, year, month, quarter
-
-table_name = 'fact_sale'
-
-df = spark.read.format("parquet").load('Files/fact_sale_1y_full')
-df = df.withColumn('Year', year(col("InvoiceDateKey")))
-df = df.withColumn('Quarter', quarter(col("InvoiceDateKey")))
-df = df.withColumn('Month', month(col("InvoiceDateKey")))
-
-df.write.mode("overwrite").format("delta").partitionBy("Year","Quarter").save("Tables/dbo/" + table_name) 
-```
-
- ![A screenshot of a computer Description automatically
- generated](./media/img2.png)
-
-7.  表格加載完成後，你可以繼續加載其餘尺寸的數據。接下來的單元格創建一個函數，用於讀取
-    lakehouse
-    **文件**部分中每個作為參數傳遞的表名的原始數據。接下來，它創建一個維度表列表。最後，它會循環處理表列表，並為每個從輸入參數讀取的表名創建一個增量表。
-
-8.  使用單元格輸出下方的 **+
-    Code**圖標，向筆記本添加一個新的代碼單元格，並輸入以下代碼。点击 **▷
-    Run cell**  按钮，查看输出结果。
-
-```
-from pyspark.sql.types import *
-
-def loadFullDataFromSource(table_name):
-    df = spark.read.format("parquet").load('Files/' + table_name)
-    df = df.drop("Photo")
-    df.write.mode("overwrite").format("delta").save("Tables/" + table_name)
-
-full_tables = [
-    'dimension_city',
-    'dimension_customer',
-    'dimension_date',
-    'dimension_employee',
-    'dimension_stock_item'
-]
-
-for table in full_tables:
-    loadFullDataFromSource(table)
-```
- ![A screenshot of a computer Description automatically
- generated](./media/img3.png)
-
-6.  要验证已创建的表，请在**Explorer**面板的“**Tables**”中点击并选择刷新，直到所有表都出现在列表中。
-
-> ![](./media/image75.png)
 >
-> ![A screenshot of a computer Description automatically
-> generated](./media/img9.png)
+> ![](./media/image68.png)
 
-### **任務2：整合業務數據以實現聚合**
+### 任务2：创建Delta表
 
-一個組織可能有數據工程師在使用Scala/Python，還有其他數據工程師在使用SQL（Spark
-SQL或T-SQL），他們都處理同一份數據。Fabric使這些經驗和偏好各異的群體能夠合作和合作。這兩種不同的方法能夠轉化並生成業務匯總。你可以根據喜好選擇合適的方案，或根據喜好混合搭配這些方法，而不犧牲性能:
+> 在这个任务中，你需要运行notebook单元格，从原始 data创建Delta表。
+>
+> 这些表格遵循星型模式，这是组织分析数据的常见模式：
 
-- **Approach \#1** - 使用 PySpark
-  连接和汇总数据以生成业务聚合。这种方法比有编程背景（Python或PySpark）的人更合适。
+- **fact
+  table** （fact_sale）包含企业可测量的事件——在此例中，包含数量、价格和利润的单个销售交易。
 
-- **Approach \#2** - 使用 Spark SQL
-  连接和汇总数据以生成业务聚合。这种方法对有 SQL 背景、转用 Spark
-  的人来说更受欢迎。
+- **Dimension
+  tables**（dimension_city、dimension_customer、dimension_date、dimension_employee、dimension_stock_item）包含为事实提供背景的描述属性，如销售发生地点、谁制作的以及何时。
 
-**Approach \#1 (sale_by_date_city)**
-
-使用 PySpark
-進行合併和匯總數據，生成業務聚合。用以下代碼，你創建三個不同的 Spark
-數據幀，每個數據幀都引用一個已有的 delta
-表。然後你用數據幀連接這些表，進行分組生成聚合，重命名幾列，最後在湖屋的**表**部分寫成一個增量表，以保持數據的保存。
-
-1.  使用單元格輸出下方的 **+
-    Code**圖標，向筆記本添加一個新的代碼單元格，並輸入以下代碼。点击 **▷
-    Run cell** 按钮，查看输出结果
-
-在這個單元格中，你創建三個不同的 Spark
-數據幀，每個數據幀都引用一個已有的 delta 表。
+1.  **Cell 1 - Spark session configuration。**
+    该单元支持两个Fabric功能，优化后续单元中data的写入和读取方式。
+    [V-order](https://learn.microsoft.com/en-us/fabric/data-engineering/delta-optimization-and-v-order)优化了parquet文件布局，以实现更快的读取和更好的压缩。
+    [Optimize
+    Write](https://learn.microsoft.com/en-us/fabric/data-engineering/tune-file-size#optimize-write)
+    减少写入文件数量并增加单个文件大小。
 
 ```
-df_fact_sale = spark.read.format("delta").load("Tables/dbo/fact_sale")
-df_dimension_date = spark.read.format("delta").load("Tables/dbo/dimension_date")
-df_dimension_city = spark.read.format("delta").load("Tables/dbo/dimension_city")
+spark.conf.set("spark.sql.parquet.vorder.enabled", "true")
+spark.conf.set("spark.microsoft.delta.optimizeWrite.enabled", "true")
+spark.conf.set("spark.microsoft.delta.optimizeWrite.binSize", "1073741824")
 ```
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/img4.png)
+2.  **Run** 这个单元，等它完成后再进入下一步。
 
-2.  使用單元格輸出下方的 **+
-    Code**圖標，向筆記本添加一個新的代碼單元格，並輸入以下代碼。点击 **▷
-    Run cell**按钮，查看输出结果
+> ![](./media/image69.png)
+>
+> ![](./media/image70.png)
 
-在這個單元格裡，你用之前創建的數據幀連接這些表，進行分組生成聚合，重命名幾列，最後在
-lakehouse 的**表格**部分寫成一個delta表。
+3.  **Cell 2 - Fact - Sale。** 该单元格读取
+    Files/wwi-raw-data/full/fact_sale_1y_full的原始parquet
+    data，添加日期部分列（**Year**, **Quarter**和**Month**），并将fact_sale写入按**Year**和
+    **Quarter**划分的Delta表。
 
-```
-sale_by_date_city = df_fact_sale.alias("sale") \
-.join(df_dimension_date.alias("date"), df_fact_sale.InvoiceDateKey == df_dimension_date.Date, "inner") \
-.join(df_dimension_city.alias("city"), df_fact_sale.CityKey == df_dimension_city.CityKey, "inner") \
-.select("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", 
- "city.SalesTerritory", "sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")\
-.groupBy("date.Date", "date.CalendarMonthLabel", "date.Day", "date.ShortMonth", "date.CalendarYear", "city.City", "city.StateProvince", 
- "city.SalesTerritory")\
-.sum("sale.TotalExcludingTax", "sale.TaxAmount", "sale.TotalIncludingTax", "sale.Profit")\
-.withColumnRenamed("sum(TotalExcludingTax)", "SumOfTotalExcludingTax")\
-.withColumnRenamed("sum(TaxAmount)", "SumOfTaxAmount")\
-.withColumnRenamed("sum(TotalIncludingTax)", "SumOfTotalIncludingTax")\
-.withColumnRenamed("sum(Profit)", "SumOfProfit")\
-.orderBy("date.Date", "city.StateProvince", "city.City")
+4.  运行这个单元，等它完成后再进入下一步。
 
-sale_by_date_city.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/aggregate_sale_by_date_city")
-```
+> ![](./media/image71.png)
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/img5.png)
+5.  **Cell 3** -
+    Dimensions。该单元读取五维分层数据集，并将其写入为Delta表
+    (dimension_city, dimension_customer, dimension_date, dimension_employee,
+    and dimension_stock_item) under Tables/dbo/....
 
-**Approach \#2 (sale_by_date_employee)**
+6.  **Run** 这个单元，等它完成后再进入下一步。
 
-使用Spark
-SQL進行連接和聚合數據，生成業務聚合。用以下代碼，你通過連接三個表創建臨時
-Spark 視圖，進行分組生成聚合，並重命名部分列。最后，你从临时的 Spark
-视图读取数据，最后将其写入 Lakehouse 的 **Tables** 部分的 delta
-表，以保持数据的持久化。
+> ![](./media/image72.png)
 
-3.  使用單元格輸出下方的 **+ Code**
-    圖標，向筆記本添加一個新的代碼單元格，並輸入以下代碼。点击** ▷ Run
-    cell**按钮，查看输出结果
+7.  要验证已创建的表，在资源管理器中右键点击 **wwilakehouse**
+    湖屋，然后选择**Refresh**。表格出现了。
 
-在這個單元格裡，你通過連接三個表創建臨時 Spark
-視圖，進行分組生成聚合，並重命名部分列。
+> ![](./media/image73.png)
+>
+> ![](./media/image74.png)
 
-```
-spark.sql("""
-CREATE OR REPLACE TEMPORARY VIEW sale_by_date_employee
-AS
-SELECT
-           DD.Date, DD.CalendarMonthLabel
-        , DD.Day, DD.ShortMonth Month, CalendarYear Year
-        , DE.PreferredName, DE.Employee
-        , SUM(FS.TotalExcludingTax) SumOfTotalExcludingTax
-        , SUM(FS.TaxAmount) SumOfTaxAmount
-        , SUM(FS.TotalIncludingTax) SumOfTotalIncludingTax
-        , SUM(FS.Profit) SumOfProfit
-FROM delta.`Tables/dbo/fact_sale` FS
-INNER JOIN delta.`Tables/dbo/dimension_date` DD ON FS.InvoiceDateKey = DD.Date
-INNER JOIN delta.`Tables/dbo/dimension_employee` DE ON FS.SalespersonKey = DE.EmployeeKey
-GROUP BY DD.Date, DD.CalendarMonthLabel, DD.Day, DD.ShortMonth, DD.CalendarYear, DE.PreferredName, DE.Employee
-ORDER BY DD.Date ASC, DE.PreferredName ASC, DE.Employee ASC
-""")
+### 任务3：转化业务Data以实现聚合
 
-sale_by_date_employee = spark.sql("SELECT * FROM sale_by_date_employee")
-sale_by_date_employee.write.mode("overwrite").format("delta").option("overwriteSchema", "true").save("Tables/dbo/aggregate_sale_by_date_employee") 
-```
- ![A screenshot of a computer AI-generated content may be
-incorrect.](./media/img6.png)
+在任务中，你继续使用同一个notebook，然后运行接下来的单元格，用你在上一节创建的Delta表创建汇总表。
 
-8.  要驗證已創建的**表**，請點擊並選擇“refresh”，直到匯總表出現。
+1.  确保笔记本仍然绑定在**wwilakehouse**。
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/img7.png)
+2.  **Cell 4 - Load source tables for transformation (PySpark only)。**
+    如果你用的是 PySpark 笔记本，可以运行这个单元格，把 Delta 表加载到
+    DataFrames 里，进行后续的聚合步骤。
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/img8.png)
+3.  运行这个单元，等它完成后再进入下一步。
 
-這兩種方法的結果相似。你可以根據自己的背景和偏好選擇，以減少學習新技術或在性能上做出妥協。
+![](./media/image75.png)
 
-你可能還會發現你把數據寫成了三角洲湖的文件。Fabric
-的自動表發現和註冊功能會在元存儲中獲取並註冊這些數據。你不需要顯式調用
-CREATE TABLE 語句來創建用於 SQL 的表。
+4.  **Cell 5 - Create aggregate_sale_by_date_city。**
+    该单元格将销售、日期和城市数据合并，然后创建城市层级的汇总表。
 
-# 練習4：在Microsoft Fabric中構建報表
+5.  运行这个单元，等它完成后再进入下一步。
 
-在教程的這一部分中，你將創建一個Power
-BI數據模型，並從零開始創建一份報告。
+> ![](./media/image76.png)
 
-### 任務1：利用SQL端點探索銀層中的數據
+6.  **Cell 6 - Create aggregate_sale_by_date_employee。**
+    该单元格连接销售、日期和员工 data，然后创建员工级别的汇总表。
+
+7.  运行这个单元，等它完成后再进入下一步。
+
+> ![](./media/image77.png)
+
+8.  要验证已创建的表，在资源管理器中右键点击 **wwilakehouse**
+    lakehouse，然后选择**Refresh**。汇总表会出现。
+
+> ![](./media/image78.png)
+>
+> ![](./media/image79.png)
+
+## 练习4：在Microsoft Fabric中构建报表
+
+在教程的这一部分中，你将创建一个Power BI
+data模型，并从零开始创建一份报告。
+
+### 任务1：利用SQL endpoint探索银层中的 data
 
 Power
-BI是原生集成在整個Fabric體驗中的。這種原生集成帶來了一種獨特的模式，稱為DirectLake，能夠訪問湖屋中的數據，提供最高性能的查詢和報告體驗。DirectLake
-模式是一種開創性的全新引擎功能，用於分析 Power BI
-中非常龐大的數據集。該技術基於這樣一個理念：直接從data
-lake加載parquet格式文件，無需查詢數據倉庫或lakehouse端點，也無需導入或複製數據到Power
-BI數據集中。DirectLake 是一種快速路徑，可以直接將數據湖的數據加載到
-Power BI 引擎，供分析。
+BI是原生集成在整个Fabric体验中的。这种原生集成带来了一种独特的模式，称为
+DirectLake，能够访问lakehouse中的
+data，提供最高性能的查询和报告体验。DirectLake
+模式是一种开创性的全新引擎功能，用于分析 Power BI
+中非常庞大的datasets。该技术基于这样一个理念：直接从data
+lake加载parquet格式文件，无需查询data warehouse或lakehouse
+endpoint，也无需导入或复制 data到Power BI dataset中。DirectLake
+是一种快速路径，可以直接将data lake的 data加载到 Power BI 引擎，供分析。
 
-在傳統的DirectQuery模式下，Power
-BI引擎直接從源端查詢數據以執行每個查詢，查詢性能取決於數據檢索速度。DirectQuery
-消除了複製數據的需求，確保源代碼的任何變化在導入過程中立即反映在查詢結果中。另一方面，導入模式下性能更好，因為數據在內存中易於獲取，無需每次查詢都從源端查詢數據。然而，Power
-BI
-引擎必須在數據刷新時先將數據複製到內存中。只有在下一次數據刷新（無論是計劃刷新還是按需刷新）時，才會被接收到底層數據源的變更。
+在传统的DirectQuery模式下，Power BI引擎直接从源端查询
+data以执行每个查询，查询性能取决于 data检索速度。DirectQuery 消除了复制
+data的需求，确保源代码的任何变化在导入过程中立即反映在查询结果中。另一方面，导入模式下性能更好，因为
+data在内存中易于获取，无需每次查询都从源端查询 data。然而，Power BI
+引擎必须在 data刷新时先将 data复制到内存中。只有在下一次
+data刷新（无论是计划刷新还是按需刷新）时，才会被接收到底层
+data源的变更。
 
-DirectLake
-模式現在通過直接將數據文件加載到內存中，消除了這種導入要求。由於沒有明確的導入流程，用戶可以在源頭實時捕捉任何變化，從而結合了DirectQuery和導入模式的優勢，同時避免了它們的缺點。因此，DirectLake
-模式是分析非常大型數據集和源頭頻繁更新數據集的理想選擇。
+DirectLake 模式现在通过直接将
+data文件加载到内存中，消除了这种导入要求。由于没有明确的导入流程，用户可以在源头实时捕捉任何变化，从而结合了DirectQuery和导入模式的优势，同时避免了它们的缺点。因此，DirectLake
+模式是分析非常大型数据集和源头频繁更新 data集的理想选择。
 
-1.  在左側菜單中，選擇工作區圖標，然後選擇工作區名稱。
+1.  在左侧菜单中选择 **Fabric
+    Dataengineering-DataFactory-@lab.LabInstance.Id，**然后选择名为
+    **wwisemanticmodel** 的Semantic模型。
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image83.png)
+2.  打开semantic模型，选择右上角的模式下拉菜单，从查看切换到编辑，然后选择
+    “Make any changes”。
 
-2.  在左側菜單中選擇**Fabric** [**Lakehouse-@lab.LabInstance.Id**
-    然後選擇名為](mailto:Lakehouse-@lab.LabInstance.Id)**wwilakehouse**的語義模型。
+![](./media/image80.png)
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image84.png)
+3.  在菜单功能区中选择**“Edit tables**”以显示表格同步对话框。
 
-3.  在顶部菜单栏选择“**Open semantic model**”以打开数据模型设计器。
+![](./media/image81.png)
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image85.png)
+4.  在**“Edit semantic model**”对话框中，选择**select
+    all**，然后在对话框底部选择**“Confirm**”以同步语义模型。
 
-4.  在右上角，確保數據模型設計器處於**Editing**模式。這樣下拉文本應該會變成“Editing”。
+![](./media/image82.png)
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image86.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image83.png)
 
-5.  在菜单功能区中选择**“Edit tables**”以显示表格同步对话框。
+5.  从**fact_sale**表中，拖动**CityKey**字段并将其放置在**dimension_city**表中的
+    **CityKey**字段 上，创建关联。**Create Relationship** 对话框出现了。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image87.png)
+注意：通过点击表格，拖放表格，将dimension_city和fact_sale表格相邻来重新排列表格。同样的道理也适用于你想要建立关系的两张桌子。这样做只是为了方便在表格之间拖拽列。![](./media/image84.png)
 
-6.  在“**Edit semantic
-    model** ”对话框中，**选择所有**表格，然后在对话框底部选择“**Confirm** ”以同步语义模型。
+> 6\. 在**Create Relationship**对话框中:
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image88.png)
->
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image89.png)
+- **表1**由**fact_sale**和**CityKey**列填充。
 
-7.  从**fact_sale**表中，拖动**CityKey**字段并将其放置在**dimension_city**表中的CityKey**字段**
-    上，创建关联。创建**关系对话框**出现了。
+- **表2**包含**dimension_city**和**CityKey**列。
 
-> 注意：通过点击表格，拖放表格，将dimension_city和fact_sale表格相邻来重新排列表格。同样的道理也适用于你想要建立关系的两张桌子。这样做只是为了方便在表格之间拖拽列。 ![](./media/image90.png)
+- Cardinality: **Many to one (\*:1)**
 
-8.  在**Create Relationship**对话框中:
+- Cross filter direction: **Single**
 
-    - **表1**由**fact_sale**和**CityKey**列填充。
+- 保持“**Make this relationship active**”旁边的复选框选中。
 
-    - **表2**包含**dimension_city**和**CityKey**列。
+- 选择“**Assume referential integrity”**旁边的框。
 
-    - Cardinality: **Many to one (\*:1)**
+- 选择**Save。**
 
-    - 交叉滤波器方向: **Single**
+![](./media/image85.png)
 
-    - 保持“**Make this relationship active**”旁边的复选框选中。 
+> 7\. 接下来，使用上述相同的**Create
+> Relationship **设置，但使用以下表格和列添加这些关系：
 
-    - 选中“**Assume referential integrity**”旁边的复选框。
+- **StockItemKey(fact_sale)** - **StockItemKey(dimension_stock_item)**
 
-    - 选择**Save。**
+![](./media/image86.png)
 
-> ![](./media/image91.png)
-
-9.  接下来，将这些关系添加在与上述相同的**Create
-    Relationship**置中，但表格和列为基础:
-
-    - **StockItemKey(fact_sale)** - **StockItemKey(dimension_stock_item)**
-
-> ![](./media/image92.png)
->
-> ![](./media/image93.png)
+![](./media/image87.png)
 
 - **Salespersonkey(fact_sale)** - **EmployeeKey(dimension_employee)**
 
-> ![](./media/image94.png)
+![](./media/image88.png)
 
-10. 確保按照上述步驟創建下面兩組之間的關係。
+> 8\. 确保按照上述步骤创建下面两组之间的关系。
 
-    - **CustomerKey(fact_sale)** - **CustomerKey(dimension_customer)**
+- **CustomerKey(fact_sale)** - **CustomerKey(dimension_customer)**
 
-    - **InvoiceDateKey(fact_sale)** - **Date(dimension_date)**
+- **InvoiceDateKey(fact_sale)** - **Date(dimension_date)**
 
-11. 添加這些關係後，您的數據模型應如下圖所示，準備進行報告。
+> 9\. 添加这些关系后，您的 data模型应如下图所示，准备进行报告。
 
-> ![](./media/image95.png)
+![](./media/image89.png)
 
 ### 任务2：建造报告
 
-1.  从顶部功能区选择**文件**，选择**Create new report**，开始在 Power BI
+1.  从顶部功能区选择**File**，选择**Create new report**，开始在 Power BI
     中创建报表/仪表盘。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image96.png)
+![A screenshot of a computer AI-generated content may be
+incorrect.](./media/image90.png)
 
 2.  在 Power BI
-    報表畫布中，您可以通過將所需列從**數據**窗格拖入畫布，並使用一個或多個可用的可視化工具來創建滿足業務需求的報表。
+    报表画布中，您可以通过将所需列从**Data** 窗格拖入画布，并使用一个或多个可用的可视化工具来创建满足业务需求的报表。
 
-> ![](./media/image97.png)
+![](./media/image91.png)
 
-**添加标题:**
+**添加标题：**
 
-3.  在功能区中，选择**Text box**。输入**WW Importers Profit
-    Reporting**。高**Highlight** 文本并放大到**20**。
+3.  在功能区中，选择**文本框**。输入**WW Importers Profit Reporting**。
+    **高亮文本** 并放大到**20**。
 
-> ![](./media/image98.png)
+![](./media/image92.png)
 
-4.  調整文本框大小，放在報告頁面左**上角**，點擊文本框外。
+4.  调整文本框大小，放在报告页面**左上角**，点击文本框外。
 
-> ![](./media/image99.png)
+![](./media/image93.png)
 
-**添加卡片:**
+**添加卡片：**
 
-- 在**數據**面板上，展開**fact_sales**並勾選利潤旁邊的框。此選擇會生成柱狀圖表，並將字段添加到Y軸。
+- 在**Data** 面板上，展开**fact_sales**并勾选Profit旁边的框。此选择会生成柱状图表，并将字段添加到Y轴。
 
-> ![](./media/image100.png)
+![](./media/image94.png)
 
-5.  選擇柱狀圖後，在可視化面板中選擇**卡片**可視化。
+5.  选择柱状图后，在可视化面板中选择**Card **可视化。
 
-> ![](./media/image101.png)
+![](./media/image95.png)
 
-6.  此選擇將視覺化轉換為一張卡片。把卡片放在标题下面。
+6.  此选择将视觉化转换为一张卡片。把卡片放在标题下面。
 
-> ![](./media/image102.png)
+![](./media/image96.png)
 
-7.  點擊空白畫布上的任意位置（或按Esc鍵），這樣剛放置的卡牌就不再被選中。
+7.  点击空白canvas上的任意位置（或按Esc键），这样刚放置的卡牌就不再被选中。
 
-**添加条形图:**
+**添加Bar chart：**
 
-8.  在**數據**面板上，展開**fact_sales**並勾選利潤旁邊的框。此選擇會生成柱狀圖表，並將字段添加到Y軸。
+8.  在**Data**面板上，展开**fact_sales**并勾选**Profit**旁边的框。此选择会生成柱状图表，并将字段添加到Y轴。
 
-> ![](./media/image103.png)
+![](./media/image97.png)
 
-9.  在**数据**面板中，展开**dimension_city**并勾选**SalesTerritory**的选项。该选择将场添加到Y轴上。
+9.  在**Data **面板中，展开**dimension_city**并勾选**SalesTerritory**的选项。该选择将场添加到Y轴上。
 
-> ![](./media/image104.png)
+![](./media/image98.png)
 
 10. 选择条形图后，在可视化窗格中选择**“Clustered bar
     chart**”可视化。此选择将柱状图转换为柱状图。
 
-> ![](./media/image105.png)
+![](./media/image99.png)
 
-11. 調整條形圖大小，填滿標題和卡片下方的區域。
+11. 调整Bar chart大小，填满标题和卡片下方的区域。
 
-> ![](./media/image106.png)
+![](./media/image100.png)
 
-12. 點擊空白畫布上的任意位置（或按Esc鍵），這樣條形圖就不再被選中。
+12. 点击空白 canvas上的任意位置（或按Esc键），这样bar
+    chart就不再被选中。
 
-**構建疊加面積圖可視化:**
+**构建堆叠面积图可视化：**
 
-13. 在**Visualizations**面板中，选择**Stacked area chart** 可视化。 
+13. 在“**Visualizations**”窗格中，选择“**Stacked area chart**”视觉对象。
 
-> ![](./media/image107.png)
+![](./media/image101.png)
 
-14. 重新定位並調整堆疊區域圖，位於卡片右側，以及之前步驟中創建的條形圖可視化。
+14. 重新定位并调整stacked area chart，位于卡片右侧，以及之前步骤中创建的
+    bar chart可视化。
 
-> ![](./media/image108.png)
+![](./media/image102.png)
 
-15. 在**数据**面板上，展开**fact_sales**并勾选利润旁边的框。展开**dimension_date**，勾选“**FiscalMonthNumber**”旁边的框。该选择会生成一个充满折线图，显示按财政月份的利润。
+15. 在**Data** 面板上，展开**fact_sales**并勾选**Profit**旁边的框。展开**dimension_date**，勾选“**FiscalMonthNumber**”旁边的框。该选择会生成一个充满折线图，显示按财政月份的利润。
 
-> ![](./media/image109.png)
+![](./media/image103.png)
 
-16. 在**数据**面板中，展开**dimension_stock_item**，并将
+16. 在**Data** 面板中，展开**dimension_stock_item**，并将
     **BuyingPackage** 拖入图例字段。该选项为每个购买套餐添加一行。
 
-> ![](./media/image110.png) ![](./media/image111.png)
+![](./media/image104.png) ![](./media/image105.png)
 
-17. 點擊空白畫布上的任意位置（或按Esc鍵），這樣堆疊面積圖就不再被選中。
+17. 点击空白canvas上的任意位置（或按Esc键），这样堆叠面积图就不再被选中。
 
-**制作柱状图:**
+**制作柱状图：**
 
-18. 在**Visualizations **面板中，选择**Stacked column chart**可视化。
+18. 在**Visualizations **面板中，选择**Stacked column chart** 可视化。
 
-> ![](./media/image112.png)
+![](./media/image106.png)
 
-19. 在**數據**面板上，展開**fact_sales**並勾選**利潤**旁邊的框。該選擇將場添加到Y軸上。
+19. 在 **Data**面板上，展开**fact_sales**并勾选
+    **profit**旁边的框。该选择将场添加到Y轴上。
 
-20.  在**数据**面板中，展开**dimension_employee**，勾选“**Employee**”旁边的框。该选择将场加到X轴上。
+20.  在
+    **Data**面板中，展开**dimension_employee**，勾选“**Employee**”旁边的框。该选择将场加到X轴上。
 
-> ![](./media/image113.png)
+![](./media/image107.png)
 
-21. 在空白畫布上任意點擊（或按Esc鍵），這樣圖表就不再被選中。
+21. 在空白canvas上任意点击（或按Esc键），这样图表就不再被选中。
 
 22. 从功能区选择**“File \> Save**”。
 
-> ![](./media/image114.png)
+![](./media/image108.png)
 
-23. 请输入您的报告名称为**“Profit Reporting**”。选择**Save**。
+23. 请输入您的报告名称为**“Profit Reporting**”。选择 **Save**。
 
-> ![](./media/image115.png)
+![](./media/image109.png)
 
-24. 你會收到通知，說報告已被保存。
+24. 你会收到通知，说报告已被保存。 
 
-> ![](./media/image116.png)
+![](./media/image110.png)
 
-# 練習5：清理資源
+# 练习7：清理资源
 
-你可以刪除單個報表、管道、倉庫和其他項目，或者刪除整個工作區。請按照以下步驟刪除你為本教程創建的工作區。
+你可以删除单个报表、pipelines、仓库和其他项目，或者删除整个工作区。请按照以下步骤删除你为本教程创建的工作区。
 
-1.  选择你的工作区，从左侧导航菜单中选择**Fabric Lakehouse
-    Tutorial-XX**。它会打开工作区的物品视图。
+1.  选择你的工作区，即左侧导航菜单中的 **Fabric
+    Dataengineering-DataFactory-@lab.LabInstance.Id**。它会打开工作区的物品视图。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image117.png)
+&nbsp;
 
 2.  选择...... 在工作区名称下选择选项，选择**Workspace settings**。
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image118.png)
+![](./media/image111.png)
 
-3.  选择**“General**”并**Remove this workspace。**
+3.  选择**“General**”并 **Remove this workspace。**
 
-> ![A screenshot of a computer AI-generated content may be
-> incorrect.](./media/image119.png)
+![](./media/image112.png)
 
 4.  点击弹出的警告中“**Delete**”。
 
-> ![](./media/image120.png)
+![](./media/image113.png)
 
-5.  等待工作區被刪除的通知後，再進入下一個實驗室。
+5.  等待工作区被删除的通知后，再进入下一个实验室。
 
-> ![](./media/image121.png)
+![](./media/image114.png)
 
-**總結**：本實踐實驗室重點在Microsoft Fabric和Power
-BI中設置和配置數據管理與報告所需的關鍵組件。它包括激活試用、配置
-OneDrive、創建工作區和設置湖屋等任務。實驗室還涵蓋採樣數據的導入、優化差異表以及在
-Power BI 中構建報告以實現有效數據分析等任務。目标旨在提供使用Microsoft
-Fabric和Power BI进行数据管理和报告目的的实践经验
+**摘要**
 
+在这个实验室里，你通过创建Fabric工作区和Lakehouse实现了完整的Microsoft
+Fabric data engineering流程，导入源 data，加载到Delta表中，用SQL查询验证
+data，构建semantic模型，并生成Power BI报告。这些活动展示了Microsoft
+Fabric如何通过将
+data集成、存储、转换、semantic建模和报告整合在统一平台上，简化现代分析。在实验室中获得的技能为利用Microsoft
+Fabric开发可扩展的data engineering解决方案奠定了基础。
