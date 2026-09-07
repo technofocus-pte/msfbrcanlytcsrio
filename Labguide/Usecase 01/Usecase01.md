@@ -396,9 +396,9 @@ de Wide World Importers (WWI) en el lakehouse.
 
 | Property | Value |
 |---|---|
-| Account name or URL | !!https://fabrictutorialdata.blob.core.windows.net/sampledata/!! |
+| Account name or URL | +++https://fabrictutorialdata.blob.core.windows.net/sampledata/+++ |
 | Connection | Create new connection |
-| Connection name | !!wwisampledata!! |
+| Connection name | +++wwisampledata+++ |
 | Authentication kind | Anonymous |
 
 ![](./media/image50.png)
@@ -411,7 +411,7 @@ de Wide World Importers (WWI) en el lakehouse.
 |---|---|
 | Connection | wwisampledata |
 | File path type | File path |
-| File path | Container name (first text box): !!sampledata!!<br>Directory name (second text box): !!WideWorldImportersDW/parquet!! |
+| File path | Container name (first text box): +++sampledata+++<br>Directory name (second text box): +++WideWorldImportersDW/parquet+++ |
 | Recursively | Checked |
 | File format | Binary |
 
@@ -424,7 +424,7 @@ de Wide World Importers (WWI) en el lakehouse.
 |---|---|
 | Connection | wwilakehouse (choose your lakehouse if you named it differently) |
 | Root folder | Files |
-| File path | Directory name (first text box): !!wwi-raw-data!! |
+| File path | Directory name (first text box): +++wwi-raw-data+++ |
 | File format | Binary |
 
 ![](./media/image52.png)
