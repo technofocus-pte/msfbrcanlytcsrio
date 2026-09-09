@@ -1,1056 +1,1009 @@
-# 用例04——在Microsoft Fabric中构建Contoso的销售和地理Data Warehouse
+用例 1 - 从Semantics到洞察：利用 Fabric IQ 本体和 Fabric Data Agents
 
 **简介**
 
-Contoso是一家跨国零售公司，正寻求现代化其
-data基础设施，以提升销售和地理分析能力。目前，他们的销售和客户
-data分散在多个系统中，使业务分析师和公民开发者难以获得洞察。公司计划将这些
-data整合到一个统一平台，利用 Microsoft Fabric
-实现交叉查询、销售分析和地理报告。
+在现代数据平台中，企业通常需要一个以**业务为中心的语义层**，以统一不同数据源和分析模型之间的意义。
+Microsoft Fabric IQ 中的
+*Ontology（预览）*功能允许您通过定义**企业概念**（如产品、商店和事件）及其**关系**，并将这些定义绑定到跨越湖屋、语义模型和事件流的真实lakehouse，从而构建这一层。
 
-在本实验室中，你将扮演Contoso的data
-engineer角色，负责设计和实施使用Microsoft Fabric的data
-warehouse解决方案。您将首先搭建 Fabric 工作区，创建data warehouse，从
-Azure Blob Storage 加载 data，并执行分析任务，向 Contoso
-的决策者提供洞察。
-
-虽然Microsoft Fabric中的许多概念对
-data和分析专业人士来说可能很熟悉，但在新环境中应用这些概念可能具有挑战性。本实验室旨在逐步带领从
-data采集到 data消耗的端到端场景，建立对 Microsoft Fabric
-用户体验、各种体验及其集成点，以及 Microsoft Fabric
-专业和公民开发者体验的基本理解。
+剧情设定中，一家虚构的公司叫**Lakeshore
+Retail**，在多个地点销售冰淇淋。通过示例数据，教程展示了如何搭建环境并开始构建涵盖*Store*,*Products*和*SaleEvent*等商业概念的本体。你还会将流数据（比如来自Eventhouse的冷冻室温度）连接到这些概念上，使本体能够支持**跨域推理和查询**，例如：
+*“当冷冻室温度升高到-18°C以上时，哪些商店的冰淇淋销量会更低？”*
 
 **目标**
 
-- 搭建一个启用试用版的Fabric工作区。
+- 准备一个包含必要服务的 Microsoft Fabric 工作空间，包括
+  Lakehouse、Eventhouse 和 Ontology（预览版）。
 
-- 在 Microsoft Fabric 中建立一个名为 WideWorldImporters 的新Warehouse。
+- 通过定义核心实体类型例如Store, Products,
+  SaleEvent和Freezer来构建以业务为中心的ontology。
 
-- 通过Data Factory pipeline将 data加载到Warehouse_FabricXX工作区。
+- ind 来自 OneLake 表的静态数据以及从 Eventhouse 到ontology
+  实体的时间序列数据。
 
-- 在data warehouse中生成dimension_city和fact_sale表。
+- 在實體之間建立有意義的關係，以代表真實的業務流程（例如，商店有SaleEvent，商店運營Freezeer）。
 
-- 用Azure Blob Storage的 data填充dimension_city和fact_sale表。
+- 利用實體實例、關係圖和查詢構建器過濾器探索並驗證本體。
 
-- 在Warehouse里创建dimension_city和fact_sale的桌子clones。
+- 通过将本体与Fabric Data Agent（预览）集成，实现自然语言查询。
 
-- 将 Tables dimension_city 和 Tables fact_sale Clone到 dbo1 架构中。
+# 练习一：环境设置
 
-- 开发一个存储过程来转换data并创建aggregate_sale_by_date_city表。
+## 任務1：創建Fabric工作區
 
-- 使用可视化查询构建器生成查询，以合并和聚合data。
+在這個任務中，你需要創建一個Fabric工作區。工作区包含了本 lakehouse
+教程所需的所有内容，包括 lakehouse、数据流、Data Factory
+管道、笔记本、Power BI 数据集和报表。
 
-- 使用notebook查询和分析dimension_customer表中的data。
+1.  打开浏览器，进入地址栏，输入或粘贴以下URL：+++https://app.fabric.microsoft.com/+++，然后按下**Enter**键，用你的凭证登录
 
-- 包含WideWorldImporters和ShortcutExercise warehouses以便交叉查询。
+    | Credential | Value |
+    |------------|-------|
+    | Username | +++@lab.CloudPortalCredential(User1).Username+++ |
+    | Password | +++@lab.CloudPortalCredential(User1).Password+++ |
 
-- 在 WideWorldImporters 和 ShortcutExercise 仓库之间执行 T-SQL 查询。
+2.  在工作区面板中，点击**+New workspace** 磁贴
 
-- 在管理门户中启用 Azure Maps 可视化集成。
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image1.png)
 
-- 生成销售分析报告的柱状图、地图和表格可视化。
+3.  在右侧的**Create a
+    workspace** 面板中，输入以下细节，然后点击**“Apply**”按钮。
 
-- 利用OneLake data中心中的WideWorldImporters dataset中的data hub建报告。
+    | Setting | Value |
+    |----------|----------|
+    | Name | +++Fabric IQ Ontology@Lab.LabInstance.Id+++ |
+    | Advanced | Under **License mode**, select **Fabric capacity** |
+    | Default storage format | **Small dataset storage format** |
 
-- 移除工作区及其相关项目。
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image2.png)
+    >
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image3.png)
+    >
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image4.png)
 
-## 练习1：创建 Microsoft Fabric 工作区
+## 任务2：建造lakehouse
 
-### 任务1：创建一个工作区
+1.  点击导航栏中的 **+New item **按钮创建新lakehouse。
 
-1.  打开浏览器，进入地址栏，输入或粘贴以下URL：+++https://app.fabric.microsoft.com/+++，然后按下**Enter **键。
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image5.png)
 
-\[！note\]**注意**：如果你被引导到Microsoft Fabric主页，请跳到步骤#5。
+2.  通過篩選並選擇 **+++Lakehouse+++** 瓦片。
 
-![](./media/image1.png)
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image6.png)
 
-2.  在 **Microsoft Fabric**
-    窗口中，输入你的凭证，然后点击**Submit**按钮。
+3.  在**“New lakehouse**”对话框中，在 名称字段输入 **+++IQ_Lakehouse+++**，并**取消选择**lakehouse的模式。点击**“Create**”按钮，打开新的lakehouse。
 
-| Credential | Value |
-|---|---|
-| Username | +++@lab.CloudPortalCredential(User1).Username+++ |
-| Password | +++@lab.CloudPortalCredential(User1).Password+++ |
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image7.png)
+    >
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image8.png)
 
-> ![](./media/image2.png)
+4.  你会看到一条通知，提示**Successfully created SQL endpoint**。
 
-3.  然后，在 **Microsoft** 窗口输入密码，点击**Sign in **按钮。
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image9.png)
 
-> ![](./media/image3.png)
+## 任务3：导入样本数据
 
-4.  在 **Stay signed in? **窗口，点击**“Yes”**按钮。
+1.  在**IQ_Lakehouse**页面，点击**“Get data in your
+    lakehouse**”部分，点击**下图所示的“Upload files”。**
 
-5.  如果 PowerBI 默认打开，请按照以下步骤操作，否则跳过这一步
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image10.png)
 
-- 点击 PowerBI
+2.  在“Upload files”标签页中，点击文件下的文件夹
 
-![](./media/image4.png)
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image11.png)
 
-- 从选项中选择Fabric
+3.  在虚拟机上浏览到
+    **C：\LabFiles\LabFiles**，然后选择**DimProducts.csv、DimStore.csv、FactSale.csv**和**Freezer.csv**文件，点击**Open** 按钮。
 
-![](./media/image5.png)
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image12.png)
 
-6.  Fabric主页，选择 **+New workspace **瓷砖。
+4.  然後，點擊**“Upload**”按鈕， 通過選擇“**Upload
+    files**”對話框的**X**圖標關閉該對話框。
 
-![](./media/image6.png)
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image13.png)
+    >
+    ![A screenshot of a upload box AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image14.png)
 
-7.  在“**Create a
-    workspace”**标签中**，**输入以下信息，点击**“Apply**”按钮。
+5.  點擊並選擇**Files**刷新。文件出现了。
 
-| Field | Value |
-|---|---|
-| Name | +++Warehouse_Fabric@lab.LabInstance.Id+++ (must be a unique Id) |
-| Description | +++This workspace contains all the artifacts for the data warehouse+++ |
-| Advanced Under License mode | Fabric |
-| Default storage format | Small dataset storage format |
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image15.png)
 
-![](./media/image7.png)
+6.  在**Lakehouse**页面，在资源管理器面板下选择**“Files**”。现在，将鼠标悬停在**DimProducts.csv**文件上。点击水平椭圆**（...）**
+    旁边**DimProducts.csv**。点击**“Load Table**”，然后选择**“New
+    table**”。
 
-![](./media/image8.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image16.png)
+    >
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image17.png)
 
-![](./media/image9.png)
+7.  在**“Load file to new table**”对话框中，点击**Load**按钮。
 
-3.  等待部署完成。完成大约需要1-2分钟。当你的新工作区开放时，应该是空的。
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image18.png)
 
-![](./media/image10.png)
+8.  现已成功创建了 **DimProducts** 表
 
-### 任务2：在 Microsoft Fabric 中创建一个Warehouse
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image19.png)
 
-1.  在**Fabric**页面，选择 **+ New
-    item **创建lakehouse，然后选择**Warehouse**
+9.  选择 **DimProducts** 表以预览数据。
 
-![A screenshot of a computer Description automatically
-generated](./media/image11.png)
+    \[！note\]**注意**：您可能需要多次點擊**Refresh** 按鈕以預覽數據。
 
-2.  在“**New warehouse**”对话框中，输入
-    +++**WideWorldImporters+++** 并点击**“Create**”按钮。
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image20.png)
 
-![](./media/image12.png)
+10. 重複步驟7到9，將剩餘文件推入表格。
 
-3.  配置完成后，会出现**WideWorldImporters** warehouse 的登陆页面。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image21.png)
 
-![](./media/image13.png)
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image22.png)
 
-## 练习2：在Microsoft Fabric中将 data导入Warehouse
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image23.png)
+    >
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image24.png)
+    >
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image25.png)
+    >
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image26.png)
+    >
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image27.png)
 
-### 任务1：将 data导入Warehouse
+11. 在左侧导航栏中，选择 **Fabric IQ Ontology**。
 
-1.  在 **WideWorldImporters**
-    仓库着陆页，左侧导航菜单中选择**Warehouse_FabricXX**返回工作区物品列表。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image28.png)
 
-![](./media/image14.png)
+## 任务4：准备eventhouse
 
-2.  在**Warehouse_FabricXX**页面，选择 +**New item**。然后，点击**Copy
-    job**，查看“Get data”下的完整可用项目列表。
+请按照以下步骤将设备流数据文件上传到Eventhouse中的KQL database。
 
-![](./media/image15.png)
+1.  在 **Fabric IQ Ontology** 主页，选择 **+New item**，选择
+    **Eventhouse**。
 
-3.  在**“New copy job**”窗口的**Name** 框中，输入 +++**Load Customer Data**+++。选择**Create**
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image29.png)
 
-> ![](./media/image16.png)
+2.  将Eventhouse命名为
+    +++**TelemetryDataEH**+++，然后点击**“Create**”按钮。
 
-4.  当复**Copy job** 页面打开时，配置就完成了。
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image30.png)
 
-> ![](./media/image17.png)
+3.  Eventhouse在准备好时开放![A screenshot of a computer AI-generated
+    content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image31.png)
 
-5.  在**Copy job** 窗口的第一页 ，从该页面的菜单栏选择**“Sample
-    data**”。本教程中使用了**Retail Data Model from Wide World
-    Importers** 样本。选择此选项以导航至下一页
+4.  通过选择KQL database名称打开。
 
-> ![](./media/image18.png)
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image32.png)
+    >
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image33.png)
 
-6.  样本data的预览加载。在**“Choose
-    data**”页面，您可以预览所选dataset。查看数据后，选择**“Next**”。
+5.  在**KQL database**的下层功能区，点击**“Get data”**，然后选择**“Local
+    file**”，将本地系统的文件上传到database。![A screenshot of a
+    computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image34.png)
 
-![](./media/image19.png)
+6.  选择将数据导入新表的目标选项，点击 + New table，并输入表名
+    +++**FreezerTelemetry**+++。
 
-5.  Choose data
-    destination的地页面允许您配置商品类型。在OneLake目录中，选择你的
-    **Wide World Importers** 仓库，然后选择 **“Next”。**
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image35.png)
+    >
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image36.png)
 
-> ![](./media/image20.png)
+7.  选择目标表，然后拖拽文件，或点击*Browse for files*以上传数据。
 
-6.  **Choose copy job mode**页面，选择**Full copy** 并选择**Next**。
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image37.png)
 
-> ![](./media/image21.png)
+8.  在VM上浏览
+    **C:\LabFiles\Lab1**，然后选择***FreezerTelemetry*.csv**文件，点击**Open** 按钮。
 
-7.  输入以下目标表，然后选择 **“Next**”。
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image38.png)
 
-- dbo.dimension_city
+9.  点击 **“Next**”按钮
 
-- dbo.dimension_customer
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image39.png)
 
-- dbo.dimension_date
+10. 然后点击**“Finish**”按钮。
 
-- dbo.dimension_employee
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image40.png)
 
-- dbo.dimension_stock_item
+11. 等待Data ingestion完成后，点击**Close**。
 
-- dbo.fact_sale
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image41.png)
 
-> ![](./media/image22.png)
+12. 完成后，KQL database会显示**FreezerTelemetry**表：
 
-8.  在**“Review + save**”页面，查看**Source** 和**Destination**。
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image42.png)
 
-![](./media/image23.png)
+13. 在左侧导航窗格选择**Fabric IQ Ontology**。
 
-9.  使用**Results** 标签来监控复Copy job的执行情况。
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image43.png)
 
-![](./media/image24.png)
+# 练习 2：基于 OneLake 构建ontology
 
-10. 完成后，**Copy
-    job** 将发送**“Succeeded**”通知和状态。你现在会在仓库中看到来自Wide
-    World Importers dataset的六张新表格。
+## 任务1：创建ontology（预览）项目
 
-![](./media/image25.png)
+1.  在你的Fabric工作区中，选择 **+ New item**。搜索并选择 **Ontology
+    (preview)** 项目。
 
-11. 在**Load Customer Data** 页面，点击
-    左侧导航栏**Warehouse_FabricXX** 工作区，选择**WideWorldImporters**
-    Warehouse。
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image44.png)
 
-> ![](./media/image26.png)
+2.  输入 +++**RetailSalesOntology+++** 作为 你的ontology
+    **Name**，然后选择**Create**。
 
-12. 在 **WideWorldImporters** warehouse 中，展开 **Schemas \> dbo\>
-    Tables**，并验证表（**dimension_city**、**dimension_customer**、**dimension_date**、**dimension_employee**、**dimension_stock_item**
-    和 **fact_sale**）是否已成功创建。
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image45.png)
+    >
+    > ** 提示：**
+    > Ontology名称可以包含数字、字母和下划线。不要使用空格或破折号。
 
-![](./media/image27.png)
+3.  Ontology在准备好时才会打开。
 
-## 练习3： **在Warehouse中用T-SQL克隆表**
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image46.png)
+    >
+    > 接下來，根據Lakehouse表中的數據，創建實體類型、數據綁定和關係。
 
-### 任务1：**在同一模式内克隆一个表**
+## 任務2：創建實體類型和data bindings
 
-1.  在 **WideWorldImporters** 页面，进入**Home** 标签，从 下拉菜单选择
-    **SQL**，然后点击“**New SQL query**”。
+> 首先，創建實體類型。實體類型表示企業中的對象類型。這一步有三種實體類型：*Store*, *Products,*和*SaleEvent*。創建實體類型後，通過綁定源數據列在***IQ_Lakehouse***
+> lakehouse表中創建它們的屬性。
 
-![](./media/image28.png)
+### 添加第一entity類型（存儲）
 
-3.  在查询编辑器中，粘贴以下代码。代码创建了dimension_city表和
-    fact_sale表的克隆。
+1.  在配置画布的顶部色带或中心，选择**Add entity type**。
 
-```
---Create a clone of the dbo.dimension_city table.
- CREATE TABLE [dbo].[dimension_city1] AS CLONE OF [dbo].[dimension_city];
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image47.png)
 
- --Create a clone of the dbo.fact_sale table.
- CREATE TABLE [dbo].[fact_sale1] AS CLONE OF [dbo].[fact_sale];
-```
+2.  输入 +++**Store+++ **作为您的实体类型名称，并选择**Add Entity
+    Type**。
 
-> ![](./media/image29.png)
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image48.png)
 
-4.  要执行查询，在查询设计功能区上选择 **Run**。
+3.  *Store* 实体类型被添加到配置画布中，**Entity type
+    configuration** 面板可见。
 
-![](./media/image30.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image49.png)
 
-![](./media/image31.png)
+4.  在配置畫布中，選擇**......**在實體名稱旁邊選擇“**Bind data**”。
 
-5.  在查询编辑器中，粘贴以下代码。CURRENT_TIMESTAMP T-SQL 函数返回当前
-    UTC 时间戳为**datetime**。选择**Run** 以执行查询。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image50.png)
 
-```
-SELECT CURRENT_TIMESTAMP;
-```
+5.  选择 **Add data binding \> Lakehouse table**。
 
-![](./media/image32.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image51.png)
 
-6.  要创建一个*past point in
-    time*的表克隆，在查询编辑器中粘贴以下代码**替换现有语句**。代码在某个时间点创建了dimension_city表和
-    fact_sale 表的克隆。运行查询。
+6.  接下来，选择你的data source。选择**IQ_Lakehouse**
+    lakehouse，然后选择**Next**。
 
-```
---Create a clone of the dbo.dimension_city table at a specific point in time.   
-CREATE TABLE [dbo].[dimension_city2] AS CLONE OF [dbo].[dimension_city] AT '2025-01-01T10:00:00.000';
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image52.png)
 
- --Create a clone of the dbo.fact_sale table at a specific point in time.
-CREATE TABLE [dbo].[fact_sale2] AS CLONE OF [dbo].[fact_sale] AT '2025-01-01T10:00:00.000';
-```
+7.  选择**dimstore**表并选择**“Select**”。
 
-![](./media/image33.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image53.png)
 
-![](./media/image34.png)
+8.  源表中的字段填充data binding
+    configuration。请查看configuration页面的各个部分：
 
-7.  将查询重命名为 +++**Clone Tables+++**。
+    - **Entity類型鍵**：識別可用於唯一標識每條被攝取data記錄的字段。
 
-> ![](./media/image35.png)
->
-> ![](./media/image36.png)
+    - **結合選擇**: 識別包含綁定數據的源表。
 
-### 任务2：在同一仓库内跨模式克隆表
+    - **Entity類型密鑰映射**：識別source
+    data表中映射到實體類型密鑰屬性的列。你可以從source
+    data中選擇字符串列和整數列作為實體類型鍵。你選擇的列共同唯一標識一條記錄。
 
-在这个任务中，学习如何在同一仓库内跨模式克隆一个表。
+    - **属性**：列出源数据中将作为*Store* entity类型属性表示的列。**Source
+    column** 端会自动填充来自*dimstore*表的列，**Property
+    name** 端则在ontology中的*Store* entity类型中列出对应的属性名称
+    。在这个教程中，保留默认的属性名称。
 
-1.  要创建新查询，在**Home** 功能区选择 **New SQL query**。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image54.png)
 
-> ![](./media/image37.png)
+9.  在configuration顶部选择**Define entity type key** 。
 
-2.  在查询编辑器中，粘贴以下代码。代码创建一个模式，然后在新模式中创建
-    **fact_sale**和**dimension_city**表的克隆。运行查询。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image55.png)
 
-```
---Create a new schema within the warehouse named dbo1.
- CREATE SCHEMA dbo1;
- GO
+10. 從屬性列表中選擇**StoreId**，然後選擇**Save**。
 
- --Create a clone of dbo.fact_sale table in the dbo1 schema.
- CREATE TABLE [dbo1].[fact_sale1] AS CLONE OF [dbo].[fact_sale];
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image56.png)
 
- --Create a clone of dbo.dimension_city table in the dbo1 schema.
- CREATE TABLE [dbo1].[dimension_city1] AS CLONE OF [dbo].[dimension_city];
-```
-> ![](./media/image38.png)
+11. **保存**data binding。
 
-3.  执行完成后，预览 **dbo1**
-    模式中加载到**dimension_city1**表中的data。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image57.png)
 
-> ![](./media/image39.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image58.png)
 
-4.  要创建*previous point in
-    time*的表克隆，在查询编辑器中粘贴以下代码**替换现有语句**。代码在新模式的某些时间点创建**了dimension_city**表和**fact_sale**表的克隆。运行查询。
+12. 確認entity類型已成功更新，然後選擇**Cancel **以關閉配置選項。
 
-```
---Create a clone of the dbo.dimension_city table in the dbo1 schema.
-CREATE TABLE [dbo1].[dimension_city2] AS CLONE OF [dbo].[dimension_city] AT '2025-01-01T10:00:00.000';
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image59.png)
 
---Create a clone of the dbo.fact_sale table in the dbo1 schema.
-CREATE TABLE [dbo1].[fact_sale2] AS CLONE OF [dbo].[fact_sale] AT '2025-01-01T10:00:00.000';
-```
-> ![](./media/image40.png)
+13. 你会看到entity类型详情中的**Configure** 页面。本页展示了关于entity类型的重要信息，包括其属性和data
+    bindings。查看你配置的data bindings。
 
-5.  执行完成后，预览加载到**dbo1**模式中**fact_sale2**表中的data。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image60.png)
 
-> ![](./media/image41.png)
+14. 选择 **“Home** ”返回configuration画布并添加新的entity类型。
 
-6.  将查询重命名为 +++**Clone Tables Across Schemas**+++。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image61.png)
 
-> ![](./media/image42.png)
->
-> ![](./media/image43.png)
+### 添加其他entity类型（产品、SaleEvent）
 
-## 练习4：使用存储过程转换data
+15. 按照你为存**Store **entity类型所做的相同步骤
+    ，创建下表中描述的entity类型。每个entity都有一个静态data
+    binding，与其源表的默认列相关联。
 
-### 任务1：创建存储过程
+    | Entity Type Name | Source Table in IQ_Lakehouse | Entity Type Key |
+    |------------------|------------------------------|-----------------|
+    | +++Products+++<br><br>**Note:** Use the plural form **Products** to avoid conflict with the GQL reserved word **PRODUCT**. | **dimproducts** | **ProductId** |
+    | +++SaleEvent+++ | **factsales** | **SaleId** |
 
-在此任务中，学习如何创建存储过程以转换仓库表中的 data。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image62.png)
 
-1.  在 **WideWorldImporters** 页面，进入**Home** 标签，从下拉菜单中选择
-    **SQL**，然后点击“**New SQL query**”。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image63.png)
 
-![](./media/image44.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image64.png)
 
-2.  在查询编辑器中，粘贴以下代码。代码会丢弃存储过程（如果存在的话），然后创建一个名为
-    **populate_aggregate_sale_by_city** 的存储过程。存储过程逻辑创建名为
-    **aggregate_sale_by_date_city** 的表，并通过按组查询插入 data，连接
-    **fact_sale** 和 **dimension_city** 表。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image65.png)
 
-```
---Drop the stored procedure if it already exists.
- DROP PROCEDURE IF EXISTS [dbo].[populate_aggregate_sale_by_city];
- GO
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image66.png)
 
- --Create the populate_aggregate_sale_by_city stored procedure.
- CREATE PROCEDURE [dbo].[populate_aggregate_sale_by_city]
- AS
- BEGIN
-     --Drop the aggregate table if it already exists.
-     DROP TABLE IF EXISTS [dbo].[aggregate_sale_by_date_city];
-     --Create the aggregate table.
-     CREATE TABLE [dbo].[aggregate_sale_by_date_city]
-     (
-        [Date] [DATETIME2](6),
-        [City] [VARCHAR](8000),
-        [StateProvince] [VARCHAR](8000),
-        [SalesTerritory] [VARCHAR](8000),
-        [SumOfTotalExcludingTax] [DECIMAL](38,2),
-        [SumOfTaxAmount] [DECIMAL](38,6),
-        [SumOfTotalIncludingTax] [DECIMAL](38,6),
-        [SumOfProfit] [DECIMAL](38,2)
-     );
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image67.png)
 
-     --Load aggregated data into the table.
-     INSERT INTO [dbo].[aggregate_sale_by_date_city]
-     SELECT
-        FS.[InvoiceDateKey] AS [Date], 
-        DC.[City], 
-        DC.[StateProvince], 
-        DC.[SalesTerritory], 
-        SUM(FS.[TotalExcludingTax]) AS [SumOfTotalExcludingTax], 
-        SUM(FS.[TaxAmount]) AS [SumOfTaxAmount], 
-        SUM(FS.[TotalIncludingTax]) AS [SumOfTotalIncludingTax], 
-        SUM(FS.[Profit]) AS [SumOfProfit]
-     FROM [dbo].[fact_sale] AS FS
-     INNER JOIN [dbo].[dimension_city] AS DC
-        ON FS.[CityKey] = DC.[CityKey]
-     GROUP BY
-        FS.[InvoiceDateKey],
-        DC.[City], 
-        DC.[StateProvince], 
-        DC.[SalesTerritory]
-     ORDER BY 
-        FS.[InvoiceDateKey], 
-        DC.[StateProvince], 
-        DC.[City];
- END;
-```
-> ![](./media/image45.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image68.png)
 
-3.  要执行查询，在查询设计功能区选择**Run**
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image69.png)
 
-> ![](./media/image46.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image70.png)
 
-4.  执行完成后，将查询重命名为 +++**Create Aggregate Procedure**+++。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image71.png)
 
-> ![A screenshot of a computer Description automatically
-> generated](./media/image47.png)
->
-> ![](./media/image48.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image72.png)
 
-5.  在**Explorer** 面板中，从**dbo**模式的**Stored
-    Procedures** 文件夹中确认**aggregate_sale_by_date_city**存储过程是否存在。
+16. 选择**“Home**”返回configuration画布并添加 **SaleEvent** entity类型。
 
-![](./media/image49.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image73.png)
 
-### 任务2：运行存储过程
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image74.png)
 
-在此任务中，学习如何执行存储过程以转换仓库表中的 data。
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image75.png)
+    >
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image76.png)
+    >
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image77.png)
+    >
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image78.png)
+    >
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image79.png)
+    >
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image80.png)
+    >
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image81.png)
+    >
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image82.png)
+    >
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image83.png)
+    >
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image84.png)
 
-1.  在**WideWorldImporters** 页面，进入**Home** 标签，从下拉菜单中选择
-    **SQL**，然后点击“**New SQL query**”。
+17. 完成后，你会在**Entity Types** 面板中看到这些entity类型。
 
-> ![](./media/image50.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image85.png)
 
-2.  在查询编辑器中，粘贴以下代码。该代码执行**populate_aggregate_sale_by_city**存储过程。运行查询。
+## 任務3：創建關係類型
 
-```
---Execute the stored procedure to create and load aggregated data.
- EXEC [dbo].[populate_aggregate_sale_by_city];
-```
+接下來，創建實體類型之間的關係類型，以表示數據中的上下文連接。
 
-![](./media/image51.png)
+### 商店的SaleEvent
 
-3.  执行完成后，将查询重命名为 +++**Run Aggregate Procedure+++**。
+1.  从Explorer中选择**SaleEvent**实体类型。
 
-> ![](./media/image52.png)
->
-> ![](./media/image53.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image86.png)
 
-4.  要预览汇总数据，请在 **Explorer** 面板中选择
-    **aggregate_sale_by_date_city** 表。
+2.  从菜单功能区选择**Add relationship**。
 
-> ![](./media/image54.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image87.png)
 
-** 注意：**如果表格未出现，选择 **Tables** 文件夹中的省略号（...），
-然后选择**Refresh**。
+3.  输入以下关系类型详情，选择**Add relationship type**。
 
-##  练习5：在语句层面使用T-SQL进行时间旅行
+    - **Relationship type name**: +++from+++
 
-### 任务1：处理时间旅行查询
+    - **Source entity type**: *SaleEvent*
 
-在这个任务中，学习如何创建销售额排名前十的客户视图。你将在下一个任务中使用视图来运行时间旅行查询。
+    - **Target entity type**: *Store*
 
-1.  在 **WideWorldImporters** 页面，进入**Home**标签，从下拉菜单中选择
-    **SQL**，然后点击“**New SQL query**”。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image88.png)
+    >
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image89.png)
 
-![](./media/image55.png)
+4.  这种关系被加入semantic画布中。选择它以打开关系详情configuration。请查看configuration页面的各个部分：
 
-2.  在查询编辑器中，粘贴以下代码。代码创建了一个名为 Top10Customers
-    的视图。该视图通过查询检索基于销售额的前10名客户。选择**Run **以执行查询。
+    - **Origin entity类型**：列出起源entity的详细信息（此处为
+    **SaleEvent**）。
 
-```
---Create the Top10Customers view.
-CREATE VIEW [dbo].[Top10Customers]
-AS
-SELECT TOP(10)
-    FS.[CustomerKey],
-    DC.[Customer],
-    SUM(FS.[TotalIncludingTax]) AS [TotalSalesAmount]
-FROM
-    [dbo].[dimension_customer] AS DC
-    INNER JOIN [dbo].[fact_sale] AS FS
-        ON DC.[CustomerKey] = FS.[CustomerKey]
-GROUP BY
-    FS.[CustomerKey],
-    DC.[Customer]
-ORDER BY
-    [TotalSalesAmount] DESC;
-```
-> ![](./media/image56.png)
+    - **關係類型**：設置關係類型的詳細信息。
 
-3.  执行完成后，将查询重命名为 +++Create Top 10 Customer View+++。
+    - **目標entity類型**：列出目標entity的詳細信息（此處為**Store **）。
 
-![](./media/image57.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image90.png)
+    >
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image91.png)
 
-![](./media/image58.png)
+5.  在中間部分，請填寫以下細節。
 
-3.  在**Explorer**中，通过在dbo
-    **schema**下展开**View**节点，确认你能看到新创建的视图
-    **Top10CustomersView**。
 
-![](./media/image59.png)
+1.  **Mapping table**：**Browse available
+    sources** 并选择**factsales**表。源数据中的该表可以将*Store* 实体和*SaleEvent*实体连接起来，因为它包含了两种实体类型的识别信息。表中的每一行通过ID指向一个门店和一个销售事件。
 
-4.  创建一个类似步骤1的新查询。在功能区的**Home** 标签中，选择 **New SQL
-    query**。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image92.png)
 
-> ![](./media/image60.png)
+2.  **Matched SaleEvent: SaleId**:
+    选择**SaleId**。该设置指定关系源数据表中与*SaleEvent* entity定义的关键属性匹配的列
+    。在这种情况下，关系数据源和entity
+    data源都使用*factsales*表，所以你选择的是同一个列（SaleId）。
 
-5.  在查询编辑器中，粘贴以下代码。该代码会更新单个事实行的
-    **TotalIncludingTax**值，故意膨胀其总销售额。它还会检索当前时间戳。
+3.  **Matched Store: StoreId**: 选择**StoreId**。该设置指定关系源数据表
+    (*factsales \>* StoreId) 中值与*Store* entity*（*dimstore \>
+    *StoreId ）定义的关键属性匹配*
+    的列。在教程数据中，两个表的列名（StoreId）是相同的。
 
-```
---Update the TotalIncludingTax for a single fact row to deliberately inflate its total sales.
- UPDATE [dbo].[fact_sale]
- SET [TotalIncludingTax] = 200000000
- WHERE [SaleKey] = 22632918; --For customer 'Tailspin Toys (Muir, MI)'
- GO
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image93.png)
 
- --Retrieve the current (UTC) timestamp.
- SELECT CURRENT_TIMESTAMP;
-```
+    **  
+    重要提示：**確保選擇 與entity 類型**匹配**的匹配列，關鍵屬性。
 
-![](./media/image61.png)
+6.  **保存**关系类型。确认关系类型已成功更新，然后选择**Cancel **关闭configuration选项。
 
-6.  把返回的时间戳值复制到你的剪贴板上。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image94.png)
+    >
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image95.png)
+    >
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image96.png)
+    >
+    > 現在第一個關係被創建，並綁定到源表中的數據。繼續進入下一部分，創建另一種關係類型。
 
-![](./media/image62.png)
+### **SaleEvent 销售产品**
 
-**注意：** 目前，你只能使用 Coordinated Universal Time (UTC)
-时区进行时间旅行.
+1.  选择**“Home**”返回配置画布，在那里你可以添加新的entity类型。
 
-7.  执行完成后，将查询重命名为 +++**Time Travel+++**。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image97.png)
 
-![](./media/image63.png)
+2.  按照你在第一种关系类型中使用的相同步骤，从**SaleEvent**
+    entity类型创建第二种关系，具体细节如下表所述。
 
-![](./media/image64.png)
 
-8.  将以下代码粘贴到查询编辑器中，并将时间戳值替换为前一步获得的时间戳值。时间戳语法格式为
-    **YYYY-MM-DDTHH:MM:SS\[.FFF\]。**
+    | Relationship Type Name | Origin Entity Type | Target Entity Type | Mapping Table | Matched SaleEvent: SaleId | Matched Products: ProductId |
+    |------------------------|-------------------|-------------------|---------------|--------------------------|----------------------------|
+    | `sold` | `SaleEvent` | `Products` | `factsales` | `SaleId` | `ProductId` |
 
-9.  去掉尾部的零，例如：**2026-07-27T06：20：55.823**。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image98.png)
 
-&nbsp;
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image99.png)
 
-10. 要检索*now*排名前十的客户，请在新的查询编辑器中粘贴以下语句。该代码通过使用“FOR
-    TIMESTAM AS OF”查询提示来获取前10名客户。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image100.png)
 
-11. 用你复制到剪贴板的时间戳替换YOUR_TIMESTAMP。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image101.png)
 
-```
---Retrieve the top 10 customers as of now.
- SELECT *
- FROM [dbo].[Top10Customers]
- OPTION (FOR TIMESTAMP AS OF 'YOUR_TIMESTAMP');
-```
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image102.png)
 
-![](./media/image65.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image103.png)
 
-12. 将查询重命名为 **+++Time Travel Now+++**
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image104.png)
 
-> ![](./media/image66.png)
->
-> ![](./media/image67.png)
+# 練習3：用額外數據豐富ontology
 
-13. 注意，Tailspin Toys(Muir, MI)的**CustomerKey**排名第二大值是**49**。
+在這個練習中，你通過添加一個新的***Freezer***
+entity類型來豐富你的ontology。該實體類型增加了更多的領域上下文，並引入了反映實時運營信息的時間序列數據屬性。
 
-> ![](./media/image68.png)
+** 注釋**
 
-14. 通过从时间戳*中**subtracting one
-    minute，***将时间戳值修改为更早的时间
+對於靜態和時間序列數據，你可以創建屬性而無需綁定數據，之後再綁定數據，或者在一步驟內創建屬性並綁定數據。本文展示了這兩種方法。
 
-15. 再次运行查询，注意到 **Wingtip Toys (Sarversville, PA)** 的
-    **CustomerKey 前数值是 381。**
+最後，你創建一個新的關係類型來表示商店與其freezers之間的連接。
 
-## 练习6：在Warehouse中使用可视化查询构建器创建查询
+## 任務1：創建Freezer entity類型並添加屬性
 
-### 任务1：使用可视化查询构建器
+按照以下步驟創建*Freezer*
+entity類型並為其添加屬性。屬性還沒有綁定到數據上。
 
-在这个任务中，学习如何使用可视化查询构建器创建查询。
+1.  从顶部的色带中选择**Add entity type**。输入
+    +++**Freezer+++** 作为你的实体类型名称，然后选择 **Add Entity
+    Type**。
 
-1.  在**Home** 功能区，打开 **New SQL query** 下拉列表，然后选择 **New
-    visual query**。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image105.png)
+    >
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image106.png)
 
-![](./media/image69.png)
+2.  在资源管理器中选择**Explorer** entity体类型后，从顶部色带选择“**View
+    entity type details**”。
 
-2.  从**Explorer** 面板，从dbo schema
-    **Tables**文件夹，将**fact_sale**表拖 到可视化查询canvas。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image107.png)
 
-![](./media/image70.png)
+3.  此時會打開實體類型詳細信息的“**Configure**”頁面。此页面会显示有关entity类型的重要信息，包括其属性和data
+    bindings。
 
-3.  点击“**Reduce rows**”下拉菜单，然后点击“**Keep top
-    rows**”，如下图所示，导航到查询设计窗**transformations
-    ribbon** 并限制dataset大小。
+    展开**“Manage property bindings”**，然后选择 **Add properties**。
 
-![](./media/image71.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image108.png)
 
-4.  在“**Keep top rows**”对话框中，输入**+++10000+++**并选择**OK**。
+4.  添加以下屬性並選擇**Save**。
 
-![](./media/image72.png)
+    | Name | Property Type |
+    |------|---------------|
+    | `FreezerId` | `String` |
+    | `Model` | `String` |
+    | `minSafeTempC` | `Double` |
+    | `StoreId` | `String` |
 
-![](./media/image73.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image109.png)
 
-5.  从**Explorer** 面板，从dbo schema
-    **Tables**文件夹，将**dimension_city**表拖 到可视化查询canvas。
+    **注意：** 物業名稱必須在所有 entity類型中唯一。
 
-6.  右键点击**dimension_city**，选择 **Insert into canvas**
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image110.png)
 
-> ![](./media/image74.png)
+5.  属性会被添加到**Configure **页面，且不受绑定到任何data source。
 
-![](./media/image75.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image111.png)
 
-6.  在变换功能区中，选择“**Combine**”旁边的下拉菜单
-    ，并如下图所示选择**“Merge queries as new”**。
+## 任務2：將靜態數據綁定到屬性
 
-![](./media/image76.png)
+接下來，將靜態數據綁定到你在*Freezer* entity類型上創建的屬性。
 
-7.  在**Merge **设置页面输入以下信息。
+1.  展开**“Manage property bindings”**，选择**Add binding and
+    properties**。
 
-- 在**Left table for merge**下拉菜单中，选择**dimension_city**
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image112.png)
 
--  在**Right table for
-  merge** 中，选择**fact_sale**（使用横向和纵向滚动条）
+2.  选择 **Add data binding \> Lakehouse table**。
 
--  在**dimension_city**表中选择头部列名以表示连接列，选择**CityKey**字段。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image113.png)
 
--  在**fact_sale**表中选择 **CityKey** 字段
-  ，方法是在头部行中选择列名，表示连接列。
+3.  选择你的 data source。
 
--  在“**Join kind**”选择中，选择**“Inner**”并点击**“Ok**”按钮。
+    - 选择 **IQ_Lakehouse** lakehouse，然后选择 **Next**。
 
-![](./media/image77.png)
+    - 选择 **freezer** 柜台并 **Select**。
 
-![](./media/image78.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image114.png)
+    >
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image115.png)
 
-8.  选中**Merge** 步骤后，如下图所示，选择
-    data网格头部**fact_sale**旁的**“Expand**”按钮，然后选择**TaxAmount, Profit,
-    TotalIncludingTax** 列，选择**Ok。**
+4.  源表中的字段填充data binding
+    configuration。请查看configuration页面的各个部分：
 
-![](./media/image79.png)
+    - **Entity類型鍵**：識別可用於唯一標識每條被攝取數據記錄的字段。
 
-![](./media/image80.png)
+    - **Binding選擇**：識別存放綁定data的源表。
 
-![](./media/image81.png)
+    - **Entity類型密鑰映射**：識別源數據表中映射到entity類型密鑰屬性的列。你可以從源數據中選擇字符串列和整數列作為entity類型鍵。你选择的列共同唯一标识一条记录。
 
-9.  在**transformations
-    ribbon，**点击“**Transform**”旁边的下拉菜单，然后选择**“Group
-    by”。**
+    - **屬性**：列出源數據中的列及**Freezer** entity類型對應的屬性。**源端**會自動填充來自**freezer** 表的列，**屬性名**稱端則在ontology中的**Freezer** entity類型中列出對應的屬性名稱
+    。在這個教程中，保留默認的屬性名稱。
 
-![](./media/image82.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image116.png)
 
-10. 在“**Group by**”页面输入以下信息。
+5.  在配置顶部选择**Define entity type
+    key**。从属性列表中选择FreezerId，然后选择**Save**。
 
-- 选择**Advanced **单选按钮。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image117.png)
 
-- 在**“Group by”**下选择以下内容:
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image118.png)
 
-  1.  **Country**
+6.  **保存**data
+    binding。确认实体类型已成功更新，然后选择**Cancel** 以关闭configuration选项。
 
-  2.  **StateProvince**
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image119.png)
 
-  3.  **City**
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image120.png)
 
-- 在**New column name**中，在**Operation** 栏字段
-  输入**SumOfTaxAmount**，选择**Sum**，然后在**Column** 字段下选择**TaxAmount。**
-  点击**“Add aggregation**”以添加更多汇总列和操作。
+## 任務3：將時間序列數據綁定到附加屬性
 
-- 在**New column name**中**，**在**Operation** 栏字段
-  输入**SumOfProfit**，选择**SumOfProfit**，然后在**Column** 字段下选择**Profit**。点击**“Add
-  aggregation**”以添加更多汇总列和操作。
+接下来，通过创建一个新属性并在单一data binding操作中绑定时间序列
+data，在 **Freezer **entity上添加时间序列 data。
 
-- 在**New column name**中，在**Operation** 栏字段输入
-  **SumOfTotalIncludingTax**，选择 **Sum**，然后在**列**字段下选
-  **TotalIncludingTax。**
+1.  在**Configure** 页面，展开**“Manage property
+    bindings”**，再次选择**Add binding and
+    properties** 以重新打开binding configuration。
 
-- 点击**OK**按钮
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image121.png)
 
-![](./media/image83.png)
+2.  在**“Binding”选择中**，展开**“Add data binding”**，然后选择
+    **Eventhouse table or materialized view**。
 
-![](./media/image84.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image122.png)
 
-11. 在资源管理器中，进入**Queries**，右键点击查询中的 **Visual query
-    1** 。然后，选择**Rename**。
+3.  选择你的data source。
 
-![](./media/image85.png)
+    1.  选择 **TelemetryDataEH** eventhouse并选择**Add**。
 
-12. 输入 +++**Sales Summary+++** 以更改查询名称。按
-    键盘**Enter** 键或选择标签页外的任意位置保存更改。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image123.png)
 
-![](./media/image86.png)
+2.  选择**FreezerTelemetry**表并**Add**。
 
-13. 点击**Home**标签下方的**Refresh** 图标。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image124.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image87.png)
+4.  配置中会出现**Timeseries data** 部分。对于**Timestamp
+    column**，选择timestamp
 
-## 练习7：用notebook分析data
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image125.png)
 
-### 任务1：创建T-SQL notebook
+5.  向下滾動到**Properties**部分，**StoreId**顯示錯誤，因為它已經被綁定在靜態數據綁定中。用垃圾桶圖標刪除重複的屬性。
 
-在这个任务中，学习如何创建T-SQL notebook。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image126.png)
 
-1.  在**Home** 功能区，打开 **New SQL query** 下拉列表，然后选择
-    notebook中的 **New SQL query** 
+6.  **保存**data
+    binding。确认entity类型已成功更新，然后选择**Cancel** 以关闭配置选项。
 
-> ![](./media/image88.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image127.png)
 
-2.  在**Explorer** 面板中，选择**Warehouses** 以显示**Wide World
-    Importers** 仓库的物品。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image128.png)
 
-3.  要生成用于探索
-    data的SQL模板，在**dimension_city**表右侧，选择**省略号（...），**然后选择**“SELECT
-    TOP 100**”。
+7.  回到 **Configure** 页面為
+    *Freezer*，注意到现在有了更多entity类型属性，而且新的属性都绑定到了
+    *FreezerTelemetry* 数据源。
 
-> ![](./media/image89.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image129.png)
 
-4.  要在该单元格中运行 T-SQL 代码，选择该代码单元格的“**Run
-    cell**”按钮。
+    现在 *Freezer* entity有两个data bindings：一个是来自 *Freezer* Lakehouse
+    表的静态数据，另一个是来自 *FreezerTelemetry* eventhouse 表的流data。
 
-> ![](./media/image90.png)
+## 任务4：添加关系类型
 
-5.  查看结果面板中的查询结果。
+最後，創建一個新的關係類型來表示商店與其freezers之間的連接。
 
-> ![](./media/image91.png)
+**Create Store 运营 Freezer**
 
-### 任务2：创建一个lakehouse快捷方式，并用notebook分析data
+1.  在 **Configure** 页面，展开“Manage relationships”并选择 **Add new
+    relationship**。
 
-在这个任务中，学习如何创建lakehouse捷径并用notebook分析 data。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image130.png)
 
-1.  在左侧菜单中，选择 **Warehouse_Fabric65897@lab.labinstance.id**
-    工作区图标，然后选择工作区名称。
+2.  输入以下关系类型详情，选择**Add relationship type**。
 
-> ![](./media/image92.png)
+    1.  **Relationship type name**: *operates*
 
-2.  选择** + New Item **以显示所有可用商品类型的完整列表。
+    2.  **Source entity type**: *Store*
 
-3.  在列表中，在**“Store data**”部分，选择**Lakehouse**项目类型。
+    3.  **Target entity type**: *Freezer*
 
-> ![](./media/image93.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image131.png)
 
-4.  配置完成后，lakehouse将
-    +++**Shortcut_Exercise**+++作为lakehouse名称，并取消选择
-    lakehouse的模式。选择**Create**。
-     ![](./media/image94.png)
+3.  该关系被添加到**“Relationships”**部分。在画布上选择
+    **operates** 关系以打开关系详情 configuration。请查看 configuration
+    页面的各个部分：
 
-> ![](./media/image95.png)
+    - **Origin entity type**: 列出源 entity 的详细信息（此处为 *Store*）。
 
-5.  当新 lakehouse打开后，在登陆页面选择**“New shortcut**”选项。
+    - **Relationship type**: 列出关系类型的详细信息。
 
-> ![](./media/image96.png)
+    - **Target entity type**: 列出目标 entity 的详细信息（此处指
+    *Freezer*）。
 
-6.  在“** New shortcut**”窗口中，选择 **Microsoft OneLake** 选项。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image132.png)
 
-> ![](./media/image97.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image133.png)
 
-7.  在“**Select a data source type**”窗口中，选择“**Wide World
-    Importers** warehouse”，然后选择**“Next**”。
+4.  在中間部分，請填寫以下細節。
 
-> ![](./media/image98.png)
+    - **Mapping
+    table**：选择**freezer** 台。源数据中的该表可以将*Store*和*Freezer* *entity*
+    连接起来，因为它包含了两种entity
+    类型的识别信息。表中的每一行通过ID指向一个商店和一个freezer。
 
-8.  点击连接
+    - **Matched Store:
+    StoreID**：选择**StoreId**。该设置指定关系源数据表（*freezer \>*
+    StoreId）中与存储 *entity（*dimstore \> *StoreId
+    ）*定义的关键属性匹配的列。在教程
+    data中，两个表的列名（StoreId）是相同的。
 
-> ![](./media/image99.png)
+    - **Matched Freezer: FreezerId**: 选择**FreezerId。**
+    该设置指定关系源数据表中与Freezer entity的关键属性匹配的列
+    。在这种情况下，关系数据源和entity data
+    source都使用*了freezer* 表，所以你选择的是同一个列（FreezerId）。
 
-9.  在 **OneLake object**浏览器中，展开**Tables**，展开 **dbo**
-    模式，然后选择 **dimension_customer** 表的复选框。选择**Next**。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image134.png)
 
-> ![](./media/image100.png)
+    **  
+    重要提示：** 確保選擇與 entity類型關鍵屬性匹配的正確源列。
 
-10. 选择**Create**。
+5.  **保存**关系类型。确认关系类型已成功更新，然后选择**Cancel** 关闭configuration选项。
 
-> ![](./media/image101.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image135.png)
 
-11. 在**Explorer** 面板中，选择**dimension_customer**表预览data，然后查看从仓库dimension_customer表检索到的
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image136.png)
+
+6.  你会看到实体的**Configure** 页面，更新后的关系仍可见于
+    **Relationships** 部分。
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image137.png)
+
+# 練習4： **查看ontology**
+
+在這個練習中，利用預覽體驗探索你的ontology。檢查那些用數據實例化實體類型的entity實例，探索銷售和設備流數據中的圖形上下文。
+
+## 任務1： **查看實例列表和靜態數據**
+
+當你在之前的教程步驟中將數據綁定到entity類型時，ontology會自動創建這些實體的實例，這些實例與源數據行綁定。在本節中，你使用預覽體驗來查看這些實體實例。
+
+1.  从ontology的 Home configuration画布开始。选择**SaleEvent**
+    entity类型，并 从顶部丝带查看 **View Entity Type details**。
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image138.png)
+
+2.  打开**Instances**
+    标签页。确认它显示六个实体实例，数据来自**Factsales**
+    lakehouse表，如收入和单位数量。
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image139.png)
+
+## 任務2：查看時間序列數據
+
+1.  在頁面左上角，使用實體類型名稱旁的選擇器切換到**Freezer** entity類型。
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image140.png)
+
+2.  打开“**Overview**”标签页。标签页加载的是空白图表，因为默认的时间范围“**Last
+    30 days** ”不包含任何data。
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image141.png)
+
+3.  将时间范围从默认的 **Last 30
+    days** 更新为自定义日期范围，该时间范围从**2025年8月1日星期五凌晨12：00开始，**到**2025年8月4日星期一凌晨12：00**结束，**Time
+    granularity** 为**5分钟**。
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image142.png)
+
+4.  觀察你選擇的時間窗口內多個**Freezer **entity實例現在可見的時間序列
     data。
 
-> ![](./media/image102.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image143.png)
 
-12. 在 **dimension_customer** 表格页面，点击 **“Analyze data
-    with**”，选择 **“Notebook**”，然后选择 **“New notebook** ”创建新的
-    Spark notebook 进行 data 分析
+## 任务3： **查看Ontology图**
 
-> ![](./media/image103.png)
+**“Overview**”标签还包含**Relationship
+graph**，你可以用它在节点和边的图中可视化你的ontology。
 
-13. 在**Explorer** 面板中，选择**Lakehouses**。
+1.  使用entity类型选择器切换到**SaleEvent** entity类型。在**Relationship
+    graph** tile中，选择**“Expand**”。
 
-14. 把**dimension_customer**桌拖到打开的notebook单元。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image144.png)
 
-> ![](./media/image104.png)
+2.  他擴展了圖視圖的打開。观察从**SaleEvent**
+    entity类型到**Products**和**Store**之间的关系细节。
 
-15. 注意笔记本单元格中添加了**PySpark**查询。该查询获取
-    **Shortcut_Exercise.dimension_customer** 快捷方式中的前 **1,000 行**
-    。这种笔记本体验类似于Visual Studio Code Jupyter
-    notebook体验。你也可以用VS Code打开notebook。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image145.png)
 
-> ![](./media/image105.png)
+3.  使用entity类型选择器切换到**Store **entity类型。 **扩展** 其
+    **relationship graph。**
 
-16. 在**Home**功能区，选择**“Run all**”按钮。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image146.png)
 
-> ![](./media/image106.png)
->
-> ![](./media/image107.png)
+4.  在圖表中，觀察**Store**與**Freezer**和**SaleEvent**之間的關係。然後，在查詢構建功能區選擇**“Run
+    query**”。此操作運行默認查詢，並顯示實體實例及其連接的圖
 
-## 练习8：使用SQL查询编辑器创建跨仓库查询
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image147.png)
 
-### 任务1：向Explorer添加多个仓库
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image148.png)
 
-在本任务中，学习如何轻松地使用SQL查询编辑器在多个仓库中创建和执行T-SQL查询，包括将Microsoft
-Fabric中的SQL Endpoint和仓库的 data合并在一起。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image149.png)
 
-1.  从 **Notebook2** 页面，点击左侧导航菜单中的 **WideWorldImporters**
-    工作区。
+## 任務4：查詢圖實例
 
-> ![](./media/image108.png)
+在關係圖視圖中，你可以查詢符合特定條件的entity實例。使用顶部功能区的**Query
+builder** 过滤器来创建查询。
 
-2.  在**Explorer** 面板中，选择 **+ Warehouses**。
+![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image150.png)
 
-![](./media/image109.png)
+首先，設計這個問題：*顯示巴黎門店運營的所有freezers。*
 
-3.  在 **OneLake 目录**窗口中，选择 **Shortcut_Exercise** SQL 分析
-    endpoint。选择**Confirm**。
+1.  在*Store* entity的关系图中，从查询构建器功能区选择 **Add filter \>
+    Store \> StoreId** 。设置 **StoreID = S-PAR-01**
+    的过滤器。这个值是巴黎门店的门店ID。
 
-![](./media/image110.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image151.png)
 
-4.  在**Explorer** 面板中，注意**Shortcut_Exercise**
-    SQL分析endpoint可用。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image152.png)
 
-![](./media/image111.png)
+5.  在**Components**部分取消勾选*SaleEvent*，只勾选 **Nodes \>
+    Store**, **Nodes \> Freezer**和 **Edges \> operates**。
 
-### 任务2：运行跨仓库查询
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image153.png)
 
-在这个任务中，学习如何运行跨仓库查询。具体来说，你将运行一个查询，将
-Wide World Importers 仓库连接到 Shortcut_Exercise SQL 分析endpoint。
+6.  選擇**Run query**，確認實例圖顯示兩台freezers連接到*巴黎*商店。
 
-** 注意：**跨
-database查询使用*database.schema.table*的三部分命名来引用对象。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image154.png)
 
-1.  在功能区的**Home** 标签中，选择 **New SQL query**。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image155.png)
 
-![](./media/image112.png)
+7.  选择**Clear query**以清除查询结果。
 
-2.  在查询编辑器中，粘贴以下代码。该代码检索了按库存商品、描述和客户销售数量的总量。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image156.png)
 
-```
---Retrieve an aggregate of quantity sold by stock item, description, and customer.
-SELECT
-    Sales.StockItemKey,
-    Sales.Description,
-    c.Customer,
-    SUM(CAST(Sales.Quantity AS int)) AS SoldQuantity
-FROM
-    [dbo].[fact_sale] AS Sales
-    INNER JOIN [Shortcut_Exercise].[dbo].[dimension_customer] AS c
-        ON Sales.CustomerKey = c.CustomerKey
-GROUP BY
-    Sales.StockItemKey,
-    Sales.Description,
-    c.Customer;
-```
-3.  **运行** 查询，并查看查询结果。
+    接下來，設計這個問題：*顯示所有銷售額超過150的商店。*
 
-![](./media/image113.png)
+8.  选择**Add a node**，添加**SaleEvent**节点。
 
-![](./media/image114.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image157.png)
 
-3.  将查询重命名以便参考。在**Explorer** 中右键点击**SQL
-    query**，选择**“Rename**”。
+9.  在**Components**部分，勾选 **Nodes \> Store Edges \>
+    from** 的框，将它们添加到图中。
 
-> ![](./media/image115.png)
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image158.png)
 
-![](./media/image116.png)
+10. 在query builder功能区中，选择 **Add filter \> SaleEvent \>
+    RevenueUSD**。将过滤器设置为 +++**RevenueUSD \> 150+++**。
 
-4.  在“**Rename**”对话框中，在**“Name**”字段下输入 +++**Cross-warehouse
-    query+++**，然后点击**Rename**按钮。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image159.png)
 
-> ![](./media/image117.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image160.png)
 
-## 练习9：创建Direct Lake semantic模型和Power BI报告
+11. 選擇**Run
+    query**，並驗證實例圖是否顯示兩家門店符合其關聯銷售事件的篩選條件。你也可以選擇圖表中的節點，查看具體促銷活動的詳細信息
 
-### 任务1：创建一个semantic模型
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image161.png)
 
-在此任务中，学习如何基于Wide World Importers仓库创建Direct Lake
-semantic模型。
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image162.png)
 
-1.  在 **WideWorldImportes** 页面的 **Home**标签下，选择**New semantic
-    model**。
+    這個流程可以讓你檢查將運營問題（比如某些門店freezer溫度升高）與業務成果（銷售）聯繫起來的路徑。
 
-![](./media/image118.png)
+# 练习 5：从代理中获取**ontology**
 
-2.  在**New semantic model** 窗口中，在 **Direct Lake semantic model
-    name**框中输入 +++**Sales Model+++**
+Ontology（预览）与 [Fabric
+数据代理（预览版）](https://learn.microsoft.com/en-us/fabric/data-science/concept-data-agent)集成，允许你用自然语言提问，并基于Ontology的定义和绑定获得答案。
 
-3.  展开dbo模式，打开**Tables**文件夹，然后检查**dimension_city**和**fact_sale**表。选择**Confirm**。
+## 任務 1：創建具有ontology（預覽）源的數據代理
 
-> ![](./media/image119.png)
+按照以下步驟創建一個新的data代理，連接到你的ontology（預覽）項目。
 
-9.  从左侧导航选择***Warehouse_FabricXXXXX***，如下图所示
+1.  现在，点击左侧导航窗格上的 **Fabric IQ Ontology XX**。
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image120.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image163.png)
 
-10. 要打开semantic模型，返回工作区着陆页，然后选择 **Sales
-    Model **semantic模型。
+2.  在**Fabric**主页，选择 **+New item。**
+    在“按项目类型筛选”搜索框中，输入 +++**data agent**+++ 并选择 Data
+    agent
 
-![](./media/image121.png)
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image164.png)
 
-![](./media/image122.png)
+3.  输入 **+++RetailOntologyAgent+++**
+    作为数据代理名称，并选择**Create**。
 
-12. 在**Sales Model** 页面，要编辑**“Manage
-    Relationships”**，请将模式从**“Viewing**”改为**“Editing”**![A
-    screenshot of a computer AI-generated content may be
-    incorrect.](./media/image123.png)
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image165.png)
 
-13. 要创建关系，在模型设计器中，在 **Home**功能区选择**“Manage
-    relationships**”。
+4.  在 **RetailOntologyAgent** 页面中，选择**Add a data source**
 
-![](./media/image124.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image166.png)
 
-14. 在**Manage relationship** 窗口中，选择 **+ New relationship**。
+5.  在 OneLake catalog标签页中，选择 **RetailSalesOntology**
+    Ontology，并选择 **Add。**
 
-![](./media/image125.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image167.png)
+    >
+    > 當代理準備好時，門就會打開。
+    >
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image168.png)
 
-14. 在**“New relationship window”**窗口中，完成以下步骤创建关系：
+## 任務2：提供代理指令
 
--  在“**From table”**下拉列表中，选择**dimension_city**表。
+** 注釋：** 此步驟是針對已知影響查詢聚合的問題而添加的。
 
-- 在**“To 表**”下拉列表中，选择**fact_sale**表。
+> 接下來，向代理添加自定義指令。
 
-- 在**Cardinality** 下拉列表中，选择 **One to many (1:\*)。**
+1.  从菜单功能区选择**Agent instructions**。
 
-- 在**Cross-filter direction** 下拉菜单中，选择**Single**。
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image169.png)
 
-- 勾选**“Assume referential integrity**”框。
+2.  在输入框底部添加+++**Support group by in
+    GQL**+++。此指令可以更好地聚合ontology data。
 
-- 选择**Save**。
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image170.png)
 
-![](./media/image126.png)
+3.  指令是自动执行的。可选地，关闭**Agent instructions** 标签页。
 
-![](./media/image127.png)
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image171.png)
 
-15. 在**Manage relationship** 窗口中，选择**Close**。
+## 任務3：帶自然語言的查詢代理
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image128.png)
+> 接下来，用自然语言问题探索你的ontology。
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image129.png)
+1.  輸入以下文字，點擊下圖所示的 **Submit圖標。**
 
-### 任务2：创建Power BI报告
+    > **+++For each store, show any freezers operated by that store that
+    > ever had a humidity lower than 46 percent.+++**
+    >
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image172.png)
 
-在这个任务中，学习如何基于你在任务中创建的语义模型创建Power BI报告。
+    ![A screenshot of a chat AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image173.png)
 
-1.  在**File**功能区，选择**Create new report**。
+2.  輸入以下文字，點擊下圖所示的**Submit圖標**。
 
-![](./media/image130.png)
+    > *+++What is the top product by revenue across all stores?+++*
 
-2.  在报表设计器中，完成以下步骤以创建柱状图可视化：
+    ![A screenshot of a chat AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image174.png)
 
--  在**Data** 面板中，展开**fact_sale**表，然后勾选Profit 字段。
+    ![A screenshot of a chat AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image175.png)
 
-- 在**Data**面板中，展开dimension_city表，然后勾选SalesTerritory字段。
+    > 注意，这些响应引用的是实体类型（*Store*, *Products*, *Freezer*）及其关系，而不仅仅是原始表。
+    >
+    ![Screenshot of the result of a query.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image176.png)
+    >
+    > ** 提示：**
+    > 如果你在運行示例查詢時看到錯誤提示無數據，建議等幾分鐘，給代理更多時間初始化。然後，再次運行查詢。
+    >
+    > 繼續探索數據代理，嘗試一些你自己的提示。
 
-![](./media/image131.png)
+## 任务4：清理资源
 
-3.  在**Visualizations**面板中，选择 **Azure Map** 可视化。
+1.  選擇您的工作區，即左側導航菜單中的 **Fabric IQ
+    OntologyXX**。它會打開工作區的物品視圖。
 
-![](./media/image132.png)
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image177.png)
 
-4.  在“**Data**”窗格中，从 dimension_city 表中，将 StateProvince
-    字段拖到“**Visualizations**”窗格中的“**Location**”区域。
+1.  选择......在工作区名称下选择选项，选择 **Workspace settings**。
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image133.png)
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image178.png)
 
-5.  在“**Data**”窗格中，从 fact_sale
-    表中选中“Profit”字段，将其添加到地图可视化“**Size**”区域。
+2.  导航到“General”标签底部，选择**“Remove this workspace**”。
 
-6.  在**Visualizations **面板中，选择**Table **可视化。
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image179.png)
+    >
+    ![A screenshot of a computer AI-generated content may be
+    incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image180.png)
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image134.png)
+    **摘要**
 
-7.  在**Data**面板中，勾选以下字段：
+    該用例展示了如何使用 Microsoft Fabric IQ
+    Ontology（預覽版）創建一個連接的語義數據模型，代表真實世界的商業概念及其關係。通過將結構化lakehouse數據與流式遙測數據結合，ontology提供了統一且商業友好的企業數據視圖。
 
--  dimension_city表中的SalesTerritory
+    通過實體定義、data
+    bindings和關係建模，用戶可以分析運營信號——如freezer溫度或濕度——如何與銷售和收入等業務結果相關。該用例還強調了本體如何通過Fabric
+    data代理支持圖探索和自然語言查詢，從而在無需用戶理解底層表或模式的情況下獲得更深入的洞察。
 
-- dimension_city表中的StateProvince
-
-- fact_sale表的Profit 
-
-- 从fact_sale表中的TotalExcludingTax
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image135.png)
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image136.png)
-
-8.  请核实报告页面的完成设计是否与以下图片相似。
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image137.png)
-
-9.  要保存报告，在**Home** 功能区选择**“File** \> **Save**”。
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image138.png)
-
-10. 在“Save your report”窗口，在“Enter a name for your
-    report”框中，输入+++**Sales Analysis**+++，然后选择**Save**
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image139.png)
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image140.png)
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image141.png)
-
-### 任务3：清理资源
-
-你可以删除单个报表、pipelines、仓库和其他项目，或者删除整个工作区。在这个教程中，你将清理工作区、单个报告、pipelines、仓库以及你作为实验室一部分创建的其他项目。
-
-1.  在导航菜单中选择**Warehouse_FabricXX**返回工作区的项目列表。
-
-![](./media/image142.png)
-
-2.  在工作区头的菜单中，选择**Workspace settings**。
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image143.png)
-
-3.  在工作**Workspace
-    settings** 对话框中，选择“**General**”，然后选择**“Remove this
-    workspace**”。
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image144.png)
-
-4.  在 **Delete workspace?** 对话框，点击**Delete** 按钮。
-    ![](./media/image145.png)
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image146.png)
-
-**摘要**
-
-这个综合实验室介绍了一系列旨在在 Microsoft Fabric 中建立功能性
-data环境的任务。它从创建一个工作区开始，这对
-data操作至关重要，并确保试验的启用。 随后，在 Fabric 环境中建立了名为
-WideWorldImporters 的仓库，作为
-data存储和处理的中央仓库。随后，通过实现Data Factory
-pipeline，详细说明了Warehouse_FabricXX工作区中的data ingestion过程。
-该过程涉及从外部来源获取
-data并将其无缝集成到工作区中。关键表、关键表、dimension_city和fact_sale在
-data仓库中被创建，作为
-data分析的基础结构。Data加载过程继续使用T-SQL进行，将Azure
-Blob存储中的data传输到指定的表中。 后续任务涉及
-data管理和操作领域。演示了克隆表，为
-data复制和测试提供了宝贵的技术。此外，克隆过程被扩展到同一仓库内的不同模式（dbo1），展示了结构化的
-data组织方法。实验室推进到 data转换，引入了存储过程以高效聚合销售
-data。随后转为可视化查询构建，为复杂 data查询提供直观的界面。
-接着是对笔记本的探索，展示了它们在查询和分析dimension_customer表
-data方面的实用性。随后，展示了多仓库查询功能，使工作空间内不同仓库之间能够无缝检索
-data。实验室最终实现了Azure地图可视化集成，增强了Power BI中的地理
-data表示。随后，创建了一系列Power
-BI报告，包括柱状图、地图和表格，以促进深入的销售
-data分析。最后一项任务是从OneLake数据中心生成报告，进一步强调Fabric中
-data源的多样性。最后，实验室还提供了资源管理的见解，强调清理程序对于保持高效工作环境的重要性。这些任务综合起来，提供了对在
-Microsoft Fabric 中设置、管理和分析 data的全面理解。
+    总体而言，这一用例展示了Fabric IQ
+    Ontology如何帮助连接运营数据和分析，支持跨域更智能的决策。
