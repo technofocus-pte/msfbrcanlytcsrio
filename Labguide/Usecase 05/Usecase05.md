@@ -1,1236 +1,905 @@
-# Caso de uso 04: Crear un data warehouse de ventas y geografía para Contoso en Microsoft Fabric
+## Caso de uso 04: Análisis de nueva generación con Fabric IQ, Agentes de Datos y Rayfin
 
-**Introducción**
+Ontology con Fabric Data Agents
 
-Contoso, una empresa minorista multinacional, busca modernizar su
-infraestructura de datos para mejorar el análisis de ventas y
-geográfico. Actualmente, sus datos de ventas y clientes están dispersos
-en varios sistemas, lo que dificulta que sus analistas de negocio y
-citizen developers obtengan información relevante. La empresa planea
-consolidar estos datos en una plataforma unificada mediante Microsoft
-Fabric para permitir realizar consultas cruzadas, análisis de ventas e
-informes geográficos.
+### Introducción
 
-En este laboratorio, asumirá el rol de ingeniero de datos en Contoso,
-encargado de diseñar e implementar una solución de data warehouse
-mediante Microsoft Fabric. Comenzará configurando un workspace de
-Fabric, creando un data warehouse, cargando datos desde Azure Blob
-Storage y realizando tareas analíticas para proporcionar información a
-los responsables de la toma de decisiones de Contoso.
+En las plataformas de datos modernas, las empresas suelen necesitar una capa semántica centrada en el negocio que unifique el significado entre diversas fuentes de datos y modelos analíticos. La característica Ontology (preview) de Microsoft Fabric IQ le permite crear esta capa definiendo conceptos empresariales (como productos, tiendas y eventos) y sus relaciones, y vinculando estas definiciones con datos reales de su Lakehouse, modelos semánticos y flujos de eventos.
 
-Aunque muchos conceptos de Microsoft Fabric pueden resultar familiares
-para los profesionales de datos y análisis, puede ser difícil aplicar
-estos conceptos en un nuevo entorno. Este laboratorio está diseñado para
-guiarle paso a paso a través de un escenario integral, desde la
-adquisición de datos hasta su consumo, con el objetivo de proporcionar
-una comprensión básica de la experiencia de usuario de Microsoft Fabric,
-las distintas experiencias y sus puntos de integración, así como las
-experiencias de Microsoft Fabric para profesionales y citizen
-developers..
+En este escenario, una empresa ficticia llamada Lakeshore Retail, que vende helados en varias ubicaciones. Con datos de ejemplo, el tutorial muestra cómo configurar el entorno y comenzar a crear una ontología que capture conceptos empresariales como Store, Products y SaleEvent. También conectará datos de streaming (como las temperaturas de los congeladores desde Eventhouse) a estos conceptos para que la ontología pueda admitir razonamiento y consultas entre dominios, por ejemplo: “¿Qué Store tienen menores ventas de helados cuando la temperatura del congelador supera los –18 °C?”
 
-**Objetivos**
+### Objetivos
 
-- Configurar un workspace de Fabric con la versión de prueba habilitada.
+- Preparar un Microsoft Fabric Workspace con los servicios necesarios,
+  incluidos Lakehouse, Eventhouse y Ontology (preview).
 
-- Crear un nuevo Warehouse denominado WideWorldImporters en Microsoft
-  Fabric.
+- Crear una ontología centrada en el negocio definiendo los tipos de
+  entidad principales, como Store, Products, SaleEvent y Freezer.
 
-- Cargar datos en el workspace Warehouse_FabricXX mediante un pipeline
-  de Data Factory.
+- Vincular datos estáticos de tablas de OneLake y datos de series
+  temporales de Eventhouse con las entidades de la ontología.
 
-- Generar las tablas dimension_city y fact_sale en el data warehouse.
+- Crear relaciones significativas entre entidades para representar
+  procesos empresariales reales (por ejemplo, Store tiene SaleEvent y Store opera Freezer).
 
-- Rellenar las tablas dimension_city y fact_sale con datos de Azure Blob
-  Storage.
+- Explorar y validar la ontología mediante instancias de entidades,
+  gráficos de relaciones y filtros del generador de consultas.
 
-- Crear clones de las tablas dimension_city y fact_sale en el Warehouse.
+- Habilitar consultas en lenguaje natural integrando la ontología con un
+  Fabric Data Agent (preview).
 
-- Clonar las tablas dimension_city y fact_sale en el esquema dbo1.
 
-- Desarrollar un procedimiento almacenado para transformar los datos y
-  crear la tabla aggregate_sale_by_date_city.
+# Ejercicio 1: Configuración del entorno
 
-- Generar una consulta mediante el generador de consultas visual para
-  combinar y agregar datos.
+## Tarea 1: Crear un espacio de trabajo de Fabric
 
-- Utilizar un notebook para consultar y analizar datos de la tabla
-  dimension_customer.
+En esta tarea, creará un espacio de trabajo de Fabric. El espacio de trabajo contendrá todos los elementos necesarios para este laboratorio de Lakehouse, incluidos Lakehouse, los flujos de datos, los pipelines de Data Factory, los notebooks, los conjuntos de datos de Power BI y los informes.
 
-- Incluir los warehouses WideWorldImporters y ShortcutExercise para
-  realizar consultas cruzadas.
+1. Abra el navegador, vaya a la barra de direcciones y escriba o pegue la siguiente URL: +++https://app.fabric.microsoft.com/+++; luego presione **Enter** e inicie sesión con sus credenciales.
 
-- Ejecutar una consulta T-SQL en los warehouses WideWorldImporters y
-  ShortcutExercise.
+    | Credential | Value |
+    |------------|-------|
+    | Username | +++@lab.CloudPortalCredential(User1).Username+++ |
+    | Password | +++@lab.CloudPortalCredential(User1).Password+++ |
 
-- Habilitar la integración de la visualización Azure Maps en el portal
-  de administración.
+1. En el panel Workspaces, haga clic en el mosaico **+New workspace.**
 
-- Generar visualizaciones de gráfico de columnas, mapa y tabla para el
-  informe Sales Analysis.
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image1.png)
 
-- Crear un informe utilizando datos del conjunto de datos
-  WideWorldImporters en OneLake data hub.
+1. En el panel **Create a workspace** que aparece en el lado derecho, escriba los siguientes valores y haga clic en el botón **Apply**.
 
-- Eliminar el workspace y los elementos asociados.
+    | Setting | Value |
+    |----------|----------|
+    | Name | +++Fabric IQ Ontology@lab.LabInstance.Id+++|
+    | Advanced | Under **License mode**, select **Fabric capacity** |
+    | Default storage format | **Small dataset storage format** |
 
-## Ejercicio 1: Crear un workspace de Microsoft Fabric
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image2.png)
+    
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image3.png)
+    
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image4.png)
 
-### Tarea 1: Crear un workspace
 
-1.  Abra el navegador, vaya a la barra de direcciones y escriba o pegue
-    la siguiente URL: +++https://app.fabric.microsoft.com/+++ y, a
-    continuación, presione el botón **Enter**.
+## Tarea 2: Crear un Lakehouse
 
-\[!note\]**Nota:** Si se le dirige a la página de inicio de Microsoft
-Fabric, omita el paso n.º 5.
+1. Cree un nuevo Lakehouse haciendo clic en el botón **+New item** de la barra de navegación.
 
-![](./media/image1.png)
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image5.png)
 
-2.  En la ventana de **Microsoft Fabric**, introduzca sus credenciales y
-    haga clic en el botón **Submit**.
+1. Filtre por Lakehouse y seleccione el mosaico +++Lakehouse+++.
 
-| Credential | Value |
-|---|---|
-| Username | +++@lab.CloudPortalCredential(User1).Username+++ |
-| Password | +++@lab.CloudPortalCredential(User1).Password+++ |
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image6.png)
 
-> ![](./media/image2.png)
+1. En el cuadro de diálogo **New lakehouse**, escriba +++IQ_Lakehouse+++ en el campo **Name** y desactive **Lakehouse schemas**. Haga clic en el botón **Create** y abra el nuevo **Lakehouse**.
 
-3.  A continuación, en la ventana de **Microsoft**, introduzca la
-    contraseña y haga clic en el botón **Sign in**.
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image7.png)
+    
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image8.png)
 
-> ![](./media/image3.png)
+1. Verá una notificación con el mensaje **Successfully created SQL endpoint**.
 
-4.  En la ventana **Stay signed in?,** haga clic en el botón **Yes**.
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image9.png)
 
-5.  Si Power BI se abre de forma predeterminada, siga los pasos que se
-    indican a continuación; de lo contrario, omita este paso.
 
-- Haga clic en **Power BI**.
+## Tarea 3: Incorporar datos de ejemplo
 
-![](./media/image4.png)
+1. En la página **IQ_Lakehouse**, vaya a la sección **Get data in your lakehouse** y haga clic en **Upload files**, como se muestra en la siguiente imagen**.**
 
-- Seleccione Fabric entre las opciones.
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image10.png)
 
-![](./media/image5.png)
+1. En la pestaña **Upload files**, haga clic en el icono de carpeta ubicado debajo de **Files**.
 
-6.  En la página de inicio de Fabric, seleccione el mosaico **+ New
-    workspace**.
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image11.png)
 
-![](./media/image6.png)
+1. Vaya a **C:\LabFiles\LabFiles** en la VM, seleccione los archivos **DimProducts.csv**, **DimStore.csv**, **FactSale.csv** y **Freezer.csv**, y haga clic en el botón **Open**.
 
-7.  En la pestaña **Create a workspace**, introduzca los siguientes
-    detalles y haga clic en el botón **Apply**.
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image12.png)
 
-| Field | Value |
-|---|---|
-| Name | +++Warehouse_Fabric@lab.LabInstance.Id+++ (must be a unique Id) |
-| Description | +++This workspace contains all the artifacts for the data warehouse+++ |
-| Advanced Under License mode | Fabric |
-| Default storage format | Small dataset storage format |
+1. A continuación, haga clic en el botón **Upload** y cierre el cuadro de diálogo **Upload files** seleccionando el icono **X**.
 
-![](./media/image7.png)
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image13.png)
+    
+    ![A screenshot of a upload box AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image14.png)
 
-![](./media/image8.png)
+1. Haga clic en **Refresh** en **Files**. Los archivos aparecerán.
 
-![](./media/image9.png)
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image15.png)
 
-3.  Espere a que finalice la implementación. El proceso tarda entre 1 y
-    2 minutos. Cuando se abra el nuevo workspace, debería estar vacío.
+1. En la página **Lakehouse**, en el panel **Explorer**, seleccione **Files**. A continuación, coloque el cursor sobre el archivo **DimProducts.csv**. Haga clic en los puntos suspensivos (**…**) junto a **DimProducts.csv**, seleccione **Load to Tables** y, después, **New table.**
 
-![](./media/image10.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image16.png)
+    
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image17.png)
 
-### Tarea 2: Crear un Warehouse en Microsoft Fabric
+1. En el cuadro de diálogo **Load file to new table**, haga clic en el botón **Load**.
 
-1.  En la página de **Fabric**, seleccione **+ New item** para crear un
-    lakehouse y seleccione **Warehouse.**
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image18.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image11.png)
+1. La tabla **DimProducts** se creará correctamente.
 
-2.  En el cuadro de diálogo **New warehouse**, introduzca
-    +++**WideWorldImporters**+++ y haga clic en el botón **Create**.
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image19.png)
 
-![](./media/image12.png)
+1. Seleccione la tabla **DimProducts** para obtener una vista previa de los datos.
 
-3.  Cuando finalice el aprovisionamiento, aparecerá la página de inicio
-    del Warehouse **WideWorldImporters**.
+    [!Note] **Nota**: Es posible que deba seleccionar el botón **Refresh** más de una vez para obtener una vista previa de los datos.
 
-![](./media/image13.png)
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image20.png)
 
-## Ejercicio 2: Ingerir datos en un Warehouse de Microsoft Fabric
+1. Repita los pasos 7 al 9 para cargar los archivos restantes en las tablas.
 
-### Tarea 1: Ingerir datos en un Warehouse
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image21.png)
 
-1.  Desde la página de inicio del Warehouse **WideWorldImporters**,
-    seleccione **Warehouse_FabricXX** en el menú de navegación del lado
-    izquierdo para volver a la lista de elementos del workspace.
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image22.png)
 
-![](./media/image14.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image23.png)
+    
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image24.png)
+    
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image25.png)
+    
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image26.png)
+    
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image27.png)
 
-2.  En la página **Warehouse_FabricXX**, seleccione **+ New item**. A
-    continuación, haga clic en **Copy job** para ver la lista completa
-    de elementos disponibles en **Get data**.
+1. En la barra de navegación izquierda, seleccione **Fabric IQ Ontology**.
 
-![](./media/image15.png)
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image28.png)
 
-3.  En la ventana **New copy job**, en el cuadro **Name**, introduzca
-    +++**Load Customer Data**+++. Seleccione **Create.**
 
-> ![](./media/image16.png)
+## Tarea 4: Preparar el Eventhouse
 
-4.  El aprovisionamiento habrá finalizado cuando se abra la página
-    **Copy job**.
+Siga estos pasos para cargar el archivo de datos de streaming de dispositivos en una base de datos KQL en Eventhouse.
 
-> ![](./media/image17.png)
+1. En la página principal de **Fabric IQ Ontology**, seleccione **+New item** y, a continuación, seleccione **Eventhouse**.
 
-5.  En la primera página de la ventana **Copy job**, seleccione **Sample
-    data** en la barra de menús de esta página. Para este tutorial,
-    utilizaremos el modelo de datos **Retail Data Model del ejemplo Wide
-    World Importers**. Seleccione esta opción para ir a la página
-    siguiente.
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image29.png)
 
-> ![](./media/image18.png)
+1. Asigne el nombre +++TelemetryDataEH+++ al **Eventhouse** y haga clic en el botón **Create**.
 
-6.  Se cargará la vista previa de los datos de ejemplo. En la página
-    **Choose data**, puede obtener una vista previa del conjunto de
-    datos seleccionado. Después de revisar los datos, seleccione
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image30.png)
+
+1. El Eventhouse se abrirá cuando esté listo.
+
+    ![A screenshot of a  computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image31.png)
+
+1. Abra la base de datos KQL seleccionando su nombre.
+
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image32.png)
+    
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image33.png)
+
+1. En la cinta de opciones inferior de la **KQL database**, haga clic en **Get data** y, a continuación, seleccione **Local file** para cargar archivos desde el sistema local en la base de datos.
+
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image34.png)
+
+1. Seleccione la opción de destino para incorporar los datos en una nueva tabla, haga clic en **+ New table** y escriba +++FreezerTelemetry+++ como nombre de la tabla.
+
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image35.png)
+    
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image36.png)
+
+1. Seleccione la tabla de destino y, a continuación, arrastre y suelte los archivos o haga clic en **Browse for files** para cargar los datos.
+
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image37.png)
+
+1. Vaya a **C:\LabFiles\Lab1** en su VM, seleccione el archivo **FreezerTelemetry.csv** y haga clic en el botón **Open**.
+
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image38.png)
+
+1. Haga clic en el botón **Next.**
+
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image39.png)
+
+1. A continuación, haga clic en el botón **Finish**.
+
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image40.png)
+
+1. Espere a que se complete la **Data ingestion** y haga clic en **Close**.
+
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image41.png)
+
+1. Cuando termine, la KQL database mostrará la tabla **FreezerTelemetry**:
+
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image42.png)
+
+1. Seleccione **Fabric IQ Ontology** en el panel de navegación izquierdo.
+
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image43.png)
+
+
+# Ejercicio 2: Crear una Ontology a partir de OneLake
+
+## Tarea 1: Crear un elemento Ontology (preview)
+
+1. En el espacio de trabajo de Fabric, seleccione **+ New item**. Busque y seleccione el elemento **Ontology (preview)**.
+
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image44.png)
+
+1. Escriba +++RetailSalesOntology+++ como nombre de la ontología y seleccione **Create**.
+
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image45.png)
+    
+     ** Sugerencia:** Los nombres de las ontologías pueden incluir números,
+     letras y guiones bajos. No utilice espacios ni guiones.
+
+1. La **Ontology** se abrirá cuando esté lista.
+
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image46.png)
+    
+     A continuación, cree tipos de entidad, vinculaciones de datos y
+     relaciones basadas en los datos de las tablas de su Lakehouse.
+
+
+## Tarea 2: Crear tipos de entidad y vinculaciones de datos
+
+ Primero, cree los tipos de entidad. Los tipos de entidad representan
+ tipos de objetos en una empresa. En este paso se crean tres tipos de
+ entidad: *Store, Products* y *SaleEvent*. Después de crear los tipos
+ de entidad, cree sus propiedades vinculando las columnas de los datos
+ de origen de las tablas del Lakehouse ***IQ_Lakehouse.***
+
+### Agregar el primer tipo de entidad (Store)
+
+1. En la cinta de opciones superior o en el centro del lienzo de configuración, seleccione **Add entity type**.
+
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image47.png)
+
+1. Escriba +++Store+++ como nombre del tipo de entidad y seleccione **Add Entity Type**.
+
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image48.png)
+
+1. El tipo de entidad *Store* se agrega al lienzo de configuración y el panel **Entity type configuration** estará visible.
+
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image49.png)
+
+1. En el lienzo de configuración, haga clic en los puntos suspensivos (**...**) situados junto al nombre de la entidad y seleccione **Bind data**.
+
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image50.png)
+
+1. Seleccione **Add data binding \ Lakehouse table**.
+
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image51.png)
+
+1. A continuación, elija el origen de datos. Seleccione el **Lakehouse** **IQ_Lakehouse** y haga clic en **Next**.
+
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image52.png)
+
+1. Seleccione la tabla **dimstore** y haga clic en **Select**.
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image53.png)
+
+1. Los campos de la tabla de origen se cargarán en la configuración de la vinculación de datos. Observe las siguientes secciones de la página de configuración:
+
+    - **Entity type key:** Identifica el campo (o los campos) que puede
+    utilizarse para identificar de forma única cada registro de los datos incorporados.
+
+    - **Binding selection:** Identifica la tabla de origen que contiene los
+    datos de la vinculación.
+
+    - **Entity type key mapping:** Identifica la columna (o las columnas) de
+    la tabla de datos de origen que se asigna a la propiedad de clave del tipo de entidad. Puede seleccionar columnas de tipo cadena e integer de los datos de origen como clave del tipo de entidad. En conjunto, las columnas seleccionadas identifican de forma única un registro.
+
+    - **Properties:** Enumera las columnas de los datos de origen que se
+    representarán como propiedades del tipo de entidad *Store*. La columna **Source** se completa automáticamente con las columnas de la tabla *dimstore*, mientras que la columna **Property name** muestra los nombres de las propiedades correspondientes del tipo de entidad *Store* dentro de la Ontology. Para este tutorial, mantenga los nombres de propiedad predeterminados.
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image54.png)
+
+
+1. En la parte superior de la configuración, seleccione **Define entity type key**.
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image55.png)
+
+1. Seleccione **StoreId** en la lista de propiedades y haga clic en **Save**.
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image56.png)
+
+1. **Guarde** la vinculación de datos.
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image57.png)
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image58.png)
+
+1. Confirme que el tipo de entidad se haya actualizado correctamente y, a continuación, seleccione **Cancel** para cerrar las opciones de configuración.
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image59.png)
+
+1. Verá la página **Configure** con los detalles del tipo de entidad. Esta página muestra información importante sobre el tipo de entidad, incluidas sus propiedades y vinculaciones de datos. Revise las vinculaciones de datos configuradas.
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image60.png)
+
+1. Seleccione **Home** para volver al lienzo de configuración y agregar nuevos tipos de entidad.
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image61.png)
+
+
+### Agregar los demás tipos de entidad (Products, SaleEvent)
+
+1. Siga los mismos pasos que utilizó para el tipo de entidad **Store** para crear los tipos de entidad descritos en la siguiente tabla. Cada entidad tiene una vinculación de datos estática con las columnas predeterminadas de su tabla de origen.
+
+    | Entity Type Name | Source Table in IQ_Lakehouse | Entity Type Key |
+    |------------------|------------------------------|-----------------|
+    | +++Products+++<br<br**Note:** Use the plural form **Products** to avoid conflict with the GQL reserved word **PRODUCT**. | **dimproducts** | **ProductId** |
+    | +++SaleEvent+++ | **factsales** | **SaleId** |
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image62.png)
+
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image63.png)
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image64.png)
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image65.png)
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image66.png)
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image67.png)
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image68.png)
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image69.png)
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image70.png)
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image71.png)
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image72.png)
+
+1. Seleccione **Home** para volver al lienzo de configuración y agregar el tipo de entidad **SaleEvent**.
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image73.png)
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image74.png)
+
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image75.png)
+    
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image76.png)
+    
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image77.png)
+    
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image78.png)
+    
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image79.png)
+    
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image80.png)
+    
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image81.png)
+    
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image82.png)
+    
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image83.png)
+    
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image84.png)
+
+1. Cuando termine, verá estos tipos de entidad enumerados en el panel **Entity Types**.
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image85.png)
+
+
+## Tarea 3: Crear tipos de relación
+
+A continuación, cree tipos de relación entre los tipos de entidad para representar las conexiones contextuales de los datos.
+
+### SaleEvent desde Store
+
+1. En el Explorer, seleccione el tipo de entidad **SaleEvent**.
+
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image86.png)
+
+1. En la cinta de opciones, seleccione **Add relationship**.
+
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image87.png)
+
+1. Escriba los siguientes detalles del tipo de relación y seleccione **Add relationship type**.
+
+    - **Relationship type name**: +++from+++
+    - **Source entity type**: **SaleEvent**
+    - **Target entity type**: **Store**
+
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image88.png)
+    
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image89.png)
+
+
+1. La relación se agregará al lienzo semántico. Selecciónela para abrir la configuración de los detalles de la relación. Observe las siguientes secciones de la página de configuración:
+
+    - **Origin entity type:** Muestra los detalles de la entidad de origen
+    **(SaleEvent** en este caso**).
+
+    - **Relationship type:** Permite configurar los detalles del tipo de
+    relación.
+
+    - **Target entity type:** Muestra los detalles de la entidad de destino
+    **(Store** en este caso**)**.
+
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image90.png)
+    
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image91.png)
+
+
+1. En la sección central, especifique los siguientes detalles:
+
+1. **Mapping table**: **Examine los orígenes disponibles** y seleccione la tabla **factsales.** Esta tabla de los datos de origen puede vincular las entidades Store y SaleEvent, ya que contiene información de identificación para ambos tipos de entidad. Cada fila de esta tabla hace referencia a un almacén y a un evento de venta mediante su ID.
+
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image92.png)
+
+1. **Matched SaleEvent: SaleId**: Seleccione **SaleId**. Esta configuración especifica la columna de la tabla de datos de origen de la relación cuyos valores coinciden con la propiedad de clave definida en la entidad *SaleEvent*. En este caso, el origen de datos de la relación y el origen de datos de la entidad utilizan la misma tabla, *factsales*, por lo que se selecciona la misma columna (SaleId).
+
+1. **Matched Store: StoreId**: Seleccione **StoreId**. Esta configuración especifica la columna de la tabla de datos de origen de la relación (*factsales \* StoreId) cuyos valores coinciden con la propiedad de clave definida en la entidad *Store* (*dimstore* \ StoreId). En los datos de este tutorial, el nombre de la columna es el mismo (StoreId) en ambas tablas.
+
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image93.png)
+
+    ** Importante:** Asegúrese de seleccionar las columnas **Matched** correctas que correspondan a las propiedades de clave de los tipos de entidad.
+
+1. **Guarde** el tipo de relación. Confirme que el tipo de relación se haya actualizado correctamente y, a continuación, seleccione **Cancel** para cerrar las opciones de configuración.
+
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image94.png)
+    
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image95.png)
+    
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image96.png)
+    
+     Ahora se ha creado la primera relación y se ha vinculado a los datos
+     de la tabla de origen. Continúe con la siguiente sección para crear
+     otro tipo de relación.
+
+
+### **SaleEvent sold Products**
+
+1. Seleccione **Home** para volver al lienzo de configuración, donde podrá agregar nuevos tipos de relación.
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image97.png)
+
+1. Siga los mismos pasos que utilizó para el primer tipo de relación para crear un segundo tipo de relación desde el tipo de entidad **SaleEvent**, con los detalles descritos en la siguiente tabla.
+
+    | Relationship Type Name | Origin Entity Type | Target Entity Type | Mapping Table | Matched SaleEvent: SaleId | Matched Products: ProductId |
+    |------------------------|-------------------|-------------------|---------------|--------------------------|----------------------------|
+    | `sold` | `SaleEvent` | `Products` | `factsales` | `SaleId` | `ProductId` |
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image98.png)
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image99.png)
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image100.png)
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image101.png)
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image102.png)
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image103.png)
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image104.png)
+
+
+# Ejercicio 3: Enriquecer la Ontology con datos adicionales
+
+En este ejercicio, enriquecerá la Ontology agregando un nuevo tipo de entidad ***Freezer***. Este tipo de entidad incorpora más contexto del dominio e introduce propiedades para datos de series temporales, que reflejan información operativa en tiempo real.
+
+### Nota
+
+Tanto para datos estáticos como para datos de series temporales, puede crear propiedades sin vincular datos y vincularlos posteriormente, o crear las propiedades y vincular los datos a ellas en un solo paso. En este artículo se muestran ambos enfoques.
+
+Por último, creará un nuevo tipo de relación para representar la conexión entre una tienda y sus congeladores.
+
+## Tarea 1: Crear el tipo de entidad Freezer y agregar propiedades
+
+Siga estos pasos para crear el tipo de entidad *Freezer* y agregarle propiedades. Las propiedades aún no estarán vinculadas a los datos.
+
+1. Seleccione **Add entity type** en la cinta de opciones superior. Escriba +++Freezer*+++* como nombre del tipo de entidad y seleccione **Add Entity Type.**
+
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image105.png)
+    
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image106.png)
+
+1. Con el tipo de entidad **Freezer** seleccionado en el **Explorer**, seleccione **View entity type details** en la cinta de opciones superior.
+
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image107.png)
+
+1. Se abrirá la página **Configure** con los detalles del tipo de entidad. En esta página se muestra información importante sobre el tipo de entidad, incluidas sus propiedades y los vínculos con los datos.
+
+    Expanda **Manage property bindings** y seleccione **Add properties**.
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image108.png)
+
+1. Agregue las siguientes propiedades y seleccione **Save**.
+
+    | Name | Property Type |
+    |------|---------------|
+    | `FreezerId` | `String` |
+    | `Model` | `String` |
+    | `minSafeTempC` | `Double` |
+    | `StoreId` | `String` |
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image109.png)
+
+    **Nota:** Los nombres de las propiedades deben ser únicos en todos los tipos de entidad.
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image110.png)
+
+1. Las propiedades se agregan a la página **Configure**, sin estar vinculadas a ningún origen de datos.
+
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image111.png)
+
+
+## Tarea 2: Vincular datos estáticos a las propiedades
+
+A continuación, vincule datos estáticos a las propiedades que creó para el tipo de entidad *Freezer*.
+
+1. Expanda **Manage property bindings** y seleccione **Add binding and properties**.
+
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image112.png)
+
+1. Seleccione **Add data binding \ Lakehouse table**.
+
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image113.png)
+
+1. Elija el origen de datos.
+
+    - Seleccione el Lakehouse **IQ_Lakehouse** y, a continuación, seleccione
     **Next**.
 
-![](./media/image19.png)
+    - Seleccione la tabla **freezer** y seleccione **Select**.
 
-5.  La página **Choose data destination** permite configurar el tipo de
-    elemento. En **OneLake catalog**, seleccione su **Warehouse Wide
-    World Importers** y, a continuación, seleccione **Next**.
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image114.png)
+    
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image115.png)
 
-> ![](./media/image20.png)
 
-6.  En la página **Choose copy job mode**, seleccione **Full copy** y, a
-    continuación, seleccione **Next**.
+1. Los campos de la tabla de origen se incorporan a la configuración del vínculo de datos. Observe las secciones de la página de configuración:
 
-> ![](./media/image21.png)
+    - **Entity type key:** Identifica el campo (o los campos) que sirve como
+    clave única para cada registro de los datos ingeridos.
 
-7.  Introduzca las siguientes tablas de destino y, a continuación,
-    seleccione **Next**.
+    - **Binding selection:** Identifica la tabla de origen que contiene los
+    datos del vínculo.
 
-- dbo.dimension_city
+    - **Entity type key mapping:** Identifica la(s) columna(s) de la tabla
+    de datos de origen que se asignan a la propiedad de clave del tipo de entidad. Puede seleccionar columnas de tipo cadena e integer de los datos de origen como clave del tipo de entidad. En conjunto, las columnas seleccionadas identifican de forma única un registro.
 
-- dbo.dimension_customer
+    - **Properties**: Enumera las columnas de los datos de origen y las
+    propiedades correspondientes del tipo de entidad **Freezer**. El lado **Source** se completa automáticamente con las columnas de la tabla **freezer**, y el lado **Property name** muestra los nombres de las propiedades correspondientes del tipo de entidad **Freezer** dentro de la **Ontology**. En este tutorial, mantenga los nombres de propiedad predeterminados.
 
-- dbo.dimension_date
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image116.png)
 
-- dbo.dimension_employee
 
-- dbo.dimension_stock_item
+1. Seleccione **Define entity type key** en la parte superior de la configuración. Seleccione **FreezerId** en la lista de propiedades y, a continuación, seleccione **Save**.
 
-- dbo.fact_sale
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image117.png)
 
-> ![](./media/image22.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image118.png)
 
-8.  En la página **Review + save**, revise el **Source** y el
-    **Destination**.
+1. **Guarde** el vínculo de datos. Confirme que el tipo de entidad se haya actualizado correctamente y, a continuación, seleccione **Cancel** para cerrar las opciones de configuración.
 
-![](./media/image23.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image119.png)
 
-9.  Utilice la pestaña **Results** para supervisar la ejecución del Copy
-    job.
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image120.png)
 
-![](./media/image24.png)
 
-10. Cuando finalice, el **Copy job** mostrará una notificación y un
-    estado **Succeeded**. Ahora verá seis tablas nuevas del conjunto de
-    datos Wide World Importers en su Warehouse.
+## Tarea 3: Vincular datos de series temporales a propiedades adicionales
 
-![](./media/image25.png)
+A continuación, agregue datos de series temporales a la entidad **Freezer**, creando nuevas propiedades y vinculando los datos de series temporales a ellas en una única operación de vínculo de datos.
 
-11. En la página **Load Customer Data**, haga clic en el workspace
-    **Warehouse_FabricXX** en la barra de navegación del lado izquierdo
-    y seleccione el Warehouse **WideWorldImporters**.
+1. En la página **Configure**, expanda **Manage property bindings** y seleccione nuevamente **Add binding and properties** para volver a abrir la configuración del vínculo.
 
-> ![](./media/image26.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image121.png)
 
-12. En el Warehouse **WideWorldImporters**, expanda **Schemas \> dbo \>
-    Tables** y compruebe que las tablas (**dimension_city**,
-    **dimension_customer**, **dimension_date**, **dimension_employee**,
-    **dimension_stock_item** y **fact_sale**) se hayan creado
-    correctamente.
+1. En **Binding selection**, expanda **Add data binding** y seleccione **Eventhouse table or materialized view**.
 
-![](./media/image27.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image122.png)
 
-## Ejercicio 3: Clonar una tabla con T-SQL en un Warehouse
+1. Elija el origen de datos.
 
-### Tarea 1: Clonar una tabla dentro del mismo esquema
+    1. Seleccione el Eventhouse **TelemetryDataEH** y, a continuación, seleccione **Add**.
 
-1.  En la página **WideWorldImporters**, vaya a la pestaña **Home**,
-    seleccione **SQL** en la lista desplegable y haga clic en **New SQL
-    query**.
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image123.png)
 
-![](./media/image28.png)
+1. Seleccione la tabla **FreezerTelemetry** y, a continuación, seleccione **Add**.
 
-3.  En el editor de consultas, pegue el código siguiente. El código crea
-    un clon de las tablas **dimension_city** y **fact_sale**.
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image124.png)
 
-```
---Create a clone of the dbo.dimension_city table.
- CREATE TABLE [dbo].[dimension_city1] AS CLONE OF [dbo].[dimension_city];
+1. En la configuración aparecerá una sección **Timeseries data**. En **Timestamp column**, seleccione **timestamp**.
 
- --Create a clone of the dbo.fact_sale table.
- CREATE TABLE [dbo].[fact_sale1] AS CLONE OF [dbo].[fact_sale];
-```
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image125.png)
 
-> ![](./media/image29.png)
+1. Desplácese hasta la sección **Properties**, donde **StoreId** muestra un error porque ya está vinculado en el enlace de datos estáticos. Utilice el icono de la papelera para eliminar la propiedad duplicada.
 
-4.  Para ejecutar la consulta, en la cinta del diseñador de consultas,
-    seleccione **Run**.
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image126.png)
 
-![](./media/image30.png)
+1. **Guarde** el vínculo de datos. Confirme que el tipo de entidad se haya actualizado correctamente y, a continuación, seleccione **Cancel** para cerrar las opciones de configuración.
 
-![](./media/image31.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image127.png)
 
-5.  En el editor de consultas, pegue el código siguiente. La función
-    T-SQL CURRENT_TIMESTAMP devuelve la marca de tiempo UTC actual como
-    un valor de tipo **datetime**. Seleccione **Run** para ejecutar la
-    consulta.
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image128.png)
 
-```
-SELECT CURRENT_TIMESTAMP;
-```
+1. De vuelta en la página **Configure** de *Freezer*, observe que ahora hay más propiedades del tipo de entidad y que las nuevas están vinculadas al origen de datos *FreezerTelemetry*.
 
-![](./media/image32.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image129.png)
 
-6.  Para crear un clon de una tabla correspondiente a un *past point in
-    time*, en el editor de consultas, pegue el código siguiente **para
-    reemplazar las instrucciones existentes**. El código crea un clon de
-    las tablas dimension_city y fact_sale en un momento determinado.
-    Ejecute la consulta.
+    Ahora la entidad *Freezer* tiene dos vínculos de datos: uno con datos estáticos de la tabla *freezer* del Lakehouse y otro con datos de streaming de la tabla *FreezerTelemetry* del Eventhouse.
 
-```
---Create a clone of the dbo.dimension_city table at a specific point in time.   
-CREATE TABLE [dbo].[dimension_city2] AS CLONE OF [dbo].[dimension_city] AT '2025-01-01T10:00:00.000';
 
- --Create a clone of the dbo.fact_sale table at a specific point in time.
-CREATE TABLE [dbo].[fact_sale2] AS CLONE OF [dbo].[fact_sale] AT '2025-01-01T10:00:00.000';
-```
+## Tarea 4: Agregar un tipo de relación
 
-![](./media/image33.png)
+Por último, cree un nuevo tipo de relación para representar la conexión entre una tienda y sus congeladores.
 
-![](./media/image34.png)
+### Create Store operates Freezer
 
-7.  Cambie el nombre de la consulta a +++**Clone Tables+++**.
+1. En la página **Configure**, expanda **Manage relationships** y seleccione **Add new relationship.**
 
-> ![](./media/image35.png)
->
-> ![](./media/image36.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image130.png)
 
-### Tarea 2: Clonar una tabla entre esquemas dentro del mismo Warehouse
+1. Especifique los siguientes detalles del tipo de relación y seleccione **Add relationship type**.
 
-En esta tarea, aprenderá a clonar una tabla entre esquemas dentro del
-mismo Warehouse.
+    1. **Relationship type name**: **operates**
 
-1.  Para crear una nueva consulta, en la cinta **Home**, seleccione
-    **New SQL query**.
+    1. **Source entity type**: **Store**
 
-> ![](./media/image37.png)
+    1. **Target entity type**: **Freezer**
 
-2.  En el editor de consultas, pegue el código siguiente. El código crea
-    un esquema y, a continuación, crea clones de las tablas
-    **fact_sale** y **dimension_city** en el nuevo esquema. Ejecute la
-    consulta.
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image131.png)
 
-```
---Create a new schema within the warehouse named dbo1.
- CREATE SCHEMA dbo1;
- GO
-
- --Create a clone of dbo.fact_sale table in the dbo1 schema.
- CREATE TABLE [dbo1].[fact_sale1] AS CLONE OF [dbo].[fact_sale];
-
- --Create a clone of dbo.dimension_city table in the dbo1 schema.
- CREATE TABLE [dbo1].[dimension_city1] AS CLONE OF [dbo].[dimension_city];
-```
-
-![](./media/image38.png)
-
-3.  Cuando finalice la ejecución, obtenga una vista previa de los datos
-    cargados en la tabla **dimension_city1** del esquema **dbo1**.
-
-> ![](./media/image39.png)
-
-4.  Para crear clones de las tablas correspondientes a un *previous
-    point in time*, en el editor de consultas, pegue el código siguiente
-    para **reemplazar las instrucciones existentes**. El código crea un
-    clon de las tablas **dimension_city** y **fact_sale** en
-    determinados momentos del pasado en el nuevo esquema. Ejecute la
-    consulta.
-
-```
---Create a clone of the dbo.dimension_city table in the dbo1 schema.
-CREATE TABLE [dbo1].[dimension_city2] AS CLONE OF [dbo].[dimension_city] AT '2025-01-01T10:00:00.000';
-
---Create a clone of the dbo.fact_sale table in the dbo1 schema.
-CREATE TABLE [dbo1].[fact_sale2] AS CLONE OF [dbo].[fact_sale] AT '2025-01-01T10:00:00.000';
-```
-
- ![](./media/image40.png)
-
-5.  Cuando finalice la ejecución, obtenga una vista previa de los datos
-    cargados en la tabla **fact_sale2** del esquema **dbo1**.
-
-> ![](./media/image41.png)
-
-6.  Cambie el nombre de la consulta a +++**Clone Tables Across Schemas**+++.
-
-> ![](./media/image42.png)
->
-> ![](./media/image43.png)
-
-## Ejercicio 4: Transformar datos mediante un procedimiento almacenado
-
-### Tarea 1: Crear un procedimiento almacenado
-
-En esta tarea, aprenderá a crear un procedimiento almacenado para
-transformar datos en una tabla del Warehouse.
-
-1.  En la página **WideWorldImporters**, vaya a la pestaña **Home**,
-    seleccione **SQL** en la lista desplegable y haga clic en **New SQL
-    query**.
-
-![](./media/image44.png)
-
-2.  En el editor de consultas, pegue el código siguiente. El código
-    elimina el procedimiento almacenado (si existe) y, a continuación,
-    crea un procedimiento almacenado denominado
-    **populate_aggregate_sale_by_city**. La lógica del procedimiento
-    almacenado crea una tabla denominada **aggregate_sale_by_date_city**
-    e inserta datos en ella mediante una consulta **GROUP BY** que
-    combina las tablas **fact_sale** y **dimension_city**.
-
-```
---Drop the stored procedure if it already exists.
- DROP PROCEDURE IF EXISTS [dbo].[populate_aggregate_sale_by_city];
- GO
+1. La relación se agrega a la sección **Relationships**. Seleccione la relación **operates** en el lienzo para abrir la configuración de los detalles de la relación. Observe las secciones de la página de configuración:
 
- --Create the populate_aggregate_sale_by_city stored procedure.
- CREATE PROCEDURE [dbo].[populate_aggregate_sale_by_city]
- AS
- BEGIN
-     --Drop the aggregate table if it already exists.
-     DROP TABLE IF EXISTS [dbo].[aggregate_sale_by_date_city];
-     --Create the aggregate table.
-     CREATE TABLE [dbo].[aggregate_sale_by_date_city]
-     (
-        [Date] [DATETIME2](6),
-        [City] [VARCHAR](8000),
-        [StateProvince] [VARCHAR](8000),
-        [SalesTerritory] [VARCHAR](8000),
-        [SumOfTotalExcludingTax] [DECIMAL](38,2),
-        [SumOfTaxAmount] [DECIMAL](38,6),
-        [SumOfTotalIncludingTax] [DECIMAL](38,6),
-        [SumOfProfit] [DECIMAL](38,2)
-     );
+    - **Origin entity type:** Enumera los detalles de la entidad de origen
+    (**Store** en este caso).
 
-     --Load aggregated data into the table.
-     INSERT INTO [dbo].[aggregate_sale_by_date_city]
-     SELECT
-        FS.[InvoiceDateKey] AS [Date], 
-        DC.[City], 
-        DC.[StateProvince], 
-        DC.[SalesTerritory], 
-        SUM(FS.[TotalExcludingTax]) AS [SumOfTotalExcludingTax], 
-        SUM(FS.[TaxAmount]) AS [SumOfTaxAmount], 
-        SUM(FS.[TotalIncludingTax]) AS [SumOfTotalIncludingTax], 
-        SUM(FS.[Profit]) AS [SumOfProfit]
-     FROM [dbo].[fact_sale] AS FS
-     INNER JOIN [dbo].[dimension_city] AS DC
-        ON FS.[CityKey] = DC.[CityKey]
-     GROUP BY
-        FS.[InvoiceDateKey],
-        DC.[City], 
-        DC.[StateProvince], 
-        DC.[SalesTerritory]
-     ORDER BY 
-        FS.[InvoiceDateKey], 
-        DC.[StateProvince], 
-        DC.[City];
- END;
-```
-> ![](./media/image45.png)
-
-3.  Para ejecutar la consulta, en la cinta del diseñador de consultas,
-    seleccione **Run**.
-
-> ![](./media/image46.png)
-
-4.  Cuando finalice la ejecución, cambie el nombre de la consulta a
-    +++**Create Aggregate Procedure**+++.
-
-> ![A screenshot of a computer Description automatically
-> generated](./media/image47.png)
->
-> ![](./media/image48.png)
-
-5.  En el panel **Explorer**, dentro de la carpeta **Stored Procedures**
-    del esquema **dbo**, compruebe que exista el procedimiento
-    almacenado **aggregate_sale_by_date_city**.
-
-![](./media/image49.png)
-
-### Tarea 2: Ejecutar el procedimiento almacenado
-
-En esta tarea, aprenderá a ejecutar el procedimiento almacenado para
-transformar datos en una tabla del Warehouse.
-
-1.  En la página **WideWorldImporters**, vaya a la pestaña **Home**,
-    seleccione SQL en la lista desplegable y haga clic en **New SQL
-    query**.
-
-> ![](./media/image50.png)
-
-2.  En el editor de consultas, pegue el código siguiente. El código
-    ejecuta el procedimiento almacenado
-    **populate_aggregate_sale_by_city**. Ejecute la consulta.
-
-```
---Execute the stored procedure to create and load aggregated data.
- EXEC [dbo].[populate_aggregate_sale_by_city];
-```
-
-![](./media/image51.png)
+    - **Relationship type:** Establece los detalles del tipo de relación.
+    - **Target entity type:** Enumera los detalles de la entidad de destino
+    **(Freezer** en este caso**)**.
 
-3.  Cuando finalice la ejecución, cambie el nombre de la consulta a
-    +++**Run Aggregate Procedure**+++.
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image132.png)
 
-> ![](./media/image52.png)
->
-> ![](./media/image53.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image133.png)
 
-4.  Para obtener una vista previa de los datos agregados, en el panel
-    **Explorer**, seleccione la tabla **aggregate_sale_by_date_city**.
 
-> ![](./media/image54.png)
+1. En la sección central, especifique los siguientes detalles.
 
-** Nota:** Si la tabla no aparece, seleccione los puntos suspensivos (…)
-de la carpeta **Tables** y, a continuación, seleccione **Refresh**.
+    - **Mapping table:** Esta tabla de los datos de origen puede vincular
+    las entidades *Store* y *Freezer*, ya que contiene información de identificación para ambos tipos de entidad. Cada fila de esta tabla hace referencia a una **Store** y a un Freezer mediante su ID.
 
-##  Ejercicio 5: Utilizar time travel mediante T-SQL a nivel de instrucción
+    - **Matched Store:** **StoreId:** Seleccione **StoreId.** Esta
+    configuración especifica la columna de la tabla de datos de origen de la relación (*freezer* \ StoreId) cuyos valores coinciden con la propiedad clave definida en la entidad Store (*dimstore* \ StoreId). En los datos del tutorial, el nombre de la columna es el mismo (StoreId) en ambas tablas.
 
-### Tarea 1: Trabajar con consultas de time travel
+    - **Matched Freezer: FreezerId:** Seleccione **FreezerId**. Esta
+    configuración especifica la columna de la tabla de datos de origen de la relación cuyos valores coinciden con la propiedad clave definida en la entidad *Freezer*. En este caso, el origen de datos de la relación y el origen de datos de la entidad utilizan la misma tabla (*freezer*), por lo que se selecciona la misma columna (*FreezerId*).
 
-En esta tarea, aprenderá a crear una vista de los 10 principales
-clientes por ventas. Utilizará la vista en la siguiente tarea para
-ejecutar consultas de time travel.
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image134.png)
 
-1.  En la página **WideWorldImporters**, vaya a la pestaña **Home**,
-    seleccione SQL en la lista desplegable y haga clic en **New SQL
-    query**.
+    **mportante:** Asegúrese de seleccionar las columnas de origen correctas que coincidan con las propiedades clave del tipo de entidad.
 
-![](./media/image55.png)
 
-2.  En el editor de consultas, pegue el código siguiente. El código crea
-    una vista denominada Top10Customers. La vista utiliza una consulta
-    para recuperar los 10 principales clientes según las ventas.
-    Seleccione **Run** para ejecutar la consulta.
+1. **Guarde** el tipo de relación. Confirme que el tipo de relación se haya actualizado correctamente y, a continuación, seleccione **Cancel** para cerrar las opciones de configuración.
 
-```
---Create the Top10Customers view.
-CREATE VIEW [dbo].[Top10Customers]
-AS
-SELECT TOP(10)
-    FS.[CustomerKey],
-    DC.[Customer],
-    SUM(FS.[TotalIncludingTax]) AS [TotalSalesAmount]
-FROM
-    [dbo].[dimension_customer] AS DC
-    INNER JOIN [dbo].[fact_sale] AS FS
-        ON DC.[CustomerKey] = FS.[CustomerKey]
-GROUP BY
-    FS.[CustomerKey],
-    DC.[Customer]
-ORDER BY
-    [TotalSalesAmount] DESC;
-```
-> ![](./media/image56.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image135.png)
 
-3.  Cuando finalice la ejecución, cambie el nombre de la consulta a
-    +++**Create Top 10 Customer View**+++.
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image136.png)
 
-![](./media/image57.png)
+1. Verá la página **Configure** de la entidad, donde la relación actualizada permanece visible en la sección **Relationships**.
 
-![](./media/image58.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image137.png)
 
-3.  En **Explorer**, compruebe que puede ver la vista recién creada
-    **Top10CustomersView** expandiendo el nodo Views del esquema
-    **dbo**.
 
-![](./media/image59.png)
+# Ejercicio 4: **Ver la Ontology**
 
-4.  Cree otra consulta nueva, como en el paso 1. En la pestaña **Home**
-    de la cinta, seleccione **New SQL query**.
+En este ejercicio, explorará la Ontology mediante la experiencia de vista previa. Inspeccionará instancias de entidad que crean instancias de los tipos de entidad con datos y explorará el contexto con forma de grafo entre los datos de ventas y los datos de streaming de dispositivos.
 
-> ![](./media/image60.png)
+## Tarea 1: **Ver la lista de instancias y los datos estáticos**
 
-5.  En el editor de consultas, pegue el código siguiente. El código
-    actualiza el valor **TotalIncludingTax** de una sola fila de fact
-    para inflar deliberadamente sus ventas totales. También recupera la
-    marca de tiempo actual.
+Cuando vinculó datos a los tipos de entidad en los pasos anteriores del tutorial, Ontology creó automáticamente instancias de esas entidades asociadas a las filas de los datos de origen. En esta sección, utilizará la experiencia de vista previa para ver esas instancias de entidad.
 
-```
---Update the TotalIncludingTax for a single fact row to deliberately inflate its total sales.
- UPDATE [dbo].[fact_sale]
- SET [TotalIncludingTax] = 200000000
- WHERE [SaleKey] = 22632918; --For customer 'Tailspin Toys (Muir, MI)'
- GO
+1. Comience en el lienzo de configuración **Home** de **Ontology**. Seleccione el tipo de entidad **SaleEvent** y, en la cinta superior, seleccione **View Entity Type details.**
 
- --Retrieve the current (UTC) timestamp.
- SELECT CURRENT_TIMESTAMP;
-```
-![](./media/image61.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image138.png)
 
-6.  Copie el valor de la marca de tiempo devuelto al portapapeles.
+1. Abra la pestaña **Instances**. Compruebe que muestra seis instancias de entidad con datos rellenados a partir de la tabla **factsales** del Lakehouse, como ingresos y cantidades de unidades.
 
-![](./media/image62.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image139.png)
 
-**Nota:** Actualmente, solo puede utilizar la zona horaria **Coordinated
-Universal Time (UTC)** para **time travel**.
 
-7.  Cuando finalice la ejecución, cambie el nombre de la consulta a
-    +++**Time Travel**+++.
+## Tarea 2: Ver datos de series temporales
 
-![](./media/image63.png)
+1. En la esquina superior izquierda de la página, utilice el selector situado junto al nombre del tipo de entidad para cambiar al tipo de entidad **Freezer**.
 
-![](./media/image64.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image140.png)
 
-8.  Pegue el código siguiente en el editor de consultas y reemplace el
-    valor de la marca de tiempo por el valor de la marca de tiempo
-    actual obtenido en el paso anterior. El formato de sintaxis de la
-    marca de tiempo es **YYYY-MM-DDTHH:MM:SS**.
+1. Abra la pestaña **Overview**. La pestaña se carga con gráficos vacíos, porque el intervalo de tiempo predeterminado **Last 30 days** no incluye ningún dato.
 
-9.  Elimine los ceros finales, por ejemplo: **2026-07-27T06:20:55.823**.
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image141.png)
 
-&nbsp;
+1. Actualice el intervalo de tiempo, reemplazando el valor predeterminado **Last 30 days** por un intervalo de fechas personalizado que comience el **viernes 1 de agosto de 2025 a las 12:00 AM**, finalice el **lunes 4 de agosto de 2025 a las 12:00 AM** y tenga una **Time granularity** de **5 minutos**.
 
-10. Para recuperar los 10 principales clientes *a partir de ahora*, en
-    un nuevo editor de consultas, pegue la siguiente instrucción. El
-    código recupera los 10 principales clientes mediante la sugerencia
-    de consulta **FOR TIMESTAMP AS OF**.
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image142.png)
 
-11. Reemplace YOUR_TIMESTAMP por la marca de tiempo que copió al
-    portapapeles.
+1. Observe los datos de series temporales que ahora son visibles para varias instancias de la entidad **Freezer** dentro del intervalo de tiempo que seleccionó.
 
-```
---Retrieve the top 10 customers as of now.
- SELECT *
- FROM [dbo].[Top10Customers]
- OPTION (FOR TIMESTAMP AS OF 'YOUR_TIMESTAMP');
-```
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image143.png)
 
-![](./media/image65.png)
 
-12. Cambie el nombre de la consulta a+++**Time Travel Now+++**
+## Tarea 3: **Ver el gráfico de Ontology**
 
-> ![](./media/image66.png)
->
-> ![](./media/image67.png)
+La pestaña **Overview** también contiene un gráfico **Relationship graph**, que se utiliza para visualizar la ontología mediante un gráfico de nodos y aristas.
 
-13. Observe que el segundo valor de **CustomerKey** de los principales
-    clientes es **49** para Tailspin Toys (Muir, MI).
+1. Utilice el selector de tipo de entidad para cambiar al tipo de entidad **SaleEvent**. En el mosaico **Relationship graph**, seleccione **Expand**.
 
-> ![](./media/image68.png)
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image144.png)
 
-14. Modifique el valor de la marca de tiempo a una hora anterior
-    **s*ubtracting one minute*** de la marca de tiempo.
+1. Se abre la vista expandida del gráfico. Observe los detalles de las relaciones desde el tipo de entidad **SaleEvent** hacia **Products** y **Store**.
 
-15. Vuelva a ejecutar la consulta y observe que el segundo **valor de**
-    **CustomerKey** de los principales clientes es **381** para
-    **Wingtip Toys (Sarversville, PA)**.
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image145.png)
 
-## Ejercicio 6: Crear una consulta con el generador de consultas visual en un Warehouse
+1. Utilice el selector de tipo de entidad para cambiar al tipo de entidad Store. Expanda su gráfico **Relationship graph**.
 
-### Tarea 1: Utilizar el generador de consultas visual
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image146.png)
 
-En esta tarea, aprenderá a crear una consulta con el generador de
-consultas visual.
+1. En el gráfico, observe las relaciones que **Store** tiene con **Freezer** y **SaleEvent**. Después, seleccione **Run query** en la cinta del generador de consultas. Esta acción ejecuta la consulta predeterminada y muestra un gráfico de instancias de entidad junto con sus conexiones.
 
-1.  En la cinta **Home**, abra la lista desplegable **New SQL query** y,
-    a continuación, seleccione **New visual query**.
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image147.png)
 
-![](./media/image69.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image148.png)
 
-2.  En el panel **Explorer**, desde la carpeta Tables del esquema
-    **dbo**, arrastre la tabla **fact_sale** al lienzo de la consulta
-    visual.
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image149.png)
 
-![](./media/image70.png)
 
-3.  Vaya a la cinta Transformations del panel **Query design** y limite
-    el tamaño del conjunto de datos haciendo clic en la lista
-    desplegable **Reduce rows** y, a continuación, en **Keep top rows**,
-    como se muestra en la imagen siguiente.
+## Tarea 4: Consultar instancias del gráfico
 
-![](./media/image71.png)
+En la vista del gráfico de relaciones, puede consultar Ontology para buscar instancias de entidad que cumplan determinados criterios. Utilice los filtros de **Query builder** en la cinta superior para crear consultas.
 
-4.  En el cuadro de diálogo **Keep top rows**, introduzca
-    +++**10000**+++ y seleccione **OK.**
+![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image150.png)
 
-![](./media/image72.png)
+Primero, cree esta consulta: *Show all freezers that are operated in the Paris store.*
 
-![](./media/image73.png)
+1. En el gráfico de relaciones de la entidad *Store*, seleccione **Add filter** \ **Store** \ **StoreId** en la cinta de **Query builder**. Configure el filtro con **StoreId = S-PAR-01**. Este valor corresponde al identificador de la tienda de *París*.
 
-5.  En el panel **Explorer**, desde la carpeta Tables del esquema
-    **dbo**, arrastre la tabla **dimension_city** al lienzo de la
-    consulta visual.
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image151.png)
 
-6.  Haga clic con el botón derecho en **dimension_city** y seleccione
-    **Insert into canvas**.
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image152.png)
 
-> ![](./media/image74.png)
+1. En la sección **Components**, desactive *SaleEvent* para que los únicos campos seleccionados sean **Nodes** \ **Store**, **Nodes** \ **Freezer** y **Edges** \ **operates**.
 
-![](./media/image75.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image153.png)
 
-6.  En la cinta **Transformations**, seleccione la lista desplegable
-    situada junto a **Combine** y seleccione **Merge queries as new**,
-    como se muestra en la imagen siguiente.
+1. Seleccione **Run query** y compruebe que el gráfico de instancias muestra dos freezers conectados a la tienda de *París*.
 
-![](./media/image76.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image154.png)
 
-7.  En la página de configuración **Merge**, introduzca los siguientes
-    detalles.
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image155.png)
 
-- En la lista desplegable **Left table for merge**, seleccione
-  **dimension_city**.
+1. Seleccione **Clear query** para borrar los resultados de la consulta.
 
-- En la lista desplegable **Right table for merge**, seleccione
-  **fact_sale** (utilice las barras de desplazamiento horizontal y
-  vertical).
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image156.png)
 
-- Seleccione el campo **CityKey** en la tabla **dimension_city**
-  seleccionando el nombre de la columna en la fila de encabezado para
-  indicar la columna de combinación.
+    A continuación, cree esta consulta: *Show all stores that have made a sale with a revenue greater than 150.*
 
-- Seleccione el campo **CityKey** en la **tabla fact_sale**
-  seleccionando el nombre de la columna en la fila de encabezado para
-  indicar la columna de combinación.
+1. Seleccione **Add a node** y agregue un nodo para **SaleEvent.**
 
-- En la selección del diagrama **Join kind**, seleccione **Inner** y
-  haga clic en el botón **OK.**
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image157.png)
 
-![](./media/image77.png)
+1. En la sección **Components**, seleccione las casillas situadas junto a **Nodes** \ **Store** y **Edges** \ **from** para agregarlos al gráfico.
 
-![](./media/image78.png)
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image158.png)
 
-8.  Con el paso **Merge** seleccionado, seleccione el botón **Expand**
-    situado junto a **fact_sale** en el encabezado de la cuadrícula de
-    datos, como se muestra en la imagen siguiente. A continuación,
-    seleccione las columnas **TaxAmount**, **Profit**,
-    **TotalIncludingTax** y seleccione **OK.**
+1. En la cinta de **Query builder**, seleccione **Add filter** \ **SaleEvent** \ **RevenueUSD**. Configure el filtro con +++RevenueUSD \ 150+++.
 
-![](./media/image79.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image159.png)
 
-![](./media/image80.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image160.png)
 
-![](./media/image81.png)
+1. Seleccione **Run query** y compruebe que el gráfico de instancias muestra dos tiendas que cumplen el filtro aplicado a los eventos de venta conectados. También puede seleccionar los nodos del gráfico para obtener detalles de los eventos de venta específicos.
 
-9.  En la cinta **Transformations,** haga clic en la lista desplegable
-    situada junto a **Transform** y, a continuación, seleccione **Group
-    by**.
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image161.png)
 
-![](./media/image82.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image162.png)
 
-10. En la página de configuración **Group by**, introduzca los
-    siguientes detalles.
+    Este proceso permite inspeccionar las rutas que conectan los problemas operativos (como el aumento de la temperatura de los freezers en determinadas tiendas) con los resultados del negocio (las ventas).
 
-- Seleccione el botón de opción **Advanced**.
 
-- En **Group by**, seleccione lo siguiente:
+# Ejercicio 5: **Usar Ontology (preview) desde agentes**
 
-  1.  **Country**
+Ontology (preview) se integra con [Fabric data agent (preview)](https://learn.microsoft.com/en-us/fabric/data-science/concept-data-agent) para permitirle formular preguntas en lenguaje natural y obtener respuestas basadas en las definiciones y asociaciones de Ontology.
 
-  2.  **StateProvince**
+## Tarea 1: Crear un data agent con Ontology (preview) como origen
 
-  3.  **City**
+Siga estos pasos para crear un nuevo data agent que se conecte al elemento Ontology (preview).
 
-- En **New column name**, introduzca **SumOfTaxAmount.** En el campo
-  **Operation**, seleccione **Sum** y, a continuación, en el campo
-  **Column**, seleccione **TaxAmount**. Haga clic en **Add aggregation**
-  para agregar otra columna y operación de agregación.
+1. Ahora, seleccione **Fabric IQ Ontology XX** en el panel de navegación izquierdo.
 
-- En **New column name**, introduzca **SumOfProfit.** En el campo
-  **Operation**, seleccione **Sum** y, a continuación, en el campo
-  **Column**, seleccione **Profit**. Haga clic en **Add aggregation**
-  para agregar otra columna y operación de agregación.
+    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image163.png)
 
-- En **New column name**, introduzca **SumOfTotalIncludingTax**. En el
-  campo Operation, seleccione **Sum** y, a continuación, en el campo
-  **Column**, seleccione **TotalIncludingTax.** 
+1. En la página principal de **Fabric**, seleccione **+New item**. En el cuadro de búsqueda **Filter by item type**, escriba +++data agent+++ y seleccione **Data agent**.
 
-- Haga clic en el botón **OK**.
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image164.png)
 
-![](./media/image83.png)
+1. Escriba +++RetailOntologyAgent+++ como nombre del **Data agent** y seleccione **Create**.
 
-![](./media/image84.png)
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image165.png)
 
-11. En **Explorer,** vaya a **Queries** y haga clic con el botón derecho
-    en **Visual query 1** dentro de **Queries.** A continuación,
-    seleccione **Rename.**
+1. En la página de **RetailOntologyAgent**, seleccione **Add a data source**.
 
-![](./media/image85.png)
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image166.png)
 
-12. Escriba +++**Sales Summary**+++ para cambiar el nombre de la
-    consulta. Presione Enter en el teclado o seleccione cualquier lugar
-    fuera de la pestaña para guardar el cambio.
+1. En la pestaña **OneLake catalog,** seleccione la ontología **RetailSalesOntology** y, a continuación, seleccione **Add**.
 
-![](./media/image86.png)
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image167.png)
+    
+     Cuando el agente esté listo, se abrirá.
+    
+     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image168.png)
 
-13. Haga clic en el icono **Refresh** situado debajo de la pestaña
-    **Home**.
 
-![A screenshot of a computer Description automatically
-generated](./media/image87.png)
+## Tarea 2: Proporcionar instrucciones al agente
 
-## Ejercicio 7: Analizar datos con un notebook
+** Nota:** Este paso se agrega como respuesta a un problema conocido que afecta a la agregación en las consultas**.**
 
-### Tarea 1: Crear un notebook de T-SQL
+ A continuación, agregue una instrucción personalizada al agente.
 
-En esta tarea, aprenderá a crear un notebook de T-SQL.
+1. Seleccione **Agent instructions** en la cinta.
 
-1.  En la cinta **Home**, abra la lista desplegable **New SQL query** y,
-    a continuación, seleccione **New SQL query in notebook**.
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image169.png)
 
-> ![](./media/image88.png)
+1. En la parte inferior del cuadro de entrada, agregue +++Support group by in GQL+++. Esta instrucción permite una mejor agregación de los datos de **Ontology.**
 
-2.  En el panel **Explorer**, seleccione **Warehouses** para mostrar los
-    objetos del Warehouse **WideWorldImporters**.
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image170.png)
 
-3.  Para generar una plantilla SQL para explorar los datos, a la derecha
-    de la tabla **dimension_city**, seleccione los puntos suspensivos
-    **(…)** y, a continuación, seleccione **SELECT TOP 100**.
+1. La instrucción se aplica automáticamente. Si lo desea, cierre la pestaña **Agent instructions**.
 
-> ![](./media/image89.png)
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image171.png)
 
-4.  Para ejecutar el código T-SQL de esta celda, seleccione el botón
-    **Run cell** correspondiente a la celda de código.
 
-> ![](./media/image90.png)
+## Tarea 3: Consultar el agente mediante lenguaje natural
 
-5.  Revise el resultado de la consulta en el panel **results**.
+ A continuación, explore Ontology mediante preguntas en lenguaje
+ natural.
 
-> ![](./media/image91.png)
+1. Escriba el siguiente texto y seleccione el **icono Submit**, como se muestra en la siguiente imagen.
 
-### Tarea 2: Crear un acceso directo a un lakehouse y analizar datos con un notebook
+    +++For each store, show any freezers operated by that store that ever had a humidity lower than 46 percent.+++
+    
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image172.png)
 
-En esta tarea, aprenderá a crear un acceso directo a un lakehouse y
-analizar datos con un notebook.
+    ![A screenshot of a chat AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image173.png)
 
-1.  En el menú de la izquierda, seleccione el icono del workspace
-    **Warehouse_Fabric65897@lab.labinstance.id** y, a continuación,
-    seleccione el nombre del workspace.
+1. Escriba el siguiente texto y seleccione el **icono Submit**, como se muestra en la siguiente imagen.
 
-> ![](./media/image92.png)
+    +++What is the top product by revenue across all stores?+++
 
-2.  Seleccione **+ New item** para mostrar la lista completa de tipos de
-    elementos disponibles.
+    ![A screenshot of a chat AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image174.png)
 
-3.  En la lista, en la sección **Store data**, seleccione el tipo de
-    elemento **Lakehouse**.
+    ![A screenshot of a chat AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image175.png)
 
-> ![](./media/image93.png)
+     Observe que las respuestas hacen referencia a los tipos de entidad
+     (*Store, Products, Freezer*) y a las relaciones entre ellos, no solo a
+     las tablas sin procesar.
+    
+     ![Screenshot of the result of a query.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image176.png)
+    
+     ** Sugerencia:** Si al ejecutar las consultas de ejemplo aparecen
+     errores que indican que no hay datos, espere unos minutos para dar más
+     tiempo al agente para inicializarse. Después, vuelva a ejecutar las
+     consultas.
+    
+     Continúe explorando el data agent probando algunas consultas propias.
 
-4.  Cuando finalice el aprovisionamiento del lakehouse, introduzca
-    +++**Shortcut_Exercise**+++ como nombre del lakehouse y desmarque
-    **Lakehouse schemas**. Seleccione
-    **Create**.![](./media/image94.png)
 
-> ![](./media/image95.png)
+## Tarea 4: Eliminar recursos
 
-5.  Cuando se abra el nuevo lakehouse, en la página de inicio,
-    seleccione la opción **New shortcut**.
+1. En el menú de navegación izquierdo, seleccione su espacio de trabajo, **Fabric IQ OntologyXX**. Se abrirá la vista de elementos del espacio de trabajo.
 
-> ![](./media/image96.png)
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image177.png)
 
-6.  En la ventana **New shortcut**, seleccione la opción **Microsoft
-    OneLake**.
+1. Seleccione el botón de los tres puntos (...) situado debajo del nombre del espacio de trabajo y, a continuación, seleccione **Workspace settings**.
 
-> ![](./media/image97.png)
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image178.png)
 
-7.  En la ventana **Select a data source type**, seleccione el
-    **Warehouse Wide World Importers** y, a continuación, seleccione
-    **Next**.
+1. Desplácese hasta la parte inferior de la pestaña **General** y seleccione **Remove this workspace**.
 
-> ![](./media/image98.png)
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image179.png)
+    
+     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-ES(spanish)/Labguides/Usecase%2001/media/image180.png)
 
-8.  Haga clic en **Connect**.
 
-> ![](./media/image99.png)
+### Resumen
 
-9.  En **OneLake object browser**, expanda **Tables**, expanda el
-    esquema **dbo** y, a continuación, seleccione la casilla de
-    verificación de la tabla **dimension_customer**. Seleccione
-    **Next**.
+Este caso de uso demuestra cómo Microsoft Fabric IQ Ontology (preview) puede utilizarse para crear un modelo de datos semántico e interconectado que representa conceptos empresariales del mundo real y sus relaciones. Al combinar datos estructurados de Lakehouse con datos de telemetría de streaming, la ontología proporciona una vista unificada y orientada al negocio de los datos empresariales.
 
-> ![](./media/image100.png)
+Mediante definiciones de entidades, enlaces de datos y modelado de relaciones, los usuarios pueden analizar cómo las señales operativas, como la temperatura o la humedad de los congeladores, se relacionan con resultados empresariales como las ventas y los ingresos. El caso de uso también muestra cómo las ontologías permiten la exploración de grafos y las consultas en lenguaje natural mediante Fabric Data Agents, lo que facilita la obtención de insights más profundos sin que los usuarios necesiten comprender las tablas o los esquemas subyacentes.
 
-10. Seleccione **Create**.
-
-> ![](./media/image101.png)
-
-11. En el panel **Explorer**, seleccione la tabla **dimension_customer**
-    para obtener una vista previa de los datos y, a continuación, revise
-    los datos recuperados de la tabla **dimension_customer** en el
-    **Warehouse**.
-
-> ![](./media/image102.png)
-
-12. En la página de la tabla **dimension_customer**, haga clic en
-    **Analyze data with**, seleccione **Notebook** y, a continuación,
-    elija **New notebook** para crear un nuevo **notebook de Spark**
-    para el análisis de datos.
-
-> ![](./media/image103.png)
-
-13. En el panel **Explorer,** seleccione **Lakehouses.**
-
-14. Arrastre la tabla **dimension_customer** a la celda abierta del
-    notebook.
-
-> ![](./media/image104.png)
-
-15. Observe la consulta de **PySpark** que se agregó a la celda del
-    notebook. Esta consulta recupera las primeras **1,000** filas del
-    acceso directo **Shortcut_Exercise.dimension_customer**. Esta
-    experiencia de notebook es similar a la experiencia de Jupyter
-    notebook de **Visual Studio Code**. También puede abrir el notebook
-    en **VS Code**.
-
-> ![](./media/image105.png)
-
-16. En la cinta **Home**, seleccione el botón **Run all.**
-
-> ![](./media/image106.png)
->
-> ![](./media/image107.png)
-
-## Ejercicio 8: Crear consultas entre warehouses con el editor de consultas SQL
-
-### Tarea 1: Agregar varios warehouses al Explorer
-
-En esta tarea, aprenderá cómo crear y ejecutar fácilmente consultas
-T-SQL con el editor de consultas SQL en varios warehouses, incluida la
-combinación de datos de un SQL Endpoint y un Warehouse en Microsoft
-Fabric.
-
-1.  Desde la página **Notebook2**, vaya al workspace
-    **WideWorldImporters** y haga clic en él en el menú de navegación
-    del lado izquierdo.
-
-> ![](./media/image108.png)
-
-2.  En el panel **Explorer**, seleccione **+ Warehouses**.
-
-![](./media/image109.png)
-
-3.  En la ventana **OneLake catalog**, seleccione **Shortcut_Exercise
-    SQL analytics endpoint**. Seleccione **Confirm**.
-
-![](./media/image110.png)
-
-4.  En el panel **Explorer,** observe que **Shortcut_Exercise SQL
-    analytics endpoint** está disponible.
-
-![](./media/image111.png)
-
-### Tarea 2: Ejecutar la consulta entre warehouses
-
-En esta tarea, aprenderá a ejecutar una consulta entre warehouses. En
-concreto, ejecutará una consulta que combina el Warehouse Wide World
-Importers con el Shortcut_Exercise SQL analytics endpoint.
-
-** Nota:** Una consulta entre bases de datos utiliza una nomenclatura de
-tres partes, *database.schema.table*, para hacer referencia a los
-objetos.
-
-1.  En la pestaña **Home** de la cinta, seleccione **New SQL query**.
-
-![](./media/image112.png)
-
-2.  En el editor de consultas, pegue el código siguiente. El código
-    recupera una agregación de la cantidad vendida por artículo de
-    inventario, descripción y cliente.
-
-```
---Retrieve an aggregate of quantity sold by stock item, description, and customer.
-SELECT
-    Sales.StockItemKey,
-    Sales.Description,
-    c.Customer,
-    SUM(CAST(Sales.Quantity AS int)) AS SoldQuantity
-FROM
-    [dbo].[fact_sale] AS Sales
-    INNER JOIN [Shortcut_Exercise].[dbo].[dimension_customer] AS c
-        ON Sales.CustomerKey = c.CustomerKey
-GROUP BY
-    Sales.StockItemKey,
-    Sales.Description,
-    c.Customer;
-```
-3.  **Ejecute** y revise el resultado de la consulta**.**
-
-![](./media/image113.png)
-
-![](./media/image114.png)
-
-3.  Cambie el nombre de la consulta para facilitar su referencia. Haga
-    clic con el botón derecho en **SQL query** en **Explorer** y
-    seleccione **Rename**.
-
-> ![](./media/image115.png)
-
-![](./media/image116.png)
-
-4.  En el cuadro de diálogo **Rename**, en el campo **Name**, introduzca
-    +++**Cross-warehouse query**+++ y, a continuación, haga clic en el
-    botón **Rename**. 
-
-> ![](./media/image117.png)
-
-## Ejercicio 9: Crear un modelo semántico Direct Lake y un informe de Power BI
-
-### Tarea 1: Crear un modelo semántico
-
-En esta tarea, aprenderá a crear un modelo semántico Direct Lake basado
-en el Warehouse Wide World Importers.
-
-1.  En la página **WideWorldImporters**, en la pestaña **Home,**
-    seleccione **New semantic model**.
-
-![](./media/image118.png)
-
-2.  En la ventana **New semantic model**, en el cuadro **Direct Lake
-    semantic model name**, introduzca +++**Sales Model**+++.
-
-3.  Expanda el esquema **dbo**, expanda la carpeta **Tables** y, a
-    continuación, seleccione las casillas de verificación de las tablas
-    **dimension_city** y **fact_sale**. Seleccione **Confirm.**
-
-> ![](./media/image119.png)
-
-9.  En la navegación de la izquierda, seleccione
-    ***Warehouse_FabricXXXXX***, como se muestra en la imagen siguiente.
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image120.png)
-
-10. Para abrir el modelo semántico, vuelva a la página de inicio del
-    workspace y, a continuación, seleccione el modelo semántico **Sales
-    Model**.
-
-![](./media/image121.png)
-
-![](./media/image122.png)
-
-12. En la página **Sales Model**, para editar **Manage Relationships**,
-    cambie el modo de **Viewing a Editing**. ![A screenshot of a
-    computer AI-generated content may be
-    incorrect.](./media/image123.png)
-
-13. Para crear una relación, en el diseñador de modelos, en la cinta
-    **Home**, seleccione **Manage relationships**.
-
-![](./media/image124.png)
-
-14. En la ventana **Manage relationship**, seleccione **+ New
-    relationship**.
-
-![](./media/image125.png)
-
-14. En la ventana **New relationship**, complete los siguientes pasos
-    para crear la relación:
-
--  En la lista desplegable **From table**, seleccione la tabla
-  **dimension_city**.
-
-- En la lista desplegable **To table**, seleccione la tabla
-  **fact_sale**.
-
-- En la lista desplegable **Cardinality**, seleccione **One to many
-  (1:\*).**
-
-- En la lista desplegable **Cross-filter direction**, seleccione
-  **Single**.
-
-- Seleccione la casilla **Assume referential integrity**.
-
-- Seleccione **Save**.
-
-![](./media/image126.png)
-
-![](./media/image127.png)
-
-15. En la ventana **Manage relationship**, seleccione **Close.**
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image128.png)
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image129.png)
-
-### Tarea 2: Crear un informe de Power BI
-
-En esta tarea, aprenderá a crear un informe de Power BI basado en el
-modelo semántico que creó en la tarea anterior.
-
-1.  En la cinta **File**, seleccione **Create new report**.
-
-![](./media/image130.png)
-
-2.  En el diseñador de informes, complete los siguientes pasos para
-    crear una visualización de gráfico de columnas:
-
--  En el panel **Data**, expanda la tabla **fact_sale** y, a
-  continuación, seleccione el campo **Profit**.
-
-- En el panel **Data**, expanda la tabla **dimension_city** y, a
-  continuación, seleccione el campo **SalesTerritory**.
-
-![](./media/image131.png)
-
-3.  En el panel **Visualizations**, seleccione la visualización **Azure
-    Map**.
-
-![](./media/image132.png)
-
-4.  En el panel **Data**, dentro de la tabla *dimension_city*, arrastre
-    el campo **StateProvince** al área **Location** del panel
-    **Visualizations**.
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image133.png)
-
-5.  En el panel **Data**, dentro de la tabla **fact_sale**, seleccione
-    el campo **Profit** para agregarlo al área **Size** de la
-    **visualización de mapa**.
-
-6.  En el panel **Visualizations**, seleccione la visualización
-    **Table**.
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image134.png)
-
-7.  En el panel **Data**, seleccione los siguientes campos:
-
--  SalesTerritory de la tabla dimension_city
-
-- StateProvince de la tabla dimension_city
-
-- Profit de la tabla fact_sale
-
-- TotalExcludingTax de la tabla fact_sale![A screenshot of a computer
-  AI-generated content may be incorrect.](./media/image135.png)
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image136.png)
-
-8.  Compruebe que el diseño final de la página del informe sea similar a
-    la siguiente imagen.
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image137.png)
-
-9.  Para guardar el informe, en la cinta **Home**, seleccione **File \>
-    Save**.
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image138.png)
-
-10. En la ventana **Save your report**, en el cuadro **Enter a name for
-    your report**, introduzca +++**Sales Analysis**+++ y seleccione
-    **Save**.
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image139.png)
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image140.png)
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image141.png)
-
-### Tarea 3: Eliminar los recursos
-
-Puede eliminar informes, pipelines, warehouses y otros elementos
-individuales, o eliminar todo el workspace. En este tutorial, limpiará
-el workspace, los informes, pipelines, warehouses y otros elementos que
-creó como parte del laboratorio.
-
-1.  Seleccione **Warehouse_FabricXX** en el menú de navegación para
-    volver a la lista de elementos del workspace.
-
-![](./media/image142.png)
-
-2.  En el menú del encabezado del workspace, seleccione **Workspace
-    settings**.
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image143.png)
-
-3.  En el cuadro de diálogo **Workspace settings**, seleccione
-    **General** y seleccione **Remove this workspace**.
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image144.png)
-
-4.  En el cuadro de diálogo **Delete workspace?,** haga clic en el botón
-    **Delete**.![](./media/image145.png)
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image146.png)
-
-**Resumen**
-
-Este completo laboratorio guía a través de una serie de tareas
-destinadas a establecer un entorno de datos funcional en Microsoft
-Fabric. Comienza con la creación de un workspace, esencial para las
-operaciones de datos, y garantiza que la versión de prueba esté
-habilitada. Posteriormente, se crea un Warehouse denominado
-WideWorldImporters dentro del entorno de Fabric para servir como
-repositorio central de almacenamiento y procesamiento de datos. A
-continuación, se detalla la ingesta de datos en el workspace
-Warehouse_FabricXX mediante la implementación de un pipeline de Data
-Factory. Este proceso implica obtener datos de fuentes externas e
-integrarlos de forma fluida en el workspace.
-
-Se crean tablas fundamentales, dimension_city y fact_sale, en el data
-warehouse para servir como estructuras base para el análisis de datos.
-El proceso de carga de datos continúa mediante T-SQL, donde los datos de
-Azure Blob Storage se transfieren a las tablas especificadas.
-
-Las tareas posteriores profundizan en la administración y manipulación
-de datos. Se muestra cómo clonar tablas, una técnica útil para la
-replicación y las pruebas de datos. Además, el proceso de clonación se
-extiende a un esquema diferente (dbo1) dentro del mismo Warehouse,
-mostrando un enfoque estructurado para la organización de los datos.
-
-El laboratorio continúa con la transformación de datos mediante la
-creación de un procedimiento almacenado para agregar datos de ventas de
-forma eficiente. A continuación, se utiliza el generador de consultas
-visual para proporcionar una interfaz intuitiva para consultas
-complejas. Esto es seguido por una exploración de notebooks, que
-demuestra su utilidad para consultar y analizar datos de la tabla
-dimension_customer.
-
-A continuación, se presentan las capacidades de consulta entre varios
-warehouses, lo que permite recuperar datos de forma fluida entre
-diferentes warehouses dentro del workspace. El laboratorio culmina con
-la habilitación de la integración de visualizaciones de Azure Maps,
-mejorando la representación de datos geográficos en Power BI.
-Posteriormente, se crean diversos informes de Power BI, incluidos
-gráficos de columnas, mapas y tablas, para facilitar un análisis
-detallado de los datos de ventas.
-
-La tarea final se centra en generar un informe a partir de OneLake data
-hub, destacando aún más la versatilidad de las fuentes de datos en
-Fabric. Finalmente, el laboratorio proporciona información sobre la
-administración de recursos y destaca la importancia de los
-procedimientos de limpieza para mantener un workspace eficiente.
-
-En conjunto, estas tareas proporcionan una comprensión integral de cómo
-configurar, administrar y analizar datos en Microsoft Fabric.
+En conjunto, este caso de uso muestra cómo Fabric IQ Ontology ayuda a conectar los datos operativos con el análisis de datos, lo que favorece una toma de decisiones más inteligente en distintos dominios.
