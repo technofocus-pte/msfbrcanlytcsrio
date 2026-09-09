@@ -877,9 +877,189 @@ Siga estos pasos para crear un nuevo data agent que se conecte al elemento Ontol
      consultas.
     
      Continúe explorando el data agent probando algunas consultas propias.
+## Ejercicio 6: Cree y pruebe una aplicación complementaria con Project Rayfin
+
+### Tarea 1: Cree y pruebe una aplicación complementaria con Project Rayfin
+
+1.  Cree una nueva carpeta en la **unidad C:\\** Haga clic en **New** en
+    la barra de herramientas, seleccione **Folder**, escriba **Lab4**
+    como nombre de la carpeta y presione **Enter** para guardarla.
+
+![](./media/a1.png)
+
+2.  En el cuadro de búsqueda de Windows, escriba Visual Studio y, a
+    continuación, haga clic en **Visual Studio Code**.
+
+![A screenshot of a computer Description automatically \>
+generated](./media/a2.png)
+
+3.  En el cuadro de diálogo de Visual Studio Code, haga clic en
+    **Allow** para continuar con el proceso de autenticación de
+    Microsoft.
+
+![](./media/a3.png)
+
+4.  En la ventana **Sign in**, seleccione **Work or school account** y,
+    a continuación, haga clic en **Continue** para iniciar sesión con su
+    cuenta organizativa.
+
+> ![](./media/a4.png)
+
+1.  Inicie sesión con sus credenciales
+
+[TABLE]
+
+![](./media/a5.png)
+
+![](./media/a6.png)
+
+5.  En Visual Studio Code, haga clic en el menú **More Actions (⋯)**,
+    seleccione **Terminal** y, a continuación, elija **New Terminal**
+    para abrir una nueva ventana de terminal integrada.
+
+> ![](./media/a7.png)
+
+6.  En la terminal, vaya al directorio **Lab4.**
+
++++cd\\++
+
++++cd Lab4+++
+
+> ![](./media/a8.png)
+
+7.  Ejecute el siguiente comando para generar la plantilla
+    **\[Experimental\] Todo app with full local dev** +++npm create
+    @microsoft/rayfin@latest -- --template
+    https://github.com/microsoft/awesome-rayfin --template-name
+    "\[Experimental\] Todo app with full local dev"+++
+
+![](./media/a9.png)
+
+![](./media/a10.png)
+
+8.  Ingrese el nombre del proyecto +++**Fabricapp**+++
+
+![](./media/a11.png)
+
+![](./media/a12.png)
+
+9.  Una vez creado correctamente el proyecto, vaya al directorio del
+    proyecto **Fabricapp** ejecutando Fabricapp, y, a continuación,
+    inicie el servidor de desarrollo local ejecutando npm run dev.
+
++++cd **Fabricapp**+++
+
++++cd **npm run dev**+++
+
+![](./media/a13.png)
+
+10. Cuando se le solicite, ingrese **Fabric IQ OntologyXXXXXX** como
+    nombre del espacio de trabajo de Fabric y presione **Enter** para
+    continuar con la implementación de la aplicación en el espacio de
+    trabajo de Fabric seleccionado.
+
+![](./media/a14.png)
+
+11. Cuando aparezca el cuadro de diálogo de Seguridad de Windows, haga
+    clic en **Allow** para permitir que **Node.js JavaScript Runtime**
+    se comunique a través de redes públicas y privadas y continúe
+    ejecutando la aplicación.
+
+![](./media/a15.png)
+
+12. Copie la URL del frontend local que aparece en la terminal, que
+    debería ser similar a +++http://localhost:5173+++, y ábrala en una
+    nueva pestaña del navegador.
+
+![](./media/a16.png)
+
+13. Seleccione el botón **Sign in with Microsoft**. Como ya tiene una
+    sesión SSO activa del Ejercicio 1, debería iniciar sesión
+    automáticamente sin necesidad de volver a introducir las
+    credenciales. De lo contrario, inicie sesión con la misma cuenta de
+    Microsoft que utilizó para Fabric:
+
+- **Email**: <+++@lab.CloudPortalCredential>(User1).Username+++
+
+- **TAP**: <+++@lab.CloudPortalCredential>(User1).AccessToken+++
+
+![](./media/a17.png)
+
+14. En la **Todo App**, ingrese +++**Review Lakeshore Retail ontology
+    relationships**+++ en el campo de tareas y, a continuación, haga
+    clic en **Add** para crear el nuevo elemento de tareas pendientes.
+
+![](./media/a18.png)
+
+15. En la **Todo App**, ingrese **+++Validate freezer telemetry
+    ingestion+++** en el campo de tareas y, a continuación, haga clic en
+    **Add** para crear el nuevo elemento de tareas pendientes.
+
+![](./media/a19.png)
+
+![](./media/a20.png)
+
+16. Seleccione una tarea.
+
+![](./media/a21.png)
+
+![](./media/a22.png)
+
+17. De vuelta en la terminal de Visual Studio Code, detenga el servidor
+    de desarrollo de Vite presionando **Ctrl+C**.
+
+![](./media/a23.png)
+
+18. Implemente el backend en su espacio de trabajo de Fabric.
+
++++npm run up+++
+
+![](./media/a24.png)
+
+19. La static hosting URL que muestra la CLI. La URL debería tener un
+    formato similar a https://*{random-prefix}*.webapp.rayfin….com.
+
+20. Haga clic en **App URL** para iniciar la aplicación en el navegador
+    web predeterminado.
+
+![](./media/a25.png)
+
+21. Cuando aparezca el mensaje **"Do you want Code to open the external
+    website?"**, haga clic en **Open** para iniciar la aplicación
+    implementada en el navegador web predeterminado.
+
+![](./media/a26.png)
+
+22. Seleccione **Sign in with Microsoft**, tal como lo hizo en el paso
+    13.
+
+![](./media/a27.png)
+
+![](./media/a28.png)
+
+### Tarea 2: Inspeccione la implementación en Fabric
+
+Veamos la aplicación y la base de datos implementadas en el portal de
+Microsoft Fabric.
+
+1.  Abra el portal de Microsoft Fabric en
+    +++[https://app.fabric.microsoft.com+++](https://app.fabric.microsoft.com+++/).
+
+2.  Abra el espacio de trabajo [+++ Fabric
+    IQ <Ontology@lab.LabInstance.Id>](mailto:+++Fabric-Apps-@lab.LabInstance.Id)+++
+    que creó en el Ejercicio 1.
+
+![](./media/a29.png)
+
+3.  Compruebe que el espacio de trabajo contenga un elemento de **Fabric
+    data app** y un elemento de **SQL Database.**
+
+> ![](./media/a30.png)
+
+![](./media/a31.png)
 
 
-## Tarea 4: Eliminar recursos
+## Tarea 3: Eliminar recursos
 
 1. En el menú de navegación izquierdo, seleccione su espacio de trabajo, **Fabric IQ OntologyXX**. Se abrirá la vista de elementos del espacio de trabajo.
 
