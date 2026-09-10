@@ -33,7 +33,7 @@ Antes de trabajar con datos en Fabric, cree un workspace con la versión
 de prueba de Fabric habilitada.
 
 1.  Abra el navegador, vaya a la barra de direcciones y escriba o pegue
-    la siguiente URL: +++<https://app.fabric.microsoft.com/+++> y, a
+    la siguiente URL: +++https://app.fabric.microsoft.com+++ y, a
     continuación, presione el botón **Enter**.
 
     **Nota:** Si se le dirige a la página principal de Microsoft Fabric,
@@ -155,18 +155,16 @@ de prueba de Fabric habilitada.
 
     ```
     from pyspark.sql import SparkSession
-
     spark = SparkSession.builder.appName("LoadParquet").getOrCreate()
-# Read the green_tripdata_2017 parquet file
-df2 = spark.read.format("parquet").load("Files/part-00000-907cea6d-0f54-4639-9a14-042dc04185ef-c000.snappy.parquet")
+    # Read the green_tripdata_2017 parquet file
+    df2 = spark.read.format("parquet").load("Files/part-00000-907cea6d-0f54-4639-9a14-042dc04185ef-c000.snappy.parquet")
+    # Write to table
+    df2.write.mode("overwrite").saveAsTable("Bronze")
+    ```
 
-# Write to table
-df2.write.mode("overwrite").saveAsTable("Bronze")
-```
+    ![](./media/image24.png)
 
-![](./media/image24.png)
-
-![](./media/image25.png)
+    ![](./media/image25.png)
 
 7.  Para validar las tablas creadas, haga clic con el botón derecho en
     el lakehouse **DataFactoryLakehouse** en Explorer y, a continuación,
