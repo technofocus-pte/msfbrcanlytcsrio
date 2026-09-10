@@ -296,17 +296,17 @@ notebooks de Fabric.
 
     ```
     df = spark.read.format("csv").option("header","true").load("Files/orders/2019.csv")
-# df now is a Spark DataFrame containing CSV data from "Files/orders/2019.csv".
-display(df)
-```
+    # df now is a Spark DataFrame containing CSV data from "Files/orders/2019.csv".
+    display(df)
+    ```
 
-![A screenshot of a computer Description automatically
+    ![A screenshot of a computer Description automatically
 generated](./media/image29.png)
 
-![A screenshot of a computer AI-generated content may be
+    ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image30.png)
 
-**Sugerencia:** Puede ocultar los paneles de exploración de Lakehouse de
+    **Sugerencia:** Puede ocultar los paneles de exploración de Lakehouse de
 la izquierda utilizando sus iconos «. Esto le ayudará a centrarse en el
 notebook.
 
@@ -340,11 +340,11 @@ notebook.
 
     ```
     df = spark.read.format("csv").option("header","false").load("Files/orders/2019.csv")
-# df now is a Spark DataFrame containing CSV data from "Files/orders/2019.csv".
-display(df)
-```
+    # df now is a Spark DataFrame containing CSV data from "Files/orders/2019.csv".
+    display(df)
+    ```
 
-![](./media/image33.png)
+    ![](./media/image33.png)
 
 7.  Ahora el dataframe incluye correctamente la primera fila como
     valores de datos, pero los nombres de las columnas se generan
@@ -503,7 +503,7 @@ contiene.
     productSales = df.select("Item", "Quantity").groupBy("Item").sum()
     display(productSales)
     ```
-    > ![](./media/image41.png)
+    ![](./media/image41.png)
 
 2.  Observe que los resultados muestran la suma de las cantidades de
     pedidos agrupadas por producto. El método **groupBy** agrupa las
@@ -547,18 +547,18 @@ procesamiento o análisis.
     ```
     from pyspark.sql.functions import *
 
-## Create Year and Month columns
-transformed_df = df.withColumn("Year", year(col("OrderDate"))).withColumn("Month", month(col("OrderDate")))
+    ## Create Year and Month columns
+    transformed_df = df.withColumn("Year", year(col("OrderDate"))).withColumn("Month", month(col("OrderDate")))
 
-# Create the new FirstName and LastName fields
-transformed_df = transformed_df.withColumn("FirstName", split(col("CustomerName"), " ").getItem(0)).withColumn("LastName", split(col("CustomerName"), " ").getItem(1))
+    # Create the new FirstName and LastName fields
+    transformed_df = transformed_df.withColumn("FirstName", split(col("CustomerName"), " ").getItem(0)).withColumn("LastName", split(col("CustomerName"), " ").getItem(1))
 
-# Filter and reorder columns
-transformed_df = transformed_df["SalesOrderNumber", "SalesOrderLineNumber", "OrderDate", "Year", "Month", "FirstName", "LastName", "Email", "Item", "Quantity", "UnitPrice", "Tax"]
+    # Filter and reorder columns
+    transformed_df = transformed_df["SalesOrderNumber", "SalesOrderLineNumber", "OrderDate", "Year", "Month", "FirstName", "LastName", "Email", "Item", "Quantity", "UnitPrice", "Tax"]
 
-# Display the first five orders
-display(transformed_df.limit(5))
-```
+    # Display the first five orders
+    display(transformed_df.limit(5))
+    ```
 
 2.  **Ejecute** el código para crear un nuevo dataframe a partir de los
     datos de pedidos originales con las siguientes transformaciones:
@@ -713,12 +713,12 @@ data lake que se administra independientemente del metastore).
     **salesorders:**
 
     ```
-# Create a new table
-df.write.format("delta").saveAsTable("salesorders")
+    # Create a new table
+    df.write.format("delta").saveAsTable("salesorders")
 
-# Get the table description
-spark.sql("DESCRIBE EXTENDED salesorders").show(truncate=False)
-```
+    # Get the table description
+    spark.sql("DESCRIBE EXTENDED salesorders").show(truncate=False)
+    ```
 
 **Nota:** Cabe destacar un par de aspectos sobre este ejemplo. En primer
 lugar, no se proporciona ninguna ruta explícita, por lo que los archivos
@@ -848,7 +848,7 @@ Exploremos las diferencias entre las tablas administradas y externas.
     lakehouse que termina en **/Tables/salesorders** (es posible que
     deba ampliar la columna **Data type** para ver la ruta completa).
 
-    > ![](./media/image67.png)
+    ![](./media/image67.png)
 
 3.  Modifique el comando **DESCRIBE** para mostrar los detalles de la
     tabla **external_saleorder**, como se muestra aquí.
@@ -994,15 +994,15 @@ de los datos de los dataframes.
     ```
     from matplotlib import pyplot as plt
 
-# matplotlib requires a Pandas dataframe, not a Spark one
-df_sales = df_spark.toPandas()
+    # matplotlib requires a Pandas dataframe, not a Spark one
+    df_sales = df_spark.toPandas()
 
-# Create a bar plot of revenue by year
-plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'])
+    # Create a bar plot of revenue by year
+    plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'])
 
-# Display the plot
-plt.show()
-```
+    # Display the plot
+    plt.show()
+    ```
 
 4.  Haga clic en el botón **Run cell** y revise los resultados, que
     consisten en un gráfico de columnas con los ingresos brutos totales
@@ -1032,26 +1032,26 @@ plt.show()
     ```
     from matplotlib import pyplot as plt
 
-# Clear the plot area
-plt.clf()
+    # Clear the plot area
+    plt.clf()
 
-# Create a bar plot of revenue by year
-plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
+    # Create a bar plot of revenue by year
+    plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
 
-# Customize the chart
-plt.title('Revenue by Year')
-plt.xlabel('Year')
-plt.ylabel('Revenue')
-plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)
-plt.xticks(rotation=45)
+    # Customize the chart
+    plt.title('Revenue by Year')
+    plt.xlabel('Year')
+    plt.ylabel('Revenue')
+    plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)
+    plt.xticks(rotation=45)
+    
+    # Show the figure
+    plt.show()
+    ```
 
-# Show the figure
-plt.show()
-```
-
-![](./media/image79.png)
-
-![](./media/image80.png)
+    ![](./media/image79.png)
+    
+    ![](./media/image80.png)
 
 6.  Ahora el gráfico incluye un poco más de información. Técnicamente,
     un gráfico está contenido en una **Figure**. En los ejemplos
@@ -1065,25 +1065,25 @@ plt.show()
     ```
     from matplotlib import pyplot as plt
 
-# Clear the plot area
-plt.clf()
-
-# Create a Figure
-fig = plt.figure(figsize=(8,3))
-
-# Create a bar plot of revenue by year
-plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
-
-# Customize the chart
-plt.title('Revenue by Year')
-plt.xlabel('Year')
-plt.ylabel('Revenue')
-plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)
-plt.xticks(rotation=45)
-
-# Show the figure
-plt.show()
-```
+    # Clear the plot area
+    plt.clf()
+    
+    # Create a Figure
+    fig = plt.figure(figsize=(8,3))
+    
+    # Create a bar plot of revenue by year
+    plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
+    
+    # Customize the chart
+    plt.title('Revenue by Year')
+    plt.xlabel('Year')
+    plt.ylabel('Revenue')
+    plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)
+    plt.xticks(rotation=45)
+    
+    # Show the figure
+    plt.show()
+    ```
 
 8.  **Vuelva a ejecutar** la celda de código y revise los resultados. La
     Figure determina la forma y el tamaño del gráfico.
@@ -1101,31 +1101,31 @@ plt.show()
     código.
 
     ```
-# Clear the plot area
-plt.clf()
-
-# Create a figure for 2 subplots (1 row, 2 columns)
-fig, ax = plt.subplots(1, 2, figsize = (10,4))
-
-# Create a bar plot of revenue by year on the first axis
-ax[0].bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
-ax[0].set_title('Revenue by Year')
-
-# Create a pie chart of yearly order counts on the second axis
-yearly_counts = df_sales['OrderYear'].value_counts()
-ax[1].pie(yearly_counts)
-ax[1].set_title('Orders per Year')
-ax[1].legend(yearly_counts.keys().tolist())
-
-# Add a title to the Figure
-fig.suptitle('Sales Data')
-
-# Show the figure
-plt.show()
-```
-![](./media/image83.png)
-
-![](./media/image84.png)
+    # Clear the plot area
+    plt.clf()
+    
+    # Create a figure for 2 subplots (1 row, 2 columns)
+    fig, ax = plt.subplots(1, 2, figsize = (10,4))
+    
+    # Create a bar plot of revenue by year on the first axis
+    ax[0].bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
+    ax[0].set_title('Revenue by Year')
+    
+    # Create a pie chart of yearly order counts on the second axis
+    yearly_counts = df_sales['OrderYear'].value_counts()
+    ax[1].pie(yearly_counts)
+    ax[1].set_title('Orders per Year')
+    ax[1].legend(yearly_counts.keys().tolist())
+    
+    # Add a title to the Figure
+    fig.suptitle('Sales Data')
+    
+    # Show the figure
+    plt.show()
+    ```
+    ![](./media/image83.png)
+    
+    ![](./media/image84.png)
 
 **Nota:** Para obtener más información sobre cómo crear gráficos con
 matplotlib, consulte el [*matplotlib
@@ -1144,13 +1144,13 @@ capacidades. Una de estas bibliotecas es **seaborn**.
     ```
     import seaborn as sns
 
-# Clear the plot area
-plt.clf()
-
-# Create a bar chart
-ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
-plt.show()
-```
+    # Clear the plot area
+    plt.clf()
+    
+    # Create a bar chart
+    ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+    plt.show()
+    ```
 
 2.  **Ejecute** el código y observe que muestra un gráfico de barras
     utilizando la biblioteca seaborn.
@@ -1166,20 +1166,20 @@ plt.show()
     ```
     import seaborn as sns
 
-# Clear the plot area
-plt.clf()
+    # Clear the plot area
+    plt.clf()
+    
+    # Set the visual theme for seaborn
+    sns.set_theme(style="whitegrid")
+    
+    # Create a bar chart
+    ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+    plt.show()
+    ```
 
-# Set the visual theme for seaborn
-sns.set_theme(style="whitegrid")
-
-# Create a bar chart
-ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
-plt.show()
-```
-
-![](./media/image87.png)
-
-![](./media/image88.png)
+    ![](./media/image87.png)
+    
+    ![](./media/image88.png)
 
 4.  **Modifique** nuevamente el código de la siguiente manera.
     **Ejecute** el código modificado para ver los ingresos anuales como
@@ -1188,16 +1188,16 @@ plt.show()
     ```
     import seaborn as sns
 
-# Clear the plot area
-plt.clf()
-
-# Create a bar chart
-ax = sns.lineplot(x="OrderYear", y="GrossRevenue", data=df_sales)
-plt.show()
-```
-![](./media/image89.png)
-
-![](./media/image90.png)
+    # Clear the plot area
+    plt.clf()
+    
+    # Create a bar chart
+    ax = sns.lineplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+    plt.show()
+    ```
+    ![](./media/image89.png)
+    
+    ![](./media/image90.png)
 
 **Nota:** Para obtener más información sobre cómo crear gráficos con
 seaborn, consulte el [*seaborn
@@ -1219,32 +1219,32 @@ Internet de las cosas (IoT).
     from pyspark.sql.types import *
     from pyspark.sql.functions import *
 
-# Create a folder
-inputPath = 'Files/data/'
-mssparkutils.fs.mkdirs(inputPath)
+    # Create a folder
+    inputPath = 'Files/data/'
+    mssparkutils.fs.mkdirs(inputPath)
+    
+    # Create a stream that reads data from the folder, using a JSON schema
+    jsonSchema = StructType([
+    StructField("device", StringType(), False),
+    StructField("status", StringType(), False)
+    ])
+    iotstream = spark.readStream.schema(jsonSchema).option("maxFilesPerTrigger", 1).json(inputPath)
+    
+    # Write some event data to the folder
+    device_data = '''{"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev2","status":"error"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"error"}
+    {"device":"Dev2","status":"ok"}
+    {"device":"Dev2","status":"error"}
+    {"device":"Dev1","status":"ok"}'''
+    mssparkutils.fs.put(inputPath + "data.txt", device_data, True)
+    print("Source stream created...")
+    ```
 
-# Create a stream that reads data from the folder, using a JSON schema
-jsonSchema = StructType([
-StructField("device", StringType(), False),
-StructField("status", StringType(), False)
-])
-iotstream = spark.readStream.schema(jsonSchema).option("maxFilesPerTrigger", 1).json(inputPath)
-
-# Write some event data to the folder
-device_data = '''{"device":"Dev1","status":"ok"}
-{"device":"Dev1","status":"ok"}
-{"device":"Dev1","status":"ok"}
-{"device":"Dev2","status":"error"}
-{"device":"Dev1","status":"ok"}
-{"device":"Dev1","status":"error"}
-{"device":"Dev2","status":"ok"}
-{"device":"Dev2","status":"error"}
-{"device":"Dev1","status":"ok"}'''
-mssparkutils.fs.put(inputPath + "data.txt", device_data, True)
-print("Source stream created...")
-```
-
-![](./media/image91.png)
+    ![](./media/image91.png)
 
 2.  Asegúrese de que se muestre el mensaje ***Source stream created*…**.
     El código que acaba de ejecutar ha creado un origen de datos de
@@ -1255,14 +1255,14 @@ print("Source stream created...")
     continuación, haga clic en el botón **Run cell**.
 
     ```
-# Write the stream to a delta table
-delta_stream_table_path = 'Tables/dbo/iotdevicedata'
-checkpointpath = 'Files/delta/checkpoint'
-deltastream = iotstream.writeStream.format("delta").option("checkpointLocation", checkpointpath).start(delta_stream_table_path)
-print("Streaming to delta sink...")
-```
+    # Write the stream to a delta table
+    delta_stream_table_path = 'Tables/dbo/iotdevicedata'
+    checkpointpath = 'Files/delta/checkpoint'
+    deltastream = iotstream.writeStream.format("delta").option("checkpointLocation", checkpointpath).start(delta_stream_table_path)
+    print("Streaming to delta sink...")
+    ```
 
-![](./media/image92.png)
+    ![](./media/image92.png)
 
 4.  Este código escribe los datos de los dispositivos de streaming en
     formato delta en una carpeta denominada **iotdevicedata**. Dado que
@@ -1292,19 +1292,19 @@ print("Streaming to delta sink...")
     continuación, haga clic en el botón **Run cell**.
 
     ```
-# Add more data to the source stream
-more_data = '''{"device":"Dev1","status":"ok"}
-{"device":"Dev1","status":"ok"}
-{"device":"Dev1","status":"ok"}
-{"device":"Dev1","status":"ok"}
-{"device":"Dev1","status":"error"}
-{"device":"Dev2","status":"error"}
-{"device":"Dev1","status":"ok"}'''
-
-mssparkutils.fs.put(inputPath + "more-data.txt", more_data, True)
-```
-
-![](./media/image96.png)
+    # Add more data to the source stream
+    more_data = '''{"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"error"}
+    {"device":"Dev2","status":"error"}
+    {"device":"Dev1","status":"ok"}'''
+    
+    mssparkutils.fs.put(inputPath + "more-data.txt", more_data, True)
+    ```
+    
+    ![](./media/image96.png)
 
 8.  Este código escribe más datos hipotéticos de dispositivos en el
     origen de **streaming**.
@@ -1326,7 +1326,8 @@ mssparkutils.fs.put(inputPath + "more-data.txt", more_data, True)
 11. Haga clic en **+ Code**, copie y pegue el código siguiente y, a
     continuación, haga clic en el botón **Run cell**.
 
-    > deltastream.stop()
+    
+    +++deltastream.stop()+++
 
     ![](./media/image98.png)
 
