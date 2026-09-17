@@ -623,6 +623,8 @@ Delta creadas en la sección anterior.
 >
 > ![](./media/image79.png)
 
+9. Ejecute todas las celdas de la sección Path 2 - Lakehouse schemas not enabled (alternate path) del cuaderno para crear las tablas necesarias en el Lakehouse.
+
 ## Ejercicio 4: Crear informes en Microsoft Fabric
 
 En esta sección del tutorial, creará un modelo de datos de Power BI y
