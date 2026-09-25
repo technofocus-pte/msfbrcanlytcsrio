@@ -115,7 +115,7 @@
 
 1. 选择 **DimProducts** 表以预览数据。
 
-    \[！note\]**注意**：您可能需要多次點擊**Refresh** 按鈕以預覽數據。
+    >[!Note] 您可能需要多次點擊**Refresh** 按鈕以預覽數據。
 
     ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image20.png)
 
@@ -410,7 +410,7 @@
 
     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image93.png)
 
-    ** 重要提示：**確保選擇 與entity 類型**匹配**的匹配列，關鍵屬性。
+    重要提示：**確保選擇 與entity 類型**匹配**的匹配列，關鍵屬性。
 
 1. **保存**关系类型。确认关系类型已成功更新，然后选择**Cancel **关闭configuration选项。
 
@@ -799,7 +799,7 @@ Ontology（预览）与 [Fabric 数据代理（预览版）](https://learn.micro
 
 ** 注釋：** 此步驟是針對已知影響查詢聚合的問題而添加的。
 
-> 接下來，向代理添加自定義指令。
+>接下來，向代理添加自定義指令。
 
 1. 从菜单功能区选择**Agent instructions**。
 
@@ -881,7 +881,7 @@ Ontology（预览）与 [Fabric 数据代理（预览版）](https://learn.micro
 
 1. 在終端中，導航到**Lab4**目錄
 
-    +++cd\\++
+    `cd\\`
 
     `cd Lab4`
 
@@ -925,8 +925,8 @@ Ontology（预览）与 [Fabric 数据代理（预览版）](https://learn.micro
 
 1. 选择“ **sign in with Microsoft** ”按钮。由于你已经有练习 1 的活跃 SSO 会话，应该会自动登录，无需重新输入凭证。否则，使用你用 Fabric 使用的同一个 Microsoft 账户登录：
 
-    - **電子郵件**: +++@lab.CloudPortalCredential>(User1).Username+++
-    - **TAP**: `@lab.CloudPortalCredential>(User1).AccessToken`
+    - **電子郵件**: +++@lab.CloudPortalCredential(User1).Username+++
+    - **TAP**: +++@lab.CloudPortalCredential(User1).AccessToken+++
 
     ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image17.png)
 
