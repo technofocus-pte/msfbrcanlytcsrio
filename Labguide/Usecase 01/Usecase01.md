@@ -193,7 +193,7 @@
 
 ### 任務 5: 制作报告
 
-1. 在左侧导航面板中，选择 **Fabric Dataengineering-DataFactory-XX**.
+1. 在左侧导航面板中，选择 **Fabric Dataengineering-DataFactory-@Lab.LabInstance.Id**.
 
     ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image33.png)
 
@@ -230,11 +230,11 @@
 
 ### 任務 1: 导入数据
 
-1. 在左侧导航面板中，选择 **Fabric Dataengineering-DataFactory-XX**.
+1. 在左侧导航面板中，选择 **Fabric Dataengineering-DataFactory-@Lab.LabInstance.Id**.
 
     ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image41.png)
 
-1. 在 **Fabric Dataengineering-DataFactory-XX** 工作区页面，点击 **+New item** 按钮，然后选择**管道**。
+1. 在 **Fabric Dataengineering-DataFactory-@Lab.LabInstance.Id** 工作区页面，点击 **+New item** 按钮，然后选择**管道**。
 
     ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image42.png)
 
@@ -329,7 +329,7 @@
 
 ### 任務1：轉換數據並加載為銀色Delta表
 
-1. 在左侧导航面板中，选择 **Fabric Dataengineering-DataFactory-XX**.
+1. 在左侧导航面板中，选择 **Fabric Dataengineering-DataFactory-@Lab.LabInstance.Id**.
 
     ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image60.png)
 
@@ -466,7 +466,7 @@
 
     ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image85.png)
 
-1. 會顯示“選擇數據”對話框。 扩展工作区 **Fabric Dataengineering-DataFactory** -@lab.LabInstance.Id, 然后扩展 Lakehouse - **wwilakehouse**, 并从列表中选择fact_sale表。点击 **创建**。
+1. 會顯示“選擇數據”對話框。 扩展工作区 **Fabric Dataengineering-DataFactory-@lab.LabInstance.Id**, 然后扩展 Lakehouse - **wwilakehouse**, 并从列表中选择fact_sale表。点击 **创建**。
 
     ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image86.png)
 
@@ -518,7 +518,7 @@
 
     ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image97.png)
 
-1. 显示“选择数据”对话框。展开工作空间 **Fabric Dataengineering-DataFactory-**@lab.LabInstance.Id，然后展开 Lakehouse - **wwilakehouse**，选择 **dimension_city** 表。点击创建。
+1. 显示“选择数据”对话框。展开工作空间 **Fabric Dataengineering-DataFactory-@lab.LabInstance.Id**，然后展开 Lakehouse - **wwilakehouse**，选择 **dimension_city** 表。点击创建。
 
     ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image98.png)
 
@@ -635,7 +635,7 @@
 
     ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image121.png)
 
-1. 在选择目标目标下，选择新表，浏览 **Fabric Dataengineering-DataFactory-XX** 工作区下的 wwilakehouse，输入 +++Gold_Sales_By_City+++ 作为表名，然后点击**下一步**。
+1. 在选择目标目标下，选择新表，浏览 **Fabric Dataengineering-DataFactory-@Lab.LabInstance.Id** 工作区下的 wwilakehouse，输入 +++Gold_Sales_By_City+++ 作为表名，然后点击**下一步**。
 
     ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image122.png)
 
@@ -672,7 +672,7 @@
 
 ### 任務 1: 将 Office 365 Outlook 活动添加到您的管道中
 
-1. 在左侧导航菜单中点击 **Fabric Dataengineering-DataFactory-**@lab.LabInstance.Id Workspace 导航。
+1. 在左侧导航菜单中点击 **Fabric Dataengineering-DataFactory-@lab.LabInstance.Id** Workspace 导航。
 
 1. 在工作区页面选择 **“Pipeline**”。
 
