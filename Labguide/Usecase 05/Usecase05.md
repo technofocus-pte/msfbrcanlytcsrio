@@ -975,6 +975,174 @@ Ontology（预览）与 [Fabric
     >
     > 繼續探索數據代理，嘗試一些你自己的提示。
 
+
+## 練習 6: 搭建并测试与Project Rayfin相关的配套应用
+
+### 任務 1: 搭建并测试与Project Rayfin相关的配套应用
+
+1.  在 **C:\\ drive
+    創建一個新文件夾**。點擊工具欄上的**“新建**”，選擇**文件夾**，輸入
+    **Lab4** 作為文件夾名，然後按**回車**保存。
+
+![](./media/image1.png)
+
+1.  在Windows搜索框中输入Visual Studio，然后点击VS **Code**。
+
+![A screenshot of a computer Description automatically \>
+generated](./media/image2.png)
+
+2.  在 VS Code 對話框中，點擊 **允許** 繼續 Microsoft 認證流程。
+
+![](./media/image3.png)
+
+3.  在 **登錄** 窗口中，選擇 **工作賬戶或學校賬戶**，然後點擊 **繼續**
+    ，使用您的組織賬戶登錄。
+
+> ![](./media/image4.png)
+
+1.  请用您的凭证登录
+
+| 资历 | 價值 |
+|---|---|
+| 用户名 | `[+++@lab.CloudPortalCredential](mailto:+++@lab.CloudPortalCredential)(User1).Username+++` |
+| 密碼 | `[+++@lab.CloudPortalCredential](mailto:+++@lab.CloudPortalCredential)(User1).Password+++` |
+
+![](./media/image5.png)
+
+![](./media/image6.png)
+
+5.  在 Visual Studio Code
+    中，点击**“更多操作”（⋯）**菜单，选择**终端**，然后选择**新终端**以打开新的集成终端窗口
+
+> ![](./media/image7.png)
+
+6.  在終端中，導航到**Lab4**目錄
+
++++cd\\++
+
++++cd Lab4+++
+
+> ![](./media/image8.png)
+
+7.  運行以下命令，搭建 **帶有完整本地開發模板的\[實驗性\] Todo 應用**
+
++++npm create @microsoft/rayfin@latest -- --template
+https://github.com/microsoft/awesome-rayfin --template-name
+"\[Experimental\] Todo app with full local dev"+++
+
+![](./media/image9.png)
+
+![](./media/image10.png)
+
+8.  项目名称输入 +++**Fabricapp**+++
+
+![](./media/image11.png)
+
+![](./media/image12.png)
+
+9.  項目成功創建後，運行 **Fabricapp 進入** Fabricapp
+    項目目錄，然後通過運行啟動本地開發服務器 npm run dev.
+
++++cd **Fabricapp**+++
+
++++cd **npm run dev**+++
+
+![](./media/image13.png)
+
+10. 当提示时，输入 Fabric 工作区名称 **Fabric IQ OntologyXXXXXX** ，并按
+    **回车** 继续将应用部署到所选的 Fabric 工作区。
+
+![](./media/image14.png)
+
+11. 當 Windows 安全對話框出現時，點擊 **允許** **JavaScript
+    運行時允許Node.js JavaScript 運行時**
+    在公網和私有網絡上通信並繼續運行應用程序。
+
+![](./media/image15.png)
+
+12. 複製終端顯示的本地前端URL，應該類似於+++http://localhost:5173+++,
+    然後在新的瀏覽器標簽頁中打開它.
+
+![](./media/image16.png)
+
+13. 选择“ **sign in with Microsoft** ”按钮。由于你已经有练习 1 的活跃
+    SSO 会话，应该会自动登录，无需重新输入凭证。否则，使用你用 Fabric
+    使用的同一个 Microsoft 账户登录：
+
+- **電子郵件**: <+++@lab.CloudPortalCredential>(User1).Username+++
+
+- **TAP**: <+++@lab.CloudPortalCredential>(User1).AccessToken+++
+
+![](./media/image17.png)
+
+14. 在 **Todo 應用**中輸入 +++**Review Lakeshore Retail ontology
+    relationships+++** 在任務字段中，然後點擊 **添加**
+    以創建新的待辦事項。
+
+![](./media/image18.png)
+
+15. 在 **Todo應用**中輸入 **+++Validate freezer telemetry ingestion+++**
+    在任務字段中，然後點擊 **添加** 以創建新的待辦事項。
+
+![](./media/image19.png)
+
+![](./media/image20.png)
+
+16. 选择一个任务
+
+![](./media/image21.png)
+
+![](./media/image22.png)
+
+17. 回到 VS Code 终端，按 **Ctrl+C 停止 Vite 开发服务器**。
+
+![](./media/image23.png)
+
+18. 将后端部署到你的Fabric工作区。
+
++++npm run up+++
+
+![](./media/image24.png)
+
+19. CLI 打印的**靜態託管 URL**。URL 應該看起來類似
+    https://*{random-prefix}*.webapp.rayfin….com.
+
+20. 點擊 **應用網址** ，在默認瀏覽器中啟動應用。
+
+![](./media/image25.png)
+
+21. 當出現 **"Do you want Code to open the external
+    website?"，提示**出現時，點擊**打開**，在你的默認瀏覽器中啟動已部署的應用程序。
+
+![](./media/image26.png)
+
+22. 选择**像第13步那样** **Sign in with Microsoft** 
+
+![](./media/image27.png)
+
+![](./media/image28.png)
+
+### 任務 2: 在 Fabric 中检查部署情况
+
+让我们来看看 Microsoft Fabric 门户中已部署的应用和数据库。
+
+1.  在 Microsoft Fabric 门户打开
+    +++[https://app.fabric.microsoft.com+++](https://app.fabric.microsoft.com+++/).
+
+2.  打開  <Ontology@lab.LabInstance.Id>
+    +Ontology@lab.LabInstance.Id+++工作區。
+
+![](./media/image29.png)
+
+3.  确认工作区包含一个 **Fabric data app**  项目和一个 **SQL
+    Database**项目。
+
+> ![](./media/image30.png)
+
+![](./media/image31.png)
+
+    
+
 ## 任务4：清理资源
 
 1.  選擇您的工作區，即左側導航菜單中的 **Fabric IQ
