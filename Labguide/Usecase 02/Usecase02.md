@@ -77,7 +77,7 @@
 
 ### 任务2：创建一个lakehouse并导入样本 data
 
-1. 在**Data-FactoryXX**工作区页面，点击 **+New item **按钮
+1. 在**Data-Factory@lab.LabInstance.Id**工作区页面，点击 **+New item **按钮
 
     ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image13.png)
 
@@ -169,7 +169,7 @@
 
     ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image34.png)
 
-1. 会显示**“Choose data**”对话框。使用导航面板找到 **workspace- Data-FactoryXX** 并展开它。然后，展开 你在上一个模块中为目的地创建的 **Lakehouse** - **DataFactoryLakehouse** ，从列表中选择**Bronze**表，然后点击 **Create**按钮。
+1. 会显示**“Choose data**”对话框。使用导航面板找到 **workspace- Data-Factory@lab.LabInstance.Id** 并展开它。然后，展开 你在上一个模块中为目的地创建的 **Lakehouse** - **DataFactoryLakehouse** ，从列表中选择**Bronze**表，然后点击 **Create**按钮。
 
     ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image35.png)
 
@@ -370,11 +370,11 @@
 
     ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image79.png)
 
-1. 现在，点击左侧导航窗格上的 **Data +++Factory-@lab.LabInstance.Id+++ workspace**。
+1. 现在，点击左侧导航窗格上的 **Data Factory-@lab.LabInstance.Id workspace**。
 
     ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image80.png)
 
-1. 在**Data_FactoryXX**窗格中，选择 **DataFactoryLakehouse** 查看新加载的表。
+1. 在**Data_Factory@lab.LabInstance.Id**窗格中，选择 **DataFactoryLakehouse** 查看新加载的表。
 
     ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image81.png)
 
@@ -387,7 +387,7 @@
 
 ### 任务1：将Office 365 Outlook活动添加到你的pipeline中
 
-1. 在左侧导航菜单中点击**Data_FactoryXX** 工作区。
+1. 在左侧导航菜单中点击**Data_Factory@lab.LabInstance.Id** 工作区。
 
     ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image83.png)
 
@@ -407,7 +407,7 @@
 
     | Setting | Value |
     |---|---|
-    | Connection | +++dfconnection +++User-@lab.LabInstance.Id+++ |
+    | Connection | +++dfconnection User-@lab.LabInstance.Id+++ |
     | Connection Type | Select **HTTP** |
     | File format | **Delimited Text** |
 
@@ -550,7 +550,7 @@
 
 你可以删除单个报表、pipelines、仓库和其他项目，或者删除整个工作区。请按照以下步骤删除你为本教程创建的工作区。
 
-1. 在左侧导航菜单中选择您的工作区，即**Data-FactoryXX** 。它会打开工作区的物品视图。
+1. 在左侧导航菜单中选择您的工作区，即**Data-Factory@lab.LabInstance.Id** 。它会打开工作区的物品视图。
 
     ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image83.png)
 
