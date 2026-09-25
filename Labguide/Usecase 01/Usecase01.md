@@ -66,7 +66,9 @@ Lakehouse，作为分析解决方案的集中存储。
 
 2.  在 **Microsoft Fabric** 窗口中，输入你的凭证，然后点击**提交**按钮。
 
-[TABLE]
+| 用户名 | 密码 |
+|---|---|
+| `[+++@lab.CloudPortalCredential](mailto:+++@lab.CloudPortalCredential)(User1).Username+++` | `[+++@lab.CloudPortalCredential](mailto:+++@lab.CloudPortalCredential)(User1).Password+++` |
 
 ![A screenshot of a computer AI-generated content may be
 incorrect.](./media/image2.png)
@@ -100,7 +102,11 @@ incorrect.](./media/image2.png)
 
 2.  在**右側的創建工作區**面板中，輸入以下細節，然後點擊**“應用**”按鈕。
 
-[TABLE]
+| Property | Value |
+|---|---|
+| Name | `Fabric Dataengineering-DataFactory [-@lab.LabInstance.Id](mailto:-@lab.LabInstance.Id)` |
+| Advanced | Under **License mode**, select **Fabric** |
+| Default storage format | **Small dataset storage format** |
 
 ![](./media/image8.png)
 
@@ -198,11 +204,11 @@ incorrect.](./media/image19.png)
     查询文件会自动保存以供未来参考，您可以根据需要重命名或删除这些文件。將代碼粘貼如下圖所示，然後點擊播放圖標執行
     腳本：
 
-> SELECT BuyingGroup, Count(\*) AS Total
->
-> FROM dimension_customer
->
-> GROUP BY BuyingGroup
+```
+SELECT BuyingGroup, Count(*) AS Total
+FROM dimension_customer
+GROUP BY BuyingGroup
+```
 
 ![](./media/image30.png)
 
@@ -302,19 +308,35 @@ incorrect.](./media/image19.png)
 9.  在“連接數據源**”頁面**輸入以下細節。然後選擇**連接**以創建與數據源的連接。在本教程中，所有示例数据都存在
     Azure Blob 存储的公共容器中。你连接到该容器以复制数据。
 
-[TABLE]
+| 财产 | 价值 |
+|---|---|
+| 账户名称或网址 | `https://fabrictutorialdata.blob.core.windows.net/sampledata/` |
+| 连接 | 创建新的连接 |
+| 连接名称 | `wwisampledata` |
+| 认证类型 | 匿名 |
 
 ![](./media/image50.png)
 
 10. 在**“源**”標簽頁中，默認選擇新創建的連接。在進入目標設置前，請先指定以下屬性。
 
-[TABLE]
+| 财产 | 价值 |
+|---|---|
+| 连接 | `wwisampledata` |
+| 文件路径类型 | File path |
+| 文件路径 | 容器名称（第一个文本框）：`sampledata`<br>目录名称（第二个文本框）：`WideWorldImportersDW/parquet` |
+| 递归地 | 已勾选 |
+| 文件格式 | Binary |
 
 ![](./media/image51.png)
 
 11. 在**“Destination** ”标签页中，指定以下属性：
 
-[TABLE]
+| 财产 | 价值 |
+|---|---|
+| 连接 | `wwilakehouse` (choose your lakehouse if you named it differently) |
+| 根文件夹 | `Files` |
+| 文件路径 | 目录名称（first text box）：`wwi-raw-data` |
+| 文件格式 | `Binary` |
 
 ![](./media/image52.png)
 
@@ -398,12 +420,11 @@ incorrect.](./media/image19.png)
     会话配置。**该单元支持两个Fabric功能，优化后续单元中数据的写入和读取方式。[V-order](https://learn.microsoft.com/en-us/fabric/data-engineering/delta-optimization-and-v-order) 优化Parquet文件布局，以加快读取速度和更好的压缩。 [Optimize
     write](https://learn.microsoft.com/en-us/fabric/data-engineering/tune-file-size#optimize-write) 减少写入文件数量并增加单个文件大小。
 
-> spark.conf.set("spark.sql.parquet.vorder.enabled", "true")
->
-> spark.conf.set("spark.microsoft.delta.optimizeWrite.enabled", "true")
->
-> spark.conf.set("spark.microsoft.delta.optimizeWrite.binSize",
-> "1073741824")
+```
+spark.conf.set("spark.sql.parquet.vorder.enabled", "true")
+spark.conf.set("spark.microsoft.delta.optimizeWrite.enabled", "true")
+spark.conf.set("spark.microsoft.delta.optimizeWrite.binSize", "1073741824")
+```
 
 2.  **運行** 這個單元，等它完成後再進入下一步。
 
@@ -468,6 +489,8 @@ incorrect.](./media/image19.png)
 > ![](./media/image78.png)
 >
 > ![](./media/image79.png)
+>
+9. 执行笔记本中“Path 2 - Lakehouse schemas not enabled (alternate path)”部分的所有单元格，以在 Lakehouse 中创建所需的表
 
 ## 練習 4: 在 Data Factory 中通過數據流進行數據轉換
 
@@ -630,7 +653,11 @@ incorrect.](./media/image19.png)
 
 6.  在自定義列對話框中，配置新列如下**:**
 
-[TABLE]
+| 财产 | 价值 |
+|---|---|
+| 新专栏名称 | `ProfitMargin` |
+| 数据类型 | 货币 |
+| 自定义列公式 | `if [TotalIncludingTax] > 0 then [Profit] / [TotalIncludingTax] else 0` |
 
 然后选择 **OK**.
 
@@ -658,7 +685,7 @@ incorrect.](./media/image19.png)
 
 ![](./media/image119.png)
 
-[TABLE]
+注意: ProfitMargin = Profit / TotalIncludingTax. 0.35 表示该销售利润率为 35%。四舍五入至小数点后 4 位以保证报告精度。
 
 ### 任務 6: 將輸出查詢加載到 Lakehouse中的金表中
 
@@ -759,7 +786,9 @@ incorrect.](./media/image19.png)
 
 ![](./media/image138.png)
 
-[TABLE]
+会出现 Pipeline表达式构建对话框。输入以下表达式，然后选择确定：
+ @concat('WWI Data Pipeline Succeeded with Pipeline Run Id: ', pipeline().RunId)
+
 
 ![](./media/image139.png)
 
@@ -771,7 +800,9 @@ incorrect.](./media/image19.png)
 
 ![](./media/image141.png)
 
-[TABLE]
+```
+@concat('RunID = ', pipeline().RunId, ' ; ', 'Files Written: ', activity('Data Copy to Lakehouse').output.filesWritten, ' ; ', 'Throughput: ', activity('Data Copy to Lakehouse').output.throughput)
+```
 
 2.  最后，在流水线编辑器顶部选择“主页”标签，选择
     **“运行**”。然后在确认对话框中选择“保存并再次运行”，以执行这些活动。
@@ -798,7 +829,7 @@ incorrect.](./media/image19.png)
 
 2.  根据需要配置排程。下面的示例将流水线安排在每天晚上8：00执行，直到年底。
 
-[TABLE]
+注意: 如果 Copy data1 被重命名，请用你管道复制活动的实际名称替换它。
 
 ![](./media/image148.png)
 
