@@ -1,998 +1,1003 @@
-# 使用场景 1: 实现一个用于Fabric Data Factory数据迁移和转换的 Data engineering 解决方案
+# 實驗 1：使用 Fabric Data Factory 實作資料移動與轉換的資料工程解決方案
 
-### 場景
+**情境**
 
-**Wide World Importers（WWI）** 是一家全球零售组织，在多个地区运营数百家门店。客户信息从多种运营系统收集，包括销售点（POS）应用、客户关系管理平台和电子商务渠道。數據以CSV文件形式存儲，每天從不同業務單元接收。
+**Wide World Importers (WWI)** 是一家全球零售組織，在多個地區經營數百家門市。客戶資訊從多個營運系統收集而來，包括銷售點 (POS) 應用程式、CRM 平台和電子商務通路。這些資料以 CSV 檔案形式儲存，每天從不同的業務單位接收。
 
-公司分析團隊目前花費大量時間手動導入文件、驗證數據質量以及準備數據集以供報告。這些人工流程導致客戶洞察生成延遲，也使業務用戶難以獲取一致可靠的信息。
+公司的分析團隊目前花費大量時間手動匯入檔案、驗證資料品質，以及準備報表所需的資料集。這些人工流程導致客戶洞察的產出延遲，也讓業務使用者難以取得一致且可靠的資訊。
 
-为现代化 analytics 平台，Wide World Importers采用了**Microsoft Fabric**作为统一数据平台。data engineering 团队被指派利用**Microsoft Fabric Data Factory**和**Lakehouse**实现可扩展解决方案，集中客户数据，实现高效数据管理，简化报告。
+為了將分析平台現代化，Wide World Importers 採用 **Microsoft Fabric** 作為統一的資料平台。資料工程團隊的任務是使用 **Microsoft Fabric Data Factory** 和 **Lakehouse** 實作可擴充的解決方案，以集中管理客戶資料、提升資料管理效率並簡化報表製作。
 
-作为数据工程师，你的职责是创建Fabric工作区，配置Lakehouse，将客户数据导入OneLake，将源文件转换为托管的Delta表，使用SQL Analytics Endpoint验证导入数据，创建Direct Lake语义模型，并生成Power BI报告，使业务利益相关者能够以最小延迟分析客户信息。
+身為資料工程師，你的職責是建立 Fabric 工作區、佈建 Lakehouse、將客戶資料擷取到 OneLake、將來源檔案轉換為受控 Delta 資料表、使用 SQL 分析端點驗證匯入的資料、建立 Direct Lake 語義模型，並產生 Power BI 報表，讓業務利害關係人能以最低延遲分析客戶資訊。
 
-通过实施该解决方案，Wide World Importers 可以消除手动数据准备，提供客户分析的单一真实来源，并利用 Microsoft Fabric 实现更快速、数据驱动的业务决策。
+透過實作此解決方案，Wide World Importers 可以免除手動資料準備、為客戶分析提供單一事實來源，並使用 Microsoft Fabric 做出更快速、以資料為導向的業務決策。
 
-### 简介
+**簡介**
 
-在此用例中，您将通过使用 **Microsoft Fabric Data Factory** 和 **Fabric Lakehouse** 构建完整的数据工程解决方案。從新的 Fabric 工作區開始，您將數據導入 Lakehouse，將文件轉換為託管的 Delta 表，使用 SQL 分析端點查詢數據，創建語義模型，並生成交互式 Power BI 報告。
+在本實驗中，你將使用 **Microsoft Fabric Data Factory** 和 **Fabric Lakehouse** 建置完整的資料工程解決方案。從新的 Fabric 工作區開始，你將把資料擷取到 Lakehouse、將檔案轉換為受控 Delta 資料表、使用 SQL 分析端點查詢資料、使用管線、筆記本和 Dataflow Gen2 轉換資料、透過電子郵件通知自動化並排程管線、建立語義模型，並產生互動式 Power BI 報表。
 
-在整個實驗過程中，您將探索 Microsoft Fabric 如何將數據集成、存儲、轉換、分析和報告整合到單一的軟件即服務（SaaS）平臺中。通過完成這一實踐練習，您將理解現代數據工程工作流程如何通過 Fabric Data Factory 實現，同時遵循行業在數據攝取、管理和分析方面的最佳實踐。
+在整個實驗中，你將了解 Microsoft Fabric 如何將資料整合、儲存、轉換、分析和報表統一到單一的軟體即服務 (SaaS) 平台中。
 
-**目标**:
-- 创建并配置一个 Microsoft Fabric 工作空间。
-- 建造并配置Fabric Lakehouse。
-- 將源數據導入OneLake。
-- 將文件加載到託管的Delta表中。
-- 使用 SQL Analytics Endpoint 查询 Lakehouse 数据。
-- 创建一个Direct Lake语义模型。
-- 从Fabric data 中激活并探索Power BI报告。
-- 了解Fabric Data Factory如何将数据工程和分析整合到一个统一平台中。
+**本實驗建立的 Fabric 項目**
 
+| **項目** | **名稱** | **在實驗中的用途** |
+|----|----|----|
+| 工作區 | Fabric Dataengineering-DataFactory-\<實驗執行個體 ID\> | 包含本實驗的所有項目 |
+| Lakehouse | wwilakehouse | 在 OneLake 中儲存原始檔案和 Delta 資料表 |
+| 語義模型 | wwisemanticmodel | 用於報表的 Direct Lake 模型 |
+| 管線 | IngestDataFromSourceToLakehouse | 複製 WWI 範例資料、執行資料流程並傳送電子郵件 |
+| 筆記本 | Prepare and transform data – PySpark | 建立事實、維度和彙總 Delta 資料表 |
+| Dataflow Gen2 | wwi_fact_sale_transform | 建立 Gold_Sales_By_City 資料表 |
+| 報表 | dimension_customer-report、Profit Reporting | 以 Lakehouse 資料建置的 Power BI 報表 |
 
-## 练习一：搭建Microsoft Fabric data Engineering 环境
+**目標**：
 
-在构建数据工程解决方案之前，你需要先准备好 Microsoft Fabric 环境。在这个练习中，你将登录 Microsoft Fabric，创建一个专用工作区，并配置一个 Lakehouse，作为分析解决方案的集中存储。
+- 建立並設定 Microsoft Fabric 工作區。
 
-### 任务 1: 登录 Power BI 账户
+- 建置並設定 Fabric Lakehouse。
 
-1. 打開瀏覽器，進入地址欄，輸入或粘貼以下內容 URL: +++https://app.fabric.microsoft.com/+++ 然後按下**回車**鍵。
+- 將來源資料擷取到 OneLake。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image1.png)
+- 將檔案載入受控 Delta 資料表。
 
-1. 在 **Microsoft Fabric** 窗口中，输入你的凭证，然后点击**提交**按钮。
+- 使用 SQL 分析端點查詢 Lakehouse 資料。
 
-    | 用户名 | 密码 |
-    |---|---|
-    | +++@lab.CloudPortalCredential(User1).Username+++ | +++@lab.CloudPortalCredential(User1).Password+++ |
+- 使用筆記本和 Dataflow Gen2 轉換資料。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image2.png)
+- 透過電子郵件通知自動化、排程和監視 Data Factory 管線。
 
-1. 然後，在 **Microsoft** 窗口輸入密碼，點擊**登錄**按鈕。
+- 建立 Direct Lake 語義模型。
 
-    ![A login screen with a red box and blue text AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image3.png)
+- 從 Fabric 資料產生並探索 Power BI 報表。
 
-1. 在**“保持登錄”中，**點擊**“是”**按鈕。
+**注意：** 本實驗的螢幕擷取畫面使用英文介面，因此步驟中的介面名稱（例如 **+ New workspace**、**Apply**）保留英文，方便你對照畫面操作。
 
-1. 你将被引导到Power BI主页。
+## 練習 1：設定 Microsoft Fabric 資料工程環境
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image4.png)
+在建置資料工程解決方案之前，你需要先準備 Microsoft Fabric 環境。在本練習中，你將登入 Microsoft Fabric、建立專用工作區，並佈建作為分析解決方案集中儲存區的 Lakehouse。
 
-1. 选择屏幕左下角的默认 Power BI 图标，然后选择 **Fabric**。
+### 工作 1：登入 Power BI 帳戶
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image5.png)
+1.  開啟瀏覽器，在網址列中輸入或貼上以下 URL：+++https://app.fabric.microsoft.com/+++，然後按 **Enter** 鍵。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image6.png)
+![](./media/image1.png)
 
+2.  在 **Microsoft Fabric** 視窗中輸入你的認證，然後按一下 **Submit** 按鈕。
 
-### 任務 2: 創建一個Fabric工作區
+| **使用者名稱** | **+++@lab.CloudPortalCredential(User1).Username+++** |
+|----|----|
+| **密碼** | **+++@lab.CloudPortalCredential(User1).Password+++** |
 
-在這個任務中，你需要創建一個 Fabric 工作區。工作区包含了 lakehouse 教程所需的所有内容，包括 lakehouse、数据流、Data Factory 流水线、笔记本、Power BI 数据集和报告。
+![](./media/image2.png)
 
-1. Fabric主頁，選擇**+新工作區**瓷磚。
+3.  在 **Microsoft** 視窗中輸入密碼，然後按一下 **Sign in** 按鈕。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image7.png)
+![](./media/image3.png)
 
-1. 在**右側的創建工作區**面板中，輸入以下細節，然後點擊**“應用**”按鈕。
+4.  在 **Stay signed in?** 視窗中，按一下 **Yes** 按鈕。
 
-    | Property | Value |
-    |---|---|
-    | Name | `Fabric Dataengineering-DataFactory -@lab.LabInstance.Id` |
-    | Advanced | Under **License mode**, select **Fabric** |
-    | Default storage format | **Small dataset storage format** |
+5.  系統會將你導向 Power BI 首頁。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image8.png)
+![](./media/image4.png)
 
-    注意：要查找您的實驗室即時ID，請選擇“幫助”並複製即時ID。
+6.  選取畫面左下角預設的 Power BI 圖示，然後選取 **Fabric**。
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image9.png)
+![](./media/image5.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image10.png)
+![](./media/image6.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image11.png)
+### 工作 2：建立 Fabric 工作區
 
-1. 等待部署完成。完成大約需要2-3分鐘。
+在這項工作中，你將建立 Fabric 工作區。工作區包含本實驗所需的所有項目，包括 Lakehouse、資料流程、Data Factory 管線、筆記本、Power BI 語義模型和報表。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image12.png)
+1.  在 Fabric 首頁上，選取 **+ New workspace** 圖格。
 
+![](./media/image7.png)
 
-### 任務 3: 創建 lakehouse
+2.  在右側出現的 **Create a workspace** 窗格中，輸入以下詳細資料，然後按一下 **Apply** 按鈕。
 
-1. 點擊導航欄中的**+新物品**按鈕創建新湖屋。
+| **屬性** | **值** |
+|----|----|
+| **Name** | +++Fabric Dataengineering-DataFactory-@lab.LabInstance.Id+++ |
+| **Advanced** | 在 **License mode** 下選取 **Fabric** |
+| **Default storage format** | **Small dataset storage format** |
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image13.png)
+![](./media/image8.png)
 
-1. 点击“ **Lakehouse**”瓷砖。
+**注意：** 若要找到你的實驗執行個體 ID，請選取 **Help** 並複製執行個體 ID。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image14.png)
+![](./media/image9.png)
 
-1. 在**“新湖屋**”對話框中，在名稱字段輸入 +++wwilakehouse+++ ，並**取消選擇**湖屋的模式。點擊**“創建**”按鈕，打開新湖屋。
+![](./media/image10.png)
 
-    **注意：确保在**wwilakehouse之前清空。
+![](./media/image11.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image15.png)
+3.  等待部署完成，大約需要 2-3 分鐘。
 
-1. 你會看到一條通知，提示SQL**端點已成功創建**。
+![](./media/image12.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image16.png)
+### 工作 3：建立 Lakehouse
 
+1.  按一下導覽列中的 **+ New item** 按鈕，建立新的 Lakehouse。
 
-### 任務4: 导入样本数据
+![](./media/image13.png)
 
-1. 在**wwilakehouse**頁面，點擊**“獲取你的湖屋數據**”部分，點擊“**上傳文件**”，如下圖所示。
+2.  按一下 **Lakehouse** 圖格。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image17.png)
+![](./media/image14.png)
 
-1. 在“上傳文件”標簽頁中，點擊文件下的文件夾
+3.  在 **New lakehouse** 對話方塊的 **Name** 欄位中輸入 +++wwilakehouse+++，並**取消選取** **Lakehouse schemas**。按一下 **Create** 按鈕，並開啟新的 Lakehouse。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image18.png)
+**注意**：請確認 **wwilakehouse** 前面沒有空格。
 
-1. 在虚拟机上浏览到**C：\LabFiles**，然后选择**dimension_customer.csv**文件，点击**打开**按钮。
+![](./media/image15.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image19.png)
+4.  你會看到 **Successfully created SQL endpoint** 的通知。
 
-1. 然後點擊**上傳**按鈕並關閉
+![](./media/image16.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image20.png)
+### 工作 4：擷取範例資料
 
-1. **关闭**上传文件面板。
+1.  在 **wwilakehouse** 頁面上，前往 **Get data in your lakehouse** 區段，然後按一下 **Upload files**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image21.png)
+![](./media/image17.png)
 
-1. 點擊並選擇文件刷新。文件會出現。
+2.  在 **Upload files** 索引標籤上，按一下 **Files** 下方的資料夾圖示。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image22.png)
+![](./media/image18.png)
 
-1. 在**Lakehouse**頁面，在資源管理器窗格下選擇“文件”。不過，現在用鼠標打開**dimension_customer.csv**文件。點擊橫向省略號**（...）**旁邊**dimension_customer**.csv。導航並點擊“**加載表**”，然後選擇**“新表**”。
+3.  在虛擬機器上瀏覽至 **C:\LabFiles**，選取 **dimension_customer.csv** 檔案，然後按一下 **Open** 按鈕。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image23.png)
+![](./media/image19.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image24.png)
+4.  按一下 **Upload** 按鈕。
 
-1. 在**“加載文件到新表格**”對話框中，點擊 **Load**按鈕。
+![](./media/image20.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image25.png)
+5.  **關閉** **Upload files** 窗格。
 
-1. 现在 表格**dimension_customer**成功创建。
+![](./media/image21.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image26.png)
+6.  選取 **Files** 並按一下 **Refresh**，檔案隨即出現。
 
-1. 在表格下**选择dimension_customer**表。
+![](./media/image22.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image27.png)
+7.  在 **Explorer** 窗格中選取 **Files**。將滑鼠游標停留在 **dimension_customer.csv** 檔案上，按一下旁邊的水平省略號 **(…)**，按一下 **Load Table**，然後選取 **New table**。
 
-1. 你也可以使用湖屋的SQL端點用SQL語句查詢數據。 **在屏幕右上角的下拉菜单**中选择**SQL analytics endpoint**。
+![](./media/image23.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image28.png)
+![](./media/image24.png)
 
-1. 在 **wwilakehouse** 页面，在 Explorer 下选择 **dimension_customer** 表预览其数据，并选择**新 SQL 查询**来写你的 SQL 语句。
+8.  在 **Load file to new table** 對話方塊中，按一下 **Load** 按鈕。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image29.png)
+![](./media/image25.png)
 
-1. 以下示例查询汇总了基于**dimension_customer**表中 **BuyingGroup 列**的行数。SQL 查询文件会自动保存以供未来参考，您可以根据需要重命名或删除这些文件。將代碼粘貼如下圖所示，然後點擊播放圖標執行 腳本：
+9.  **dimension_customer** 資料表已成功建立。
 
-    ```
-    SELECT BuyingGroup, Count(*) AS Total
-    FROM dimension_customer
-    GROUP BY BuyingGroup
-    ```
+![](./media/image26.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image30.png)
+10. 選取 **Tables** 下的 **dimension_customer** 資料表。
 
-    **注意**：如果你在腳本執行過程中遇到錯誤，請交叉檢查腳本語法，確保沒有不必要的空格。
+![](./media/image27.png)
 
-1. 之前所有湖屋的表和視圖都會自動添加到語義模型中。最近更新後，對於新湖屋，你必須手動將表添加到語義模型中。
+11. 你也可以使用 Lakehouse 的 SQL 端點，以 SQL 陳述式查詢資料。從畫面右上角的 **Analyze data with** 下拉式功能表中選取 **SQL analytics endpoint**。
 
-1. 在Lakehouse**主頁**標簽中，選擇**“新語義模型**”，選擇你想添加到語義模型中的表格。
+![](./media/image28.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image31.png)
+12. 在 **wwilakehouse** 頁面的 **Explorer** 下，選取 **dimension_customer** 資料表以預覽其資料，然後選取 **New SQL query** 撰寫 SQL 陳述式。
 
-1. 在**“新語義模型**”對話框中輸入 +++wwwsemanticmodel+++，然後從表列表中選擇**dimension_customer**表，選擇**確認**以創建新模型。
+![](./media/image29.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image32.png)
+13. 以下範例查詢會依 **dimension_customer** 資料表的 **BuyingGroup** 資料行彙總資料列數。SQL 查詢檔案會自動儲存以供日後參考，你可以視需要重新命名或刪除這些檔案。貼上程式碼，然後按一下播放圖示**執行**指令碼。
 
+```sql
+SELECT BuyingGroup, Count(*) AS Total
+FROM dimension_customer
+GROUP BY BuyingGroup
+```
 
-### 任務 5: 制作报告
+![](./media/image30.png)
 
-1. 在左侧导航面板中，选择 **Fabric Dataengineering-DataFactory-@Lab.LabInstance.Id**.
+**注意**：如果執行指令碼時發生錯誤，請檢查指令碼語法中是否有多餘的空格。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image33.png)
+14. 過去所有 Lakehouse 資料表和檢視都會自動加入語義模型。在最近的更新之後，新的 Lakehouse 需要手動將資料表加入語義模型。
 
-1. 在你的工作区里，找到你创建的语义模型，选择**......**（省略号）菜单，然后选择 **Auto-create report**.
+15. 在 Lakehouse 的 **Home** 索引標籤上，選取 **New semantic model**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image34.png)
+![](./media/image31.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image35.png)
+16. 在 **New semantic model** 對話方塊中輸入 +++wwisemanticmodel+++，從資料表清單中選取 **dimension_customer** 資料表，然後按一下 **Confirm** 建立新模型。
 
-1. 報告準備好後，點擊“**立即查看報告**”以打開並查看。
+![](./media/image32.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image36.png)
+### 工作 5：建置報表
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image37.png)
+1.  在左側導覽窗格中，選取 **Fabric Dataengineering-DataFactory-@lab.LabInstance.Id**。
 
-1. 由於表格是一個維度，裡面沒有測量值，Power BI 會為行數創建一個度量，並在不同列中匯總，並生成不同的圖表，如下圖所示。
+![](./media/image33.png)
 
-1. 通過從頂部的色帶選擇**“保存**”，將此報告保存以備將來使用。
+2.  在工作區中找到 **wwisemanticmodel** 語義模型，選取 **...**（省略號）功能表，然後選取 **Auto-create report**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image38.png)
+![](./media/image34.png)
 
-1. 在**“Save your report** ”对话框中，输入报告名称 +++dimension_customer-report+++，然后选择**保存。**
+![](./media/image35.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image39.png)
+3.  報表準備好後，按一下 **View report now** 開啟並檢閱報表。
 
-1. 你會看到一條通知，說“**報告已保存**”。
+![](./media/image36.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image40.png)
+![](./media/image37.png)
 
+4.  由於此資料表是維度資料表且沒有量值，Power BI 會建立資料列計數量值、在不同資料行間彙總，並產生如上圖所示的各種圖表。
 
-## 練習2：在Fabric Lakehouse中導入和管理數據
+5.  從頂端功能區選取 **Save** 以儲存此報表。
 
-在這個練習中，你會將來自世界大戰（WWI）的額外維度和事實表導入湖邊別墅。
+![](./media/image38.png)
 
-### 任務 1: 导入数据
+6.  在 **Save your report** 對話方塊中，輸入 +++dimension_customer-report+++ 作為名稱，然後按一下 **Save**。
 
-1. 在左侧导航面板中，选择 **Fabric Dataengineering-DataFactory-@Lab.LabInstance.Id**.
+![](./media/image39.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image41.png)
+7.  你會看到 **Report saved** 的通知。
 
-1. 在 **Fabric Dataengineering-DataFactory-@Lab.LabInstance.Id** 工作区页面，点击 **+New item** 按钮，然后选择**管道**。
+![](./media/image40.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image42.png)
+## 練習 2：在 Fabric Lakehouse 中擷取和管理資料
 
-1. 在“新建管道”对话框中，指定名称为 +++IngestDataFromSourceToLakehouse+++，并选择**创建。**创建一个新的数据工厂流水线并打开。
+在本練習中，你將使用 Data Factory 管線，把 Wide World Importers (WWI) 範例資料中的其他維度和事實資料表擷取到 Lakehouse。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image43.png)
+### 工作 1：擷取資料
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image44.png)
+1.  在左側導覽窗格中，選取 **Fabric Dataengineering-DataFactory-@lab.LabInstance.Id**。
 
-1. 在新管道的**主**页标签中，选择**Pipeline activity** \> **Copy data**.
+![](./media/image41.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image45.png)
+2.  在工作區頁面上，按一下 **+ New item** 按鈕，然後選取 **Pipeline**。
 
-1. 從畫布中選擇新的**“CopyData**活動”。活動屬性顯示在畫布下方的窗格中，分為包括**“通用**”、“**來源**”、“**目的地**”、“**映射**”和**“設置**”等標簽頁。你可能需要通过拖动顶部边缘向上展开窗格。
+![](./media/image42.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image46.png)
+3.  在 **New pipeline** 對話方塊中，輸入 +++IngestDataFromSourceToLakehouse+++ 作為名稱，然後按一下 **Create**。系統會建立並開啟新的 Data Factory 管線。
 
-1. 在“**通用**”标签页，在名称字段输入 +++Data Copy to Lakehouse+++ 。其他字段保持默认值。
+![](./media/image43.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image47.png)
+![](./media/image44.png)
 
-1. 在“**源**”標簽下，選擇連接下拉菜單，然後選擇“**全部瀏覽**”。
+4.  在新管線的 **Home** 索引標籤上，選取 **Pipeline activity** \> **Copy data**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image48.png)
+![](./media/image45.png)
 
-1. 在“**Choose a data source to get started** **”**页面中，搜索并选择**Azure blobs**。
+5.  選取畫布上新的 **Copy data** 活動。活動屬性會顯示在畫布下方的窗格中，分為 **General**、**Source**、**Destination**、**Mapping** 和 **Settings** 等索引標籤。你可能需要拖曳窗格頂端邊緣，將窗格向上展開。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image49.png)
+![](./media/image46.png)
 
-1. 在“連接數據源**”頁面**輸入以下細節。然後選擇**連接**以創建與數據源的連接。在本教程中，所有示例数据都存在 Azure Blob 存储的公共容器中。你连接到该容器以复制数据。
+6.  在 **General** 索引標籤的 **Name** 欄位中輸入 +++Data Copy to Lakehouse+++。其他欄位保留預設值。
 
-    | 财产 | 价值 |
-    |---|---|
-    | 账户名称或网址 | `https://fabrictutorialdata.blob.core.windows.net/sampledata/` |
-    | 连接 | 创建新的连接 |
-    | 连接名称 | `wwisampledata` |
-    | 认证类型 | 匿名 |
+![](./media/image47.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image50.png)
+7.  在 **Source** 索引標籤上，選取 **Connection** 下拉式清單，然後選取 **Browse all**。
 
-1. 在**“源**”標簽頁中，默認選擇新創建的連接。在進入目標設置前，請先指定以下屬性。
+![](./media/image48.png)
 
-    | 财产 | 价值 |
-    |---|---|
-    | 连接 | `wwisampledata` |
-    | 文件路径类型 | File path |
-    | 文件路径 | 容器名称（第一个文本框）：`sampledata`<br>目录名称（第二个文本框）：`WideWorldImportersDW/parquet` |
-    | 递归地 | 已勾选 |
-    | 文件格式 | Binary |
+8.  在 **Choose a data source to get started** 頁面上，搜尋並選取 **Azure Blobs**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image51.png)
+![](./media/image49.png)
 
-1. 在**“Destination** ”标签页中，指定以下属性：
+9.  在 **Connect data source** 頁面上輸入以下詳細資料，然後按一下 **Connect**。所有範例資料都存放在 Azure Blob 儲存體的公用容器中。
 
-    | 财产 | 价值 |
-    |---|---|
-    | 连接 | `wwilakehouse` (choose your lakehouse if you named it differently) |
-    | 根文件夹 | `Files` |
-    | 文件路径 | 目录名称（first text box）：`wwi-raw-data` |
-    | 文件格式 | `Binary` |
+| **屬性** | **值** |
+|----|----|
+| **Account name or URL** | +++https://fabrictutorialdata.blob.core.windows.net/sampledata/+++ |
+| **Connection** | **Create new connection** |
+| **Connection name** | +++wwisampledata+++ |
+| **Authentication kind** | **Anonymous** |
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image52.png)
+![](./media/image50.png)
 
-1. 點擊**“運行”**以運行複製數據。
+10. 在 **Source** 索引標籤上，預設會選取新建立的連線。在設定目的地之前，請先指定以下屬性。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image53.png)
+| **屬性** | **值** |
+|----|----|
+| **Connection** | **wwisampledata** |
+| **File path type** | **File path** |
+| **File path** | 容器名稱（第一個文字方塊）：+++sampledata+++ <br> 目錄名稱（第二個文字方塊）：+++WideWorldImportersDW/parquet+++ |
+| **Recursively** | **已勾選** |
+| **File format** | **Binary** |
 
-1. 點擊“**保存並運行**”按鈕，這樣該流程就會被保存並運行。
+![](./media/image51.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image54.png)
+11. 在 **Destination** 索引標籤上，指定以下屬性。
 
-1. 數據複製過程大約需要1-2分鐘完成。
+| **屬性** | **值** |
+|----|----|
+| **Connection** | **wwilakehouse**（如果你的 Lakehouse 使用其他名稱，請選取該 Lakehouse） |
+| **Root folder** | **Files** |
+| **File path** | 目錄名稱（第一個文字方塊）：+++wwi-raw-data+++ |
+| **File format** | **Binary** |
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image55.png)
+![](./media/image52.png)
 
-1. 在“輸出”標簽下，選擇**“Data Copy to Lakehouse** ”以查看數據傳輸的詳細信息。看到**狀態**為**“成功”**後，點擊**關閉**按鈕。
+12. 按一下 **Run** 執行複製資料活動。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image56.png)
+![](./media/image53.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image57.png)
+13. 按一下 **Save and run** 按鈕，儲存並執行管線。
 
-1. 管道成功執行後，進入你的湖屋（**wwilakehouse**）打開資源管理器查看導入的數據。
+![](./media/image54.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image58.png)
+14. 資料複製程序大約需要 1-2 分鐘完成。
 
-1. 刷新**文件**部分以查看被導入的數據。文件部分会出现一个新文件夹**wwi-raw-data，Azure** Blob表的数据会被复制到那里。
+![](./media/image55.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image59.png)
+15. 在 **Output** 索引標籤上，選取 **Data Copy to Lakehouse** 以檢視資料傳輸的詳細資料。確認 **Status** 為 **Succeeded** 後，按一下 **Close** 按鈕。
 
+![](./media/image56.png)
 
-## 練習 3: 準備和轉換 Lakehouse內的數據
+![](./media/image57.png)
 
-### 任務1：轉換數據並加載為銀色Delta表
+16. 管線成功執行後，前往你的 Lakehouse (**wwilakehouse**) 並開啟 Explorer 檢視匯入的資料。
 
-1. 在左侧导航面板中，选择 **Fabric Dataengineering-DataFactory-@Lab.LabInstance.Id**.
+![](./media/image58.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image60.png)
+17. 重新整理 **Files** 區段以查看擷取的資料。**Files** 區段中會出現新的 **wwi-raw-data** 資料夾，Azure Blob 儲存體中的資料已複製到此處。
 
-1. 在**Fabric**頁面，點擊命令欄的**“導入**”下注，然後選擇**新筆記本\>從這台電腦**。
+![](./media/image59.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image61.png)
+## 練習 3：在 Lakehouse 中準備和轉換資料
 
-1. 從屏幕右側打開**的**導入狀態面板**中選擇**上傳。
+在本練習中，你將匯入 PySpark 筆記本，並使用它從原始資料建立事實、維度和彙總 Delta 資料表。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image62.png)
+### 工作 1：匯入筆記本並連結至 Lakehouse
 
-1. 在虛擬機上瀏覽到 **C：\LabFiles**，然後選擇**“準備和轉換數據——PySpark** 筆記本”，點擊**打開**按鈕。
+1.  在左側導覽窗格中，選取 **Fabric Dataengineering-DataFactory-@lab.LabInstance.Id**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image63.png)
+![](./media/image60.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image64.png)
+2.  在工作區頁面上，按一下命令列中的 **Import** 下拉式清單，然後選取 **New notebook \> From this computer**。
 
-1. 選擇**wwilakehouse**湖屋來打開它，這樣你接下來打開的筆記本就會關聯到它。
+![](./media/image61.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image65.png)
+3.  在畫面右側開啟的 **Import status** 窗格中，選取 **Upload**。
 
-1. 在工具欄中，選擇“用下拉菜單**分析數據**”，指向**筆記本**，然後選擇**“現有筆記本**”。
+![](./media/image62.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image66.png)
+4.  在虛擬機器上瀏覽至 **C:\LabFiles**，選取 **Prepare and transform data – PySpark** 筆記本，然後按一下 **Open** 按鈕。
 
-1. 選擇導入的筆記本，準備 **並轉換數據——PySpark**，然後點擊 **打開。**
+![](./media/image63.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image67.png)
+![](./media/image64.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image68.png)
+5.  選取 **wwilakehouse** Lakehouse 將其開啟，讓接下來開啟的筆記本連結到此 Lakehouse。
 
+![](./media/image65.png)
 
-### 任務2: 創建Delta表
+6.  從工具列選取 **Analyze data with** 下拉式功能表，指向 **Notebook**，然後選取 **Existing notebook**。
 
-> 在這個任務中，你需要運行筆記本單元格，從原始數據創建Delta表。
->
-> 這些表格遵循星型模式，這是組織分析數據的常見模式：
+![](./media/image66.png)
 
-- **事實表**（fact_sale）包含企業可測量的事件——在此例中，包含數量、價格和利潤的單個銷售交易。
-- **维度表**（dimension_city、dimension_customer、dimension_date、dimension_employee、dimension_stock_item）包含为事实提供背景的描述属性，如销售发生地点、谁制作的以及何时。
+7.  選取匯入的筆記本 **Prepare and transform data – PySpark**，然後按一下 **Open**。
 
+![](./media/image67.png)
 
-1. **Cell 1 - Spark 会话配置。**该单元支持两个Fabric功能，优化后续单元中数据的写入和读取方式。[V-order](https://learn.microsoft.com/en-us/fabric/data-engineering/delta-optimization-and-v-order) 优化Parquet文件布局，以加快读取速度和更好的压缩。 [Optimize write](https://learn.microsoft.com/en-us/fabric/data-engineering/tune-file-size#optimize-write) 减少写入文件数量并增加单个文件大小。
+![](./media/image68.png)
 
-    ```
-    spark.conf.set("spark.sql.parquet.vorder.enabled", "true")
-    spark.conf.set("spark.microsoft.delta.optimizeWrite.enabled", "true")
-    spark.conf.set("spark.microsoft.delta.optimizeWrite.binSize", "1073741824")
-    ```
+### 工作 2：建立 Delta 資料表
 
-1. **運行** 這個單元，等它完成後再進入下一步。
+在這項工作中，你將執行筆記本儲存格，從原始資料建立 Delta 資料表。這些資料表採用星型結構描述，這是組織分析資料的常見模式：
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image69.png)
+- **事實資料表** (fact_sale) 包含可衡量的業務事件——在此案例中是個別銷售交易，包括數量、價格和利潤。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image70.png)
+- **維度資料表** (dimension_city、dimension_customer、dimension_date、dimension_employee、dimension_stock_item) 包含為事實提供背景資訊的描述性屬性，例如銷售發生的地點、由誰完成以及發生的時間。
 
-1. **Cell 2 - Fact - Sale.** 该单元读取文件/wwi-raw-data/full/fact_sale_1y_full的原始parquet数据，添加日期部分列（**年份**、**季度**和**月份**），并将fact_sale写成按年和季度划分的Delta表 。
+1.  **Cell 1 - Spark 工作階段設定。** 此儲存格會啟用兩項 Fabric 功能，最佳化後續儲存格寫入和讀取資料的方式。[V-order](https://learn.microsoft.com/en-us/fabric/data-engineering/delta-optimization-and-v-order) 會最佳化 Parquet 檔案配置，以加快讀取速度並提升壓縮率。[Optimize write](https://learn.microsoft.com/en-us/fabric/data-engineering/tune-file-size#optimize-write) 會減少寫入的檔案數量並增加個別檔案的大小。
 
-1. 運行這個單元，等它完成後再進入下一步。
+```python
+spark.conf.set("spark.sql.parquet.vorder.enabled", "true")
+spark.conf.set("spark.microsoft.delta.optimizeWrite.enabled", "true")
+spark.conf.set("spark.microsoft.delta.optimizeWrite.binSize", "1073741824")
+```
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image71.png)
+2.  **執行**此儲存格，並等待完成後再進行下一個步驟。
 
-1. **Cell 3** - 尺寸. 该单元读取五维分层数据集，并将其写入 Delta 表（dimension_city、dimension_customer、dimension_date、dimension_employee 和 dimension_stock_item），在 Tables/dbo/.... 下。
+![](./media/image69.png)
 
-1. **運行** 這個單元，等它完成後再進入下一步。
+![](./media/image70.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image72.png)
+3.  **Cell 2 - Fact - Sale。** 此儲存格會從 **Files/wwi-raw-data/full/fact_sale_1y_full** 讀取原始 Parquet 資料、新增日期部分資料行（**Year**、**Quarter** 和 **Month**），並將 **fact_sale** 寫入依 **Year** 和 **Quarter** 分割的 Delta 資料表。
 
-1. 要驗證已創建的表格，請在資源管理器中右鍵點擊 **wwilakehouse** 湖屋，然後選擇**刷新**。表格显示出来。
+4.  **執行**此儲存格，並等待完成後再進行下一個步驟。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image73.png)
+![](./media/image71.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image74.png)
+5.  **Cell 3 - Dimensions。** 此儲存格會讀取五個維度 Parquet 資料集，並將其寫入 Delta 資料表（**dimension_city**、**dimension_customer**、**dimension_date**、**dimension_employee** 和 **dimension_stock_item**）。
 
+6.  **執行**此儲存格，並等待完成後再進行下一個步驟。
 
-### 任務3: 為聚合轉換業務數據
+![](./media/image72.png)
 
-在任務中，你繼續使用同一個筆記本，然後運行接下來的單元格，用你在上一節創建的Delta表創建匯總表。
+7.  若要驗證建立的資料表，請在 Explorer 中以滑鼠右鍵按一下 **wwilakehouse** Lakehouse，然後選取 **Refresh**。資料表隨即出現。
 
-1. 确保笔记本仍然关联着**wwilakehouse**.
+![](./media/image73.png)
 
-1. **Cell 4 - 用于转换的加载源表（仅限PySpark）。**如果你用的是 PySpark 笔记本，可以运行这个单元格，把 Delta 表加载到 DataFrames 里，进行后续的聚合步骤。
+![](./media/image74.png)
 
-1. 運行這個單元，等它完成後再進入下一步。
+### 工作 3：轉換業務資料以進行彙總
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image75.png)
+在這項工作中，你將繼續使用同一個筆記本，執行接下來的儲存格，從上一項工作建立的 Delta 資料表建立彙總資料表。
 
-1. **Cell 5 - 创建aggregate_sale_by_date_city。**该单元连接销售、日期和城市数据，然后创建城市级别的汇总表。
+1.  確認筆記本仍連結到 **wwilakehouse**。
 
-1. 運行這個單元，等它完成後再進入下一步。
+2.  **Cell 4 - 載入要轉換的來源資料表。** 執行此儲存格，將 Delta 資料表載入 DataFrame，以供後續彙總步驟使用。等待完成後再進行下一個步驟。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image76.png)
+![](./media/image75.png)
 
-1. **Cell 6 - 创建aggregate_sale_by_date_employee。**该单元连接销售、日期和员工数据，然后创建员工级别汇总表。
+3.  **Cell 5 - 建立 aggregate_sale_by_date_city。** 此儲存格會聯結銷售、日期和城市資料，然後建立城市層級的彙總資料表。**執行**此儲存格並等待完成。
 
-1. 運行這個單元，等它完成後再進入下一步。
+![](./media/image76.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image77.png)
+4.  **Cell 6 - 建立 aggregate_sale_by_date_employee。** 此儲存格會聯結銷售、日期和員工資料，然後建立員工層級的彙總資料表。**執行**此儲存格並等待完成。
 
-1. 要驗證已創建的表格，請在資源管理器中右鍵點擊 **wwilakehouse** Lakehouse，然後選擇**刷新**。聚合表會出現。
+![](./media/image77.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image78.png)
+5.  若要驗證建立的資料表，請在 Explorer 中以滑鼠右鍵按一下 **wwilakehouse** Lakehouse，然後選取 **Refresh**。彙總資料表隨即出現。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image79.png)
+![](./media/image78.png)
 
-1. 执行笔记本中“Path 2 - Lakehouse schemas not enabled (alternate path)”部分的所有单元格，以在 Lakehouse 中创建所需的表
+![](./media/image79.png)
 
+## 練習 4：在 Data Factory 中使用資料流程轉換資料
 
-## 練習 4: 在 Data Factory 中通過數據流進行數據轉換
+在本練習中，你將使用 Dataflow Gen2 合併 **fact_sale** 和 **dimension_city** 資料表、新增計算的利潤率資料行，並將結果載入 Lakehouse 中的 Gold 資料表。
 
-### 任務1：從青銅湖屋表獲取數據
+### 工作 1：從 Lakehouse 資料表取得資料
 
-1. 在左側導航窗格中，點擊工作區名稱 **Fabric Dataengineering-DataFactory-@lab.LabInstance.Id** 返回工作區視圖。
+1.  在左側導覽窗格中，按一下工作區名稱 **Fabric Dataengineering-DataFactory-@lab.LabInstance.Id** 返回工作區檢視。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image80.png)
+![](./media/image80.png)
 
-1. 點擊**導航欄中的+新項目**。从可用项目列表中选择**Dataflow Gen2。**
+2.  按一下導覽列中的 **+ New item**。從可用項目清單中選取 **Dataflow Gen2**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image81.png)
+![](./media/image81.png)
 
-1. 在名称栏中输入 +++wwi_fact_sale_transform+++, 然后选择 **创建。**
+3.  在 **Name** 欄位中輸入 +++wwi_fact_sale_transform+++，然後按一下 **Create**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image82.png)
+![](./media/image82.png)
 
-1. 在新數據流菜單中，在 Power Query 面板下點擊“**獲取數據**”下拉菜單，然後選擇**“更多**......”
+4.  在 Power Query 編輯器中，按一下 **Get data** 下拉式清單，然後選取 **More...**
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image83.png)
+![](./media/image83.png)
 
-1. 在“选择数据源”标签中，搜索 +++Lakehouse+++ 并点击 **Lakehouse** 连接器。
+5.  在 **Choose data source** 索引標籤上，搜尋 +++Lakehouse+++ 並按一下 **Lakehouse** 連接器。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image84.png)
+![](./media/image84.png)
 
-1. 會彈出“連接至數據源”對話框。會根據你已登錄的用戶自動創建一個新連接。选择 **“下一步**”。
+6.  隨即出現 **Connect to data source** 對話方塊。系統會根據你登入的使用者自動建立新連線。按一下 **Next**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image85.png)
+![](./media/image85.png)
 
-1. 會顯示“選擇數據”對話框。 扩展工作区 **Fabric Dataengineering-DataFactory-@lab.LabInstance.Id**, 然后扩展 Lakehouse - **wwilakehouse**, 并从列表中选择fact_sale表。点击 **创建**。
+7.  隨即顯示 **Choose data** 對話方塊。展開 **Fabric Dataengineering-DataFactory-@lab.LabInstance.Id** 工作區，展開 **wwilakehouse** Lakehouse，然後選取 **fact_sale** 資料表。按一下 **Create**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image86.png)
+![](./media/image86.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image87.png)
+![](./media/image87.png)
 
-1. 你会看到画布现在已经被**fact_sale**数据填满了。
+8.  畫布現在已填入 **fact_sale** 資料。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image88.png)
+![](./media/image88.png)
 
+### 工作 2：轉換從 Lakehouse 匯入的資料
 
-### 任務 2: 轉換從 Lakhouse導入的數據
+1.  選取 **InvoiceDateKey** 資料行標題中的資料類型圖示以顯示下拉式功能表，將資料行從 **Date/Time** 變更為 **Date** 類型。
 
-1. 在InvoiceDateKey**列的列頭中選擇數據類型圖標** ，以顯示下拉菜單。從菜單中選擇數據類型，將該列從**日期/時間**轉換為**日期**類型。
+![](./media/image89.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image89.png)
+2.  在功能區的 **Home** 索引標籤上，於 **Manage columns** 群組中選取 **Choose columns** \> **Choose columns**。
 
-1. 在功能區的**“主頁**”標簽頁中，從**管理列**組中選擇“選擇列”選項，然後選擇**“選擇列”**
+![](./media/image90.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image90.png)
+3.  在 **Choose columns** 對話方塊中，取消選取 **TaxRate** 資料行，然後按一下 **OK**。
 
-1. 在“選擇列”對話框中，取消選擇 **稅率** 列，然後選擇 **確定：**
+![](./media/image91.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image91.png)
+4.  選取 **InvoiceDateKey** 資料行的排序和篩選下拉式功能表，選取 **Date filters**，然後選擇 **Between...**
 
-1. 選擇InvoiceDateKey列的排序和篩選下拉菜單，然後選擇日期篩選，再選擇 **中間......** 筛选。
+![](./media/image92.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image92.png)
+5.  在 **Filter rows** 對話方塊中，選取 **2000 年 1 月 1 日**到 **2000 年 1 月 31 日**之間的日期，然後按一下 **OK**。
 
-1. 在篩選行對話框中，選擇2000年1月1日至2000年1月31日之間的日期，然後選擇確定。
+![](./media/image93.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image93.png)
+![](./media/image94.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image94.png)
+### 工作 3：連線至 dimension_city 資料表
 
+你將載入在練習 3 中建立的 **dimension_city** 資料表，以城市和銷售區域資訊擴充 fact_sale 資料。
 
-###  任務 3：连接dimension_city桌
+1.  在資料流程編輯器的 **Home** 索引標籤上，選取 **Get data**，然後選擇 **More...**
 
-你不需要CSV文件，而是加载用例01中**已存在**于wwilakehouse的**dimension_city**表，以丰富fact_sale数据，包含城市和销售区域的信息。、
+![](./media/image95.png)
 
-1. 在**數據流編輯器菜單的主頁中，選擇**“獲取數據**”選項，然後選擇**“更多......”
+2.  在 **Choose data source** 索引標籤上，搜尋 +++Lakehouse+++ 並按一下 **Lakehouse** 連接器。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image95.png)
+![](./media/image96.png)
 
-1. 在“选择数据源”标签中，搜索 +++Lakehouse+++ 并点击 Lakehouse 连接器。
+3.  隨即出現 **Connect to data source** 對話方塊。按一下 **Next**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image96.png)
+![](./media/image97.png)
 
-1. 會出現“連接數據源”對話框。會自動創建一個新的連接。选择 **“下一步**”。
+4.  在 **Choose data** 對話方塊中，展開 **Fabric Dataengineering-DataFactory-@lab.LabInstance.Id** 工作區，展開 **wwilakehouse** Lakehouse，然後選取 **dimension_city** 資料表。按一下 **Create**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image97.png)
+![](./media/image98.png)
 
-1. 显示“选择数据”对话框。展开工作空间 **Fabric Dataengineering-DataFactory-@lab.LabInstance.Id**，然后展开 Lakehouse - **wwilakehouse**，选择 **dimension_city** 表。点击创建。
+5.  Power Query 編輯器中現在會出現第二個查詢 **dimension_city**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image98.png)
+![](./media/image99.png)
 
-1. 你现在会在 Power Query 编辑器**中看到第二个查询——**dimension_city。
+### 工作 4：轉換 dimension_city 資料
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image99.png)
+1.  確認已在 **Queries** 窗格中選取 **dimension_city** 查詢。
 
+2.  在功能區的 **Home** 索引標籤上，從 **Manage columns** 群組選取 **Choose columns**。
 
-###  任務 4: 转换 dimension_city 数据
+![](./media/image100.png)
 
-1. 确保**在查询面板中选中**了dimension_city查询。
+3.  在 **Choose columns** 對話方塊中，只保留以下資料行（取消選取其他所有資料行），然後按一下 **OK**：
 
-1. 在色帶的“主頁”標簽頁中，從“管理列”組中選擇“列。
+- **CityKey**
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image100.png)
+- **City**
 
-1. 在“選擇列”對話框中，只保留以下列（取消選出其他列），然後點擊 **確定**：
+- **StateProvince**
 
-    - CityKey
-    - City
-    - StateProvince
-    - SalesTerritory
+- **SalesTerritory**
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image101.png)
+![](./media/image101.png)
 
+4.  選取 **SalesTerritory** 資料行的篩選和排序下拉式清單。取消選取 **(blank)** 或 **(null)** 項目，以移除沒有銷售區域的資料列，然後按一下 **OK**。
 
-1. 選擇 **SalesTerritory** 列的篩選和排序下拉菜單。取消選擇（空）或（空）條目以移除沒有區域的行。然後點擊確定。
+![](./media/image102.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image102.png)
+![](./media/image103.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image103.png)
+### 工作 5：合併 fact_sale 和 dimension_city 資料
 
+下一步是將兩個資料表合併為單一資料表，為每筆銷售加入城市和銷售區域的背景資訊，並新增計算的利潤率資料行。
 
-###  任務5: 结合fact_sale和dimension_city数据
+1.  切換 **Diagram view** 按鈕，以便同時看到兩個查詢。
 
-下一步是将两个表格合并为一个表格，包含每笔销售的城市和领地上下文，并添加计算出的利润率栏。
+![](./media/image104.png)
 
-1. 首先，切換“圖解視圖”按鈕，這樣你可以看到兩個查詢。
+2.  選取 **fact_sale** 查詢。在 **Home** 索引標籤上，選取 **Combine** 功能表，選擇 **Merge queries**，然後選取 **Merge queries as new**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image104.png)
+![](./media/image105.png)
 
-1. 選擇**fact_sale**查詢。在主頁標簽中，選擇**“合併**”菜單，選擇**“合併查詢**”，然後選擇**“合併查詢為新查詢**”。
+3.  在 **Merge** 對話方塊中，選取 **dimension_city** 作為右側資料表，接受建議的 **CityKey** 對應至 **CityKey**，確認聯結類型已選取 **Left outer**，然後按一下 **OK**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image105.png)
+![](./media/image106.png)
 
-1. 在合併對話框中，選擇**dimension_city**為右表，接受CityKey 到**CityKey**的建議映射，確保選擇左外層作為連接類型，然後點擊確定。
+![](./media/image107.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image106.png)
+![](./media/image108.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image107.png)
+4.  展開 **dimension_city** 資料行，清除 **CityKey** 核取方塊，保留其餘資料行為選取狀態，然後按一下 **OK**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image108.png)
+![](./media/image109.png)
 
-1. 展开 **dimension_city** 列，清除 **CityKey** 复选框，保持剩余列选中，然后点击 **确定**。
+![](./media/image110.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image109.png)
+5.  若要新增計算資料行，請選取 **Add column** 索引標籤，然後從 **General** 群組選擇 **Custom column**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image110.png)
+![](./media/image111.png)
 
-1. 要添加計算列：在編輯器頂部選擇**添加列**標簽，然後從通用組中選擇**自定義列**。
+6.  在 **Custom column** 對話方塊中，依下列方式設定新資料行，然後按一下 **OK**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image111.png)
+| **屬性** | **值** |
+|----|----|
+| **New column name** | +++ProfitMargin+++ |
+| **Data type** | **Currency** |
+| **Custom column formula** | +++if [TotalIncludingTax] > 0 then [Profit] / [TotalIncludingTax] else 0+++ |
 
-1. 在自定義列對話框中，配置新列如下**:**
+![](./media/image112.png)
 
-    | 财产 | 价值 |
-    |---|---|
-    | 新专栏名称 | `ProfitMargin` |
-    | 数据类型 | 货币 |
-    | 自定义列公式 | `if [TotalIncludingTax] > 0 then [Profit] / [TotalIncludingTax] else 0` |
+![](./media/image113.png)
 
-    然后选择 **OK**.
+7.  選取新的 **ProfitMargin** 資料行。然後選取 **Transform** 索引標籤，在 **Number column** 群組中選取 **Rounding** 下拉式清單，並選擇 **Round...**
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image112.png)
+![](./media/image114.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image113.png)
+8.  在 **Round** 對話方塊中，輸入 **4** 作為小數位數，然後按一下 **OK**。
 
-1. 選擇新創建的**ProfitMargin**列。然後在編輯器窗口頂部選擇“變換”標簽。在數字列組中，選擇“**四捨五入**”下拉菜單，然後選擇“四捨五入......”
+![](./media/image115.png)
 
-    。
+![](./media/image116.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image114.png)
+9.  將 **InvoiceDateKey** 資料行的資料類型從 **Date** 改回 **Date/Time**。
 
-1. 在輪對話框中輸入4表示小數點數，然後點擊確定。
+![](./media/image117.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image115.png)
+![](./media/image118.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image116.png)
+10. 展開編輯器右側的 **Query settings** 窗格，將查詢名稱從 **Merge** 重新命名為 +++Output+++。
 
-1. 将**InvoiceDateKey列的数据类型从** 日期改回日期**/时间。**
+![](./media/image119.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image117.png)
+**注意：** ProfitMargin = Profit / TotalIncludingTax。值為 0.35 表示該筆銷售的利潤率為 35%。四捨五入至小數點後 4 位，以符合報表精確度。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image118.png)
+### 工作 6：將 Output 查詢載入 Lakehouse 中的 Gold 資料表
 
-1. 最後，從編輯器右側展開查詢設置窗格，並將查詢重命名為 +++Output+++。
+Output 查詢準備好之後，接著定義輸出目的地。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image119.png)
+1.  選取 **Output** 查詢，然後選取 **+** 圖示，為此資料流程新增資料目的地。
 
-    注意: ProfitMargin = Profit / TotalIncludingTax. 0.35 表示该销售利润率为 35%。四舍五入至小数点后 4 位以保证报告精度。
+2.  從資料目的地清單中，選取 **New destination** 下的 **Lakehouse**。
 
+![](./media/image120.png)
 
-### 任務 6: 將輸出查詢加載到 Lakehouse中的金表中
+3.  在 **Connect to data destination** 對話方塊中，應已選取你的連線。按一下 **Next**。
 
-在輸出查詢完全準備好後，定義輸出目的地。
+![](./media/image121.png)
 
-1. 選擇 之前創建的輸出合併查詢。然後選擇**+圖標**，將數據目的地添加到該數據流中。
+4.  在 **Choose destination target** 下，選取 **New table**，瀏覽至 **Fabric Dataengineering-DataFactory-@lab.LabInstance.Id** 工作區下的 **wwilakehouse**，輸入 +++Gold_Sales_By_City+++ 作為資料表名稱，然後按一下 **Next**。
 
-1. 在數據目的地列表中，選擇“新目的地”下的湖屋選項。
+![](./media/image122.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image120.png)
+5.  按一下 **Save settings**。
 
-1. 在“連接數據目的地”對話框中，你的連接應該已經被選中了。选择 **“下一步** ”继续。
+![](./media/image123.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image121.png)
+6.  回到主要編輯器視窗，確認 **Query settings** 窗格顯示 **Lakehouse** 為 Output 查詢的輸出目的地。
 
-1. 在选择目标目标下，选择新表，浏览 **Fabric Dataengineering-DataFactory-@Lab.LabInstance.Id** 工作区下的 wwilakehouse，输入 +++Gold_Sales_By_City+++ 作为表名，然后点击**下一步**。
+![](./media/image124.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image122.png)
+7.  從 **Home** 索引標籤選取 **Save and run**。
 
-1. 點擊**Save settings**
+![](./media/image125.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image123.png)
+8.  等待資料流程執行完成（大約 2-3 分鐘）。
 
-1. 回到主編輯器窗口，確認查詢設置面板顯示Lakehouse是輸出表的輸出目的地。
+![](./media/image126.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image124.png)
+9.  返回 **wwilakehouse**，在 **Tables** 區段按一下 **Refresh**。確認 **Gold_Sales_By_City** 資料表現在出現在 **Explorer** 窗格的 **Tables** 下。
 
-1. 從主頁選項卡**選擇**“保存並運行”。
+![](./media/image127.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image125.png)
+![](./media/image128.png)
 
-1. 等待數據流運行完成（大約2-3分鐘）。
+![](./media/image129.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image126.png)
+10. 按一下 **Gold_Sales_By_City** 資料表進行預覽，並確認其中包含 **City**、**StateProvince**、**SalesTerritory**、**Profit**、**TotalIncludingTax** 和 **ProfitMargin** 資料行。
 
-1. 返回 wwilakehouse，点击表格部分的刷新。确认Gold_Sales_By_City表现在出现在资源管理器面板的表格下。
+![](./media/image130.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image127.png)
+## 練習 5：使用 Data Factory 自動化並傳送通知
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image128.png)
+在本練習中，你將為管線新增電子郵件通知、設定排程，並將資料流程新增為活動，讓整個流程可以端對端執行。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image129.png)
+### 工作 1：將 Office 365 Outlook 活動新增至管線
 
-1. 点击 **Gold_Sales_By_City** 表预览并确认包含城市、州省、销售领地、利润、总计包括税和利润率等列。
+1.  在左側導覽功能表中，按一下 **Fabric Dataengineering-DataFactory-@lab.LabInstance.Id** 工作區。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image130.png)
+2.  在工作區頁面上，選取 **IngestDataFromSourceToLakehouse** 管線。
 
+![](./media/image131.png)
 
-## 練習 5: 通过Data Factory自动化并发送通知
+3.  選取管線編輯器中的 **Activities** 索引標籤，然後選取 **Office 365 Outlook** 活動。
 
-### 任務 1: 将 Office 365 Outlook 活动添加到您的管道中
+![](./media/image132.png)
 
-1. 在左侧导航菜单中点击 **Fabric Dataengineering-DataFactory-@lab.LabInstance.Id** Workspace 导航。
+4.  選取並拖曳 Copy 活動的 **On success** 路徑（Copy 活動右側的綠色核取方塊），將它連接到新的 Office 365 Outlook 活動。
 
-1. 在工作区页面选择 **“Pipeline**”。
+![](./media/image133.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image131.png)
+5.  選取管線畫布上的 Office 365 Outlook 活動，然後選取畫布下方屬性區域的 **Settings** 索引標籤。按一下 **Connection** 下拉式清單，然後選取 **Browse all**。
 
-1. 在管道编辑器中选择**“活动**”标签，找到 **Office Outlook** 活动。
+![](./media/image134.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image132.png)
+6.  在 **Choose a data source** 視窗中，選取 **Office 365 Email** 來源。
 
-1. 从复制活动中选择并拖动“成功”路径（右上角的绿色复选框）到新的Office 365 Outlook活动。
+![](./media/image135.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image133.png)
+7.  使用你要用來傳送電子郵件的帳戶登入。你可以使用已登入帳戶的現有連線。
 
-1. 從管道畫布中選擇Office 365 Outlook活動，然後選擇畫布下方屬性區域的設置標簽。點擊連接下拉菜單，選擇全部瀏覽。
+8.  按一下 **Connect** 繼續。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image134.png)
+![](./media/image136.png)
 
-1. 在選擇數據源窗口中，選擇 **Office 365郵件** 源。
+9.  選取管線畫布上的 Office 365 Outlook 活動。在 **Settings** 索引標籤上設定電子郵件。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image135.png)
+10. 在 **To** 欄位中輸入你的電子郵件地址。若要使用多個地址，請以 **;** 分隔。
 
-1. 用你想发送邮件的账户登录。你可以用已经登录的账户使用现有连接。
+![](./media/image137.png)
 
-1. 点击连接 以继续。
+11. 針對 **Subject**，選取該欄位讓 **Add dynamic content** 選項出現，然後選取它以開啟管線運算式產生器。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image136.png)
+![](./media/image138.png)
 
-1. 从管道画布中选择Office 365 Outlook活动。在画布下方属性区域的设置标签页中，配置邮件。
+12. 在 **Pipeline expression builder** 對話方塊中輸入以下運算式，然後按一下 **OK**。
 
-1. 在“收件人”部分输入你的电子邮件地址。如果你想使用多个地址，请使用 ;将它们分隔开来。
+```text
+@concat('WWI Data Pipeline Succeeded with Pipeline Run Id: ', pipeline().RunId)
+```
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image137.png)
+![](./media/image139.png)
 
-1. 对于**主题**，选择该字段，使“**添加动态**内容”选项出现，然后选择它以显示流水线表达式构建画布。
+13. 針對 **Body**，再次選取該欄位，並在文字區域下方出現 **View in expression builder** 選項時選取它。輸入以下運算式，然後按一下 **OK**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image138.png)
+```text
+@concat('RunID = ', pipeline().RunId, ' ; ', 'Files Written: ', activity('Data Copy to Lakehouse').output.filesWritten, ' ; ', 'Throughput: ', activity('Data Copy to Lakehouse').output.throughput)
+```
 
-    会出现 Pipeline表达式构建对话框。输入以下表达式，然后选择确定： @concat('WWI Data Pipeline Succeeded with Pipeline Run Id: ', pipeline().RunId)
+![](./media/image140.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image139.png)
+![](./media/image141.png)
 
-1. 对于正体，再次选择该字段，并在文本区域下方出现时选择“表达式构建器中的视图”选项。在出现的管道表达式构建器对话框中添加以下表达式，然后选择确定：
+**注意：** 如果你的複製活動使用其他名稱，請將 **Data Copy to Lakehouse** 替換為實際的活動名稱。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image140.png)
+14. 選取管線編輯器頂端的 **Home** 索引標籤，然後選擇 **Run**。接著在確認對話方塊中選取 **Save and run**，以執行這些活動。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image141.png)
+![](./media/image142.png)
 
-    `@concat('RunID = ', pipeline().RunId, ' ; ', 'Files Written: ', activity('Data Copy to Lakehouse').output.filesWritten, ' ; ', 'Throughput: ', activity('Data Copy to Lakehouse').output.throughput)`
+![](./media/image143.png)
 
-1. 最后，在流水线编辑器顶部选择“主页”标签，选择 **“运行**”。然后在确认对话框中选择“保存并再次运行”，以执行这些活动。
+15. 管線成功執行後，檢查你的電子郵件，找到管線傳送的確認郵件。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image142.png)
+![](./media/image144.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image143.png)
+![](./media/image145.png)
 
-1. 管道成功运行后，查看你的电子邮件，查找管道发送的确认邮件。
+### 工作 2：排程管線執行
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image144.png)
+完成管線的開發和測試後，你可以排程讓它自動執行。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image145.png)
+1.  在管線編輯器視窗的 **Home** 索引標籤上，選取 **Schedule**。
 
+![](./media/image146.png)
 
-### 任務2: 调度 Pipeline执行
+![](./media/image147.png)
 
-一旦你完成了流程的开发和测试，就可以安排它自动执行。
+2.  視需要設定排程。以下範例將管線排程為每天晚上 8:00 執行，直到年底。
 
-1. 在管道编辑器窗口的主页标签中，选择 **“计划**”。
+| **屬性** | **值** |
+|----|----|
+| **Repeat** | **Daily** |
+| **Time** | **8:00 PM** |
+| **End date** | 今年 12 月 31 日 |
+| **Time zone** | 選取你的當地時區 |
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image146.png)
+![](./media/image148.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image147.png)
+3.  按一下 **Close** 關閉排程。
 
-1. 根据需要配置排程。下面的示例将流水线安排在每天晚上8：00执行，直到年底。
+![](./media/image149.png)
 
-    注意: 如果 Copy data1 被重命名，请用你管道复制活动的实际名称替换它。
+### 工作 3：將 Dataflow 活動新增至管線
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image148.png)
+1.  在 **Activities** 索引標籤上，將 **Dataflow** 活動拖放到管線畫布上。
 
-1. 点击 **关闭** 日程表。
+![](./media/image150.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image149.png)
+2.  從出現的功能表中選擇 **Dataflow**。
 
+3.  新的 Dataflow 活動會插入到 Copy 活動和 Office 365 Outlook 活動之間，並自動選取，其屬性會顯示在畫布下方的區域。
 
-### 任務3: 向管道添加 Dataflow activity
+![](./media/image151.png)
 
-1. 在**活动**标签页中，将 **Datflow** 活动拖拽到管道画布上。
+4.  選取 **Settings** 索引標籤，然後選取你在練習 4 中建立的 **wwi_fact_sale_transform** 資料流程。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image150.png)
+![](./media/image152.png)
 
-1. 从出现的菜单中选择数据流。
+5.  選取管線編輯器頂端的 **Home** 索引標籤，然後選擇 **Run**。接著在確認對話方塊中選取 **Save and run**，以執行這些活動。
 
-1. 新创建的数据流活动会插入复制活动和Office 365 Outlook活动之间，并自动选择，在画布下方区域显示其属性。
+![](./media/image153.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image151.png)
+![](./media/image154.png)
 
-1. 选择属性区域的设置标签，然后选择 你在练习4中创建的**wwi_fact_sale_transform**数据流。
+6.  監視 **Output** 索引標籤，確認三個活動（**Copy data**、**Dataflow**、**Office 365 Outlook**）都以 **Status: Succeeded** 完成。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image152.png)
+![](./media/image155.png)
 
-1. 选择 Pipeline编辑器顶部的“主页”标签，选择**运行**。然后在确认对话框中选择“保存并再次运行”以执行这些活动。
+![](./media/image156.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image153.png)
+![](./media/image157.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image154.png)
+## 練習 6：在 Microsoft Fabric 中建置報表
 
-1. 监控输出标签，确认所有三项活动（复制数据、数据流、Office 365 Outlook），并显示状态：成功。
+在本練習中，你將把所有資料表加入 Direct Lake 語義模型、在資料表之間建立關聯性，並從頭開始建置 Power BI 報表。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image155.png)
+### 工作 1：在 Direct Lake 語義模型中建立關聯性
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image156.png)
+Power BI 原生整合在整個 Fabric 體驗中。這項原生整合帶來一種稱為 **Direct Lake** 的獨特模式，可存取 Lakehouse 中的資料，提供最高效能的查詢和報表體驗。Direct Lake 直接從資料湖載入 Parquet 格式的檔案，不需要查詢資料倉儲或 Lakehouse 端點，也不需要將資料匯入或複製到 Power BI 語義模型。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image157.png)
+在傳統的 **DirectQuery** 模式中，Power BI 引擎會針對每個查詢直接從來源查詢資料，查詢效能取決於資料擷取速度。DirectQuery 免除了複製資料的需求，確保來源的任何變更都能立即反映在查詢結果中。在 **Import** 模式中，由於資料已存放在記憶體中，效能較佳，但 Power BI 引擎必須在資料重新整理時先將資料複製到記憶體中，而來源的變更只會在下次重新整理時才會被擷取。
 
+Direct Lake 直接將資料檔案載入記憶體，免除了這項匯入需求。由於沒有明確的匯入程序，它可以在來源發生變更時即時擷取變更，結合了 DirectQuery 和 Import 模式的優點，同時避免其缺點。因此，Direct Lake 是分析超大型資料集以及來源經常更新之資料集的理想選擇。
 
-## 練習 6: 在 Microsoft Fabric 中构建报表
+1.  從左側功能表中選取 **Fabric Dataengineering-DataFactory-@lab.LabInstance.Id** 工作區，然後選取名為 **wwisemanticmodel** 的語義模型。
 
-在教程的这一部分中，你将创建一个Power BI数据模型，并从零开始创建一份报告。
+![](./media/image158.png)
 
-### 任務 1: 利用SQL端点探索银层的数据
+2.  開啟語義模型，選取右上角的模式下拉式清單，從 **Viewing** 切換為 **Editing**，然後選取 **Make any changes**。
 
-Power BI 原生集成在整个 Fabric 体验中。这种原生集成带来了一种独特的模式，称为 DirectLake，能够访问湖屋中的数据，提供最高性能的查询和报告体验。DirectLake 模式是开发的一项突破性新引擎功能，用于分析 Power BI 中超大型数据集。该技术基于这样一个理念：直接从数据湖加载 parquet 格式文件，无需查询数据仓库或湖屋端点，也无需导入或复制数据到 Power BI 数据集。DirectLake 是一种快速路径，可以将数据湖的数据直接加载到 Power BI 引擎，供分析。
+![](./media/image159.png)
 
-在传统的 DirectQuery 模式下，Power BI 引擎直接从源端查询数据以执行每个查询，查询性能取决于数据检索速度。DirectQuery 消除了复制数据的需求，确保源代码的任何变化在导入过程中立即反映在查询结果中。另一方面，导入模式下性能更好，因为数据在内存中易于获取，无需每次查询都从源端查询数据。 然而，Power BI 引擎必须在数据刷新时先将数据复制到内存中。只有在下一次数据刷新（包括计划刷新和按需刷新）时，才会对底层数据源进行更改。
+3.  在功能區中選取 **Edit tables**，以顯示資料表同步對話方塊。
 
-DirectLake 模式现在通过直接将数据文件加载到内存中，消除了这种导入要求。由于没有显式导入过程，用户可以在源头实时捕捉任何变化，从而结合了 DirectQuery 和导入模式的优势，同时避免了它们的缺点。因此，DirectLake 模式是分析超大型数据集和源头频繁更新数据集的理想选择。
+![](./media/image160.png)
 
-1. 从左侧菜单选择**Fabric Dataengineering-DataFactory-@lab.LabInstance.Id** 然后选择名为**wwisemanticmodel**.
+4.  在 **Edit semantic model** 對話方塊中**選取所有**資料表，然後按一下對話方塊底部的 **Confirm**，以同步語義模型。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image158.png)
+![](./media/image161.png)
 
-1. 打开语义模型，选择右上角的模式下拉菜单，从查看切换到编辑，然后选择“进行任何更改”。
+![](./media/image162.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image159.png)
+5.  從 **fact_sale** 資料表中拖曳 **CityKey** 欄位，放到 **dimension_city** 資料表的 **CityKey** 欄位上以建立關聯性。隨即出現 **Create Relationship** 對話方塊。
 
-1. 在菜单功能区中选择**“编辑表格**”以显示表格同步对话框。
+**注意：** 按一下並拖曳資料表來重新排列，讓 **dimension_city** 和 **fact_sale** 資料表彼此相鄰。在任兩個要建立關聯性的資料表之間都可以這樣做，讓資料行在資料表之間的拖放更容易。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image160.png)
+![](./media/image163.png)
 
-1. 在**“编辑语义模型**”对话框**中，选择所有**表格，然后在对话框底部选择**“确认**”以同步语义模型。
+6.  在 **Create Relationship** 對話方塊中：
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image161.png)
+- **Table 1** 已填入 **fact_sale** 和 **CityKey** 資料行。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image162.png)
+- **Table 2** 已填入 **dimension_city** 和 **CityKey** 資料行。
 
-1. 从**fact_sale**表中，拖动**CityKey**字段并将其放到**dimension_city**表中的CityKey**字段** 上，创建关联。会出现**“创建关系**”对话框。
+- **Cardinality**：**Many to one (\*:1)**
 
-    注意: 通过点击表格，拖放表格，dimension_city和fact_sale表格相邻来重新排列表格。同样的方法适用于你想建立关系的两个表格。这样做是为了让表格之间列的拖拽更方便。
+- **Cross filter direction**：**Single**
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image163.png)
+- 保持選取 **Make this relationship active** 旁邊的方塊。
 
-1. 在**“创建关系”**对话框中：
+- 選取 **Assume referential integrity** 旁邊的方塊。
 
-    - **表1**由**fact_sale**和**CityKey列填充**。
-    - **表2**包含**dimension_city**和**CityKey列**。
-    - 基数：**多对一 (\*:1)**
-    - 交叉滤波器方向: **Single**
-    - 选择“激活此关系**”的**框。
-    - 选择“**假设引用完整性”旁边的框。**
-    - 选择**保存。**
+- 按一下 **Save**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image164.png)
+![](./media/image164.png)
 
+7.  使用與上述相同的 **Create Relationship** 設定，新增以下關聯性：
 
-1. 接下来，使用上述相同的**创建关系**设置，但使用以下表格和列添加这些关系：
+| **來源 (fact_sale)** | **目標** |
+|----|----|
+| **StockItemKey** | **StockItemKey** (dimension_stock_item) |
+| **SalespersonKey** | **EmployeeKey** (dimension_employee) |
+| **CustomerKey** | **CustomerKey** (dimension_customer) |
+| **InvoiceDateKey** | **Date** (dimension_date) |
 
-    - **StockItemKey(fact_sale)** - **StockItemKey(dimension_stock_item)**
+![](./media/image165.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image165.png)
+![](./media/image166.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image166.png)
+![](./media/image167.png)
 
-    - **Salespersonkey(fact_sale)** - **EmployeeKey(dimension_employee)**
+8.  新增這些關聯性之後，你的資料模型應如下圖所示，並可用於報表。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image167.png)
+![](./media/image168.png)
 
+### 工作 2：建置報表
 
-1. 确保按照上述步骤创建下面两组之间的关系。
+1.  從頂端功能區選取 **File**，然後選取 **Create new report**，開始在 Power BI 中建立報表。
 
-    - **CustomerKey(fact_sale)** - **CustomerKey(dimension_customer)**
-    - **InvoiceDateKey(fact_sale)** - **Date(dimension_date)**
+![](./media/image169.png)
 
+2.  在 Power BI 報表畫布上，你可以將 **Data** 窗格中的資料行拖曳到畫布上，並使用一或多個可用的視覺效果，建立符合業務需求的報表。
 
-1. 添加这些关系后，您的数据模型应如下图所示，准备进行报告。
+![](./media/image170.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image168.png)
+**新增標題：**
 
+3.  在功能區中選取 **Text box**。輸入 +++WW Importers Profit Reporting+++，反白文字，並將字型大小增加為 **20**。
 
-### 任務 2: 建造报告
+![](./media/image171.png)
 
-1. 从顶部功能区选择**文件**，选择**创建新报表**，开始在 Power BI 中创建报表/仪表盘。
+4.  調整文字方塊大小，將其放在報表頁面的**左上角**，然後按一下文字方塊外部。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image169.png)
+![](./media/image172.png)
 
-1. 在 Power BI 报表画布中，您可以通过将所需列从**数据**窗格拖入画布，并使用一个或多个可用的可视化工具来创建满足业务需求的报表。
+**新增卡片：**
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image170.png)
+5.  在 **Data** 窗格中展開 **fact_sale**，並勾選 **Profit** 旁邊的方塊。此選取會建立直條圖，並將欄位新增至 Y 軸。
 
+![](./media/image173.png)
 
-### 添加标题：
+6.  選取圖表後，在 **Visualizations** 窗格中選取 **Card** 視覺效果。
 
-1. 在功能区内，选择**文本框**。输入“**WW Importers Profit Reporting**”。**高亮**该**文本**并将大小放大为**20**。
+![](./media/image174.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image171.png)
+7.  此選取會將視覺效果轉換為卡片。將卡片放在標題下方。
 
-1. 调整文本框大小，放在报告页面左**上角**，点击文本框外。
+![](./media/image175.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image172.png)
+8.  按一下空白畫布上的任何位置（或按 **Esc** 鍵），讓卡片不再處於選取狀態。
 
+**新增橫條圖：**
 
-### 添加卡片：
+9.  在 **Data** 窗格中展開 **fact_sale**，並勾選 **Profit** 旁邊的方塊。此選取會建立直條圖，並將欄位新增至 Y 軸。
 
-1. 在**数据**面板中，展开**fact_sales**，勾选利润旁边的框。此选择会生成一个柱状图表，并将字段添加到Y轴。
+![](./media/image176.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image173.png)
+10. 在 **Data** 窗格中展開 **dimension_city**，並勾選 **SalesTerritory** 的方塊。此選取會將欄位新增至 X 軸。
 
-1. 选择柱状图后，在可视化面板中选择**卡片**可视化。
+![](./media/image177.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image174.png)
+11. 選取圖表後，在 **Visualizations** 窗格中選取 **Clustered bar chart** 視覺效果。此選取會將直條圖轉換為橫條圖。
 
-1. 此选择将视觉图像转换为卡片。将卡片放在标题下方。
+![](./media/image178.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image175.png)
+12. 調整橫條圖大小，填滿標題和卡片下方的區域。
 
-1. 点击空白画布上的任意位置（或按Esc键），这样刚放置的卡牌就不再被选中。
+![](./media/image179.png)
 
+13. 按一下空白畫布上的任何位置（或按 **Esc** 鍵），讓橫條圖不再處於選取狀態。
 
-### 添加条形图:
+**建置堆疊區域圖視覺效果：**
 
-1. 在**数据**窗格中，展开**fact_sales**，勾选利润旁边的框。此选择会生成柱状图表，并将字段添加到Y轴。
+14. 在 **Visualizations** 窗格中，選取 **Stacked area chart** 視覺效果。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image176.png)
+![](./media/image180.png)
 
-1. 在**数据**面板中，展开**dimension_city**并勾选“**SalesTerritory**”选项。此选择会将字段添加到Y轴。
+15. 將堆疊區域圖重新放置並調整大小，放在卡片和橫條圖視覺效果的右側。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image177.png)
+![](./media/image181.png)
 
-1. 选择柱状图后，在可视化窗格中选择**“Clustered bar chart**”可视化。此选择将柱状图转换为条形图。
+16. 在 **Data** 窗格中展開 **fact_sale**，並勾選 **Profit** 旁邊的方塊。展開 **dimension_date**，並勾選 **FiscalMonthNumber** 旁邊的方塊。此選取會建立依會計月份顯示利潤的填滿折線圖。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image178.png)
+![](./media/image182.png)
 
-1. 调整条形图大小，填满标题和卡片下方的区域。
+17. 在 **Data** 窗格中展開 **dimension_stock_item**，並將 **BuyingPackage** 拖曳到 **Legend** 欄位。此選取會為每個購買套件新增一條線。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image179.png)
+![](./media/image183.png)
 
-1. 点击空白画布上的任意位置（或按Esc键），这样条形图就不再被选中。
+![](./media/image184.png)
 
+18. 按一下空白畫布上的任何位置（或按 **Esc** 鍵），讓堆疊區域圖不再處於選取狀態。
 
-### 构建堆叠面积图可视化：
+**建置直條圖：**
 
-1. 在**可视化**面板中，选择**堆叠面积图**可视化。
+19. 在 **Visualizations** 窗格中，選取 **Stacked column chart** 視覺效果。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image180.png)
+![](./media/image185.png)
 
-1. 重新定位并调整堆叠区域图，位于卡片右侧，以及之前步骤中创建的条形图可视化。
+20. 在 **Data** 窗格中展開 **fact_sale**，並勾選 **Profit** 旁邊的方塊。此選取會將欄位新增至 Y 軸。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image181.png)
+21. 在 **Data** 窗格中展開 **dimension_employee**，並勾選 **Employee** 旁邊的方塊。此選取會將欄位新增至 X 軸。
 
-1. 在**数据**面板中，展开**fact_sales**并勾选利润旁边的框。展开**dimension_date**，勾选财政**月份编号**旁的框。此选择会生成一个填充折线图，显示按财年月份的利润。
+![](./media/image186.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image182.png)
+22. 按一下空白畫布上的任何位置（或按 **Esc** 鍵），讓圖表不再處於選取狀態。
 
-1. 在**数据**面板中，展开**dimension_stock_item**，并将**BuyingPackage** 拖入图例字段。此选项为每个购买套餐添加一行。
+23. 從功能區選取 **File** \> **Save**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image183.png)
+![](./media/image187.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image184.png)
+24. 輸入 +++Profit Reporting+++ 作為報表名稱，然後按一下 **Save**。
 
-1. 点击空白画布上的任意位置（或按Esc键），这样堆叠面积图就不再被选中。
+![](./media/image188.png)
 
+25. 你會收到報表已儲存的通知。
 
-### 制作柱状图:
+![](./media/image189.png)
 
-1. 在**可视化**面板中，选择**堆叠列式图表**可视化。
+## 練習 7：清除資源
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image185.png)
+你可以刪除個別報表、管線、倉儲和其他項目，或移除整個工作區。請使用以下步驟刪除你為本實驗建立的工作區。
 
-1. 在**数据**面板中，展开**fact_sales**并勾选利润旁边的框。此选择会将字段添加到Y轴。
+1.  從左側導覽功能表中選取你的工作區 **Fabric Dataengineering-DataFactory-@lab.LabInstance.Id**，隨即開啟工作區項目檢視。
 
-1. 在**数据**面板上，展开**dimension_employee**并勾选“员工”旁边的框。此选择将字段添加到X轴。
+2.  選取工作區名稱下的 **...** 選項，然後選取 **Workspace settings**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image186.png)
+![](./media/image190.png)
 
-1. 在空白画布上任意点击（或按Esc键），这样图表就不再被选中。
+3.  選取 **General**，然後選取 **Remove this workspace**。
 
-1. 从功能区选择**“文件**\>**保存**”。
+![](./media/image191.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image187.png)
+4.  在彈出的警告中按一下 **Delete**。
 
-1. 输入您的报告名称为**“利润报告**”。选择**保存**。
+![](./media/image192.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image188.png)
+5.  等待工作區已刪除的通知出現後，再繼續進行下一個實驗。
 
-1. 你会收到通知，说报告已被保存。
+![](./media/image193.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image189.png)
+**摘要**
 
-
-# 練習 7: 清理资源
-
-你可以删除单个报表、管道、仓库和其他项目，或者删除整个工作区。请使用以下步骤删除你为本教程创建的工作区。
-
-1. 从左侧导航菜单中选择你的工作区，**Fabric Dataengineering-DataFactory-@lab.LabInstance.Id**。它会打开工作区项目视图。
-
-1. 选择 **...**在工作区名称下选择**工作区设置**。
-
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image190.png)
-
-1. 选择**“通用**”并**移除此工作区。**
-
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image191.png)
-
-1. 点击弹出的警告中“**删除**”。
-
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image192.png)
-
-1. 等待工作区被删除的通知后，再进入下一个实验室。
-
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2001/media/image193.png)
-
-
-### 總結
-
-在本实验室中，你通过创建Fabric工作区和Lakehouse、导入源数据、加载到Delta表、用SQL查询验证数据、构建语义模型以及生成Power BI报告，实现了完整的Microsoft Fabric Data Engineering 工作流程。这些活动展示了Microsoft Fabric如何通过在统一平台上结合数据集成、存储、转换、语义建模和报告，简化现代分析。本实验室获得的技能为开发使用Microsoft Fabric开发可扩展的 Data Engineering 解决方案奠定了基础。
+在本實驗中，你實作了完整的 Microsoft Fabric 資料工程工作流程。你建立了 Fabric 工作區和 Lakehouse、上傳來源資料並載入 Delta 資料表、使用 SQL 查詢驗證資料，並建置了快速報表。接著，你使用 Data Factory 管線擷取 Wide World Importers 範例資料、使用 PySpark 筆記本建立事實、維度和彙總 Delta 資料表，並使用 Dataflow Gen2 建置具有計算利潤率的 Gold 資料表。你透過 Office 365 Outlook 通知、排程和 Dataflow 活動將管線自動化。最後，你建置了具有關聯性的 Direct Lake 語義模型，並建立了 Power BI 報表。這些技能為使用 Microsoft Fabric 開發可擴充的資料工程解決方案奠定了基礎。
