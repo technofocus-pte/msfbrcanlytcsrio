@@ -844,151 +844,154 @@ Ontology（预览）与 [Fabric 数据代理（预览版）](https://learn.micro
     > 繼續探索數據代理，嘗試一些你自己的提示。
 
 
-## 練習 6: 搭建并测试与Project Rayfin相关的配套应用
+# 實驗 4：練習 6 - 使用 Project Rayfin 建置並測試配套應用程式
 
-### 任務 1: 搭建并测试与Project Rayfin相关的配套应用
+**注意：** 本練習的螢幕擷取畫面使用英文介面，因此步驟中的介面名稱（例如 **Allow**、**Sign in with Microsoft**）保留英文，方便你對照畫面操作。
 
-1. 在 **C:\\ drive 創建一個新文件夾**。點擊工具欄上的**“新建**”，選擇**文件夾**，輸入 **Lab4** 作為文件夾名，然後按**回車**保存。
+## 練習 6：使用 Project Rayfin 建置並測試配套應用程式
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a1.png)
+在本練習中，你將使用 Project Rayfin 建立 Todo 應用程式的架構、在本機執行，並將它部署到你的 Fabric 工作區。
 
-1. 在Windows搜索框中输入Visual Studio，然后点击VS **Code**。
+### 工作 1：在本機建置並測試應用程式
 
-    ![A screenshot of a computer Description automatically \> generated](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a2.png)
+1.  開啟**檔案總管**，前往 **C:\\** 磁碟機，按一下工具列上的 **New**，選取 **Folder**，輸入 +++Lab4+++ 作為資料夾名稱，然後按 **Enter**。
 
-1. 在 VS Code 對話框中，點擊 **允許** 繼續 Microsoft 認證流程。
+![](./media/a1.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a3.png)
+2.  在 Windows 搜尋方塊中輸入 +++Visual Studio Code+++，然後按一下 **Visual Studio Code**。
 
-1. 在 **登錄** 窗口中，選擇 **工作賬戶或學校賬戶**，然後點擊 **繼續** ，使用您的組織賬戶登錄。
+![](./media/a2.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a4.png)
+3.  在 Visual Studio Code 對話方塊中，按一下 **Allow** 以繼續 Microsoft 驗證流程。
 
-1. 请用您的凭证登录
+![](./media/a3.png)
 
-    | 资历 | 價值 |
-    |---|---|
-    | 用户名 | +++@lab.CloudPortalCredential(User1).Username+++ |
-    | 密碼 | +++@lab.CloudPortalCredential(User1).Password+++ |
+4.  在 **Sign in** 視窗中，選取 **Work or school account**，然後按一下 **Continue**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a5.png)
+![](./media/a4.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a6.png)
+5.  使用以下認證登入。
 
-1. 在 Visual Studio Code 中，点击**“更多操作”（⋯）**菜单，选择**终端**，然后选择**新终端**以打开新的集成终端窗口
+| **使用者名稱** | **+++@lab.CloudPortalCredential(User1).Username+++** |
+|----|----|
+| **密碼** | **+++@lab.CloudPortalCredential(User1).Password+++** |
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a7.png)
+![](./media/a5.png)
 
-1. 在終端中，導航到**Lab4**目錄
+![](./media/a6.png)
 
-    `cd\\`
+6.  在 Visual Studio Code 中，按一下 **More Actions (...)** 功能表，選取 **Terminal**，然後選擇 **New Terminal** 以開啟新的整合式終端機視窗。
 
-    `cd Lab4`
+![](./media/a7.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a8.png)
+7.  在終端機中，瀏覽至 **Lab4** 目錄。
 
-1. 運行以下命令，搭建 **帶有完整本地開發模板的\[實驗性\] Todo 應用**
+> +++cd C:\Lab4+++
 
-    +++npm create @microsoft/rayfin@latest -- --template
-    https://github.com/microsoft/awesome-rayfin --template-name
-    "\[Experimental\] Todo app with full local dev"+++
+![](./media/a8.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a9.png)
+8.  執行以下命令，使用 **\[Experimental\] Todo app with full local dev** 範本建立應用程式架構。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a10.png)
+```powershell
+npm create @microsoft/rayfin@latest -- --template https://github.com/microsoft/awesome-rayfin --template-name "[Experimental] Todo app with full local dev"
+```
 
-1. 项目名称输入 +++Fabricapp+++
+![](./media/a9.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a11.png)
+![](./media/a10.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a12.png)
+9.  輸入 +++Fabricapp+++ 作為專案名稱。
 
-1. 項目成功創建後，運行 **Fabricapp 進入** Fabricapp 項目目錄，然後通過運行啟動本地開發服務器 npm run dev.
+![](./media/a11.png)
 
-    `cd **Fabricapp**`
+![](./media/a12.png)
 
-    `cd **npm run dev**`
+10. 專案建立成功後，瀏覽至 **Fabricapp** 專案目錄，並啟動本機開發伺服器。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a13.png)
+> +++cd Fabricapp+++
+>
+> +++npm run dev+++
 
-1. 当提示时，输入 Fabric 工作区名称 **Fabric IQ +++Ontology@lab.LabInstance.Id+++** ，并按 **回车** 继续将应用部署到所选的 Fabric 工作区。
+![](./media/a13.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a14.png)
+11. 出現提示時，輸入 Fabric 工作區名稱 +++Fabric IQ Ontology@lab.LabInstance.Id+++，然後按 **Enter**，繼續將應用程式部署到所選的 Fabric 工作區。
 
-1. 當 Windows 安全對話框出現時，點擊 **允許** **JavaScript 運行時允許Node.js JavaScript 運行時** 在公網和私有網絡上通信並繼續運行應用程序。
+![](./media/a14.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a15.png)
+12. 當 **Windows Security** 對話方塊出現時，按一下 **Allow**，允許 **Node.js JavaScript Runtime** 在公用和私人網路上通訊。
 
-1. 複製終端顯示的本地前端URL，應該類似於+++http://localhost:5173+++, 然後在新的瀏覽器標簽頁中打開它.
+![](./media/a15.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a16.png)
+13. 複製終端機中顯示的本機前端 URL（應類似於 +++http://localhost:5173+++），並在新的瀏覽器索引標籤中開啟。
 
-1. 选择“ **sign in with Microsoft** ”按钮。由于你已经有练习 1 的活跃 SSO 会话，应该会自动登录，无需重新输入凭证。否则，使用你用 Fabric 使用的同一个 Microsoft 账户登录：
+![](./media/a16.png)
 
-    - **電子郵件**: +++@lab.CloudPortalCredential(User1).Username+++
-    - **TAP**: +++@lab.CloudPortalCredential(User1).AccessToken+++
+14. 選取 **Sign in with Microsoft** 按鈕。由於你在練習 1 中已有有效的 SSO 工作階段，應該會自動登入，不需要再次輸入認證。如果沒有自動登入，請使用登入 Fabric 時的同一個 Microsoft 帳戶登入：
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image17.png)
+| **電子郵件** | **+++@lab.CloudPortalCredential(User1).Username+++** |
+|----|----|
+| **TAP** | **+++@lab.CloudPortalCredential(User1).AccessToken+++** |
 
+![](./media/a17.png)
 
-1. 在 **Todo 應用**中輸入 +++Review Lakeshore Retail ontology relationships+++ 在任務字段中，然後點擊 **添加** 以創建新的待辦事項。
+15. 在 **Todo App** 的工作欄位中輸入 +++Review Lakeshore Retail ontology relationships+++，然後按一下 **Add** 建立新的待辦事項。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a18.png)
+![](./media/a18.png)
 
-1. 在 **Todo應用**中輸入 +++Validate freezer telemetry ingestion+++ 在任務字段中，然後點擊 **添加** 以創建新的待辦事項。
+16. 在工作欄位中輸入 +++Validate freezer telemetry ingestion+++，然後按一下 **Add** 建立另一個待辦事項。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a19.png)
+![](./media/a19.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a20.png)
+![](./media/a20.png)
 
-1. 选择一个任务
+17. 選取其中一個工作。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a21.png)
+![](./media/a21.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a22.png)
+![](./media/a22.png)
 
-1. 回到 VS Code 终端，按 **Ctrl+C 停止 Vite 开发服务器**。
+### 工作 2：將應用程式部署到 Fabric
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a23.png)
+1.  回到 Visual Studio Code 終端機，按 **Ctrl+C** 停止 Vite 開發伺服器。
 
-1. 将后端部署到你的Fabric工作区。
+![](./media/a23.png)
 
-    `npm run up`
+2.  執行以下命令，將應用程式部署到你的 Fabric 工作區。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a24.png)
+> +++npm run up+++
 
-1. CLI 打印的**靜態託管 URL**。URL 應該看起來類似 https://*{random-prefix}*.webapp.rayfin….com.
+![](./media/a24.png)
 
-1. 點擊 **應用網址** ，在默認瀏覽器中啟動應用。
+3.  部署完成後，CLI 會列出**靜態裝載 URL**，類似於 **https://{random-prefix}.webapp.rayfin….com**。按一下 **App URL** 啟動應用程式。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a25.png)
+![](./media/a25.png)
 
-1. 當出現 **"Do you want Code to open the external website?"，提示**出現時，點擊**打開**，在你的默認瀏覽器中啟動已部署的應用程序。
+4.  當出現 **Do you want Code to open the external website?** 提示時，按一下 **Open**，在預設瀏覽器中啟動已部署的應用程式。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a26.png)
+![](./media/a26.png)
 
-1. 选择**像第13步那样** **Sign in with Microsoft**
+5.  如同工作 1 中的步驟，選取 **Sign in with Microsoft**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a27.png)
+![](./media/a27.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a28.png)
+![](./media/a28.png)
 
+### 工作 3：在 Fabric 中檢查部署
 
-### 任務 2: 在 Fabric 中检查部署情况
+讓我們在 Microsoft Fabric 入口網站中查看已部署的應用程式和資料庫。
 
-让我们来看看 Microsoft Fabric 门户中已部署的应用和数据库。
+1.  開啟 Microsoft Fabric 入口網站：+++https://app.fabric.microsoft.com+++。
 
-1. 在 Microsoft Fabric 门户打开 +++https://app.fabric.microsoft.com+++/+++.
+2.  開啟你在練習 1 中建立的 **Fabric IQ Ontology@lab.LabInstance.Id** 工作區。
 
-1. 打開  <Ontology@lab.LabInstance.Id> +Ontology@lab.LabInstance.Id+++工作區。
+![](./media/a29.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a29.png)
+3.  確認工作區包含一個 **Fabric data app** 項目和一個 **SQL Database** 項目。
 
-1. 确认工作区包含一个 **Fabric data app**  项目和一个 **SQL Database**项目。
+![](./media/a30.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a30.png)
+![](./media/a31.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/a31.png)
 
 
 ## 任务4：清理资源
