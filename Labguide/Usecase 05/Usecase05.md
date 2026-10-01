@@ -1,4 +1,4 @@
-## 用例 1 - 使用 Fabric IQ、資料代理程式 Data Agents 與 Rayfin 的新世代分析
+## 用例 4 - 使用 Fabric IQ、資料代理程式 Data Agents 與 Rayfin 的新世代分析
 
 ### 简介
 
