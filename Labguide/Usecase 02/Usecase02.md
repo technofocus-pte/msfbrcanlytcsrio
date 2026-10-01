@@ -1,563 +1,1027 @@
-# 用例02：Data Factory解决方案，用于通过dataflows和data pipelines移动和转换data
+# 用例02：用Apache Spark分析data
 
 ### 简介
 
-本实验室通过在一小时内提供完整的data集成场景的逐步指导，帮助您加快Microsoft Fabric中Data Factory的评估流程。完成本教程後，你將理解Data Factory的價值和關鍵能力，並知道如何完成常見的端到端data集成場景。
+Apache Spark 是一个开源的分布式 data处理引擎，广泛用于探索、处理和分析data lake存储中的海量 data。Spark 作为处理选项在许多 data平台产品中提供，包括 Azure HDInsight、Azure Databricks、Azure Synapse Analytics 和 Microsoft Fabric。Spark 的一个优势是支持多种编程语言，包括 Java、Scala、Python 和 SQL;这使得Spark成为 data处理工作负载的非常灵活解决方案，包括 data清理与操作、统计分析与机器学习，以及 data分析与可视化。
 
-### 目標
+Microsoft Fabric lakehouse中的表基于开源的 Apache Spark *Delta Lake* 格式。Delta Lake 增加了对批处理和流 data操作的关系语义支持，并支持创建 Lakehouse 架构，在该架构中，Apache Spark 可用于处理和查询基于data lake底层文件的表中的 data。
 
-實驗分為三個練習：
+在 Microsoft Fabric 中，Dataflows (Gen2) 连接多个数据源，并在 Power Query Online 中执行转换。然后它们可以在Data Pipelines中用于将data导入lakehouse或其他分析存储，或定义 Power BI 报告中的dataset。
 
-- **练习1：**用Data Factory创建一个流水线，将原始 data从Blob
-  storage导入到Data Lakehouse中的青铜表。
+本实验室旨在介绍 Dataflows (Gen2) 的不同元素，而非创建企业中可能存在的复杂解决方案。
 
-- **练习2：**在Data Factory中用dataflow转换 data，处理bronze表的原始
-  data，并将其迁移到Data Lakehouse中的Gold表。
+### 目的：
 
-- **練習3：**用Data
-  Factory自動發送通知，發送郵件通知所有作業完成後通知你，最後將整個流程設置為定時運行。
+- 在 Microsoft Fabric 中创建一个工作区，并启用 Fabric 试用。
+- 建立lakehouse环境并上传data文件进行分析。
+- 生成一本用于交互式data探索和分析的notebook。
+- 将 data加载到dataframe中以便进一步处理和可视化。
+- 用 PySpark 对data进行转换。
+- 保存並分區轉換後的data，以便優化查詢。
+- 在 Spark 元存储库中创建一个用于结构化 data管理的表
+- 将DataFrame保存为一个名为“salesorders”的管理级delta表。
+- 将DataFrame保存为名为“external_salesorder”的外部delta表，并指定路径。
+- 描述並比較託管表和外部表的屬性。
+- 對表執行SQL查詢以進行分析和報告。
+- 使用如 matplotlib 和 seaborn 等 Python 库来可视化 data。
+- 在Data Engineering体验中建立data
+  lakehouse，并导入相关data以便后续分析。
+
+- 定义一个dataflow，用于提取、转换和加载data到lakehouse。
+- 在 Power Query 中配置data destinations，将转换后的
+  data存储在lakehouse中。
+
+- 将dataflow整合进pipeline，以实现定时的 data处理和摄取。
+- 移除工作區及相關元素以結束練習。
 
 
-## 练习1：用Data Factory创建 pipeline
+## 練習1：創建一個工作區、lakehouse、notebook，並將 data加載到 data框架中
 
-### 任务1：创建Fabric工作区
+### 任務1：創建一個工作區
 
-在处理Fabric data之前，先创建一个启用Fabric试用区的工作区。
+1. 打开浏览器，进入地址栏，输入或粘贴以下URL：+++https://app.fabric.microsoft.com/+++，然后按下**Enter** 键。
 
-1. 打开浏览器，进入地址栏，输入或粘贴以下URL：+++[https://app.fabric.microsoft.com/+++，](https://app.fabric.microsoft.com/+++)然后按下**Enter** 键。
+    \[！note\]**注意**：如果你被引导到Microsoft Fabric主页，请跳到步骤#5。
 
-    **注意**：如果你被引导到Microsoft Fabric Home页，请跳过#2到#4的步骤。
-
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image1.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image1.png)
 
 1. 在 **Microsoft Fabric** 窗口中，输入你的凭证，然后点击**Submit** 按钮。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image2.png)
+    | Credential | Value |
+    |---|---|
+    | Username | +++@lab.CloudPortalCredential(User1).Username+++ |
+    | Password | +++@lab.CloudPortalCredential(User1).Password+++ |
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image2.png)
 
 1. 然后，在 **Microsoft** 窗口输入密码，点击**Sign in** 按钮。
 
-    ![A login screen with a red box and blue text AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image3.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image3.png)
 
 1. 在 **Stay signed in?** 窗口，点击**“Yes”**按钮。
 
-    ![A screenshot of a computer error AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image4.png)
+1. 如果 PowerBI 默認打開，請按照以下步驟操作，否則跳過這一步
 
-1. 你将被引导到Power BI主页。
+    - 点击 PowerBI
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image5.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image4.png)
 
-1. 选择屏幕左下角的默认 Power BI 图标，然后选择 **Fabric**。
+    - 從選項中選擇Fabric
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image6.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image5.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image7.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image8.png)
+1. Fabric主页，选择** +New workspace **瓷砖。
 
-1. 在 Microsoft **Fabric 主页**，选择**“New workspace**”选项。
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image6.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image9.png)
-
-1. 在“**Create a workspace**”标签中，输入以下信息，点击**“Apply**”按钮。
+1. 在“**Create a workspace”标签**中，输入以下信息，点击**“Apply**”按钮。
 
     | Setting | Value |
     |---|---|
-    | Name | +++Data-Factory@lab.LabInstance.Id+++ |
+    | Name | +++dp_Fabric@lab.LabInstance.Id+++ |
+    | Description | `This workspace contains Analyze data with Apache Spark` |
     | Advanced | Under **License mode**, select **Fabric** |
-    | Default storage format | **Small semantic model storage format** |
+    | Default storage format | **Small dataset storage format** |
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image10.png)
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image7.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image11.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image8.png)
 
-1. 等待部署完成。大約需要2-3分鐘。
+1. 等待部署完成。完成大約需要2-3分鐘。當你的新工作區開放時，應該是空的。
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image12.png)
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image9.png)
 
 
-### 任务2：创建一个lakehouse并导入样本 data
+### 任務2：創建一個lakehouse並上傳文件
 
-1. 在**Data-Factory@lab.LabInstance.Id**工作区页面，点击 **+New item **按钮
+现在你有了工作区，就该切换到门户中的*Data engineering* 体验，为你要分析的data文件创建一个data lakehouse。
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image13.png)
+1. 点击导航栏中的 **+ New item** 按钮创建新的Eventhouse。
 
-1. 点击“**Lakehouse**”瓷砖。
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image10.png)
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image14.png)
+1. 通過篩選並選擇Lakehouse 瓷磚。
 
-1. 在**“New lakehouse**”对话框中，在**Name** 字段输入 +++DataFactoryLakehouse+++ ，并**取消选择**lakehouses的模式。点击**“Create**”按钮，打开新的lakehouse。
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image11.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image15.png)
+1. 在“**New lakehouse**”对话框中，在“**Name**”字段中输入+++Fabric_lakehouse+++，单击“**Create** ”按钮，打开新的lakehouse。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image16.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image12.png)
 
-1. 进入Lakehouse，右键点击文件文件夹，选择 Upload \> Upload files以添加文件
+    \[！注\]**注意**：大約一分鐘後，會生成一個新的空lakehouse。你需要把一些data导入 data lakehouse进行分析。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image17.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image13.png)
 
-1. 在“Upload files”标签页中，点击Files下的**folder**
+    你会看到一条通知，提示**Successfully created SQL endpoint**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image18.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image14.png)
 
-1. 在VM上浏览到 **C：\LabFiles**，然后选择 /Labfiles/**NYCTaxi/part-00000-907cea6d-0f54-4639-9a14-042dc04185ef-c000.snappy.parquet** 文件，点击**Open** 按钮。
+1. 在**Explorer**部分，**fabric_lakehouse**下方，将鼠标悬停在**Files folder**旁边，然后点击水平椭圆**（...）** 菜单。点击“**Upload**”，然后点击“**Upload folder**”，如下图所示。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image19.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image15.png)
 
-1. 然後點擊**Upload**按鈕並關閉
+1. 在右侧的**“Upload folder**”面板上，选择 **Files/** 下的**folder icon**，然后浏览到**C：\LabFiles\LabFiles，**然后选择**orders**文件夹，点击**Upload** 按钮。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image20.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image16.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image21.png)
+1. 如果是**，Upload 3 files to this site?** 对话框出现，然后点击**Upload** 按钮。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image22.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image17.png)
 
-1. 在工具栏中，选择使用下拉菜单 **Analyze data**，指向 **Notebook**，然后选择**“New notebook**”。
+1. 在“Upload”文件夹面板中，点击**“Upload**”按钮。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image23.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image18.png)
 
-1. 添加以下 PySpark 代码创建 Spark 会话，读取从 Lakehouse 文件文件夹上传的 Parquet 文件，将 data写入名为 *Bronze* 的表，覆盖表中已有的 data。
+1. 文件上传后 **关闭上Upload folder** 面板。
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image19.png)
+
+1. 展开**Files**，选择**orders** 文件夹，并确认CSV文件已上传。
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image20.png)
+
+
+### 任務 3：創建一個notebook
+
+要在 Apache Spark 中處理data，你可以創建一個*notebook*。Notebooks提供了一個互動環境，你可以編寫和運行多種語言的代碼，並添加筆記來記錄代碼。
+
+1. 在**Fabric**页面，点击命令栏的**“Import**”下注，然后选择 **New notebook\> From this computer**。
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image21.png)
+
+1. 幾秒鐘後，會打開一個包含單個*cell* 的新notebook。Notebooks由一个或多个单元格组成，可以包含*code* 或*markdown* *（*格式化文本）。
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image22.png)
+
+1. 選擇第一個單元格（目前是一個*代碼*單元格），然後在其右上角的動態工具欄中，使用**M↓**按鈕將**單元格轉換為標記單元格。**
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image23.png)
+
+1. 當該單元格變為標記降低單元格時，其文本會被渲染。
+
+    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image24.png)
+
+1. 使用**🖉**（編輯）按鈕將單元格切換到編輯模式，替換所有文本，然後按以下方式修改標記：
+
+    `# Sales order data exploration`
+
+1. 使用notebook中的代碼來探索銷售訂單 data。
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image25.png)
+
+    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image26.png)
+
+1. 點擊筆記本中單元格外的任何位置，停止編輯並查看渲染後的標記。
+
+    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image27.png)
+
+
+### 任务4：将 data加载到dataframe中
+
+现在你准备好运行将 data加载到*dataframe*中的代码了。Spark 中的 Dataframes 类似于 Python 中的 Pandas dataframe，并为处理行和列 data提供了通用结构。
+
+**注意**：Spark 支持多种编程语言，包括 Scala、Java 等。在这个练习中，我们将使用*PySpark*，它是Python的Spark优化版本。PySpark 是 Spark 上最常用的语言之一，也是 Fabric notebooks的默认语言。
+
+1. Notebook可见后，展开**Files** 列表，选择**orders** 文件夹，使CSV文件与notebook editor并列。
+
+    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image28.png)
+
+1. 現在，將鼠標懸停到2019.csv文件。點擊水平橢圓**（...）** 就在2019.csv旁邊。点击**Load data**，然后选择**Spark**。Notebook中将新增一个包含以下代码的代码单元格：
 
     ```
-    from pyspark.sql import SparkSession
-
-    spark = SparkSession.builder.appName("LoadParquet").getOrCreate()
-    # Read the green_tripdata_2017 parquet file
-    df2 = spark.read.format("parquet").load("Files/part-00000-907cea6d-0f54-4639-9a14-042dc04185ef-c000.snappy.parquet")
-
-    # Write to table
-    df2.write.mode("overwrite").saveAsTable("Bronze")
+    df = spark.read.format("csv").option("header","true").load("Files/orders/2019.csv")
+    # df now is a Spark DataFrame containing CSV data from "Files/orders/2019.csv".
+    display(df)
     ```
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image24.png)
+    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image29.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image25.png)
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image30.png)
 
-1. 要验证已创建的表，请在资源管理器中右键点击 **DataFactoryLakehouse** lakehouse，然后选择**Refresh**。表格出现了。
+    **提示**：你可以用左侧的“**«** icons”隐藏Lakehouse explorer面板 。正在做
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image26.png)
+    这会帮你专注于notebook。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image27.png)
+1. 使用单元左侧的 **▷ Run cell** 按钮来运行它。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image28.png)
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image31.png)
 
+    **注意**：由于这是你第一次运行任何 Spark 代码，必须启动一次 Spark 会话。这意味着会话中的第一次运行可能需要一分钟左右完成。后续的运行会更快。
 
-## 练习2：在Data Factory中通过dataflow转换 data
+1. 当单元格命令完成后，查看单元格下方的输出，应该类似于这样：
 
-### 任务1：从Lakehouse表获取 data
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image32.png)
 
-1. 現在，點擊左側導航窗格中的工作區 **Data Factory-@lab.LabInstance.Id** 。
+1. 输出显示的是2019.csv文件中的行和列数据。不过，请注意列头看起来不太对。用于将data加载到dataframe的默认代码假设CSV文件第一行包含列名，但在此情况下，CSV文件仅包含data，没有任何头部信息。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image29.png)
+1. 修改代码，将**头**选项设置为**false**。将该**单元格**中的所有代码 替换为以下代码，点击 **▷ Run cell** 按钮，查看输出结果
 
-1. 点击导航栏中的 **+New item** 按钮，创建新的Dataflow Gen2 。从可用项目列表中选择**Dataflow Gen2**项目
+    ```
+    df = spark.read.format("csv").option("header","false").load("Files/orders/2019.csv")
+    # df now is a Spark DataFrame containing CSV data from "Files/orders/2019.csv".
+    display(df)
+    ```
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image30.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image33.png)
 
-1. 提供一个新的 Dataflow Gen2 名称为 +++nyc_taxi_data_with_discounts+++，然后选择**Create**。
+1. 现在dataframe正确地包含了第一行作为data值，但列名是自动生成的，帮助不大。要理解data，你需要明确定义文件中data值的正确模式和data类型。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image31.png)
+1. 将该**单元格**中的所有代码 替换为以下代码，点击 **▷ Run cell** 按钮，查看输出结果
 
-1. 在新dataflow菜单中，在 **Power Query** 窗格下点击“**Get data”下拉菜单**，然后选择**“More...**.**”**。
+    ```
+    from pyspark.sql.types import *
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image32.png)
+    orderSchema = StructType([
+        StructField("SalesOrderNumber", StringType()),
+        StructField("SalesOrderLineNumber", IntegerType()),
+        StructField("OrderDate", DateType()),
+        StructField("CustomerName", StringType()),
+        StructField("Email", StringType()),
+        StructField("Item", StringType()),
+        StructField("Quantity", IntegerType()),
+        StructField("UnitPrice", FloatType()),
+        StructField("Tax", FloatType())
+        ])
 
-1. 在**“Choose data source**”标签中，搜索框搜索类型 +++Lakehouse+++，然后点击 **Lakehouse** 连接器。
+    df = spark.read.format("csv").schema(orderSchema).load("Files/orders/2019.csv")
+    display(df)
+    ```
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image33.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image34.png)
 
-1. 会弹出**“Connect to data source**”对话框，并根据当前登录用户自动为你创建一个新的连接。选择**Next**。
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image35.png)
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image34.png)
+1. 现在，dataframe包含正确的列名（除了**Index**，**Index**是所有dataframes中基于每行序数位置的内置列）。列的 data类型使用Spark SQL库中定义的标准类型集指定，这些类型在单元格开头导入。
 
-1. 会显示**“Choose data**”对话框。使用导航面板找到 **workspace- Data-Factory@lab.LabInstance.Id** 并展开它。然后，展开 你在上一个模块中为目的地创建的 **Lakehouse** - **DataFactoryLakehouse** ，从列表中选择**Bronze**表，然后点击 **Create**按钮。
+1. 通过查看dataframe确认您的更改已应用到 data中。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image35.png)
+1. 使用单元格输出下方的 **+ Code** 图标，向notebook添加一个新的代码单元格，并输入以下代码。点击 **▷ Run cell** 按钮，查看输出结果
 
-1. 你會看到畫布現在已經被填滿了 data。
+    `display(df)`
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image36.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image36.png)
 
+1. Dataframe仅包含 **2019.csv** 文件中的 data。修改代码，使文件路径使用\*通配符从orders文件夹中的所有文件中读取销售订单 data
 
-### 任务2：转换从Lakehouse导入的 data
+1. 使用单元格输出下方的 **+ Code** 图标，向notebook添加一个新的代码单元格，并输入以下代码。
 
-1. 在第二列的列头中选择 data类型图标，**IpepPickupDatetime**，显示下拉菜单，并从菜单中选择 data类型，将列从 **Date/Time** 转换为**Date**。
+    ```
+    from pyspark.sql.types import *
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image37.png)
+    orderSchema = StructType([
+        StructField("SalesOrderNumber", StringType()),
+        StructField("SalesOrderLineNumber", IntegerType()),
+        StructField("OrderDate", DateType()),
+        StructField("CustomerName", StringType()),
+        StructField("Email", StringType()),
+        StructField("Item", StringType()),
+        StructField("Quantity", IntegerType()),
+        StructField("UnitPrice", FloatType()),
+        StructField("Tax", FloatType())
+        ])
 
-1. 在色带的**“Home**”标签页，从**“Manage columns”Choose columns**“选择列”选项 。
+    df = spark.read.format("csv").schema(orderSchema).load("Files/orders/*.csv")
+    display(df)
+    ```
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image38.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image37.png)
 
-1. 在**“Choose columns”**对话框中，**取消选中**这里列出的一些列，然后选择**OK**。
+1. 运行修改后的代码单元格，查看输出，现在应该包括2019、2020和2021年的销售额。
 
-    - lpepDropoffDatetime
-    - DoLocationID
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image38.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image39.png)
+    **注意**：仅显示部分行，因此你可能无法看到所有年份的示例。
 
 
-1. 選擇**storeAndFwdFlag**列的篩選並排序下拉菜單。（如果你看到警告 **List may be incomplete**，选择**“Load more**”以查看所有 data。）
+## 练习2：探索dataframe内的 data
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image40.png)
+Dataframe对象包含多种函数，可用于过滤、分组和以其他方式操作其包含的 data。
 
-1. 選擇“**Y”**只顯示應用了折扣的行，然後選擇**OK**。
+### 任务1：过滤dataframe
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image41.png)
+1. 使用单元格输出下方的 **+ Code** 图标，向notebook添加一个新的代码单元格，并输入以下代码。
 
-1. 选择**Ipep_Pickup_Datetime**列排序和筛选下拉菜单，然后选择**Date filters，**再选择**“Between...** **”。** 提供日期和日期/时间类型的筛选。
+    ```
+    customers = df['CustomerName', 'Email']
+    print(customers.count())
+    print(customers.distinct().count())
+    display(customers.distinct())
+    ```
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image42.png)
+1. **运行**新的代码单元，查看结果。请注意以下细节：
 
-1. 在**Filter rows**對話框中，選擇**2017年1月1日**至**2017年1月31日**之間的日期，然後選擇**OK**。
+    - 当你对dataframe执行操作时，结果是一个新的dataframe（此例中，通过从**df**
+    dataframe中选择特定列子集创建新的**客户**dataframe）
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image43.png)
+    - Dataframes提供**计数**和**不同**等功能，可用于总结和过滤其包含的
+    data。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image44.png)
+    - dataframe\['Field1'， 'Field2'， ...\]
+    语法是一种简写方式，用于定义一组列的子集。你也可以使用**select**方法，比如上面代码的第一行可以写成customers = df.select（“CustomerName”， “Email”）
 
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image39.png)
 
-### 任務3：連接包含折扣data的CSV文件
 
-现在，在行程 data到位后，我们想加载包含每天相应折扣和 VendorID的 data，并在与行程 data合并前准备好这些 data。
+1. 修改代码，将**该单元格**中的所有代码替换为以下代码，然后点击** ▷ Run cell **按钮如下：
 
-1. 在 dataflow编辑器菜单的**Home**标签中，选择“**Get data**”选项，然后选择“**Text/CSV**”。
+    ```
+    customers = df.select("CustomerName", "Email").where(df['Item']=='Road-250 Red, 52')
+    print(customers.count())
+    print(customers.distinct().count())
+    display(customers.distinct())
+    ```
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image45.png)
+1. **运行**修改后的代码以查看购买 ***Road-250 Red, 52* product**的客户。注意，你可以“**chain**”多个函数，使一个函数的输出成为下一个函数的输入——在这种情况下，**select**方法创建的dataframe是用于应用过滤条件的**where**方法的源dataframe。
 
-1. 在“**Connect to data source**”面板中，在**Connection settings**下，选择**“Link to file**”单选按钮，然后输入 +++https://raw.githubusercontent.com/ekote/azure-architect/master/Generated-NYC-Taxi-Green-Discounts.csv+++，并将连接名称输入为 +++dfconnection+++，确保**authentication kind** 设置为**Anonymous**。点击**“Next**”按钮。
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image40.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image46.png)
 
-1. 在**Preview file data** 对话框中，选择**Create**。
+### 任务2：将 data汇总和分组到dataframe中
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image47.png)
+1. 点击 **+ Code**，复制粘贴下面的代码，然后点击**“Run cell”**按钮。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image48.png)
+    ```
+    productSales = df.select("Item", "Quantity").groupBy("Item").sum()
+    display(productSales)
+    ```
 
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image41.png)
 
-### 任務4：轉換貼現data
+1. 请注意，结果显示了按产品分组的订单数量之和。**groupBy** 方法按*Item*对行进行分组，随后对剩余所有数值列（此处为数量）应用和汇**总函数**
 
-1. 查看 data時，我們發現頭似乎在第一行。通过在预览网格区域左上角的表格右键菜单中选择**“Use first row as headers”，**将其升级为头部。
+1. 点击 **+ Code**，复制粘贴下面的代码，然后点击**“Run cell** **”**按钮。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image49.png)
+    ```
+    from pyspark.sql.functions import *
 
-    ***注意：**推广标题后，你会在dataflow编辑器顶部的**“Applied steps**”面板中看到新增一个步骤，针对你列的 data类型。*
+    yearlySales = df.select(year("OrderDate").alias("Year")).groupBy("Year").count().orderBy("Year")
+    display(yearlySales)
+    ```
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image50.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image42.png)
 
-1. 右键点击 **VendorID** 列，从显示的右键菜单中选择“**Unpivot other columns**”选项。这允许你将列转换为属性-值对，列变为行。
+1. 請注意，結果顯示的是每年銷售訂單數量。注意，**select**方法包含一個SQL **year**，用於提取*OrderDate*字段中的年份成分（這也是代碼中包含 導入語句以導入Spark SQL庫中的函數的原因）。然後它使用**alias** 方法為提取的年份值分配列名。然後將數據按派生的*年份*列分組，計算每組的行數，最後 使用**OrderBy**方法對所得dataframe進行排序。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image51.png)
 
-1. 在表格未进行转向后， 双击**Attribute** 列和**Value**列，并将**Attribute** 改为 +++Date+++ ，**Value** 改为+++Discount+++，重命名它们。
+## 练习3：使用 Spark 转换 data文件
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image52.png)
+Data engineers的一项常见任务是以特定格式或结构导入 data，并将其转换以供后续处理或分析。
 
-1. 通过选择列名左侧的 data类型菜单并选择**Date**，来更改**Date**列的 data类型。
+### 任务1：使用dataframe方法和函数进行 data转换
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image53.png)
+1. 点击 + Code，复制粘贴下面的代码
 
-1. 选择**Discount** 栏，然后在菜单中选择**“Transform**”标签。选择**Number列**，然后从子菜单中选择**Standard** 数值变换，再选择**Divide**。
+    ```
+    from pyspark.sql.functions import *
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image54.png)
+    ## Create Year and Month columns
+    transformed_df = df.withColumn("Year", year(col("OrderDate"))).withColumn("Month", month(col("OrderDate")))
 
-1. 在**Divide** 对话框中输入值 +++100+++，然后点击**OK** 按钮。
+    # Create the new FirstName and LastName fields
+    transformed_df = transformed_df.withColumn("FirstName", split(col("CustomerName"), " ").getItem(0)).withColumn("LastName", split(col("CustomerName"), " ").getItem(1))
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image55.png)
+    # Filter and reorder columns
+    transformed_df = transformed_df["SalesOrderNumber", "SalesOrderLineNumber", "OrderDate", "Year", "Month", "FirstName", "LastName", "Email", "Item", "Quantity", "UnitPrice", "Tax"]
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image56.png)
+    # Display the first five orders
+    display(transformed_df.limit(5))
+    ```
 
+1. **运行**代码，通过以下变换从原始顺序 data创建新的dataframe：
 
-### 任务7：合并行程和折扣data
+    - 根据**OrderDate** 列添加**年份**和**月份**列。
+    - 根据**CustomerName**列添加**FirstName**和**LastName**列。
+    - 过滤并重新排序列，移除**CustomerName**列。
 
-下一步是将两张表合并成一个表，列出应应用于行程的折扣和调整后的总额。
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image43.png)
 
-1. 首先，切换“**Diagram view**”按钮，这样你可以看到两个查询。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image57.png)
+1. 检查输出并确认 data的转换已完成。
 
-1. 选择**Bronze** 查询，在**Home** 标签中选择**合并**菜单，选择**Combine** 查询，选择**Merge queries**然后选择**Merge queries as new**。
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image44.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image58.png)
+    你可以充分利用 Spark SQL 库的全部功能，通过过滤行、推导、删除、重命名列以及应用其他必要的数据修改来转换 data。
 
-1. 在**Merge** 对话框中，从 右侧表格选择 **Generated-NYC-Taxi-Green-Discounts** 进行合并下拉，然后选择对话框右上角的“**light bulb**”图标，查看三表之间建议的列映射。
+    **提示**：请参阅 [*Spark dataframe documentation*](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/dataframe.html)，了解更多关于 Dataframe 对象的方法。
 
-1. 依次选择两种建议的列映射，映射两个表中的VendorID和日期列。当两个映射都被添加时，匹配的列头会在每个表中被高亮显示。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image59.png)
+### 任务2：保存转换后的data
 
-1. 会显示一条提示，要求你允许将多个data源的data合并以查看结果。选择**OK**
+1. **添加**一个带有以下代码的新单元格，以保存转换后的dataframe为Parquet格式（如果已有 data则覆盖）。 **运行**小区，等待 data已保存的消息。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image60.png)
+    ```
+    transformed_df.write.mode("overwrite").parquet('Files/transformed_data/orders')
+    print ("Transformed data saved!")
+    ```
 
-1. 在表格区域，你会看到一个警告：“The evaluation was canceled because combining data from multiple sources may reveal data from one source to another. Select continue if the possibility of revealing data is okay.”选择**“Continue**”以显示合并 data。
+    **注意**：通常，*Parquet*格式更适合用于进一步分析或导入分析存储的 data文件。Parquet是一种非常高效的格式，大多数大型 data分析系统都支持它。事实上，有时你的 data转换需求可能只是将其他格式（如CSV）的 data转换成Parquet！
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image61.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image45.png)
 
-1. 在“Privacy Levels”对话框中，选择**“check box :Ignore Privacy Levels checks for this document. Ignoring privacy Levels could expose sensitive or confidential data to an unauthorized person**”，点击**“Save**”按钮。
+1. 然后，在左侧的**Lakehouse explorer** 面板中，在**......Files** 节点菜单 中选择**Refresh**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image62.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image46.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image63.png)
+1. 点击**transformed_data**文件夹以验证其是否包含一个名为 **orders** 的新文件夹，该文件夹包含一个或多个 **Parquet files**。
 
-1. 注意在圖中新建查詢，顯示新Merge query與你之前創建的兩個查詢之間的關係。查看編輯器的表格窗格，向 “Merge query”列表右側滾動，可以看到一個帶有表值的新列。这是“**Generated NYC Taxi-Green-Discounts**”栏，类型为**\[Table\]。**
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image47.png)
 
-    在列头有一个图标，上面有两个相反方向的箭头，方便你从表格中选择列。取消选中除**Discount**以外的所有列，然后选择**OK**。
+1. 点击 **+ Code，**跟随代码，从**transformed_data -\> orders** 文件夹中的 parquet 文件加载新dataframe：
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image64.png)
+    ```
+    orders_df = spark.read.format("parquet").load("Files/transformed_data/orders")
+    display(orders_df)
+    ```
 
-1. 现在贴现值定在行级，我们可以创建一个新列来计算折现后的总金额。要做到这一点，请在编辑器顶部选择**“Add column**”标签，然后 **从**“**General”**组中选择“**Custom column**”。
+1. **运行**该单元格，验证结果是否显示了从parquet文件加载的顺序 data。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image65.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image48.png)
 
-1. 在**Custom column**对话框中，您可以使用 Power Query 公式语言（也称为 M）来定义新列的计算方式。输入 +++TotalAfterDiscount+++ 作为**New column name**，选择 **Currency** 作为**Data type+++，并为+++Custom column formula**提供以下 M 表达式：
 
-    `if [total_amount] > 0 then [total_amount] * ( 1 -[Discount] ) else [total_amount]`
+### 任务3：将 data保存到分区文件中
 
-    然后选择**OK**。
+1. 添加一个新单元格，点击以下代码的 **+ Code**;它保存dataframe，按**年份**和**月份**划分data。 **运行**小区并等待data已保存的消息
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image66.png)
+    ```
+    orders_df.write.partitionBy("Year","Month").mode("overwrite").parquet("Files/partitioned_data")
+    print ("Transformed data saved!")
+    ```
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image67.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image49.png)
 
-1. 选择新创建的**TotalAfterDiscount**列，然后在编辑器窗口顶部选择 “**Transform**”标签。在**Number column**组中，选择**“Rounding**”下拉菜单，然后选择**“Round...**.**”**。
+1. 然后，在左侧的**Lakehouse explorer** 面板中，在**......Files** 节点菜单 中选择**Refresh。**
 
-    **注意**：如果找不到**rounding** 选项，请展开菜单查看**Number column**。
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image50.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image68.png)
+1. 展开**partitioned_orders**文件夹，确认其中包含名为**Year=xxxx**的文件夹层级结构，每个文件夹包含名为**Month=xxxx**的文件夹。每个月文件夹都包含一个镶花文件，里面有当月的订单。
 
-1. 在**Round** 对话框中输入**2**，输入小数点位数，然后选择**OK**。
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image51.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image69.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image52.png)
 
-1. 将 I**pepPickupDatetime** 的 data类型从 **Date** 更改为 **Date/Time**。
+    Data文件分区是处理大量 data时优化性能的常见方法。这种方法可以显著提升性能，并使 data过滤变得更简单。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image70.png)
+1. 添加一个新单元格，点击以下代码的 **+ Code** **，**从**orders.parquet**文件加载新dataframe：
 
-1. 最后，如果编辑器右侧还没有展开**Query settings** 窗格，并将查询重命名從**Merge** 作為 +++Output+++。
+    ```
+    orders_2021_df = spark.read.format("parquet").load("Files/partitioned_data/Year=2021/Month=*")
+    display(orders_2021_df)
+    ```
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image71.png)
+1. **运行**单元格，确认结果显示的是2021年的订单 data。注意路径中指定的分区列（**年份**和**月份**）未包含在dataframe中。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image72.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image53.png)
 
 
-### 任务8：将输出查询加载到Lakehouse中的表中
+## 练习4：处理表和SQL
 
-当输出查询完全准备好并准备输出data后，我们可以定义查询的输出目的地。
+正如你所見，dataframe對象的原生方法讓你能夠非常有效地查詢和分析文件中的數據。然而，許多數據分析師更習慣使用可以用SQL syntax查詢的表。Spark 提供了一个*metastore*，你可以在这里定义关系表。提供dataframe对象的 Spark SQL 库也支持使用 SQL 语句查询metastore中的表。通过使用 Spark 的这些功能，你可以将data lake的灵活性与关系型 data Warehouse的结构化 data模式和基于 SQL 的查询结合起来——这就是“data lakehouse”这一术语的由来。
 
-1. 选择之前创建的**Output** 合并查询。然后选择 **+ icon**，将**data destination** 添加到该Dataflow中。
+### 任务1：创建一个受管理表
 
-1. 在data destination列表中，选择**“**New destination”下的**Lakehouse** 选项。
+Spark metastore中的表是data lake中文件的关系抽象。表可以被*managed* （此时文件由metastore管理）或*external* （此时表引用data lake中独立于metastore管理的文件位置）。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image73.png)
+1. 添加一个新代码，点击notebook中的 **+ Code** 单元，输入以下代码，这样销售订单 data的dataframe会保存为名为**“salesorders”**的表格：
 
-1. 在“**Connect to data destination**”对话框中，你的连接应该已经被选中了。选择**“Next**”继续。
+    ```
+    # Create a new table
+    df.write.format("delta").saveAsTable("salesorders")
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image74.png)
+    # Get the table description
+    spark.sql("DESCRIBE EXTENDED salesorders").show(truncate=False)
+    ```
 
-1. 在“**Choose destination target”**对话框中，浏览到Lakehouse，然后再次选择**“Next**”。
+    **注意**：关于这个例子，值得注意几点。首先，没有提供显式路径，因此表的文件将由metastore管理。其次，表格以 **delta** 格式保存。你可以基于多种文件格式创建表（包括 CSV、Parquet、Avro 等），但 *delta lake* 是一种 Spark 技术，为表增加了关系database功能;包括对事务、行版本控制及其他实用功能的支持。在 Fabric 中创建data lakehouses更倾向于以 delta 格式创建表。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image75.png)
+1. **运行**代码单元并查看输出，后者描述了新表的定义。
 
-1. 在**“Choose destination settings**”对话框中，再次确认你的列是否正确映射，然后选择**Save settings**。
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image54.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image76.png)
+1. 在**Lakehouse** **explorer** 面板中，在**......** **Tables** 文件夹菜单中选择 **Refresh。**
 
-1. 回到主编辑器窗口，确认你在**Output** 表的**Query settings**窗格中看到输出目的地为 **Lakehouse**，然后从主页选项卡中选择**“Save and Run**”选项。
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image55.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image77.png)
+1. 然后展开 **Tables** 节点，确认 **SalesOrders** 表是否已在 **dbo** 模式下创建。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image78.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image56.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image79.png)
+1. 将鼠标悬停在**salesorders** 表旁，然后点击水平省略号（...）。点击**Load data**，然后选择**Spark**。
 
-1. 现在，点击左侧导航窗格上的 **Data Factory-@lab.LabInstance.Id workspace**。
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image57.png)
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image80.png)
+1. 点击 **▷ Run cell** 按钮，该按钮使用Spark SQL库，在 PySpark代码中嵌入对**salesorder** 表的SQL query，并将查询结果加载到dataframe中。
 
-1. 在**Data_Factory@lab.LabInstance.Id**窗格中，选择 **DataFactoryLakehouse** 查看新加载的表。
+    ```
+    df = spark.sql("SELECT * FROM [your_lakehouse].salesorders LIMIT 1000")
+    display(df)
+    ```
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image81.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image58.png)
 
-1. 确认**Output** 表是否出现在**dbo**模式下。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image82.png)
+### 任务2：创建一个外部表格
 
+你也可以创建 *external* 表，模式元 data在lakehouse的metastore中定义，但 data文件存储在外部位置。
 
-## 练习3：用Data Factory自动化并发送通知
+1. 在第一个代码单元返回的结果下，如果没有新的代码单元格，使用 **+ Code** 按钮添加新代码单元。然后在新格子里输入以下代码。
 
-### 任务1：将Office 365 Outlook活动添加到你的pipeline中
+    `df.write.format("delta").saveAsTable("external_salesorder", path="<abfs_path>/external_salesorder")`
 
-1. 在左侧导航菜单中点击**Data_Factory@lab.LabInstance.Id** 工作区。
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image59.png)
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image83.png)
+1. 在**Lakehouse explorer** 面板中，在**...... Files** 文件夹菜单 中，选择notepad中的**“Copy ABFS path**”。
 
-1. 在工作区页面选择 **+ New item** 选项，然后选择**“Pipeline”**
+    ABFS路径是你 lakehouse OneLake存储中**Files** 文件夹的完全合格路径——类似于这个：
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image84.png)
+    abfss://<dp_Fabric29@onelake.dfs.fabric.microsoft.com>/Fabric_lakehouse.Lakehouse/Files/external_salesorder
 
-1. 提供一个管道名称 +++First_Pipeline1+++，然后选择**Create**。
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image60.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image85.png)
+1. 现在，进入代码单元，把 ***{abfs_path}*** 替换成 你复制到notepad的**路径**，这样代码会把dataframe保存为外部表， data文件存放在你 **Files** 文件夹里的名为**external_salesorder** 的文件夹里。整条路径应该像这样
 
-1. 在pipeline editor中选择“**Home**”标签，找到“**Add copy data activity”**的选项。
+    abfss://<dp_Fabric29@onelake.dfs.fabric.microsoft.com>/Fabric_lakehouse.Lakehouse/Files/external_salesorder
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image86.png)
+1. 使用单元左侧的 **▷ (*Run cell*)** 按钮来运行它。
 
-1. 在“**Source**”标签页，输入以下设置，点击**Test connection**
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image61.png)
 
-    | Setting | Value |
-    |---|---|
-    | Connection | +++dfconnection User-@lab.LabInstance.Id+++ |
-    | Connection Type | Select **HTTP** |
-    | File format | **Delimited Text** |
+1. 在**Lakehouse explorer** 面板中，在**......Tables** 文件夹菜单 中选择**Refresh**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image87.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image62.png)
 
-1. 在**“Destination**”标签页，输入以下设置。
+1. 然后展开 **Tables** 节点，验证 **external_salesorder** 表是否已创建。
 
-    | Setting | Value |
-    |---|---|
-    | Connection | **Lakehouse** |
-    | Lakehouse | Select **DataFactoryLakehouse** |
-    | Root Folder | Select the **Table** radio button |
-    | Table | Select **New**, enter +++Generated-NYC-Taxi-Green-Discounts+++, and select **Create**. |
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image63.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image88.png)
+1. 在**Lakehouse explorer** 面板中，在**......**在**Files** 文件夹菜单中选择**Refresh**。
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image89.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image64.png)
 
-1. 从色带中选择**“Run**”。
+1. 然后展开**Files** 节点，确认**external_salesorder**文件夹已为表中的 data文件创建。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image90.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image65.png)
 
-1. 在**“Save and run?”**对话框，点击**“Save and run**”按钮。
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image91.png)
+### 任务3：比较托管表和外部表
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image92.png)
+让我们来探讨托管表和外部表之间的区别。
 
-1. 在pipeline编辑器中选择**“Activities**”标签，找到 **Office Outlook** 活动。
+1. 在代码单元返回的结果下，使用 **+ Code** 按钮添加新的代码单元。将下面的代码复制到代码单元格，并使用单元格左侧的 **▷ (*Run cell*)** 按钮来运行它。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image93.png)
+    ```
+    %%sql
 
-1. 从你的复制活动中选择并拖动“Success”路径（在管道画布活动右上角的绿色复选框）到你的新的Office 365 Outlook活动。
+    DESCRIBE FORMATTED salesorders;
+    ```
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image94.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image66.png)
 
-1. 从pipeline canvas中选择Office 365 Outlook活动，然后选择 canvas下方属性区域的**Settings** 标签来配置邮件。点击**“Connection**”下拉菜单，选择**“Browse all”。**
+1. 在结果中，查看 表的 **Location** 属性，应该是通往lakehouse OneLake 存储的路径，结尾是 **/Tables/salesorders**（你可能需要放大**Data type** 栏才能看到完整路径）。
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image95.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image67.png)
 
-1. 在“choose a data source”窗口中，选择**Office 365 Email**源。
+1. 修改 **DESCRIBE** 命令以显示 **external_saleorder** 表的详细信息，如图所示。
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image96.png)
+1. 在代码单元返回的结果下，使用 **+ Code** 按钮添加新的代码单元。复制下面的代码，使用单元左侧的 **▷ (*Run cell*)** 按钮来运行它。
 
-1. 用你想发送邮件的账户登录。你可以用已经登录的账户使用现有连接。
+    ```
+    %%sql
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image97.png)
+    DESCRIBE FORMATTED external_salesorder;
+    ```
 
-1. 点击**Connect** 以继续。
+1. 在结果中，查看 表的 **Location** 属性，应该是一条通往lakehouse OneLake 存储的路径，结尾以 **/Files/external_saleorder**（你可能需要扩大**Data type** 栏才能看到完整路径）。
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image98.png)
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image68.png)
 
-1. 在pipeline canvas中选择Office 365 Outlook活动，在canvas下方属性区域的**Settings** 标签中选择该邮件。
 
-    - 在“**To”**栏输入您的电子邮件地址 。如果你想使用多个地址，请使用
-    **;** 把他们分开。
+### 任务4：在单元格中运行SQL代码
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image99.png)
+虽然能够将SQL语句嵌入包含PySpark代码的单元格很有用，但 data分析师通常只想直接用SQL工作。
 
-    - 对于**Subject**，选择该字段，使“**Add dynamic
-    content**”选项出现，然后选择它以显示pipeline表达式构建canvas。
+1. 点击笔记本的 **+ Code** 单元，输入以下代码。点击 **▷ Run cell** 按钮，查看结果。请注意：
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image100.png)
+    - 单元格开头的%%sql行（称为*magic*）表示应使用Spark
+    SQL语言运行时来运行该单元的代码，而非PySpark。
 
+    - SQL代码引用的是你之前创建的salesorders 表。
+    - SQL query的输出会自动显示为单元格下的结果
 
-1. 会显示**Pipeline expression builder** 对话框。输入以下表达式，然后选择**OK**：
+    ```
+    %%sql
+    SELECT YEAR(OrderDate) AS OrderYear,
+           SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue
+    FROM salesorders
+    GROUP BY YEAR(OrderDate)
+    ORDER BY OrderYear;
+    ```
 
-    `@concat('DI in an Hour Pipeline Succeeded with Pipeline Run Id', pipeline().RunId)`
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image69.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image101.png)
+    **注意**：有关 Spark SQL 和dataframes的更多信息，请参见 [*Spark SQL documentation*](https://spark.apache.org/docs/2.2.0/sql-programming-guide.html)。
 
-1. 对于**Body**，再次选择字段，并在文本区域下方出现时选择“**View in expression builder**”选项。在出现的**Pipeline expression builder** 对话框中再次添加以下表达式，然后选择**OK**：
 
-    `@concat('RunID = ', pipeline().RunId, ' ; ', 'Copied rows ', activity('Copy data1').output.rowsCopied, ' ; ','Throughput ', activity('Copy data1').output.throughput)`
+## 练习4：用Spark可视化data
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image102.png)
+俗话说，一幅图胜千言万语，一张图表往往比一千行data更好。虽然 Fabric 中的notebooks内置了dataframe或 Spark SQL 查询 data的图表视图，但它并非为全面的图表设计。不过，你可以用 Python 图形库，比如 **matplotlib** 和 **seaborn**，从数据帧中生成图表。
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image103.png)
+### 任务1：以图表形式查看结果
 
-    \*\* 注意：\*\* 将 **Copy data1** 替换为你自己的pipeline复制活动名称。
+1. 點擊筆記本的 **+ Code** 單元，輸入以下代碼。点击 **▷ Run cell** 按钮，观察它会返回 你之前创建的**salesorders** 视图中的 data。
 
-1. 最後，在管道編輯器頂部選擇**“Home**”標簽，然後選擇**Run**。然后在确认对话框中选择“**Save and run**”以执行这些活动。
+    ```
+    %%sql
+    SELECT * FROM salesorders
+    ```
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image104.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image70.png)
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image105.png)
+1. 在单元格下方的结果部分，将**View** 选项从**“Table**”改为**“+New chart**”。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image106.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image71.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image107.png)
+1. 使用图表右上角的**“Start editing** ”按钮，显示图表的选项面板。然后设置如下选项，选择**Apply**：
 
-1. Pipeline成功运行后，查看你的电子邮件，查找pipeline发送的确认邮件。
+    - Chart type: Bar chart
+    - X-axis: Item
+    - Y-axis: Quantity
+    - Series Group: –None–
+    - Aggregation: Sum
+    - Missing and NULL values: Display as 0
+    - Stacked: Unselected
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image108.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image72.png)
 
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image73.png)
 
-### 任务2：调度pipeline执行
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image74.png)
 
-一旦你完成了pipeline的开发和测试，就可以安排它自动执行。
 
-1. 在pipeline editor窗口的**Home** 标签中**，**选择**“Schedule”。**
+1. 请确认图表是否与此相似
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image109.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image75.png)
 
-1. 根据需要配置时间表。这里的示例安排了pipeline每天晚上8点执行，直到年底。
 
-    ![A screenshot of a schedule Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image110.png)
+### 任务2：开始使用 matplotlib
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image111.png)
+1. 点击 **+ Code** ，复制粘贴下面的代码。 **运行**代码，观察它返回一个包含年度收入的 Spark dataframe。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image112.png)
+    ```
+    sqlQuery = "SELECT CAST(YEAR(OrderDate) AS CHAR(4)) AS OrderYear, \
+                    SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue \
+                FROM salesorders \
+                GROUP BY CAST(YEAR(OrderDate) AS CHAR(4)) \
+                ORDER BY OrderYear"
+    df_spark = spark.sql(sqlQuery)
+    df_spark.show()
+    ```
 
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image76.png)
 
-### 任务3：向 pipeline添加Dataflow活动
+1. 为了将 data可视化为图表，我们将先使用 **matplotlib** Python 库。该库是许多其他库的核心绘图库，提供了极大的图表制作灵活性。
 
-1. 将鼠标悬停在连接pipeline canvas上**Copy activity**和**Office 365 Outlook**活动的绿色线上，选择 **+** 按钮插入新活动。
+1. 点击 **+ Code**，复制粘贴下面的代码。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image113.png)
+    ```
+    from matplotlib import pyplot as plt
 
-1. 从出现的菜单中选择**Dataflow** 。
+    # matplotlib requires a Pandas dataframe, not a Spark one
+    df_sales = df_spark.toPandas()
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image114.png)
+    # Create a bar plot of revenue by year
+    plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'])
 
-1. 新创建的Dataflow活动会插入复制活动和Office 365 Outlook活动之间，并自动选择，在canvas下方区域显示其属性。在属性区域选择**Settings** 标签，然后选择你在**练习2：在Data Factory中用dataflow转换 data时创建**的dataflow。
+    # Display the plot
+    plt.show()
+    ```
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image115.png)
+1. 点击**“Run cell”**按钮查看结果，结果包括一个栏状图，显示每年的总总收入。请注意用于制作该图表的代码的以下特点：
 
-1. 选择pipeline editor顶部的**“Home**”标签，然后选择**Run**。然后在确认对话框中选择“**Save and run**”以执行这些活动。
+    - **matplotlib** 库需要 *Pandas* dataframe，所以你需要将 *Spark* SQL
+    查询返回的dataframe转换成这个格式。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image116.png)
+    - **matplotlib** 库的核心是 **pyplot**
+    对象。这是大多数绘图功能的基础。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image117.png)
+    - 默认设置会得到可用的图表，但自定义空间很大
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image118.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image77.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image119.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image78.png)
 
 
-### 任务四：清理资源
+1. 修改代码，将图表绘制如下图，将该单**元格**的所有代码替换为以下代码，点击 **▷ Run cell** 格按钮，查看输出结果
 
-你可以删除单个报表、pipelines、仓库和其他项目，或者删除整个工作区。请按照以下步骤删除你为本教程创建的工作区。
+    ```
+    from matplotlib import pyplot as plt
 
-1. 在左侧导航菜单中选择您的工作区，即**Data-Factory@lab.LabInstance.Id** 。它会打开工作区的物品视图。
+    # Clear the plot area
+    plt.clf()
 
-    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image83.png)
+    # Create a bar plot of revenue by year
+    plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
 
-1. 在右上角的工作区页面选择**Workspace settings** 选项。
+    # Customize the chart
+    plt.title('Revenue by Year')
+    plt.xlabel('Year')
+    plt.ylabel('Revenue')
+    plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)
+    plt.xticks(rotation=45)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image120.png)
+    # Show the figure
+    plt.show()
+    ```
 
-1. 选择**General标签**并 **Remove this workspace。**
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image79.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2002/media/image121.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image80.png)
+
+1. 图表现在包含了一些更多信息。剧情技术上是由一个**人物**所包含的。在前面的例子中，这个图形是隐含地为你创造的;但你可以明确创建它。
+
+1. 修改代码，将图表绘制如下图，将**单元格**中的所有代码替换 为以下代码。
+
+    ```
+    from matplotlib import pyplot as plt
+
+    # Clear the plot area
+    plt.clf()
+
+    # Create a Figure
+    fig = plt.figure(figsize=(8,3))
+
+    # Create a bar plot of revenue by year
+    plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
+
+    # Customize the chart
+    plt.title('Revenue by Year')
+    plt.xlabel('Year')
+    plt.ylabel('Revenue')
+    plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)
+    plt.xticks(rotation=45)
+
+    # Show the figure
+    plt.show()
+    ```
+
+1. **重新运行**代码单元，查看结果。图形决定了地块的形状和大小。
+
+    一个图可以包含多个子线，每个子线都围绕其自身*轴*线。
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image81.png)
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image82.png)
+
+1. 修改代码，将图表绘制如下图。 **重新运行**代码单元，查看结果。图中包含了代码中指定的子线。
+
+    ```
+    # Clear the plot area
+    plt.clf()
+
+    # Create a figure for 2 subplots (1 row, 2 columns)
+    fig, ax = plt.subplots(1, 2, figsize = (10,4))
+
+    # Create a bar plot of revenue by year on the first axis
+    ax[0].bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
+    ax[0].set_title('Revenue by Year')
+
+    # Create a pie chart of yearly order counts on the second axis
+    yearly_counts = df_sales['OrderYear'].value_counts()
+    ax[1].pie(yearly_counts)
+    ax[1].set_title('Orders per Year')
+    ax[1].legend(yearly_counts.keys().tolist())
+
+    # Add a title to the Figure
+    fig.suptitle('Sales Data')
+
+    # Show the figure
+    plt.show()
+    ```
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image83.png)
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image84.png)
+
+    **注意**：想了解更多关于使用 matplotlib 绘制的信息，请参阅 [*matplotlib documentation*](https://matplotlib.org/)。
+
+
+### 任务3：使用seaborn 图书馆
+
+虽然 **matplotlib** 可以让你创建多种类型的复杂图表，但要达到最佳效果可能需要一些复杂的代码。因此，多年来，许多新的库在 matplotlib 基础上构建，以抽象化其复杂性并增强其能力。其中一个图书馆是 **seaborn**。
+
+1. 点击 **+ Code**，复制粘贴下面的代码。
+
+    ```
+    import seaborn as sns
+
+    # Clear the plot area
+    plt.clf()
+
+    # Create a bar chart
+    ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+    plt.show()
+    ```
+
+1. **运行**代码，观察它显示的是使用Seaborn库的条形图。
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image85.png)
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image86.png)
+
+1. **修改**代码如下。 **运行**修改后的代码，注意 seaborn 可以让你为地块设置一致的颜色主题。
+
+    ```
+    import seaborn as sns
+
+    # Clear the plot area
+    plt.clf()
+
+    # Set the visual theme for seaborn
+    sns.set_theme(style="whitegrid")
+
+    # Create a bar chart
+    ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+    plt.show()
+    ```
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image87.png)
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image88.png)
+
+1. **再次修改**代码如下。 **运行**修改后的代码，以折线图的形式查看年度收入。
+
+    ```
+    import seaborn as sns
+
+    # Clear the plot area
+    plt.clf()
+
+    # Create a bar chart
+    ax = sns.lineplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+    plt.show()
+    ```
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image89.png)
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image90.png)
+
+    **注意**：想了解更多关于用海生策划的建议，请参见[*seaborn documentation*](https://seaborn.pydata.org/index.html)。
+
+
+### 任务4：使用delta表进行流data流处理
+
+Delta lake支持流式 data传输。Delta表可以是 使用Spark Structured Streaming API创建的 data的*sink* 或*source*。在这个例子中，你将使用一个三角表作为模拟internet of things（IoT）场景中流 data的汇入点。
+
+1. 点击 **+ Code**，复制粘贴下面的代码，然后点击**“Run cell”**按钮。
+
+    ```
+    from notebookutils import mssparkutils
+    from pyspark.sql.types import *
+    from pyspark.sql.functions import *
+
+    # Create a folder
+    inputPath = 'Files/data/'
+    mssparkutils.fs.mkdirs(inputPath)
+
+    # Create a stream that reads data from the folder, using a JSON schema
+    jsonSchema = StructType([
+    StructField("device", StringType(), False),
+    StructField("status", StringType(), False)
+    ])
+    iotstream = spark.readStream.schema(jsonSchema).option("maxFilesPerTrigger", 1).json(inputPath)
+
+    # Write some event data to the folder
+    device_data = '''{"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev2","status":"error"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"error"}
+    {"device":"Dev2","status":"ok"}
+    {"device":"Dev2","status":"error"}
+    {"device":"Dev1","status":"ok"}'''
+    mssparkutils.fs.put(inputPath + "data.txt", device_data, True)
+    print("Source stream created...")
+    ```
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image91.png)
+
+1. 确保消息源 ***Source stream created…*** 已印刷。你刚运行的代码基于一个文件夹创建了一个流 data源，该文件夹保存了一些 data，代表假设的物联网设备的读数。
+
+1. 点击 **+ Code**，复制粘贴下面的代码，然后点击**“Run cell”**按钮。
+
+    ```
+    # Write the stream to a delta table
+    delta_stream_table_path = 'Tables/dbo/iotdevicedata'
+    checkpointpath = 'Files/delta/checkpoint'
+    deltastream = iotstream.writeStream.format("delta").option("checkpointLocation", checkpointpath).start(delta_stream_table_path)
+    print("Streaming to delta sink...")
+    ```
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image92.png)
+
+1. 该代码以delta格式将流媒体设备数据写入名为**iotdevicedata**的文件夹。由于文件夹位置的路径在 **Tables** 文件夹中，会自动为它创建一个表。点击桌子旁的水平椭圆，然后点击 **Refresh**。
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image93.png)
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image94.png)
+
+1. 点击 **+ Code**，复制粘贴下面的代码，然后点击**“Run cell”**按钮。
+
+    ```
+    %%sql
+    SELECT * FROM dbo.iotdevicedata;
+    ```
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image95.png)
+
+1. 该代码查询包含流媒体源设备 data的IotDeviceData表。
+
+1. 点击 **+ Code**，复制粘贴下面的代码，然后点击**“Run cell”**按钮。
+
+    ```
+    # Add more data to the source stream
+    more_data = '''{"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"ok"}
+    {"device":"Dev1","status":"error"}
+    {"device":"Dev2","status":"error"}
+    {"device":"Dev1","status":"ok"}'''
+
+    mssparkutils.fs.put(inputPath + "more-data.txt", more_data, True)
+    ```
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image96.png)
+
+1. 这段代码会将更多假设的设备 data写入流源。
+
+1. 点击 **+ Code**，复制粘贴下面的代码，然后点击**“Run cell”**按钮。
+
+    ```
+    %%sql
+    SELECT * FROM dbo.iotdevicedata;
+    ```
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image97.png)
+
+1. 该代码再次查询 **IotDeviceData** 表，表中应包含已添加到流源的额外 data。
+
+1. 点击 **+ Code**，复制粘贴下面的代码，然后点击**“Run cell”**按钮。
+
+    `deltastream.stop()`
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image98.png)
+
+1. 这个代码会停止直播。
+
+
+### 任务5：保存notebook并结束Spark会话
+
+现在你已经完成data处理，可以保存notebook并命名有意义，并结束 Spark 会话。
+
+1. 在notebook菜单栏，使用 ⚙️ **Settings** 图标查看notebook设置。
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image99.png)
+
+1. 将notebook**名称**设置为 +++Explore Sales Orders+++，然后关闭设置面板。
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image100.png)
+
+1. 在notebook菜单中，选择**Stop session** 以结束Spark会话。
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image101.png)
+
+    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image102.png)
+
+
+### 任务6：清理资源
+
+在这个练习中，你已经学会了如何使用Spark在Microsoft Fabric中处理data。
+
+如果你已经完成了lakehouse探索，可以删除你为这个练习创建的工作区。
+
+1. 在左侧栏中，选择工作区图标，查看其所有项目。
+
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image103.png)
+
+1. 在**......**工具栏菜单，选择**Workspace settings**。
+
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image104.png)
+
+1. 选择**“General**”，点击**“Remove this workspace”。**
+
+    ![A screenshot of a computer settings Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image105.png)
+
+1. 在 **Delete workspace?** 对话框，点击**Delete** 按钮。
+
+    ![A screenshot of a computer Description automatically generated](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image106.png)
+
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/msfbrcanlytcsrio/refs/heads/CNT-Cloudslice/Labguide/Usecase%2004/media/image107.png)
+
+
+### 摘要
+
+本用例将引导你在 Power BI 中使用 Microsoft Fabric 的过程。它涵盖了多个任务，包括搭建工作区、创建lakehouse、上传和管理 data文件，以及使用notebooks进行data探索。参与者将学习如何使用PySpark操作和转换数据，创建可视化，并保存和分区数据以实现高效的查询。
+
+在这个用例中，参与者将参与一系列专注于Microsoft Fabric中delta表的任务。任务包括上传和探索 data、创建托管和外部 delta 表、比较其属性，实验室介绍了用于结构化 data管理的 SQL 功能，并利用 Matplotlib 和 seaborn 等 Python 库提供 data可视化的见解。这些练习旨在全面理解如何使用 Microsoft Fabric 进行 data分析，以及在IoT环境中引入delta表进行data流传输。
