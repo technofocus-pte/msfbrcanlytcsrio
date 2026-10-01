@@ -16,7 +16,7 @@ Microsoft Fabric Lakehouse 中的資料表以開放原始碼的 Apache Spark **D
 
 | **項目** | **名稱** | **在實驗中的用途** |
 |----|----|----|
-| 工作區 | dp_Fabric\<實驗執行個體 ID\> | 包含本實驗的所有項目 |
+| 工作區 | dp_FabricXXXX\<實驗執行個體 ID\> | 包含本實驗的所有項目 |
 | Lakehouse | Fabric_lakehouse | 儲存銷售訂單檔案、轉換後的資料和 Delta 資料表 |
 | Notebook | Explore Sales Orders | 用於探索、轉換和視覺化資料的 Spark notebook |
 | Delta 資料表 | salesorders、external_salesorder、iotdevicedata | 受控資料表、外部資料表和串流資料表 |
