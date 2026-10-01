@@ -1,874 +1,833 @@
-## 用例 4 - 使用 Fabric IQ、資料代理程式 Data Agents 與 Rayfin 的新世代分析
+# 使用案例 04：從語意到洞察：搭配 Fabric 資料代理程式使用 Fabric IQ Ontology
 
-### 简介
+**案例情境**
 
-在现代数据平台中，企业通常需要一个以**业务为中心的语义层**，以统一不同数据源和分析模型之间的意义。 Microsoft Fabric IQ 中的 *Ontology（预览）*功能允许您通过定义**企业概念**（如产品、商店和事件）及其**关系**，并将这些定义绑定到跨越湖屋、语义模型和事件流的真实lakehouse，从而构建这一层。
+**Lakeshore Retail** 是一家虛構的公司，在多個門市地點銷售冰淇淋。銷售資料、產品詳細資料和門市資訊儲存在 Lakehouse 中，而冷凍櫃感應器則會將溫度和濕度讀數串流到 Eventhouse。目前，業務使用者必須知道要聯結哪些資料表、查詢哪些系統，才能回答簡單的跨領域問題，例如：*「當冷凍櫃溫度升高到 -18 °C 以上時，哪些門市的冰淇淋銷量較低？」*
 
-剧情设定中，一家虚构的公司叫**Lakeshore Retail**，在多个地点销售冰淇淋。通过示例数据，教程展示了如何搭建环境并开始构建涵盖*Store*,*Products*和*SaleEvent*等商业概念的本体。你还会将流数据（比如来自Eventhouse的冷冻室温度）连接到这些概念上，使本体能够支持**跨域推理和查询**，例如： *“当冷冻室温度升高到-18°C以上时，哪些商店的冰淇淋销量会更低？”*
+Lakeshore Retail 希望建立一個**以業務為中心的語意層**，以自己的業務用語（門市、產品、銷售事件和冷凍櫃）描述其業務，並將這些概念連結到底層資料。有了這一層，分析師就能以視覺化方式探索關聯性，並以自然語言提問，而不需要了解底層的資料表或結構描述。
 
-### 目标
+身為資料工程師，您將準備 Fabric 工作區、載入銷售和遙測資料、使用 **Fabric IQ Ontology（預覽）** 建置 ontology、透過圖形查詢探索 ontology、將其連線至 **Fabric 資料代理程式**以進行自然語言提問，並使用 **Project Rayfin** 建置和部署配套應用程式。
 
-- 准备一个包含必要服务的 Microsoft Fabric 工作空间，包括
-  Lakehouse、Eventhouse 和 Ontology（预览版）。
+**簡介**
 
-- 通过定义核心实体类型例如Store, Products,
-  SaleEvent和Freezer来构建以业务为中心的ontology。
+在現代資料平台中，企業通常需要一個**以業務為中心的語意層**，以統一不同資料來源和分析模型之間的意義。Microsoft Fabric IQ 中的 **Ontology（預覽）** 功能可讓您定義**企業概念**（例如產品、門市和事件）及其**關聯性**，並將這些定義繫結到 Lakehouse、語意模型和事件串流中的實際資料，以建置這個語意層。
 
-- ind 来自 OneLake 表的静态数据以及从 Eventhouse 到ontology
-  实体的时间序列数据。
+在本實驗中，您將使用範例資料建置 ontology，涵蓋 *Store*、*Products*、*SaleEvent* 和 *Freezer* 等業務概念。您也會將串流資料（來自 Eventhouse 的冷凍櫃遙測資料）連線到這些概念，讓 ontology 能夠支援**跨領域推理和查詢**。
 
-- 在實體之間建立有意義的關係，以代表真實的業務流程（例如，商店有SaleEvent，商店運營Freezeer）。
-- 利用實體實例、關係圖和查詢構建器過濾器探索並驗證本體。
-- 通过将本体与Fabric Data Agent（预览）集成，实现自然语言查询。
+**本實驗建立的 Fabric 項目**
 
+| **項目** | **名稱** | **在實驗中的用途** |
+|----|----|----|
+| 工作區 | Fabric IQ OntologyXXXX\<實驗執行個體 ID\> | 包含本實驗的所有項目 |
+| Lakehouse | IQ_Lakehouse | 儲存產品、門市、銷售和冷凍櫃資料表 |
+| Eventhouse / KQL 資料庫 | TelemetryDataEH | 儲存 FreezerTelemetry 時間序列資料 |
+| Ontology（預覽） | RetailSalesOntology | 定義 Store、Products、SaleEvent 和 Freezer 實體類型及其關聯性 |
+| 資料代理程式（預覽） | RetailOntologyAgent | 以 ontology 為基礎回答自然語言問題 |
+| Fabric data app + SQL Database | Fabricapp | 使用 Project Rayfin 建置和部署的配套 Todo 應用程式 |
 
-# 练习一：环境设置
+**目標**：
 
-## 任務1：創建Fabric工作區
+- 準備包含必要項目的 Microsoft Fabric 工作區，包括 Lakehouse、Eventhouse 和 Ontology（預覽）。
 
-在這個任務中，你需要創建一個Fabric工作區。工作区包含了本 lakehouse 教程所需的所有内容，包括 lakehouse、数据流、Data Factory 管道、笔记本、Power BI 数据集和报表。
+- 定義 Store、Products、SaleEvent 和 Freezer 等核心實體類型，建置以業務為中心的 ontology。
 
-1. 打开浏览器，进入地址栏，输入或粘贴以下URL：+++https://app.fabric.microsoft.com/+++，然后按下**Enter**键，用你的凭证登录
+- 將 OneLake 資料表的靜態資料和 Eventhouse 的時間序列資料繫結到 ontology 實體。
 
-    | Credential | Value |
-    |------------|-------|
-    | Username | +++@lab.CloudPortalCredential(User1).Username+++ |
-    | Password | +++@lab.CloudPortalCredential(User1).Password+++ |
+- 在實體之間建立代表實際業務流程的關聯性（例如 SaleEvent from Store 和 Store operates Freezer）。
 
-1. 在工作区面板中，点击**+New workspace** 磁贴
+- 使用實體執行個體、關聯性圖形和查詢產生器篩選條件，探索和驗證 ontology。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image1.png)
+- 將 ontology 與 Fabric 資料代理程式（預覽）整合，以啟用自然語言查詢。
 
-1. 在右侧的**Create a workspace** 面板中，输入以下细节，然后点击**“Apply**”按钮。
+- 使用 Project Rayfin 建置、測試配套應用程式，並將其部署到 Fabric。
 
-    | Setting | Value |
-    |----------|----------|
-    | Name | +++Fabric IQ Ontology@lab.LabInstance.Id+++ |
-    | Advanced | Under **License mode**, select **Fabric capacity** |
-    | Default storage format | **Small dataset storage format** |
+**注意：** 本實驗的螢幕擷取畫面使用英文介面，因此步驟中的介面名稱（例如 **+ New workspace**、**Apply**）保留英文，方便您對照畫面操作。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image2.png)
+## 練習 1：環境設定
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image3.png)
+在本練習中，您將建立 Fabric 工作區、將範例銷售資料載入 Lakehouse，並將冷凍櫃遙測資料上傳到 Eventhouse。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image4.png)
+### 任務 1：建立 Fabric 工作區
 
+在此任務中，您將建立 Fabric 工作區。工作區包含本實驗所需的所有項目，包括 Lakehouse、Eventhouse、ontology 和資料代理程式。
 
-## 任务2：建造lakehouse
+1.  開啟瀏覽器，在網址列中輸入或貼上以下 URL：+++https://app.fabric.microsoft.com/+++，然後按 **Enter** 鍵，並使用以下認證登入。
 
-1. 点击导航栏中的 **+New item **按钮创建新lakehouse。
+| **使用者名稱** | **+++@lab.CloudPortalCredential(User1).Username+++** |
+|----|----|
+| **密碼** | **+++@lab.CloudPortalCredential(User1).Password+++** |
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image5.png)
+2.  在 **Workspaces** 窗格中，按一下 **+ New workspace** 圖格。
 
-1. 通過篩選並選擇 +++Lakehouse+++ 瓦片。
+![](./media/image1.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image6.png)
+3.  在右側出現的 **Create a workspace** 窗格中，輸入以下詳細資料，然後按一下 **Apply** 按鈕。
 
-1. 在**“New lakehouse**”对话框中，在 名称字段输入 +++IQ_Lakehouse+++，并**取消选择**lakehouse的模式。点击**“Create**”按钮，打开新的lakehouse。
+| **設定** | **值** |
+|----|----|
+| **Name** | +++Fabric IQ Ontology@lab.LabInstance.Id+++ |
+| **Advanced** | 在 **License mode** 下選取 **Fabric capacity** |
+| **Default storage format** | **Small dataset storage format** |
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image7.png)
+![](./media/image2.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image8.png)
+![](./media/image3.png)
 
-1. 你会看到一条通知，提示**Successfully created SQL endpoint**。
+![](./media/image4.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image9.png)
+### 任務 2：建立 Lakehouse
 
+1.  按一下導覽列中的 **+ New item** 按鈕，建立新的 Lakehouse。
 
-## 任务3：导入样本数据
+![](./media/image5.png)
 
-1. 在**IQ_Lakehouse**页面，点击**“Get data in your lakehouse**”部分，点击**下图所示的“Upload files”。**
+2.  篩選 +++Lakehouse+++ 並選取 **Lakehouse** 圖格。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image10.png)
+![](./media/image6.png)
 
-1. 在“Upload files”标签页中，点击文件下的文件夹
+3.  在 **New lakehouse** 對話方塊的 **Name** 欄位中輸入 +++IQ_Lakehouse+++，並**取消選取** **Lakehouse schemas**。按一下 **Create** 按鈕，並開啟新的 Lakehouse。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image11.png)
+![](./media/image7.png)
 
-1. 在虚拟机上浏览到 **C：\LabFiles\LabFiles**，然后选择**DimProducts.csv、DimStore.csv、FactSale.csv**和**Freezer.csv**文件，点击**Open** 按钮。
+![](./media/image8.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image12.png)
+4.  您會看到 **Successfully created SQL endpoint** 的通知。
 
-1. 然後，點擊**“Upload**”按鈕， 通過選擇“**Upload files**”對話框的**X**圖標關閉該對話框。
+![](./media/image9.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image13.png)
+### 任務 3：擷取範例資料
 
-    ![A screenshot of a upload box AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image14.png)
+1.  在 **IQ_Lakehouse** 頁面上，前往 **Get data in your lakehouse** 區段，然後按一下 **Upload files**。
 
-1. 點擊並選擇**Files**刷新。文件出现了。
+![](./media/image10.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image15.png)
+2.  在 **Upload files** 索引標籤上，按一下 **Files** 下方的資料夾圖示。
 
-1. 在**Lakehouse**页面，在资源管理器面板下选择**“Files**”。现在，将鼠标悬停在**DimProducts.csv**文件上。点击水平椭圆**（...）** 旁边**DimProducts.csv**。点击**“Load Table**”，然后选择**“New table**”。
+![](./media/image11.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image16.png)
+3.  在虛擬機器上瀏覽至 **C:\LabFiles\Lab1**，選取 **DimProducts.csv**、**DimStore.csv**、**FactSales.csv** 和 **Freezer.csv** 檔案，然後按一下 **Open** 按鈕。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image17.png)
+![](./media/image12.png)
 
-1. 在**“Load file to new table**”对话框中，点击**Load**按钮。
+4.  按一下 **Upload** 按鈕，然後選取 **X** 圖示關閉 **Upload files** 對話方塊。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image18.png)
+![](./media/image13.png)
 
-1. 现已成功创建了 **DimProducts** 表
+![](./media/image14.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image19.png)
+5.  選取 **Files**，檔案會出現在 Files 窗格中。
 
-1. 选择 **DimProducts** 表以预览数据。
+![](./media/image15.png)
 
-    >[!Note] 您可能需要多次點擊**Refresh** 按鈕以預覽數據。
+6.  在 **Explorer** 窗格中選取 **Files**。將滑鼠游標停留在 **DimProducts.csv** 檔案上，按一下旁邊的水平省略號 **(…)**，按一下 **Load Table**，然後選取 **New table**。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image20.png)
+![](./media/image16.png)
 
-1. 重複步驟7到9，將剩餘文件推入表格。
+![](./media/image17.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image21.png)
+7.  在 **Load file to new table** 對話方塊中，按一下 **Load** 按鈕。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image22.png)
+![](./media/image18.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image23.png)
+8.  **DimProducts** 資料表已成功建立。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image24.png)
+![](./media/image19.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image25.png)
+9.  選取 **DimProducts** 資料表以預覽資料。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image26.png)
+**注意：** 您可能需要按一下 **Refresh** 按鈕多次，才能預覽資料。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image27.png)
+![](./media/image20.png)
 
-1. 在左侧导航栏中，选择 **Fabric IQ Ontology**。
+10. 重複步驟 6 到 9，將其餘檔案（**DimStore.csv**、**FactSales.csv** 和 **Freezer.csv**）載入資料表。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image28.png)
+![](./media/image21.png)
 
+![](./media/image22.png)
 
-## 任务4：准备eventhouse
+![](./media/image23.png)
 
-请按照以下步骤将设备流数据文件上传到Eventhouse中的KQL database。
+![](./media/image24.png)
 
-1. 在 **Fabric IQ Ontology** 主页，选择 **+New item**，选择 **Eventhouse**。
+![](./media/image25.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image29.png)
+![](./media/image26.png)
 
-1. 将Eventhouse命名为 +++TelemetryDataEH+++，然后点击**“Create**”按钮。
+![](./media/image27.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image30.png)
+11. 從左側導覽列中，選取 **Fabric IQ Ontology@lab.LabInstance.Id** 工作區。
 
-1. Eventhouse在准备好时开放
+![](./media/image28.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image31.png)
+### 任務 4：準備 Eventhouse
 
-1. 通过选择KQL database名称打开。
+請依照以下步驟，將裝置串流資料檔案上傳到 Eventhouse 中的 KQL 資料庫。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image32.png)
+1.  在工作區頁面上，選取 **+ New item**，然後選取 **Eventhouse**。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image33.png)
+![](./media/image29.png)
 
-1. 在**KQL database**的下层功能区，点击**“Get data”**，然后选择**“Local file**”，将本地系统的文件上传到database。
+2.  將 Eventhouse 命名為 +++TelemetryDataEH+++，然後按一下 **Create** 按鈕。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image34.png)
+![](./media/image30.png)
 
-1. 选择将数据导入新表的目标选项，点击 + New table，并输入表名 +++FreezerTelemetry+++。
+3.  Eventhouse 準備就緒後會自動開啟。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image35.png)
+![](./media/image31.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image36.png)
+4.  選取 KQL 資料庫的名稱以開啟它。
 
-1. 选择目标表，然后拖拽文件，或点击*Browse for files*以上传数据。
+![](./media/image32.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image37.png)
+![](./media/image33.png)
 
-1. 在VM上浏览 **C:\LabFiles\Lab1**，然后选择***FreezerTelemetry*.csv**文件，点击**Open** 按钮。
+5.  在 **KQL database** 的下方功能區中，按一下 **Get data**，然後選取 **Local file**，從本機系統將檔案上傳到資料庫。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image38.png)
+![](./media/image34.png)
 
-1. 点击 **“Next**”按钮
+6.  選取將資料擷取到新資料表的選項，按一下 **+ New table**，然後輸入 +++FreezerTelemetry+++ 作為資料表名稱。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image39.png)
+![](./media/image35.png)
 
-1. 然后点击**“Finish**”按钮。
+![](./media/image36.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image40.png)
+7.  選取目的地資料表，然後拖放檔案，或按一下 **Browse for files** 上傳資料。
 
-1. 等待Data ingestion完成后，点击**Close**。
+![](./media/image37.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image41.png)
+8.  在虛擬機器上瀏覽至 **C:\LabFiles\Lab1**，選取 **FreezerTelemetry.csv** 檔案，然後按一下 **Open** 按鈕。
 
-1. 完成后，KQL database会显示**FreezerTelemetry**表：
+![](./media/image38.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image42.png)
+9.  按一下 **Next** 按鈕。
 
-1. 在左侧导航窗格选择**Fabric IQ Ontology**。
+![](./media/image39.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image43.png)
+10. 按一下 **Finish** 按鈕。
 
+![](./media/image40.png)
 
-# 练习 2：基于 OneLake 构建ontology
+11. 等待資料擷取完成，然後按一下 **Close**。
 
-## 任务1：创建ontology（预览）项目
+![](./media/image41.png)
 
-1. 在你的Fabric工作区中，选择 **+ New item**。搜索并选择 **Ontology (preview)** 项目。
+12. 完成後，KQL 資料庫會顯示 **FreezerTelemetry** 資料表。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image44.png)
+![](./media/image42.png)
 
-1. 输入 +++RetailSalesOntology+++ 作为 你的ontology **Name+++，然后选择+++Create**。
+13. 在左側導覽窗格中，選取 **Fabric IQ Ontology@lab.LabInstance.Id** 工作區。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image45.png)
+![](./media/image43.png)
 
-    > ** 提示：**
-    > Ontology名称可以包含数字、字母和下划线。不要使用空格或破折号。
+## 練習 2：從 OneLake 建置 ontology
 
-1. Ontology在准备好时才会打开。
+在本練習中，您將建立 ontology 項目、新增 Store、Products 和 SaleEvent 實體類型、將它們繫結到 Lakehouse 資料表，並在它們之間建立關聯性。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image46.png)
+### 任務 1：建立 Ontology（預覽）項目
 
-    > 接下來，根據Lakehouse表中的數據，創建實體類型、數據綁定和關係。
+1.  在您的 Fabric 工作區中，選取 **+ New item**。搜尋並選取 **Ontology (preview)** 項目。
 
+![](./media/image44.png)
 
-## 任務2：創建實體類型和data bindings
+2.  輸入 +++RetailSalesOntology+++ 作為 ontology 的 **Name**，然後按一下 **Create**。
 
-> 首先，創建實體類型。實體類型表示企業中的對象類型。這一步有三種實體類型：*Store*, *Products,*和*SaleEvent*。創建實體類型後，通過綁定源數據列在***IQ_Lakehouse***
-> lakehouse表中創建它們的屬性。
+![](./media/image45.png)
 
-### 添加第一entity類型（存儲）
+**提示：** Ontology 名稱可以包含數字、字母和底線，但不可使用空格或破折號。
 
-1. 在配置画布的顶部色带或中心，选择**Add entity type**。
+3.  Ontology 準備就緒後會自動開啟。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image47.png)
+![](./media/image46.png)
 
-1. 输入 +++Store+++ 作为您的实体类型名称，并选择**Add Entity Type**。
+接下來，您將根據 Lakehouse 資料表中的資料，建立實體類型、資料繫結和關聯性。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image48.png)
+### 任務 2：建立實體類型和資料繫結
 
-1. *Store* 实体类型被添加到配置画布中，**Entity type configuration** 面板可见。
+首先，建立實體類型。實體類型代表業務中的物件類型。此任務包含三種實體類型：*Store*、*Products* 和 *SaleEvent*。建立實體類型後，您將繫結 **IQ_Lakehouse** Lakehouse 資料表中的來源資料行，以建立它們的屬性。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image49.png)
+**新增第一個實體類型 (Store)**
 
-1. 在配置畫布中，選擇**......**在實體名稱旁邊選擇“**Bind data**”。
+1.  從頂端功能區或設定畫布的中央，選取 **Add entity type**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image50.png)
+![](./media/image47.png)
 
-1. 选择 **Add data binding \> Lakehouse table**。
+2.  輸入 +++Store+++ 作為實體類型的名稱，然後選取 **Add Entity Type**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image51.png)
+![](./media/image48.png)
 
-1. 接下来，选择你的data source。选择**IQ_Lakehouse** lakehouse，然后选择**Next**。
+3.  *Store* 實體類型會新增到設定畫布上，並顯示 **Entity type configuration** 窗格。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image52.png)
+![](./media/image49.png)
 
-1. 选择**dimstore**表并选择**“Select**”。
+4.  在設定畫布上，選取實體名稱旁的 **...**，然後選取 **Bind data**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image53.png)
+![](./media/image50.png)
 
-1. 源表中的字段填充data binding configuration。请查看configuration页面的各个部分：
+5.  選取 **Add data binding \> Lakehouse table**。
 
-    - **Entity類型鍵**：識別可用於唯一標識每條被攝取data記錄的字段。
-    - **結合選擇**: 識別包含綁定數據的源表。
-    - **Entity類型密鑰映射**：識別source
-    data表中映射到實體類型密鑰屬性的列。你可以從source data中選擇字符串列和整數列作為實體類型鍵。你選擇的列共同唯一標識一條記錄。
+![](./media/image51.png)
 
-    - **属性**：列出源数据中将作为*Store* entity类型属性表示的列。**Source
-    column** 端会自动填充来自*dimstore*表的列，**Property name** 端则在ontology中的*Store* entity类型中列出对应的属性名称 。在这个教程中，保留默认的属性名称。
+6.  選擇資料來源。選取 **IQ_Lakehouse** Lakehouse，然後按一下 **Next**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image54.png)
+![](./media/image52.png)
 
+7.  選取 **dimstore** 資料表，然後按一下 **Select**。
 
-1. 在configuration顶部选择**Define entity type key** 。
+![](./media/image53.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image55.png)
+8.  來源資料表中的欄位會填入資料繫結設定。請觀察設定頁面的各個區段：
 
-1. 從屬性列表中選擇**StoreId**，然後選擇**Save**。
+- **Entity type key**：識別可用來唯一識別每筆擷取資料記錄的欄位。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image56.png)
+- **Binding selection**：識別保存繫結資料的來源資料表。
 
-1. **保存**data binding。
+- **Entity type key mapping**：識別來源資料表中對應到實體類型索引鍵屬性的資料行。您可以選取來源資料中的字串和整數資料行作為實體類型索引鍵，所選的資料行會共同唯一識別一筆記錄。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image57.png)
+- **Properties**：列出來源資料中將作為 *Store* 實體類型屬性的資料行。**Source column** 一側會自動填入 *dimstore* 資料表的資料行，**Property name** 一側則列出 *Store* 實體類型中對應的屬性名稱。在本實驗中，請保留預設的屬性名稱。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image58.png)
+![](./media/image54.png)
 
-1. 確認entity類型已成功更新，然後選擇**Cancel **以關閉配置選項。
+9.  選取設定頂端的 **Define entity type key**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image59.png)
+![](./media/image55.png)
 
-1. 你会看到entity类型详情中的**Configure** 页面。本页展示了关于entity类型的重要信息，包括其属性和data bindings。查看你配置的data bindings。
+10. 從屬性清單中選取 **StoreId**，然後按一下 **Save**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image60.png)
+![](./media/image56.png)
 
-1. 选择 **“Home** ”返回configuration画布并添加新的entity类型。
+11. **Save** 資料繫結。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image61.png)
+![](./media/image57.png)
 
+![](./media/image58.png)
 
-### 添加其他entity类型（产品、SaleEvent）
+12. 確認實體類型已成功更新，然後選取 **Cancel** 關閉設定選項。
 
-1. 按照你为存**Store **entity类型所做的相同步骤 ，创建下表中描述的entity类型。每个entity都有一个静态data binding，与其源表的默认列相关联。
+![](./media/image59.png)
 
-    | Entity Type Name | Source Table in IQ_Lakehouse | Entity Type Key |
-    |------------------|------------------------------|-----------------|
-    | +++Products+++<br><br>**Note:** Use the plural form **Products** to avoid conflict with the GQL reserved word **PRODUCT**. | **dimproducts** | **ProductId** |
-    | +++SaleEvent+++ | **factsales** | **SaleId** |
+13. 您會看到實體類型詳細資料的 **Configure** 頁面。此頁面會顯示實體類型的重要資訊，包括其屬性和資料繫結。檢視您設定的資料繫結。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image62.png)
+![](./media/image60.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image63.png)
+14. 選取 **Home** 返回設定畫布，以新增其他實體類型。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image64.png)
+![](./media/image61.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image65.png)
+**新增其他實體類型 (Products、SaleEvent)**
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image66.png)
+15. 依照建立 **Store** 實體類型的相同步驟，建立下表所述的實體類型。每個實體都有一個靜態資料繫結，使用其來源資料表的預設資料行。請先建立 **Products**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image67.png)
+| **實體類型名稱** | **IQ_Lakehouse 中的來源資料表** | **實體類型索引鍵** |
+|----|----|----|
+| +++Products+++ | **dimproducts** | **ProductId** |
+| +++SaleEvent+++ | **factsales** | **SaleId** |
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image68.png)
+**注意：** 請使用複數形式 **Products**，以避免與 GQL 保留字 **PRODUCT** 衝突。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image69.png)
+![](./media/image62.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image70.png)
+![](./media/image63.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image71.png)
+![](./media/image64.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image72.png)
+![](./media/image65.png)
 
-1. 选择**“Home**”返回configuration画布并添加 **SaleEvent** entity类型。
+![](./media/image66.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image73.png)
+![](./media/image67.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image74.png)
+![](./media/image68.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image75.png)
+![](./media/image69.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image76.png)
+![](./media/image70.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image77.png)
+![](./media/image71.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image78.png)
+![](./media/image72.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image79.png)
+16. 選取 **Home** 返回設定畫布，並新增 **SaleEvent** 實體類型。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image80.png)
+![](./media/image73.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image81.png)
+![](./media/image74.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image82.png)
+![](./media/image75.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image83.png)
+![](./media/image76.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image84.png)
+![](./media/image77.png)
 
-1. 完成后，你会在**Entity Types** 面板中看到这些entity类型。
+![](./media/image78.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image85.png)
+![](./media/image79.png)
 
+![](./media/image80.png)
 
-## 任務3：創建關係類型
+![](./media/image81.png)
 
-接下來，創建實體類型之間的關係類型，以表示數據中的上下文連接。
+![](./media/image82.png)
 
-### 商店的SaleEvent
+![](./media/image83.png)
 
-1. 从Explorer中选择**SaleEvent**实体类型。
+![](./media/image84.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image86.png)
+17. 完成後，您會在 **Entity Types** 窗格中看到這些實體類型。
 
-1. 从菜单功能区选择**Add relationship**。
+![](./media/image85.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image87.png)
+### 任務 3：建立關聯性類型
 
-1. 输入以下关系类型详情，选择**Add relationship type**。
+接下來，在實體類型之間建立關聯性類型，以表示資料中的情境連結。
 
-    - **Relationship type name**: `from`
-    - **Source entity type**: *SaleEvent*
-    - **Target entity type**: *Store*
+**SaleEvent from Store**
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image88.png)
+1.  從 **Explorer** 中選取 **SaleEvent** 實體類型。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image89.png)
+![](./media/image86.png)
 
+2.  從功能區選取 **Add relationship**。
 
-1. 这种关系被加入semantic画布中。选择它以打开关系详情configuration。请查看configuration页面的各个部分：
+![](./media/image87.png)
 
-    - **Origin entity类型**：列出起源entity的详细信息（此处为
-    **SaleEvent**）。
+3.  輸入以下關聯性類型詳細資料，然後選取 **Add relationship type**。
 
-    - **關係類型**：設置關係類型的詳細信息。
-    - **目標entity類型**：列出目標entity的詳細信息（此處為**Store **）。
+| **Relationship type name** | +++from+++ |
+|----|----|
+| **Source entity type** | **SaleEvent** |
+| **Target entity type** | **Store** |
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image90.png)
+![](./media/image88.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image91.png)
+![](./media/image89.png)
 
+4.  關聯性會新增到畫布上。選取它以開啟關聯性詳細資料設定。請觀察設定頁面的各個區段：
 
-1. 在中間部分，請填寫以下細節。
+- **Origin entity type**：列出來源實體的詳細資料（此處為 **SaleEvent**）。
 
-1. **Mapping table**：**Browse available sources** 并选择**factsales**表。源数据中的该表可以将*Store* 实体和*SaleEvent*实体连接起来，因为它包含了两种实体类型的识别信息。表中的每一行通过ID指向一个门店和一个销售事件。
+- **Relationship type**：設定關聯性類型的詳細資料。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image92.png)
+- **Target entity type**：列出目標實體的詳細資料（此處為 **Store**）。
 
-1. **Matched SaleEvent: SaleId**: 选择**SaleId**。该设置指定关系源数据表中与*SaleEvent* entity定义的关键属性匹配的列 。在这种情况下，关系数据源和entity data源都使用*factsales*表，所以你选择的是同一个列（SaleId）。
+![](./media/image90.png)
 
-1. **Matched Store: StoreId**: 选择**StoreId**。该设置指定关系源数据表 (*factsales \>* StoreId) 中值与*Store* entity*（*dimstore \> *StoreId ）定义的关键属性匹配* 的列。在教程数据中，两个表的列名（StoreId）是相同的。
+![](./media/image91.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image93.png)
+5.  在中間區段的 **Mapping table** 中，選取 **Browse available sources**，然後選取 **factsales** 資料表。此資料表包含兩種實體類型的識別資訊，因此可以將 *Store* 和 *SaleEvent* 實體連結在一起。資料表中的每一列都會依 ID 參考一個門市和一個銷售事件。
 
-    重要提示：**確保選擇 與entity 類型**匹配**的匹配列，關鍵屬性。
+![](./media/image92.png)
 
-1. **保存**关系类型。确认关系类型已成功更新，然后选择**Cancel **关闭configuration选项。
+6.  在 **Matched SaleEvent: SaleId** 中，選取 **SaleId**。此設定指定關聯性來源資料表中，其值與 *SaleEvent* 實體所定義之索引鍵屬性相符的資料行。在此案例中，關聯性資料來源和實體資料來源都使用 *factsales* 資料表，因此您選取的是相同的資料行 (SaleId)。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image94.png)
+7.  在 **Matched Store: StoreId** 中，選取 **StoreId**。此設定指定關聯性來源資料表（*factsales \> StoreId*）中，其值與 *Store* 實體所定義之索引鍵屬性（*dimstore \> StoreId*）相符的資料行。在實驗資料中，兩個資料表的資料行名稱 (StoreId) 相同。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image95.png)
+![](./media/image93.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image96.png)
+**重要：** 請務必選取與實體類型索引鍵屬性相符的正確 **Matched** 資料行。
 
-    > 現在第一個關係被創建，並綁定到源表中的數據。繼續進入下一部分，創建另一種關係類型。
+8.  **Save** 關聯性類型。確認關聯性類型已成功更新，然後選取 **Cancel** 關閉設定選項。
 
+![](./media/image94.png)
 
-### SaleEvent 销售产品
+![](./media/image95.png)
 
-1. 选择**“Home**”返回配置画布，在那里你可以添加新的entity类型。
+![](./media/image96.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image97.png)
+第一個關聯性現在已建立，並繫結到來源資料表中的資料。
 
-1. 按照你在第一种关系类型中使用的相同步骤，从**SaleEvent** entity类型创建第二种关系，具体细节如下表所述。
+**SaleEvent sold Products**
 
-    | Relationship Type Name | Origin Entity Type | Target Entity Type | Mapping Table | Matched SaleEvent: SaleId | Matched Products: ProductId |
-    |------------------------|-------------------|-------------------|---------------|--------------------------|----------------------------|
-    | `sold` | `SaleEvent` | `Products` | `factsales` | `SaleId` | `ProductId` |
+9.  選取 **Home** 返回設定畫布。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image98.png)
+![](./media/image97.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image99.png)
+10. 依照建立第一個關聯性類型的相同步驟，從 **SaleEvent** 實體類型建立第二個關聯性，詳細資料如下表所示。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image100.png)
+| **Relationship type name** | **Origin entity type** | **Target entity type** | **Mapping table** | **Matched SaleEvent: SaleId** | **Matched Products: ProductId** |
+|----|----|----|----|----|----|
+| +++sold+++ | SaleEvent | Products | factsales | SaleId | ProductId |
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image101.png)
+![](./media/image98.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image102.png)
+![](./media/image99.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image103.png)
+![](./media/image100.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image104.png)
+![](./media/image101.png)
 
+![](./media/image102.png)
 
-# 練習3：用額外數據豐富ontology
+![](./media/image103.png)
 
-在這個練習中，你通過添加一個新的***Freezer*** entity類型來豐富你的ontology。該實體類型增加了更多的領域上下文，並引入了反映實時運營信息的時間序列數據屬性。
+![](./media/image104.png)
 
-### 注釋
+## 練習 3：以其他資料擴充 ontology
 
-對於靜態和時間序列數據，你可以創建屬性而無需綁定數據，之後再綁定數據，或者在一步驟內創建屬性並綁定數據。本文展示了這兩種方法。
+在本練習中，您將新增 **Freezer** 實體類型來擴充 ontology。此實體類型會增加更多領域情境，並引入時間序列資料的屬性，以反映即時營運資訊。最後，您會建立新的關聯性類型，以表示門市與其冷凍櫃之間的連結。
 
-最後，你創建一個新的關係類型來表示商店與其freezers之間的連接。
+**注意：** 對於靜態和時間序列資料，您可以先建立屬性、稍後再繫結資料，也可以在單一步驟中建立屬性並繫結資料。本練習會示範這兩種方法。
 
-## 任務1：創建Freezer entity類型並添加屬性
+### 任務 1：建立 Freezer 實體類型並新增屬性
 
-按照以下步驟創建*Freezer* entity類型並為其添加屬性。屬性還沒有綁定到數據上。
+請依照以下步驟建立 *Freezer* 實體類型並新增屬性。這些屬性尚未繫結到資料。
 
-1. 从顶部的色带中选择**Add entity type**。输入 +++Freezer+++ 作为你的实体类型名称，然后选择 **Add Entity Type**。
+1.  從頂端功能區選取 **Add entity type**。輸入 +++Freezer+++ 作為實體類型的名稱，然後選取 **Add Entity Type**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image105.png)
+![](./media/image105.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image106.png)
+![](./media/image106.png)
 
-1. 在资源管理器中选择**Explorer** entity体类型后，从顶部色带选择“**View entity type details**”。
+2.  在 **Explorer** 中選取 **Freezer** 實體類型後，從頂端功能區選取 **View entity type details**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image107.png)
+![](./media/image107.png)
 
-1. 此時會打開實體類型詳細信息的“**Configure**”頁面。此页面会显示有关entity类型的重要信息，包括其属性和data bindings。
+3.  實體類型詳細資料的 **Configure** 頁面隨即開啟。展開 **Manage property bindings**，然後選取 **Add properties**。
 
-    展开**“Manage property bindings”**，然后选择 **Add properties**。
+![](./media/image108.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image108.png)
+4.  新增以下屬性，然後按一下 **Save**。
 
-1. 添加以下屬性並選擇**Save**。
+| **名稱** | **屬性類型** |
+|----|----|
+| +++FreezerId+++ | String |
+| +++Model+++ | String |
+| +++minSafeTempC+++ | Double |
+| +++StoreId+++ | String |
 
-    | Name | Property Type |
-    |------|---------------|
-    | `FreezerId` | `String` |
-    | `Model` | `String` |
-    | `minSafeTempC` | `Double` |
-    | `StoreId` | `String` |
+![](./media/image109.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image109.png)
+**注意：** 屬性名稱在所有實體類型中必須是唯一的。
 
-    **注意：** 物業名稱必須在所有 entity類型中唯一。
+![](./media/image110.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image110.png)
+5.  屬性會新增到 **Configure** 頁面，且尚未繫結到任何資料來源。
 
-1. 属性会被添加到**Configure **页面，且不受绑定到任何data source。
+![](./media/image111.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image111.png)
+### 任務 2：將靜態資料繫結到屬性
 
+接下來，將靜態資料繫結到您在 *Freezer* 實體類型上建立的屬性。
 
-## 任務2：將靜態數據綁定到屬性
+1.  展開 **Manage property bindings**，然後選取 **Add binding and properties**。
 
-接下來，將靜態數據綁定到你在*Freezer* entity類型上創建的屬性。
+![](./media/image112.png)
 
-1. 展开**“Manage property bindings”**，选择**Add binding and properties**。
+2.  選取 **Add data binding \> Lakehouse table**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image112.png)
+![](./media/image113.png)
 
-1. 选择 **Add data binding \> Lakehouse table**。
+3.  選擇資料來源。選取 **IQ_Lakehouse** Lakehouse 並按一下 **Next**，然後選取 **freezer** 資料表並按一下 **Select**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image113.png)
+![](./media/image114.png)
 
-1. 选择你的 data source。
+![](./media/image115.png)
 
-    - 选择 **IQ_Lakehouse** lakehouse，然后选择 **Next**。
-    - 选择 **freezer** 柜台并 **Select**。
+4.  來源資料表中的欄位會填入資料繫結設定。與 Store 實體類型相同，請檢閱 **Entity type key**、**Binding selection**、**Entity type key mapping** 和 **Properties** 區段。**Source column** 一側會自動填入 **freezer** 資料表的資料行，**Property name** 一側則列出 **Freezer** 實體類型中對應的屬性名稱。在本實驗中，請保留預設的屬性名稱。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image114.png)
+![](./media/image116.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image115.png)
+5.  選取設定頂端的 **Define entity type key**。從屬性清單中選取 **FreezerId**，然後按一下 **Save**。
 
+![](./media/image117.png)
 
-1. 源表中的字段填充data binding configuration。请查看configuration页面的各个部分：
+![](./media/image118.png)
 
-    - **Entity類型鍵**：識別可用於唯一標識每條被攝取數據記錄的字段。
-    - **Binding選擇**：識別存放綁定data的源表。
-    - **Entity類型密鑰映射**：識別源數據表中映射到entity類型密鑰屬性的列。你可以從源數據中選擇字符串列和整數列作為entity類型鍵。你选择的列共同唯一标识一条记录。
-    - **屬性**：列出源數據中的列及**Freezer** entity類型對應的屬性。**源端**會自動填充來自**freezer** 表的列，**屬性名**稱端則在ontology中的**Freezer** entity類型中列出對應的屬性名稱
-    。在這個教程中，保留默認的屬性名稱。
+6.  **Save** 資料繫結。確認實體類型已成功更新，然後選取 **Cancel** 關閉設定選項。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image116.png)
+![](./media/image119.png)
 
+![](./media/image120.png)
 
-1. 在配置顶部选择**Define entity type key+++。从属性列表中选择FreezerId，然后选择+++Save**。
+### 任務 3：將時間序列資料繫結到其他屬性
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image117.png)
+接下來，在單一資料繫結作業中建立新屬性並繫結時間序列資料，為 **Freezer** 實體新增時間序列資料。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image118.png)
+1.  在 **Configure** 頁面上，展開 **Manage property bindings**，再次選取 **Add binding and properties** 以重新開啟繫結設定。
 
-1. **保存**data binding。确认实体类型已成功更新，然后选择**Cancel** 以关闭configuration选项。
+![](./media/image121.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image119.png)
+2.  在 **Binding selection** 下，展開 **Add data binding**，然後選取 **Eventhouse table or materialized view**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image120.png)
+![](./media/image122.png)
 
+3.  選擇資料來源。選取 **TelemetryDataEH** Eventhouse，然後按一下 **Add**。
 
-## 任務3：將時間序列數據綁定到附加屬性
+![](./media/image123.png)
 
-接下来，通过创建一个新属性并在单一data binding操作中绑定时间序列 data，在 **Freezer **entity上添加时间序列 data。
+4.  選取 **FreezerTelemetry** 資料表，然後按一下 **Add**。
 
-1. 在**Configure** 页面，展开**“Manage property bindings”**，再次选择**Add binding and properties** 以重新打开binding configuration。
+![](./media/image124.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image121.png)
+5.  設定中會出現 **Timeseries data** 區段。在 **Timestamp column** 中，選取 **timestamp**。
 
-1. 在**“Binding”选择中**，展开**“Add data binding”**，然后选择 **Eventhouse table or materialized view**。
+![](./media/image125.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image122.png)
+6.  向下捲動到 **Properties** 區段，**StoreId** 會顯示錯誤，因為它已在靜態資料繫結中繫結。使用垃圾桶圖示刪除重複的屬性。
 
-1. 选择你的data source。
+![](./media/image126.png)
 
-    1. 选择 **TelemetryDataEH** eventhouse并选择**Add**。
+7.  **Save** 資料繫結。確認實體類型已成功更新，然後選取 **Cancel** 關閉設定選項。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image123.png)
+![](./media/image127.png)
 
-1. 选择**FreezerTelemetry**表并**Add**。
+![](./media/image128.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image124.png)
+8.  回到 *Freezer* 的 **Configure** 頁面，請注意現在有更多實體類型屬性，而新的屬性都繫結到 *FreezerTelemetry* 資料來源。
 
-1. 配置中会出现**Timeseries data** 部分。对于**Timestamp column**，选择timestamp
+![](./media/image129.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image125.png)
+現在 *Freezer* 實體有兩個資料繫結：一個是來自 *freezer* Lakehouse 資料表的靜態資料，另一個是來自 *FreezerTelemetry* Eventhouse 資料表的串流資料。
 
-1. 向下滾動到**Properties**部分，**StoreId**顯示錯誤，因為它已經被綁定在靜態數據綁定中。用垃圾桶圖標刪除重複的屬性。
+### 任務 4：新增 Store operates Freezer 關聯性類型
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image126.png)
+最後，建立新的關聯性類型，以表示門市與其冷凍櫃之間的連結。
 
-1. **保存**data binding。确认entity类型已成功更新，然后选择**Cancel** 以关闭配置选项。
+1.  在 **Configure** 頁面上，展開 **Manage relationships**，然後選取 **Add new relationship**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image127.png)
+![](./media/image130.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image128.png)
+2.  輸入以下關聯性類型詳細資料，然後選取 **Add relationship type**。
 
-1. 回到 **Configure** 页面為 *Freezer*，注意到现在有了更多entity类型属性，而且新的属性都绑定到了 *FreezerTelemetry* 数据源。
+| **Relationship type name** | +++operates+++ |
+|----|----|
+| **Source entity type** | **Store** |
+| **Target entity type** | **Freezer** |
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image129.png)
+![](./media/image131.png)
 
-    现在 *Freezer* entity有两个data bindings：一个是来自 *Freezer* Lakehouse 表的静态数据，另一个是来自 *FreezerTelemetry* eventhouse 表的流data。
+3.  關聯性會新增到 **Relationships** 區段。在畫布上選取 **operates** 關聯性，以開啟關聯性詳細資料設定。請觀察 **Origin entity type**（*Store*）、**Relationship type** 和 **Target entity type**（*Freezer*）區段。
 
+![](./media/image132.png)
 
-## 任务4：添加关系类型
+![](./media/image133.png)
 
-最後，創建一個新的關係類型來表示商店與其freezers之間的連接。
+4.  在中間區段中輸入以下詳細資料：
 
-### Create Store 运营 Freezer
+- **Mapping table**：選取 **freezer** 資料表。資料表中的每一列都會依 ID 參考一個門市和一個冷凍櫃，因此可以將 **Store** 和 **Freezer** 實體連結在一起。
 
-1. 在 **Configure** 页面，展开“Manage relationships”并选择 **Add new relationship**。
+- **Matched Store: StoreId**：選取 **StoreId**。此資料行（*freezer \> StoreId*）與 *Store* 實體所定義的索引鍵屬性（*dimstore \> StoreId*）相符。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image130.png)
+- **Matched Freezer: FreezerId**：選取 **FreezerId**。關聯性資料來源和實體資料來源都使用 *freezer* 資料表，因此您選取的是相同的資料行 (FreezerId)。
 
-1. 输入以下关系类型详情，选择**Add relationship type**。
+![](./media/image134.png)
 
-    1. **Relationship type name**: *operates*
+**重要：** 請務必選取與實體類型索引鍵屬性相符的正確來源資料行。
 
-    1. **Source entity type**: *Store*
+5.  **Save** 關聯性類型。確認關聯性類型已成功更新，然後選取 **Cancel** 關閉設定選項。
 
-    1. **Target entity type**: *Freezer*
+![](./media/image135.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image131.png)
+![](./media/image136.png)
 
-1. 该关系被添加到**“Relationships”**部分。在画布上选择 **operates** 关系以打开关系详情 configuration。请查看 configuration 页面的各个部分：
+6.  在實體的 **Configure** 頁面上，新的關聯性會顯示在 **Relationships** 區段中。
 
-    - **Origin entity type**: 列出源 entity 的详细信息（此处为 *Store*）。
-    - **Relationship type**: 列出关系类型的详细信息。
-    - **Target entity type**: 列出目标 entity 的详细信息（此处指
-    *Freezer*）。
+![](./media/image137.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image132.png)
+## 練習 4：檢視 ontology
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image133.png)
+在本練習中，您將使用預覽體驗探索 ontology。您會檢查以資料將實體類型具體化的實體執行個體，並探索跨銷售和裝置串流資料的圖形情境。
 
+### 任務 1：檢視執行個體清單和靜態資料
 
-1. 在中間部分，請填寫以下細節。
+在先前的練習中將資料繫結到實體類型時，ontology 會自動建立與來源資料列繫結的實體執行個體。在此任務中，您將檢視這些實體執行個體。
 
-    - **Mapping
-    table**：选择**freezer** 台。源数据中的该表可以将*Store*和*Freezer* *entity* 连接起来，因为它包含了两种entity 类型的识别信息。表中的每一行通过ID指向一个商店和一个freezer。
+1.  從 ontology 的 **Home** 設定畫布開始。選取 **SaleEvent** 實體類型，然後從頂端功能區選取 **View entity type details**。
 
-    - **Matched Store:
-    StoreID**：选择**StoreId**。该设置指定关系源数据表（*freezer \>* StoreId）中与存储 *entity（*dimstore \> *StoreId ）*定义的关键属性匹配的列。在教程 data中，两个表的列名（StoreId）是相同的。
+![](./media/image138.png)
 
-    - **Matched Freezer: FreezerId**: 选择**FreezerId。**
-    该设置指定关系源数据表中与Freezer entity的关键属性匹配的列 。在这种情况下，关系数据源和entity data source都使用*了freezer* 表，所以你选择的是同一个列（FreezerId）。
+2.  開啟 **Instances** 索引標籤。確認它顯示六個實體執行個體，其中的資料（例如營收和單位數量）來自 **factsales** Lakehouse 資料表。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image134.png)
+![](./media/image139.png)
 
-    ** 重要提示：** 確保選擇與 entity類型關鍵屬性匹配的正確源列。
+### 任務 2：檢視時間序列資料
 
+1.  在頁面左上角，使用實體類型名稱旁的選取器切換到 **Freezer** 實體類型。
 
-1. **保存**关系类型。确认关系类型已成功更新，然后选择**Cancel** 关闭configuration选项。
+![](./media/image140.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image135.png)
+2.  開啟 **Overview** 索引標籤。由於預設的時間範圍 **Last 30 days** 不包含任何資料，因此索引標籤載入時圖表是空的。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image136.png)
+![](./media/image141.png)
 
-1. 你会看到实体的**Configure** 页面，更新后的关系仍可见于 **Relationships** 部分。
+3.  將時間範圍從預設的 **Last 30 days** 更新為自訂日期範圍：開始於 **Fri Aug 01 2025 12:00 AM**，結束於 **Mon Aug 04 2025 12:00 AM**，**Time granularity** 設為 **5 minutes**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image137.png)
+![](./media/image142.png)
 
+4.  觀察在您所選的時間範圍內，多個 **Freezer** 實體執行個體現在可見的時間序列資料。
 
-# 練習4： 查看ontology
+![](./media/image143.png)
 
-在這個練習中，利用預覽體驗探索你的ontology。檢查那些用數據實例化實體類型的entity實例，探索銷售和設備流數據中的圖形上下文。
+### 任務 3：檢視 ontology 圖形
 
-## 任務1： 查看實例列表和靜態數據
+**Overview** 索引標籤也包含 **Relationship graph**，可讓您以節點和邊緣的圖形視覺化 ontology。
 
-當你在之前的教程步驟中將數據綁定到entity類型時，ontology會自動創建這些實體的實例，這些實例與源數據行綁定。在本節中，你使用預覽體驗來查看這些實體實例。
+1.  使用實體類型選取器切換到 **SaleEvent** 實體類型。在 **Relationship graph** 圖格中，選取 **Expand**。
 
-1. 从ontology的 Home configuration画布开始。选择**SaleEvent** entity类型，并 从顶部丝带查看 **View Entity Type details**。
+![](./media/image144.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image138.png)
+2.  展開的圖形檢視隨即開啟。觀察從 **SaleEvent** 實體類型到 **Products** 和 **Store** 的關聯性詳細資料。
 
-1. 打开**Instances** 标签页。确认它显示六个实体实例，数据来自**Factsales** lakehouse表，如收入和单位数量。
+![](./media/image145.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image139.png)
+3.  使用實體類型選取器切換到 **Store** 實體類型，並展開其 **Relationship graph**。
 
+![](./media/image146.png)
 
-## 任務2：查看時間序列數據
+4.  在圖形中，觀察 **Store** 與 **Freezer** 和 **SaleEvent** 之間的關聯性。然後，在查詢產生器功能區中選取 **Run query**。此動作會執行預設查詢，並顯示實體執行個體及其連結的圖形。
 
-1. 在頁面左上角，使用實體類型名稱旁的選擇器切換到**Freezer** entity類型。
+![](./media/image147.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image140.png)
+![](./media/image148.png)
 
-1. 打开“**Overview**”标签页。标签页加载的是空白图表，因为默认的时间范围“**Last 30 days** ”不包含任何data。
+![](./media/image149.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image141.png)
+### 任務 4：查詢圖形執行個體
 
-1. 将时间范围从默认的 **Last 30 days** 更新为自定义日期范围，该时间范围从**2025年8月1日星期五凌晨12：00开始，**到**2025年8月4日星期一凌晨12：00**结束，**Time granularity** 为**5分钟**。
+在關聯性圖形檢視中，您可以查詢符合特定條件的實體執行個體。使用頂端功能區中的 **Query builder** 篩選條件來建立查詢。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image142.png)
+![](./media/image150.png)
 
-1. 觀察你選擇的時間窗口內多個**Freezer **entity實例現在可見的時間序列 data。
+首先，建立這個查詢：**顯示巴黎門市營運的所有冷凍櫃。**
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image143.png)
+1.  在 *Store* 實體的關聯性圖形中，從查詢產生器功能區選取 **Add filter \> Store \> StoreId**。將篩選條件設為 **StoreId = +++S-PAR-01+++**。此值是巴黎門市的門市 ID。
 
+![](./media/image151.png)
 
-## 任务3： 查看Ontology图
+![](./media/image152.png)
 
-**“Overview**”标签还包含**Relationship graph**，你可以用它在节点和边的图中可视化你的ontology。
+2.  在 **Components** 區段中，取消勾選 **SaleEvent**，只勾選 **Nodes \> Store**、**Nodes \> Freezer** 和 **Edges \> operates**。
 
-1. 使用entity类型选择器切换到**SaleEvent** entity类型。在**Relationship graph** tile中，选择**“Expand**”。
+![](./media/image153.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image144.png)
+3.  選取 **Run query**，並確認執行個體圖形顯示兩台冷凍櫃連結到 **Paris** 門市。
 
-1. 他擴展了圖視圖的打開。观察从**SaleEvent** entity类型到**Products**和**Store**之间的关系细节。
+![](./media/image154.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image145.png)
+![](./media/image155.png)
 
-1. 使用entity类型选择器切换到**Store **entity类型。 **扩展** 其 **relationship graph。**
+4.  選取 **Clear query** 以清除查詢結果。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image146.png)
+![](./media/image156.png)
 
-1. 在圖表中，觀察**Store**與**Freezer**和**SaleEvent**之間的關係。然後，在查詢構建功能區選擇**“Run query**”。此操作運行默認查詢，並顯示實體實例及其連接的圖
+接下來，建立這個查詢：**顯示所有曾有營收大於 150 之銷售的門市。**
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image147.png)
+5.  選取 **Add a node**，並新增 **SaleEvent** 節點。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image148.png)
+![](./media/image157.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image149.png)
+6.  在 **Components** 區段中，勾選 **Nodes \> Store** 和 **Edges \> from** 旁的方塊，將它們新增到圖形中。
 
+![](./media/image158.png)
 
-## 任務4：查詢圖實例
+7.  從查詢產生器功能區選取 **Add filter \> SaleEvent \> RevenueUSD**。將篩選條件設為 **RevenueUSD \> +++150+++**。
 
-在關係圖視圖中，你可以查詢符合特定條件的entity實例。使用顶部功能区的**Query builder** 过滤器来创建查询。
+![](./media/image159.png)
 
-![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image150.png)
+![](./media/image160.png)
 
-首先，設計這個問題：*顯示巴黎門店運營的所有freezers。*
+8.  選取 **Run query**，並確認執行個體圖形顯示兩家門市，其相關銷售事件符合篩選條件。您也可以選取圖形中的節點，以取得特定銷售事件的詳細資料。
 
-1. 在*Store* entity的关系图中，从查询构建器功能区选择 **Add filter \> Store \> StoreId** 。设置 **StoreID = S-PAR-01** 的过滤器。这个值是巴黎门店的门店ID。
+![](./media/image161.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image151.png)
+![](./media/image162.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image152.png)
+此流程可讓您檢查將營運問題（例如某些門市的冷凍櫃溫度升高）與業務成果（銷售）連結起來的路徑。
 
-1. 在**Components**部分取消勾选*SaleEvent*，只勾选 **Nodes \> Store**, **Nodes \> Freezer**和 **Edges \> operates**。
+## 練習 5：從資料代理程式使用 ontology
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image153.png)
+Ontology（預覽）與 [Fabric 資料代理程式（預覽）](https://learn.microsoft.com/en-us/fabric/data-science/concept-data-agent)整合，可讓您以自然語言提問，並取得以 ontology 的定義和繫結為基礎的答案。
 
-1. 選擇**Run query**，確認實例圖顯示兩台freezers連接到*巴黎*商店。
+### 任務 1：建立以 ontology（預覽）為來源的資料代理程式
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image154.png)
+1.  在左側導覽窗格中，按一下 **Fabric IQ Ontology@lab.LabInstance.Id** 工作區。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image155.png)
+![](./media/image163.png)
 
-1. 选择**Clear query**以清除查询结果。
+2.  在工作區頁面上，選取 **+ New item**。在 **Filter by item type** 搜尋方塊中輸入 +++data agent+++，然後選取 **Data agent**。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image156.png)
+![](./media/image164.png)
 
-    接下來，設計這個問題：*顯示所有銷售額超過150的商店。*
+3.  輸入 +++RetailOntologyAgent+++ 作為資料代理程式名稱，然後按一下 **Create**。
 
-1. 选择**Add a node**，添加**SaleEvent**节点。
+![](./media/image165.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image157.png)
+4.  在 **RetailOntologyAgent** 頁面上，選取 **Add a data source**。
 
-1. 在**Components**部分，勾选 **Nodes \> Store Edges \> from** 的框，将它们添加到图中。
+![](./media/image166.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image158.png)
+5.  在 **OneLake catalog** 索引標籤上，選取 **RetailSalesOntology** ontology，然後按一下 **Add**。
 
-1. 在query builder功能区中，选择 **Add filter \> SaleEvent \> RevenueUSD**。将过滤器设置为 +++RevenueUSD \> 150+++。
+![](./media/image167.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image159.png)
+6.  代理程式準備就緒後會自動開啟。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image160.png)
+![](./media/image168.png)
 
-1. 選擇**Run query**，並驗證實例圖是否顯示兩家門店符合其關聯銷售事件的篩選條件。你也可以選擇圖表中的節點，查看具體促銷活動的詳細信息
+### 任務 2：提供代理程式指示
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image161.png)
+**注意：** 新增此步驟是為了因應影響查詢彙總的已知問題。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image162.png)
+1.  從功能區選取 **Agent instructions**。
 
-    這個流程可以讓你檢查將運營問題（比如某些門店freezer溫度升高）與業務成果（銷售）聯繫起來的路徑。
+![](./media/image169.png)
 
+2.  在輸入方塊底部新增 +++Support group by in GQL+++。此指示可改善 ontology 資料的彙總。
 
-# 练习 5：从代理中获取ontology
+![](./media/image170.png)
 
-Ontology（预览）与 [Fabric 数据代理（预览版）](https://learn.microsoft.com/en-us/fabric/data-science/concept-data-agent)集成，允许你用自然语言提问，并基于Ontology的定义和绑定获得答案。
+3.  指示會自動套用。您可以選擇關閉 **Agent instructions** 索引標籤。
 
-## 任務 1：創建具有ontology（預覽）源的數據代理
+![](./media/image171.png)
 
-按照以下步驟創建一個新的data代理，連接到你的ontology（預覽）項目。
+### 任務 3：以自然語言查詢代理程式
 
-1. 现在，点击左侧导航窗格上的 **Fabric IQ Ontology XX**。
+接下來，以自然語言問題探索您的 ontology。
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image163.png)
+1.  輸入以下文字，然後按一下 **Submit** 圖示。
 
-1. 在**Fabric**主页，选择 **+New item。** 在“按项目类型筛选”搜索框中，输入 +++data agent+++ 并选择 Data agent
+> +++For each store, show any freezers operated by that store that ever had a humidity lower than 46 percent.+++
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image164.png)
+![](./media/image172.png)
 
-1. 输入 +++RetailOntologyAgent+++ 作为数据代理名称，并选择**Create**。
+![](./media/image173.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image165.png)
+2.  輸入以下文字，然後按一下 **Submit** 圖示。
 
-1. 在 **RetailOntologyAgent** 页面中，选择**Add a data source**
+> +++What is the top product by revenue across all stores?+++
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image166.png)
+![](./media/image174.png)
 
-1. 在 OneLake catalog标签页中，选择 **RetailSalesOntology** Ontology，并选择 **Add。**
+![](./media/image175.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image167.png)
+3.  請注意，回應會參考實體類型（**Store**、**Products**、**Freezer**）及其關聯性，而不只是原始資料表。
 
-    > 當代理準備好時，門就會打開。
+![](./media/image176.png)
 
-    ![](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image168.png)
+**提示：** 如果執行範例查詢時看到沒有資料的錯誤，請等待幾分鐘，讓代理程式有更多時間初始化，然後再次執行查詢。
 
-
-## 任務2：提供代理指令
-
-** 注釋：** 此步驟是針對已知影響查詢聚合的問題而添加的。
-
->接下來，向代理添加自定義指令。
-
-1. 从菜单功能区选择**Agent instructions**。
-
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image169.png)
-
-1. 在输入框底部添加+++Support group by in GQL+++。此指令可以更好地聚合ontology data。
-
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image170.png)
-
-1. 指令是自动执行的。可选地，关闭**Agent instructions** 标签页。
-
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image171.png)
-
-
-## 任務3：帶自然語言的查詢代理
-
-> 接下来，用自然语言问题探索你的ontology。
-
-1. 輸入以下文字，點擊下圖所示的 **Submit圖標。**
-
-    `For each store, show any freezers operated by that store that ever had a humidity lower than 46 percent.`
-
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image172.png)
-
-    ![A screenshot of a chat AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image173.png)
-
-1. 輸入以下文字，點擊下圖所示的**Submit圖標**。
-
-    *+++What is the top product by revenue across all stores?+++*
-
-    ![A screenshot of a chat AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image174.png)
-
-    ![A screenshot of a chat AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image175.png)
-
-    > 注意，这些响应引用的是实体类型（*Store*, *Products*, *Freezer*）及其关系，而不仅仅是原始表。
-
-    ![Screenshot of the result of a query.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image176.png)
-
-    > ** 提示：**
-    > 如果你在運行示例查詢時看到錯誤提示無數據，建議等幾分鐘，給代理更多時間初始化。然後，再次運行查詢。
-    >
-    > 繼續探索數據代理，嘗試一些你自己的提示。
-
-
-# 實驗 4：練習 6 - 使用 Project Rayfin 建置並測試配套應用程式
-
-**注意：** 本練習的螢幕擷取畫面使用英文介面，因此步驟中的介面名稱（例如 **Allow**、**Sign in with Microsoft**）保留英文，方便你對照畫面操作。
+繼續嘗試您自己的提示，探索資料代理程式。
 
 ## 練習 6：使用 Project Rayfin 建置並測試配套應用程式
 
-在本練習中，你將使用 Project Rayfin 建立 Todo 應用程式的架構、在本機執行，並將它部署到你的 Fabric 工作區。
+在本練習中，您將使用 Project Rayfin 建立 Todo 應用程式的架構、在本機執行，並將它部署到您的 Fabric 工作區。
 
-### 工作 1：在本機建置並測試應用程式
+### 任務 1：在本機建置並測試應用程式
 
 1.  開啟**檔案總管**，前往 **C:\\** 磁碟機，按一下工具列上的 **New**，選取 **Folder**，輸入 +++Lab4+++ 作為資料夾名稱，然後按 **Enter**。
 
-![](./media/a1.png)
+![](./media/image177.png)
 
 2.  在 Windows 搜尋方塊中輸入 +++Visual Studio Code+++，然後按一下 **Visual Studio Code**。
 
-![](./media/a2.png)
+![](./media/image178.png)
 
 3.  在 Visual Studio Code 對話方塊中，按一下 **Allow** 以繼續 Microsoft 驗證流程。
 
-![](./media/a3.png)
+![](./media/image179.png)
 
 4.  在 **Sign in** 視窗中，選取 **Work or school account**，然後按一下 **Continue**。
 
-![](./media/a4.png)
+![](./media/image180.png)
 
 5.  使用以下認證登入。
 
@@ -876,19 +835,19 @@ Ontology（预览）与 [Fabric 数据代理（预览版）](https://learn.micro
 |----|----|
 | **密碼** | **+++@lab.CloudPortalCredential(User1).Password+++** |
 
-![](./media/a5.png)
+![](./media/image181.png)
 
-![](./media/a6.png)
+![](./media/image182.png)
 
 6.  在 Visual Studio Code 中，按一下 **More Actions (...)** 功能表，選取 **Terminal**，然後選擇 **New Terminal** 以開啟新的整合式終端機視窗。
 
-![](./media/a7.png)
+![](./media/image183.png)
 
 7.  在終端機中，瀏覽至 **Lab4** 目錄。
 
 > +++cd C:\Lab4+++
 
-![](./media/a8.png)
+![](./media/image184.png)
 
 8.  執行以下命令，使用 **\[Experimental\] Todo app with full local dev** 範本建立應用程式架構。
 
@@ -896,15 +855,15 @@ Ontology（预览）与 [Fabric 数据代理（预览版）](https://learn.micro
 npm create @microsoft/rayfin@latest -- --template https://github.com/microsoft/awesome-rayfin --template-name "[Experimental] Todo app with full local dev"
 ```
 
-![](./media/a9.png)
+![](./media/image185.png)
 
-![](./media/a10.png)
+![](./media/image186.png)
 
 9.  輸入 +++Fabricapp+++ 作為專案名稱。
 
-![](./media/a11.png)
+![](./media/image187.png)
 
-![](./media/a12.png)
+![](./media/image188.png)
 
 10. 專案建立成功後，瀏覽至 **Fabricapp** 專案目錄，並啟動本機開發伺服器。
 
@@ -912,109 +871,106 @@ npm create @microsoft/rayfin@latest -- --template https://github.com/microsoft/a
 >
 > +++npm run dev+++
 
-![](./media/a13.png)
+![](./media/image189.png)
 
 11. 出現提示時，輸入 Fabric 工作區名稱 +++Fabric IQ Ontology@lab.LabInstance.Id+++，然後按 **Enter**，繼續將應用程式部署到所選的 Fabric 工作區。
 
-![](./media/a14.png)
+![](./media/image190.png)
 
 12. 當 **Windows Security** 對話方塊出現時，按一下 **Allow**，允許 **Node.js JavaScript Runtime** 在公用和私人網路上通訊。
 
-![](./media/a15.png)
+![](./media/image191.png)
 
 13. 複製終端機中顯示的本機前端 URL（應類似於 +++http://localhost:5173+++），並在新的瀏覽器索引標籤中開啟。
 
-![](./media/a16.png)
+![](./media/image192.png)
 
-14. 選取 **Sign in with Microsoft** 按鈕。由於你在練習 1 中已有有效的 SSO 工作階段，應該會自動登入，不需要再次輸入認證。如果沒有自動登入，請使用登入 Fabric 時的同一個 Microsoft 帳戶登入：
+14. 選取 **Sign in with Microsoft** 按鈕。由於您在練習 1 中已有有效的 SSO 工作階段，應該會自動登入，不需要再次輸入認證。如果沒有自動登入，請使用登入 Fabric 時的同一個 Microsoft 帳戶登入：
 
 | **電子郵件** | **+++@lab.CloudPortalCredential(User1).Username+++** |
 |----|----|
 | **TAP** | **+++@lab.CloudPortalCredential(User1).AccessToken+++** |
 
-![](./media/a17.png)
+![](./media/image193.png)
 
 15. 在 **Todo App** 的工作欄位中輸入 +++Review Lakeshore Retail ontology relationships+++，然後按一下 **Add** 建立新的待辦事項。
 
-![](./media/a18.png)
+![](./media/image194.png)
 
 16. 在工作欄位中輸入 +++Validate freezer telemetry ingestion+++，然後按一下 **Add** 建立另一個待辦事項。
 
-![](./media/a19.png)
+![](./media/image195.png)
 
-![](./media/a20.png)
+![](./media/image196.png)
 
 17. 選取其中一個工作。
 
-![](./media/a21.png)
+![](./media/image197.png)
 
-![](./media/a22.png)
+![](./media/image198.png)
 
-### 工作 2：將應用程式部署到 Fabric
+### 任務 2：將應用程式部署到 Fabric
 
 1.  回到 Visual Studio Code 終端機，按 **Ctrl+C** 停止 Vite 開發伺服器。
 
-![](./media/a23.png)
+![](./media/image199.png)
 
-2.  執行以下命令，將應用程式部署到你的 Fabric 工作區。
+2.  執行以下命令，將應用程式部署到您的 Fabric 工作區。
 
 > +++npm run up+++
 
-![](./media/a24.png)
+![](./media/image200.png)
 
 3.  部署完成後，CLI 會列出**靜態裝載 URL**，類似於 **https://{random-prefix}.webapp.rayfin….com**。按一下 **App URL** 啟動應用程式。
 
-![](./media/a25.png)
+![](./media/image201.png)
 
 4.  當出現 **Do you want Code to open the external website?** 提示時，按一下 **Open**，在預設瀏覽器中啟動已部署的應用程式。
 
-![](./media/a26.png)
+![](./media/image202.png)
 
-5.  如同工作 1 中的步驟，選取 **Sign in with Microsoft**。
+5.  如同任務 1 中的步驟，選取 **Sign in with Microsoft**。
 
-![](./media/a27.png)
+![](./media/image203.png)
 
-![](./media/a28.png)
+![](./media/image204.png)
 
-### 工作 3：在 Fabric 中檢查部署
+### 任務 3：在 Fabric 中檢查部署
 
 讓我們在 Microsoft Fabric 入口網站中查看已部署的應用程式和資料庫。
 
 1.  開啟 Microsoft Fabric 入口網站：+++https://app.fabric.microsoft.com+++。
 
-2.  開啟你在練習 1 中建立的 **Fabric IQ Ontology@lab.LabInstance.Id** 工作區。
+2.  開啟您在練習 1 中建立的 **Fabric IQ Ontology@lab.LabInstance.Id** 工作區。
 
-![](./media/a29.png)
+![](./media/image205.png)
 
 3.  確認工作區包含一個 **Fabric data app** 項目和一個 **SQL Database** 項目。
 
-![](./media/a30.png)
+![](./media/image206.png)
 
-![](./media/a31.png)
+![](./media/image207.png)
 
+## 練習 7：清除資源
 
+1.  從左側導覽功能表中選取您的工作區 **Fabric IQ Ontology@lab.LabInstance.Id**，隨即開啟工作區項目檢視。
 
-## 任务4：清理资源
+![](./media/image208.png)
 
-1. 選擇您的工作區，即左側導航菜單中的 **Fabric IQ OntologyXX**。它會打開工作區的物品視圖。
+2.  選取工作區名稱下的 **...** 選項，然後選取 **Workspace settings**。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image177.png)
+![](./media/image209.png)
 
-1. 选择......在工作区名称下选择选项，选择 **Workspace settings**。
+3.  瀏覽至 **General** 索引標籤底部，然後選取 **Remove this workspace**。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image178.png)
+![](./media/image210.png)
 
-1. 导航到“General”标签底部，选择**“Remove this workspace**”。
+4.  在彈出的警告中按一下 **Delete**。
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image179.png)
+![](./media/image211.png)
 
-    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/fbrciqdtagntrio/refs/heads/main/Cloudslice-CNT/Labguides/Usecase%2001/media/image180.png)
+**摘要**
 
+在本實驗中，您使用 Microsoft Fabric IQ Ontology（預覽）建立了一個連結的語意資料模型，用來表示真實世界的業務概念及其關聯性。透過將結構化的 Lakehouse 資料與串流遙測資料結合，ontology 提供了統一且易於業務理解的企業資料檢視。
 
-### 摘要
-
-    該用例展示了如何使用 Microsoft Fabric IQ Ontology（預覽版）創建一個連接的語義數據模型，代表真實世界的商業概念及其關係。通過將結構化lakehouse數據與流式遙測數據結合，ontology提供了統一且商業友好的企業數據視圖。
-
-    通過實體定義、data bindings和關係建模，用戶可以分析運營信號——如freezer溫度或濕度——如何與銷售和收入等業務結果相關。該用例還強調了本體如何通過Fabric data代理支持圖探索和自然語言查詢，從而在無需用戶理解底層表或模式的情況下獲得更深入的洞察。
-
-    总体而言，这一用例展示了Fabric IQ Ontology如何帮助连接运营数据和分析，支持跨域更智能的决策。
+透過實體定義、資料繫結和關聯性建模，您分析了營運訊號（例如冷凍櫃溫度或濕度）如何與銷售和營收等業務成果相關。您使用圖形查詢探索 ontology、將其連線到 Fabric 資料代理程式以進行自然語言提問，並使用 Project Rayfin 建置配套應用程式並部署到 Fabric 工作區。這些技能說明了 Fabric IQ Ontology 如何協助連結營運資料與分析，支援跨領域更明智的決策。
