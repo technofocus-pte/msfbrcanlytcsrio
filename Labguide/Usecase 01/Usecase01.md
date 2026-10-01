@@ -1,6 +1,6 @@
-# 實驗 1：使用 Fabric Data Factory 實作資料移動與轉換的資料工程解決方案
+# 使用案例 1：使用 Fabric Data Factory 實作資料移轉與轉換的資料工程解決方案
 
-**情境**
+**案例情境**
 
 **Wide World Importers (WWI)** 是一家全球零售組織，在多個地區經營數百家門市。客戶資訊從多個營運系統收集而來，包括銷售點 (POS) 應用程式、CRM 平台和電子商務通路。這些資料以 CSV 檔案形式儲存，每天從不同的業務單位接收。
 
@@ -8,15 +8,15 @@
 
 為了將分析平台現代化，Wide World Importers 採用 **Microsoft Fabric** 作為統一的資料平台。資料工程團隊的任務是使用 **Microsoft Fabric Data Factory** 和 **Lakehouse** 實作可擴充的解決方案，以集中管理客戶資料、提升資料管理效率並簡化報表製作。
 
-身為資料工程師，你的職責是建立 Fabric 工作區、佈建 Lakehouse、將客戶資料擷取到 OneLake、將來源檔案轉換為受控 Delta 資料表、使用 SQL 分析端點驗證匯入的資料、建立 Direct Lake 語義模型，並產生 Power BI 報表，讓業務利害關係人能以最低延遲分析客戶資訊。
+身為資料工程師，您的職責是建立 Fabric 工作區、佈建 Lakehouse、將客戶資料擷取到 OneLake、將來源檔案轉換為受控 Delta 資料表、使用 SQL 分析端點驗證匯入的資料、建立 Direct Lake 語義模型，並產生 Power BI 報表，讓業務利害關係人能以最低延遲分析客戶資訊。
 
 透過實作此解決方案，Wide World Importers 可以免除手動資料準備、為客戶分析提供單一事實來源，並使用 Microsoft Fabric 做出更快速、以資料為導向的業務決策。
 
 **簡介**
 
-在本實驗中，你將使用 **Microsoft Fabric Data Factory** 和 **Fabric Lakehouse** 建置完整的資料工程解決方案。從新的 Fabric 工作區開始，你將把資料擷取到 Lakehouse、將檔案轉換為受控 Delta 資料表、使用 SQL 分析端點查詢資料、使用管線、筆記本和 Dataflow Gen2 轉換資料、透過電子郵件通知自動化並排程管線、建立語義模型，並產生互動式 Power BI 報表。
+在此使用案例中，您將使用 **Microsoft Fabric Data Factory** 和 **Fabric Lakehouse** 建置完整的資料工程解決方案。從新的 Fabric 工作區開始，您將把資料擷取到 Lakehouse、將檔案轉換為受控 Delta 資料表、使用 SQL 分析端點查詢資料、使用管線、筆記本和 Dataflow Gen2 轉換資料、透過電子郵件通知自動化並排程管線、建立語義模型，並產生互動式 Power BI 報表。
 
-在整個實驗中，你將了解 Microsoft Fabric 如何將資料整合、儲存、轉換、分析和報表統一到單一的軟體即服務 (SaaS) 平台中。
+在整個實驗中，您將了解 Microsoft Fabric 如何將資料整合、儲存、轉換、分析和報表統一到單一的軟體即服務 (SaaS) 平台中。
 
 **本實驗建立的 Fabric 項目**
 
@@ -50,11 +50,11 @@
 
 - 從 Fabric 資料產生並探索 Power BI 報表。
 
-**注意：** 本實驗的螢幕擷取畫面使用英文介面，因此步驟中的介面名稱（例如 **+ New workspace**、**Apply**）保留英文，方便你對照畫面操作。
+**注意：** 本實驗的螢幕擷取畫面使用英文介面，因此步驟中的介面名稱（例如 **+ New workspace**、**Apply**）保留英文，方便您對照畫面操作。
 
 ## 練習 1：設定 Microsoft Fabric 資料工程環境
 
-在建置資料工程解決方案之前，你需要先準備 Microsoft Fabric 環境。在本練習中，你將登入 Microsoft Fabric、建立專用工作區，並佈建作為分析解決方案集中儲存區的 Lakehouse。
+在建置資料工程解決方案之前，您需要先準備 Microsoft Fabric 環境。在本練習中，您將登入 Microsoft Fabric、建立專用工作區，並佈建作為分析解決方案集中儲存區的 Lakehouse。
 
 ### 工作 1：登入 Power BI 帳戶
 
@@ -62,7 +62,7 @@
 
 ![](./media/image1.png)
 
-2.  在 **Microsoft Fabric** 視窗中輸入你的認證，然後按一下 **Submit** 按鈕。
+2.  在 **Microsoft Fabric** 視窗中輸入您的認證，然後按一下 **Submit** 按鈕。
 
 | **使用者名稱** | **+++@lab.CloudPortalCredential(User1).Username+++** |
 |----|----|
@@ -76,7 +76,7 @@
 
 4.  在 **Stay signed in?** 視窗中，按一下 **Yes** 按鈕。
 
-5.  系統會將你導向 Power BI 首頁。
+5.  系統會將您導向 Power BI 首頁。
 
 ![](./media/image4.png)
 
@@ -88,7 +88,7 @@
 
 ### 工作 2：建立 Fabric 工作區
 
-在這項工作中，你將建立 Fabric 工作區。工作區包含本實驗所需的所有項目，包括 Lakehouse、資料流程、Data Factory 管線、筆記本、Power BI 語義模型和報表。
+在這項工作中，您將建立 Fabric 工作區。工作區包含本實驗所需的所有項目，包括 Lakehouse、資料流程、Data Factory 管線、筆記本、Power BI 語義模型和報表。
 
 1.  在 Fabric 首頁上，選取 **+ New workspace** 圖格。
 
@@ -104,7 +104,7 @@
 
 ![](./media/image8.png)
 
-**注意：** 若要找到你的實驗執行個體 ID，請選取 **Help** 並複製執行個體 ID。
+**注意：** 若要找到您的實驗執行個體 ID，請選取 **Help** 並複製執行個體 ID。
 
 ![](./media/image9.png)
 
@@ -132,7 +132,7 @@
 
 ![](./media/image15.png)
 
-4.  你會看到 **Successfully created SQL endpoint** 的通知。
+4.  您會看到 **Successfully created SQL endpoint** 的通知。
 
 ![](./media/image16.png)
 
@@ -180,7 +180,7 @@
 
 ![](./media/image27.png)
 
-11. 你也可以使用 Lakehouse 的 SQL 端點，以 SQL 陳述式查詢資料。從畫面右上角的 **Analyze data with** 下拉式功能表中選取 **SQL analytics endpoint**。
+11. 您也可以使用 Lakehouse 的 SQL 端點，以 SQL 陳述式查詢資料。從畫面右上角的 **Analyze data with** 下拉式功能表中選取 **SQL analytics endpoint**。
 
 ![](./media/image28.png)
 
@@ -188,7 +188,7 @@
 
 ![](./media/image29.png)
 
-13. 以下範例查詢會依 **dimension_customer** 資料表的 **BuyingGroup** 資料行彙總資料列數。SQL 查詢檔案會自動儲存以供日後參考，你可以視需要重新命名或刪除這些檔案。貼上程式碼，然後按一下播放圖示**執行**指令碼。
+13. 以下範例查詢會依 **dimension_customer** 資料表的 **BuyingGroup** 資料行彙總資料列數。SQL 查詢檔案會自動儲存以供日後參考，您可以視需要重新命名或刪除這些檔案。貼上程式碼，然後按一下播放圖示**執行**指令碼。
 
 ```sql
 SELECT BuyingGroup, Count(*) AS Total
@@ -238,13 +238,13 @@ GROUP BY BuyingGroup
 
 ![](./media/image39.png)
 
-7.  你會看到 **Report saved** 的通知。
+7.  您會看到 **Report saved** 的通知。
 
 ![](./media/image40.png)
 
 ## 練習 2：在 Fabric Lakehouse 中擷取和管理資料
 
-在本練習中，你將使用 Data Factory 管線，把 Wide World Importers (WWI) 範例資料中的其他維度和事實資料表擷取到 Lakehouse。
+在本練習中，您將使用 Data Factory 管線，把 Wide World Importers (WWI) 範例資料中的其他維度和事實資料表擷取到 Lakehouse。
 
 ### 工作 1：擷取資料
 
@@ -266,7 +266,7 @@ GROUP BY BuyingGroup
 
 ![](./media/image45.png)
 
-5.  選取畫布上新的 **Copy data** 活動。活動屬性會顯示在畫布下方的窗格中，分為 **General**、**Source**、**Destination**、**Mapping** 和 **Settings** 等索引標籤。你可能需要拖曳窗格頂端邊緣，將窗格向上展開。
+5.  選取畫布上新的 **Copy data** 活動。活動屬性會顯示在畫布下方的窗格中，分為 **General**、**Source**、**Destination**、**Mapping** 和 **Settings** 等索引標籤。您可能需要拖曳窗格頂端邊緣，將窗格向上展開。
 
 ![](./media/image46.png)
 
@@ -309,7 +309,7 @@ GROUP BY BuyingGroup
 
 | **屬性** | **值** |
 |----|----|
-| **Connection** | **wwilakehouse**（如果你的 Lakehouse 使用其他名稱，請選取該 Lakehouse） |
+| **Connection** | **wwilakehouse**（如果您的 Lakehouse 使用其他名稱，請選取該 Lakehouse） |
 | **Root folder** | **Files** |
 | **File path** | 目錄名稱（第一個文字方塊）：+++wwi-raw-data+++ |
 | **File format** | **Binary** |
@@ -334,7 +334,7 @@ GROUP BY BuyingGroup
 
 ![](./media/image57.png)
 
-16. 管線成功執行後，前往你的 Lakehouse (**wwilakehouse**) 並開啟 Explorer 檢視匯入的資料。
+16. 管線成功執行後，前往您的 Lakehouse (**wwilakehouse**) 並開啟 Explorer 檢視匯入的資料。
 
 ![](./media/image58.png)
 
@@ -344,7 +344,7 @@ GROUP BY BuyingGroup
 
 ## 練習 3：在 Lakehouse 中準備和轉換資料
 
-在本練習中，你將匯入 PySpark 筆記本，並使用它從原始資料建立事實、維度和彙總 Delta 資料表。
+在本練習中，您將匯入 PySpark 筆記本，並使用它從原始資料建立事實、維度和彙總 Delta 資料表。
 
 ### 工作 1：匯入筆記本並連結至 Lakehouse
 
@@ -382,7 +382,7 @@ GROUP BY BuyingGroup
 
 ### 工作 2：建立 Delta 資料表
 
-在這項工作中，你將執行筆記本儲存格，從原始資料建立 Delta 資料表。這些資料表採用星型結構描述，這是組織分析資料的常見模式：
+在這項工作中，您將執行筆記本儲存格，從原始資料建立 Delta 資料表。這些資料表採用星型結構描述，這是組織分析資料的常見模式：
 
 - **事實資料表** (fact_sale) 包含可衡量的業務事件——在此案例中是個別銷售交易，包括數量、價格和利潤。
 
@@ -422,7 +422,7 @@ spark.conf.set("spark.microsoft.delta.optimizeWrite.binSize", "1073741824")
 
 ### 工作 3：轉換業務資料以進行彙總
 
-在這項工作中，你將繼續使用同一個筆記本，執行接下來的儲存格，從上一項工作建立的 Delta 資料表建立彙總資料表。
+在這項工作中，您將繼續使用同一個筆記本，執行接下來的儲存格，從上一項工作建立的 Delta 資料表建立彙總資料表。
 
 1.  確認筆記本仍連結到 **wwilakehouse**。
 
@@ -446,7 +446,7 @@ spark.conf.set("spark.microsoft.delta.optimizeWrite.binSize", "1073741824")
 
 ## 練習 4：在 Data Factory 中使用資料流程轉換資料
 
-在本練習中，你將使用 Dataflow Gen2 合併 **fact_sale** 和 **dimension_city** 資料表、新增計算的利潤率資料行，並將結果載入 Lakehouse 中的 Gold 資料表。
+在本練習中，您將使用 Dataflow Gen2 合併 **fact_sale** 和 **dimension_city** 資料表、新增計算的利潤率資料行，並將結果載入 Lakehouse 中的 Gold 資料表。
 
 ### 工作 1：從 Lakehouse 資料表取得資料
 
@@ -470,7 +470,7 @@ spark.conf.set("spark.microsoft.delta.optimizeWrite.binSize", "1073741824")
 
 ![](./media/image84.png)
 
-6.  隨即出現 **Connect to data source** 對話方塊。系統會根據你登入的使用者自動建立新連線。按一下 **Next**。
+6.  隨即出現 **Connect to data source** 對話方塊。系統會根據您登入的使用者自動建立新連線。按一下 **Next**。
 
 ![](./media/image85.png)
 
@@ -510,7 +510,7 @@ spark.conf.set("spark.microsoft.delta.optimizeWrite.binSize", "1073741824")
 
 ### 工作 3：連線至 dimension_city 資料表
 
-你將載入在練習 3 中建立的 **dimension_city** 資料表，以城市和銷售區域資訊擴充 fact_sale 資料。
+您將載入在練習 3 中建立的 **dimension_city** 資料表，以城市和銷售區域資訊擴充 fact_sale 資料。
 
 1.  在資料流程編輯器的 **Home** 索引標籤上，選取 **Get data**，然後選擇 **More...**
 
@@ -632,7 +632,7 @@ Output 查詢準備好之後，接著定義輸出目的地。
 
 ![](./media/image120.png)
 
-3.  在 **Connect to data destination** 對話方塊中，應已選取你的連線。按一下 **Next**。
+3.  在 **Connect to data destination** 對話方塊中，應已選取您的連線。按一下 **Next**。
 
 ![](./media/image121.png)
 
@@ -670,7 +670,7 @@ Output 查詢準備好之後，接著定義輸出目的地。
 
 ## 練習 5：使用 Data Factory 自動化並傳送通知
 
-在本練習中，你將為管線新增電子郵件通知、設定排程，並將資料流程新增為活動，讓整個流程可以端對端執行。
+在本練習中，您將為管線新增電子郵件通知、設定排程，並將資料流程新增為活動，讓整個流程可以端對端執行。
 
 ### 工作 1：將 Office 365 Outlook 活動新增至管線
 
@@ -696,7 +696,7 @@ Output 查詢準備好之後，接著定義輸出目的地。
 
 ![](./media/image135.png)
 
-7.  使用你要用來傳送電子郵件的帳戶登入。你可以使用已登入帳戶的現有連線。
+7.  使用您要用來傳送電子郵件的帳戶登入。您可以使用已登入帳戶的現有連線。
 
 8.  按一下 **Connect** 繼續。
 
@@ -704,7 +704,7 @@ Output 查詢準備好之後，接著定義輸出目的地。
 
 9.  選取管線畫布上的 Office 365 Outlook 活動。在 **Settings** 索引標籤上設定電子郵件。
 
-10. 在 **To** 欄位中輸入你的電子郵件地址。若要使用多個地址，請以 **;** 分隔。
+10. 在 **To** 欄位中輸入您的電子郵件地址。若要使用多個地址，請以 **;** 分隔。
 
 ![](./media/image137.png)
 
@@ -730,7 +730,7 @@ Output 查詢準備好之後，接著定義輸出目的地。
 
 ![](./media/image141.png)
 
-**注意：** 如果你的複製活動使用其他名稱，請將 **Data Copy to Lakehouse** 替換為實際的活動名稱。
+**注意：** 如果您的複製活動使用其他名稱，請將 **Data Copy to Lakehouse** 替換為實際的活動名稱。
 
 14. 選取管線編輯器頂端的 **Home** 索引標籤，然後選擇 **Run**。接著在確認對話方塊中選取 **Save and run**，以執行這些活動。
 
@@ -738,7 +738,7 @@ Output 查詢準備好之後，接著定義輸出目的地。
 
 ![](./media/image143.png)
 
-15. 管線成功執行後，檢查你的電子郵件，找到管線傳送的確認郵件。
+15. 管線成功執行後，檢查您的電子郵件，找到管線傳送的確認郵件。
 
 ![](./media/image144.png)
 
@@ -746,7 +746,7 @@ Output 查詢準備好之後，接著定義輸出目的地。
 
 ### 工作 2：排程管線執行
 
-完成管線的開發和測試後，你可以排程讓它自動執行。
+完成管線的開發和測試後，您可以排程讓它自動執行。
 
 1.  在管線編輯器視窗的 **Home** 索引標籤上，選取 **Schedule**。
 
@@ -761,7 +761,7 @@ Output 查詢準備好之後，接著定義輸出目的地。
 | **Repeat** | **Daily** |
 | **Time** | **8:00 PM** |
 | **End date** | 今年 12 月 31 日 |
-| **Time zone** | 選取你的當地時區 |
+| **Time zone** | 選取您的當地時區 |
 
 ![](./media/image148.png)
 
@@ -781,7 +781,7 @@ Output 查詢準備好之後，接著定義輸出目的地。
 
 ![](./media/image151.png)
 
-4.  選取 **Settings** 索引標籤，然後選取你在練習 4 中建立的 **wwi_fact_sale_transform** 資料流程。
+4.  選取 **Settings** 索引標籤，然後選取您在練習 4 中建立的 **wwi_fact_sale_transform** 資料流程。
 
 ![](./media/image152.png)
 
@@ -801,7 +801,7 @@ Output 查詢準備好之後，接著定義輸出目的地。
 
 ## 練習 6：在 Microsoft Fabric 中建置報表
 
-在本練習中，你將把所有資料表加入 Direct Lake 語義模型、在資料表之間建立關聯性，並從頭開始建置 Power BI 報表。
+在本練習中，您將把所有資料表加入 Direct Lake 語義模型、在資料表之間建立關聯性，並從頭開始建置 Power BI 報表。
 
 ### 工作 1：在 Direct Lake 語義模型中建立關聯性
 
@@ -868,7 +868,7 @@ Direct Lake 直接將資料檔案載入記憶體，免除了這項匯入需求�
 
 ![](./media/image167.png)
 
-8.  新增這些關聯性之後，你的資料模型應如下圖所示，並可用於報表。
+8.  新增這些關聯性之後，您的資料模型應如下圖所示，並可用於報表。
 
 ![](./media/image168.png)
 
@@ -878,7 +878,7 @@ Direct Lake 直接將資料檔案載入記憶體，免除了這項匯入需求�
 
 ![](./media/image169.png)
 
-2.  在 Power BI 報表畫布上，你可以將 **Data** 窗格中的資料行拖曳到畫布上，並使用一或多個可用的視覺效果，建立符合業務需求的報表。
+2.  在 Power BI 報表畫布上，您可以將 **Data** 窗格中的資料行拖曳到畫布上，並使用一或多個可用的視覺效果，建立符合業務需求的報表。
 
 ![](./media/image170.png)
 
@@ -972,15 +972,15 @@ Direct Lake 直接將資料檔案載入記憶體，免除了這項匯入需求�
 
 ![](./media/image188.png)
 
-25. 你會收到報表已儲存的通知。
+25. 您會收到報表已儲存的通知。
 
 ![](./media/image189.png)
 
 ## 練習 7：清除資源
 
-你可以刪除個別報表、管線、倉儲和其他項目，或移除整個工作區。請使用以下步驟刪除你為本實驗建立的工作區。
+您可以刪除個別報表、管線、倉儲和其他項目，或移除整個工作區。請使用以下步驟刪除您為本實驗建立的工作區。
 
-1.  從左側導覽功能表中選取你的工作區 **Fabric Dataengineering-DataFactory-@lab.LabInstance.Id**，隨即開啟工作區項目檢視。
+1.  從左側導覽功能表中選取您的工作區 **Fabric Dataengineering-DataFactory-@lab.LabInstance.Id**，隨即開啟工作區項目檢視。
 
 2.  選取工作區名稱下的 **...** 選項，然後選取 **Workspace settings**。
 
@@ -1000,4 +1000,4 @@ Direct Lake 直接將資料檔案載入記憶體，免除了這項匯入需求�
 
 **摘要**
 
-在本實驗中，你實作了完整的 Microsoft Fabric 資料工程工作流程。你建立了 Fabric 工作區和 Lakehouse、上傳來源資料並載入 Delta 資料表、使用 SQL 查詢驗證資料，並建置了快速報表。接著，你使用 Data Factory 管線擷取 Wide World Importers 範例資料、使用 PySpark 筆記本建立事實、維度和彙總 Delta 資料表，並使用 Dataflow Gen2 建置具有計算利潤率的 Gold 資料表。你透過 Office 365 Outlook 通知、排程和 Dataflow 活動將管線自動化。最後，你建置了具有關聯性的 Direct Lake 語義模型，並建立了 Power BI 報表。這些技能為使用 Microsoft Fabric 開發可擴充的資料工程解決方案奠定了基礎。
+在本實驗中，您實作了完整的 Microsoft Fabric 資料工程工作流程。您建立了 Fabric 工作區和 Lakehouse、上傳來源資料並載入 Delta 資料表、使用 SQL 查詢驗證資料，並建置了快速報表。接著，您使用 Data Factory 管線擷取 Wide World Importers 範例資料、使用 PySpark 筆記本建立事實、維度和彙總 Delta 資料表，並使用 Dataflow Gen2 建置具有計算利潤率的 Gold 資料表。您透過 Office 365 Outlook 通知、排程和 Dataflow 活動將管線自動化。最後，您建置了具有關聯性的 Direct Lake 語義模型，並建立了 Power BI 報表。這些技能為使用 Microsoft Fabric 開發可擴充的資料工程解決方案奠定了基礎。
