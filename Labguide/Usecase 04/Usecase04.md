@@ -1,4 +1,4 @@
-# 用例 04：在 Microsoft Fabric 中为 Contoso 构建销售和地理数据仓库
+# 用例 03：在 Microsoft Fabric 中为 Contoso 构建销售和地理数据仓库
 
 **场景**
 
