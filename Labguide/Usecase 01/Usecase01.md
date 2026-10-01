@@ -441,6 +441,8 @@ spark.conf.set("spark.microsoft.delta.optimizeWrite.binSize", "1073741824")
 
 ![](./media/image79.png)
 
+6. 執行筆記本中「Path 2 - Lakehouse schemas not enabled (alternate path)」區段的所有儲存格，以在 Lakehouse 中建立所需的資料表。
+
 ## 练习 4：在 Microsoft Fabric 中构建报表
 
 在本练习中，你将把所有表添加到 Direct Lake 语义模型、在表之间创建关系，并从头开始构建 Power BI 报表。
