@@ -1,765 +1,1002 @@
-# Caso de uso 02: Solução do Data Factory para transferência e transformação de dados com fluxos de dados e pipelines de dados
+# Caso de uso 02: Analisar dados com o Apache Spark
+
+**Cenário**
+
+Uma empresa de varejo exporta seus pedidos de vendas como arquivos CSV a cada ano. A equipe de análise quer explorar esses dados, limpá-los e transformá-los, salvar os resultados em um formato adequado para análise e visualizar tendências rapidamente, tudo em uma única plataforma, sem alternar entre várias ferramentas.
+
+Como engenheiro de dados, você criará um workspace e um lakehouse no Microsoft Fabric, fará o upload dos arquivos de pedidos de vendas e usará um notebook do Spark para carregar, explorar, transformar e visualizar os dados. Você também criará tabelas Delta gerenciadas e externas, consultará os dados com o Spark SQL e usará tabelas Delta para dados de streaming.
 
 **Introdução**
 
-Este laboratório ajuda você a acelerar o processo de avaliação do Data
-Factory no Microsoft Fabric, fornecendo um guia passo a passo para um
-cenário completo de integração de dados em uma hora. Ao final deste
-tutorial, você compreenderá o valor e os principais recursos do Data
-Factory e saberá como concluir um cenário comum de integração de dados
-de ponta a ponta.
+O Apache Spark é um mecanismo de código aberto para processamento distribuído de dados e é amplamente utilizado para explorar, processar e analisar grandes volumes de dados no Data Lake Storage. O Spark está disponível como opção de processamento em diversos produtos de plataforma de dados, incluindo o Azure HDInsight, o Azure Databricks, o Azure Synapse Analytics e o Microsoft Fabric. Um dos benefícios do Spark é o suporte a uma ampla variedade de linguagens de programação, incluindo Java, Scala, Python e SQL, o que torna o Spark uma solução muito flexível para cargas de trabalho de processamento de dados, incluindo limpeza e manipulação de dados, análise estatística e machine learning, além de análise e visualização de dados.
 
-**Objetivo**
+As tabelas em um lakehouse do Microsoft Fabric são baseadas no formato de código aberto **Delta Lake** para o Apache Spark. O Delta Lake oferece suporte à semântica relacional para operações de dados em lote e em streaming e permite criar uma arquitetura de lakehouse na qual o Apache Spark é usado para processar e consultar dados em tabelas baseadas em arquivos de um data lake.
 
-O laboratório está dividido em três exercícios:
+**Itens do Fabric criados neste laboratório**
 
-- **Exercício 1:** Criar um pipeline com o Data Factory para importar
-  dados brutos de um armazenamento Blob para uma tabela Bronze em um
-  Data Lakehouse.
+| **Item** | **Nome** | **Função no laboratório** |
+|----|----|----|
+| Workspace | dp_Fabric\<ID da instância do laboratório\> | Contém todos os itens do laboratório |
+| Lakehouse | Fabric_lakehouse | Armazena os arquivos de pedidos de vendas, os dados transformados e as tabelas Delta |
+| Notebook | Explore Sales Orders | Notebook do Spark usado para explorar, transformar e visualizar os dados |
+| Tabelas Delta | salesorders, external_salesorder, iotdevicedata | Tabela gerenciada, tabela externa e tabela de streaming |
 
-- **Exercício 2:** Transformar dados com um fluxo de dados no Data
-  Factory para processar os dados brutos da sua tabela Bronze e movê-los
-  para uma tabela Gold no Data Lakehouse.
+**Objetivos**:
 
-- **Exercício 3:** Autonomizar e enviar notificações com o Data Factory
-  para enviar um e-mail avisando assim que todas as tarefas forem
-  concluídas e, por fim, configurar todo o fluxo para ser executado de
-  forma programada.
+- Criar um workspace e um lakehouse no Microsoft Fabric e fazer o upload de arquivos de dados para análise.
 
-## Exercício 1: Criar um pipeline com o Data Factory
+- Criar um notebook para exploração e análise interativa de dados.
 
-### Tarefa 1: Criar um workspace do Fabric
+- Carregar dados em um DataFrame e filtrar, agrupar e agregar os dados.
 
-Antes de trabalhar com dados no Fabric, crie um workspace com a
-avaliação do Fabric habilitada.
+- Transformar dados com o PySpark e salvar os dados transformados como arquivos Parquet e arquivos particionados.
 
-1.  Abra o navegador, navegue até a barra de endereços e digite ou cole
-    a seguinte URL: +++<https://app.fabric.microsoft.com/+++> e
-    pressione o botão **Enter**.
+- Criar no metastore do Spark a tabela Delta gerenciada **salesorders** e a tabela Delta externa **external_salesorder** e comparar suas propriedades.
 
-**Observação:** Se você for direcionado para a página inicial do
-Microsoft Fabric, ignore as etapas de nº 2 a nº 4.
+- Executar consultas Spark SQL nas tabelas para análise.
+
+- Visualizar dados usando bibliotecas do Python, como matplotlib e seaborn.
+
+- Usar tabelas Delta para dados de streaming.
+
+- Remover o workspace e os itens associados.
+
+## Exercício 1: Criar um workspace, um lakehouse e um notebook e carregar dados em um DataFrame
+
+Neste exercício, você cria um workspace e um lakehouse, faz o upload dos arquivos de pedidos de vendas e carrega os dados em um DataFrame em um notebook.
+
+### Tarefa 1: Criar um workspace
+
+1.  Abra o navegador, vá até a barra de endereços e digite ou cole a seguinte URL: +++https://app.fabric.microsoft.com/+++. Em seguida, pressione a tecla **Enter**.
+
+**Observação**: Se você for direcionado diretamente para a página inicial do Microsoft Fabric, pule para a etapa 6.
 
 ![](./media/image1.png)
 
-2.  Na janela do **Microsoft Fabric**, insira suas credenciais e clique
-    no botão **Submit**.
+2.  Na janela do **Microsoft Fabric**, insira suas credenciais e clique no botão **Submit**.
+
+| **Nome de usuário** | **+++@lab.CloudPortalCredential(User1).Username+++** |
+|----|----|
+| **Senha** | **+++@lab.CloudPortalCredential(User1).Password+++** |
 
 ![](./media/image2.png)
 
-3.  Em seguida, na janela da **Microsoft**, insira sua senha e clique no
-    botão **Sign in**.
+3.  Na janela **Microsoft**, insira a senha e clique no botão **Sign in**.
 
-![A login screen with a red box and blue text AI-generated content may
-be incorrect.](./media/image3.png)
+![](./media/image3.png)
 
 4.  Na janela **Stay signed in?**, clique no botão **Yes**.
 
-![A screenshot of a computer error AI-generated content may be
-incorrect.](./media/image4.png)
+5.  Se o Power BI abrir por padrão, siga as etapas abaixo; caso contrário, ignore esta etapa:
 
-5.  Você será direcionado para a página inicial do Power BI.
+- Clique em **Power BI**.
+
+![](./media/image4.png)
+
+- Selecione **Fabric** entre as opções exibidas.
 
 ![](./media/image5.png)
 
-6.  Selecione o ícone padrão do Power BI no canto inferior esquerdo da
-    tela e, em seguida, selecione **Fabric**.
+6.  Na página inicial do Fabric, selecione o bloco **+ New workspace**.
 
 ![](./media/image6.png)
+
+7.  No painel **Create a workspace**, insira os seguintes detalhes e clique no botão **Apply**.
+
+| **Propriedade** | **Valor** |
+|----|----|
+| **Name** | +++dp_Fabric@lab.LabInstance.Id+++ (deve ser um nome exclusivo) |
+| **Description** | +++Este workspace contém Analyze data with Apache Spark+++ |
+| **Advanced** | Em **License mode**, selecione **Fabric** |
+| **Default storage format** | **Small dataset storage format** |
 
 ![](./media/image7.png)
 
 ![](./media/image8.png)
 
-7.  Na **Microsoft Fabric Home Page**, selecione a opção **New
-    workspace**.
+8.  Aguarde a conclusão da implantação. Esse processo leva de 2 a 3 minutos. Quando o novo workspace for aberto, ele deverá estar vazio.
 
 ![](./media/image9.png)
 
-8.  Na aba **Create a workspace**, insira os seguintes detalhes e clique
-    no botão **Apply**:
+### Tarefa 2: Criar um lakehouse e carregar arquivos
 
-| Setting | Value |
-|---|---|
-| Name | +++Data-FactoryXXXX+++ (XXXX can be a unique number) |
-| Advanced | Under **License mode**, select **Fabric** |
-| Default storage format | **Small semantic model storage format** |
+Agora que você tem um workspace, é hora de criar um lakehouse para os arquivos de dados que você analisará.
+
+1.  Crie um novo lakehouse clicando no botão **+ New item** na barra de navegação.
 
 ![](./media/image10.png)
 
+2.  Filtre por e selecione o bloco **Lakehouse**.
+
 ![](./media/image11.png)
 
-9.  Aguarde a conclusão da implementação. Esse processo levará
-    aproximadamente 2–3 minutos.
+3.  Na caixa de diálogo **New lakehouse**, insira +++Fabric_lakehouse+++ no campo **Name**, clique no botão **Create** e abra o novo lakehouse.
 
-![A screenshot of a computer Description automatically
-generated](./media/image12.png)
+![](./media/image12.png)
 
-### Tarefa 2: Criar um lakehouse e importar dados de amostra
+**Observação**: Após cerca de um minuto, um novo lakehouse vazio será criado. Você precisa ingerir alguns dados no lakehouse para análise.
 
-1.  Na página do workspace **Data-FactoryXX**, navegue até a opção
-    **+New item** e clique nela.
+![](./media/image13.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image13.png)
+4.  Você verá uma notificação informando **Successfully created SQL endpoint**.
 
-2.  Clique no bloco **“Lakehouse”.**
+![](./media/image14.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image14.png)
+5.  Na seção **Explorer**, em **Fabric_lakehouse**, passe o cursor do mouse sobre a pasta **Files** e clique no menu de reticências horizontais **(...)**. Clique em **Upload** e, em seguida, em **Upload folder**.
 
-3.  Na caixa de diálogo **New lakehouse**, insira
-    **+++DataFactoryLakehouse+++** no campo **Name** e **desmarque** a
-    opção lakehouses schemas. Clique no botão **Create** e abra o novo
-    lakehouse.
+![](./media/image15.png)
 
-> ![](./media/image15.png)
+6.  No painel **Upload folder**, que aparece no lado direito, selecione o ícone de pasta abaixo de **Files/**, navegue até **C:\LabFiles**, selecione a pasta **orders** e clique no botão **Upload**.
 
 ![](./media/image16.png)
 
-4.  Navegue até o Lakehouse, clique com o botão direito na pasta Files e
-    selecione Upload \> Upload files para adicionar os arquivos.
+7.  Caso a caixa de diálogo **Upload 3 files to this site?** seja exibida, clique no botão **Upload**.
 
 ![](./media/image17.png)
 
-5.  Na aba Upload files, clique no ícone de **pasta** na seção Files.
+8.  No painel **Upload folder**, clique no botão **Upload**.
 
 ![](./media/image18.png)
 
-6.  Navegue até **C:\LabFiles** na sua VM, selecione o arquivo
-    **/Labfiles/NYCTaxi/part-00000-907cea6d-0f54-4639-9a14-042dc04185ef-c000.snappy.parquet**
-    e clique no botão **Open**.
+9.  Depois que os arquivos forem carregados, feche o painel **Upload folder**.
 
 ![](./media/image19.png)
 
-7.  Em seguida, clique no botão **Upload** e feche a janela.
+10. Expanda **Files**, selecione a pasta **orders** e verifique se os arquivos CSV foram carregados.
 
 ![](./media/image20.png)
 
+### Tarefa 3: Criar um notebook
+
+Para trabalhar com dados no Apache Spark, você pode criar um *notebook*. Os notebooks fornecem um ambiente interativo no qual você pode escrever e executar código (em várias linguagens) e adicionar anotações para documentá-lo.
+
+1.  Na aba **Home** do lakehouse, selecione o menu suspenso **Analyze data with**, aponte para **Notebook** e selecione **New notebook**.
+
 ![](./media/image21.png)
+
+2.  Após alguns segundos, um novo notebook contendo uma única *célula* será aberto. Os notebooks são compostos por uma ou mais células que podem conter *código* ou *markdown* (texto formatado).
 
 ![](./media/image22.png)
 
-8.  Na barra de ferramentas, selecione **Analyze data** no menu
-    suspenso, aponte para **Notebook** e, em seguida, selecione **New
-    notebook**.
+3.  Selecione a primeira célula (que atualmente é uma célula de *código*) e, na barra de ferramentas dinâmica no canto superior direito, use o botão **M↓** para converter a célula em uma célula de **markdown**.
 
 ![](./media/image23.png)
 
-9.  Adicione o seguinte código PySpark para criar uma sessão do Spark,
-    ler o arquivo Parquet carregado da pasta Files do Lakehouse e gravar
-    os dados em uma tabela chamada Bronze, substituindo quaisquer dados
-    existentes na tabela.
-
-```
-from pyspark.sql import SparkSession
-
-spark = SparkSession.builder.appName("LoadParquet").getOrCreate()
-# Read the green_tripdata_2017 parquet file
-df2 = spark.read.format("parquet").load("Files/part-00000-907cea6d-0f54-4639-9a14-042dc04185ef-c000.snappy.parquet")
-
-# Write to table
-df2.write.mode("overwrite").saveAsTable("Bronze")
-```
+4.  Quando a célula for convertida em uma célula de markdown, o texto contido nela será renderizado.
 
 ![](./media/image24.png)
 
-![](./media/image25.png)
+5.  Use o botão **🖉** (Edit) para alternar a célula para o modo de edição, substitua todo o texto e modifique o markdown da seguinte forma:
 
-7.  Para validar as tabelas criadas, clique com o botão direito do mouse
-    no **DataFactoryLakehouse** no Explorer e selecione **Refresh**. As
-    tabelas serão exibidas.
+```text
+# Sales order data exploration
+
+Use the code in this notebook to explore sales order data.
+```
+
+![](./media/image25.png)
 
 ![](./media/image26.png)
 
+6.  Clique em qualquer lugar do notebook, fora da célula, para interromper a edição e visualizar o markdown renderizado.
+
 ![](./media/image27.png)
+
+### Tarefa 4: Carregar dados em um DataFrame
+
+Agora você está pronto para executar o código que carrega os dados em um *DataFrame*. Os DataFrames no Spark são semelhantes aos DataFrames do Pandas no Python e fornecem uma estrutura comum para trabalhar com dados organizados em linhas e colunas.
+
+**Observação**: O Spark oferece suporte a várias linguagens de programação, incluindo Scala, Java e outras. Neste exercício, usaremos o *PySpark*, uma variante do Python otimizada para o Spark. O PySpark é uma das linguagens mais utilizadas no Spark e é a linguagem padrão nos notebooks do Fabric.
+
+1.  Com o notebook visível, expanda a lista **Files** e selecione a pasta **orders** para que os arquivos CSV sejam listados ao lado do editor do notebook.
 
 ![](./media/image28.png)
 
-## Exercício 2: Transformar dados com um fluxo de dados no Data Factory
+2.  Passe o cursor do mouse sobre o arquivo **2019.csv**, clique nas reticências horizontais **(...)** ao lado dele, clique em **Load data** e selecione **Spark**. Uma nova célula de código contendo o código a seguir será adicionada ao notebook:
 
-### Tarefa 1: Obter dados de uma tabela do Lakehouse
+```python
+df = spark.read.format("csv").option("header","true").load("Files/orders/2019.csv")
+# df now is a Spark DataFrame containing CSV data from "Files/orders/2019.csv".
+display(df)
+```
 
-1.  Agora, clique no workspace **Data Factory-@lab.LabInstance.Id** no
-    painel de navegação à esquerda.
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image29.png)
-
-2.  Crie um novo Dataflow Gen2 clicando no botão **+New item** na barra
-    de navegação. Na lista de itens disponíveis, selecione o item
-    **Dataflow Gen2**.
+![](./media/image29.png)
 
 ![](./media/image30.png)
 
-3.  Forneça o nome **+++nyc_taxi_data_with_discounts+++** para o novo
-    Dataflow Gen2 e, em seguida, selecione **Create**.
+**Dica**: Você pode ocultar o painel Lakehouse Explorer à esquerda usando o ícone **«**. Isso ajudará você a se concentrar no notebook.
+
+3.  Use o botão **▷ Run cell** à esquerda da célula para executá-la.
 
 ![](./media/image31.png)
 
-4.  No novo menu do Dataflow, no painel **Power Query**, clique na
-    **menu suspenso** **Get data** e, em seguida, selecione **More...**.
+**Observação**: Como esta é a primeira vez que você executa código do Spark, uma sessão do Spark precisa ser iniciada. Isso significa que a primeira execução na sessão pode levar cerca de um minuto. As execuções seguintes serão mais rápidas.
 
-![A screenshot of a computer Description automatically
-generated](./media/image32.png)
+4.  Quando o comando da célula for concluído, revise a saída abaixo da célula, que deverá ser semelhante a esta:
 
-5.  Na aba **Choose data source**, no campo de pesquisa, digite
-    **+++Lakehouse+++** e, em seguida, clique no conector **Lakehouse**.
+![](./media/image32.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image33.png)
+5.  A saída mostra as linhas e colunas de dados do arquivo 2019.csv. No entanto, observe que os cabeçalhos das colunas não estão corretos. O código padrão usado para carregar os dados em um DataFrame pressupõe que o arquivo CSV contém os nomes das colunas na primeira linha, mas, neste caso, o arquivo CSV contém apenas os dados, sem informações de cabeçalho.
 
-6.  A caixa de diálogo **Connect to data source** será exibida, e uma
-    nova conexão será criada automaticamente com base no usuário
-    conectado no momento. Selecione **Next**.
+6.  Modifique o código para definir a opção **header** como **false**. Substitua todo o código da célula pelo código a seguir, clique no botão **▷ Run cell** e revise a saída.
 
-![A screenshot of a computer Description automatically
-generated](./media/image34.png)
+```python
+df = spark.read.format("csv").option("header","false").load("Files/orders/2019.csv")
+# df now is a Spark DataFrame containing CSV data from "Files/orders/2019.csv".
+display(df)
+```
 
-7.  A caixa de diálogo **Choose data** será exibida. Use o painel de
-    navegação para localizar o **workspace- Data-FactoryXX** e
-    expanda-o. Em seguida, expanda **Lakehouse - DataFactoryLakehouse**,
-    criado para o destino no módulo anterior, selecione a tabela
-    **Bronze** na lista e clique no botão **Create**.
+![](./media/image33.png)
+
+7.  Agora, o DataFrame inclui corretamente a primeira linha como valores de dados, mas os nomes das colunas são gerados automaticamente e não são muito úteis. Para compreender os dados, você precisa definir explicitamente o esquema e os tipos de dados corretos para os valores contidos no arquivo.
+
+8.  Substitua todo o código da célula pelo código a seguir, clique no botão **▷ Run cell** e revise a saída.
+
+```python
+from pyspark.sql.types import *
+
+orderSchema = StructType([
+    StructField("SalesOrderNumber", StringType()),
+    StructField("SalesOrderLineNumber", IntegerType()),
+    StructField("OrderDate", DateType()),
+    StructField("CustomerName", StringType()),
+    StructField("Email", StringType()),
+    StructField("Item", StringType()),
+    StructField("Quantity", IntegerType()),
+    StructField("UnitPrice", FloatType()),
+    StructField("Tax", FloatType())
+])
+
+df = spark.read.format("csv").schema(orderSchema).load("Files/orders/2019.csv")
+display(df)
+```
+
+![](./media/image34.png)
 
 ![](./media/image35.png)
 
-8.  Você verá que o canvas agora está preenchido com os dados.
+9.  Agora, o DataFrame inclui os nomes corretos das colunas. Os tipos de dados das colunas são especificados usando um conjunto padrão de tipos definido na biblioteca Spark SQL, que foi importada no início da célula.
 
-> ![](./media/image36.png)
+10. Use o ícone **+ Code** abaixo da saída da célula para adicionar uma nova célula de código ao notebook e insira o código a seguir. Clique no botão **▷ Run cell** para confirmar que as alterações foram aplicadas aos dados.
 
-### Tarefa 2: Transformar os dados importados do Lakehouse
+```python
+display(df)
+```
 
-1.  Selecione o ícone de data type no cabeçalho da segunda
-    coluna, **IpepPickupDatetime**, para exibir um menu suspenso. No
-    menu, selecione o tipo de dados Date para converter a coluna de
-    **Date/Time** para o tipo **Date**.
+![](./media/image36.png)
+
+11. O DataFrame inclui apenas os dados do arquivo **2019.csv**. Em seguida, você modificará o código para que o caminho do arquivo use um caractere curinga \* para ler os dados dos pedidos de vendas de todos os arquivos da pasta **orders**.
+
+12. Use o ícone **+ Code** abaixo da saída da célula para adicionar uma nova célula de código ao notebook e insira o código a seguir.
+
+```python
+from pyspark.sql.types import *
+
+orderSchema = StructType([
+    StructField("SalesOrderNumber", StringType()),
+    StructField("SalesOrderLineNumber", IntegerType()),
+    StructField("OrderDate", DateType()),
+    StructField("CustomerName", StringType()),
+    StructField("Email", StringType()),
+    StructField("Item", StringType()),
+    StructField("Quantity", IntegerType()),
+    StructField("UnitPrice", FloatType()),
+    StructField("Tax", FloatType())
+])
+
+df = spark.read.format("csv").schema(orderSchema).load("Files/orders/*.csv")
+display(df)
+```
 
 ![](./media/image37.png)
 
-2.  Na aba **Home** da faixa de opções, selecione a opção **Choose
-    columns** no grupo **Manage columns**.
+13. Execute a célula de código modificada e revise a saída, que agora deverá incluir os dados de vendas de 2019, 2020 e 2021.
 
 ![](./media/image38.png)
 
-3.  Na caixa de diálogo **Choose columns**, **desmarque** algumas das
-    colunas listadas e, em seguida, selecione **OK**.
+**Observação**: Apenas um subconjunto das linhas é exibido, portanto talvez você não veja exemplos de todos os anos.
 
-    - lpepDropoffDatetime
+## Exercício 2: Explorar dados em um DataFrame
 
-    -  DoLocationID
+O objeto DataFrame inclui uma ampla variedade de funções que você pode usar para filtrar, agrupar e manipular os dados que ele contém.
+
+### Tarefa 1: Filtrar um DataFrame
+
+1.  Use o ícone **+ Code** abaixo da saída da célula para adicionar uma nova célula de código ao notebook e insira o código a seguir.
+
+```python
+customers = df['CustomerName', 'Email']
+print(customers.count())
+print(customers.distinct().count())
+display(customers.distinct())
+```
+
+2.  **Execute** a nova célula de código e revise os resultados. Observe os seguintes detalhes:
+
+- Quando você realiza uma operação em um DataFrame, o resultado é um novo DataFrame (neste caso, um novo DataFrame **customers** é criado selecionando um subconjunto específico de colunas do DataFrame **df**).
+
+- Os DataFrames fornecem funções como **count** e **distinct**, que podem ser usadas para resumir e filtrar os dados que eles contêm.
+
+- A sintaxe `dataframe['Field1', 'Field2', ...]` é uma forma abreviada de definir um subconjunto de colunas. Você também pode usar o método **select**; portanto, a primeira linha do código acima poderia ser escrita como `customers = df.select("CustomerName", "Email")`.
 
 ![](./media/image39.png)
 
-4.  Selecione o menu suspenso de filter and sort da coluna
-    **storeAndFwdFlag**. (Se aparecer o aviso **List may be
-    incomplete**, selecione **Load more** para visualizar todos os
-    dados.)
+3.  Substitua todo o código da célula pelo código a seguir e clique no botão **▷ Run cell**.
+
+```python
+customers = df.select("CustomerName", "Email").where(df['Item']=='Road-250 Red, 52')
+print(customers.count())
+print(customers.distinct().count())
+display(customers.distinct())
+```
+
+4.  Revise os resultados para ver os clientes que compraram o produto **Road-250 Red, 52**. Observe que você pode "encadear" várias funções, de modo que a saída de uma função se torne a entrada da próxima. Neste caso, o DataFrame criado pelo método **select** é o DataFrame de origem do método **where**, que é usado para aplicar os critérios de filtragem.
 
 ![](./media/image40.png)
 
-5.  Selecione **'Y'** para exibir somente as linhas em que um desconto
-    foi aplicado e, em seguida, selecione **OK**.
+### Tarefa 2: Agregar e agrupar dados em um DataFrame
+
+1.  Clique em **+ Code**, copie e cole o código abaixo e clique no botão **Run cell**.
+
+```python
+productSales = df.select("Item", "Quantity").groupBy("Item").sum()
+display(productSales)
+```
 
 ![](./media/image41.png)
 
-6.  Selecione o menu suspenso de sort and filter da coluna
-    **lpep_Pickup_Datetime**. Em seguida, selecione **Date filters** e
-    escolha o filtro **Between...**, disponível para os tipos Date e
-    Date/Time.
+2.  Observe que os resultados mostram a soma das quantidades pedidas agrupadas por produto. O método **groupBy** agrupa as linhas por *Item*, e a função de agregação **sum** subsequente é aplicada a todas as colunas numéricas restantes (neste caso, *Quantity*).
+
+3.  Clique em **+ Code**, copie e cole o código abaixo e clique no botão **Run cell**.
+
+```python
+from pyspark.sql.functions import *
+
+yearlySales = df.select(year("OrderDate").alias("Year")).groupBy("Year").count().orderBy("Year")
+display(yearlySales)
+```
 
 ![](./media/image42.png)
 
-7.  Na caixa de diálogo **Filter rows**, selecione as datas entre
-    **January 1, 2017** e **January 31, 2017** e, em seguida, selecione
-    **OK**.
+4.  Observe que os resultados mostram o número de pedidos de vendas por ano. O método **select** inclui uma função SQL **year** para extrair o componente de ano do campo *OrderDate* (por isso o código inclui uma instrução **import** para importar funções da biblioteca Spark SQL). Em seguida, o método **alias** é usado para atribuir um nome de coluna ao valor de ano extraído. Os dados são então agrupados pela coluna *Year* derivada, a contagem de linhas de cada grupo é calculada e, por fim, o método **orderBy** é usado para classificar o DataFrame resultante.
+
+## Exercício 3: Usar o Spark para transformar arquivos de dados
+
+Uma tarefa comum dos engenheiros de dados é ingerir dados em um determinado formato ou estrutura e transformá-los para processamento ou análise posterior.
+
+### Tarefa 1: Usar métodos e funções de DataFrame para transformar dados
+
+1.  Clique em **+ Code** e copie e cole o código abaixo.
+
+```python
+from pyspark.sql.functions import *
+
+## Create Year and Month columns
+transformed_df = df.withColumn("Year", year(col("OrderDate"))).withColumn("Month", month(col("OrderDate")))
+
+# Create the new FirstName and LastName fields
+transformed_df = transformed_df.withColumn("FirstName", split(col("CustomerName"), " ").getItem(0)).withColumn("LastName", split(col("CustomerName"), " ").getItem(1))
+
+# Filter and reorder columns
+transformed_df = transformed_df["SalesOrderNumber", "SalesOrderLineNumber", "OrderDate", "Year", "Month", "FirstName", "LastName", "Email", "Item", "Quantity", "UnitPrice", "Tax"]
+
+# Display the first five orders
+display(transformed_df.limit(5))
+```
+
+2.  **Execute** o código para criar um novo DataFrame a partir dos dados originais dos pedidos, aplicando as seguintes transformações:
+
+- Adicionar as colunas **Year** e **Month** com base na coluna **OrderDate**.
+
+- Adicionar as colunas **FirstName** e **LastName** com base na coluna **CustomerName**.
+
+- Filtrar e reordenar as colunas, removendo a coluna **CustomerName**.
 
 ![](./media/image43.png)
 
+3.  Revise a saída e verifique se as transformações foram aplicadas aos dados.
+
 ![](./media/image44.png)
 
-### Tarefa 3: Conectar-se a um arquivo CSV que contém dados de descontos
+Você pode usar todo o potencial da biblioteca Spark SQL para transformar os dados, filtrando linhas, derivando, removendo ou renomeando colunas e aplicando quaisquer outras modificações necessárias.
 
-Agora que os dados das viagens estão disponíveis, queremos carregar os
-dados que contêm os respectivos descontos para cada dia e VendorID e
-preparar os dados antes de combiná-los com os dados das viagens.
+**Dica**: Consulte a [*Spark DataFrame documentation*](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/dataframe.html) para saber mais sobre os métodos do objeto DataFrame.
 
-1.  Na aba **Home** do menu do editor de dataflow, selecione a opção
-    **Get data** e, em seguida, escolha **Text/CSV**.
+### Tarefa 2: Salvar os dados transformados
+
+1.  Adicione uma nova célula com o código a seguir para salvar o DataFrame transformado no formato Parquet (substituindo os dados, caso já existam). **Execute** a célula e aguarde a mensagem informando que os dados foram salvos.
+
+```python
+transformed_df.write.mode("overwrite").parquet('Files/transformed_data/orders')
+print ("Transformed data saved!")
+```
+
+**Observação**: Geralmente, o formato *Parquet* é preferido para arquivos de dados que serão usados em análises posteriores ou ingeridos em um armazenamento analítico. O Parquet é um formato muito eficiente e compatível com a maioria dos sistemas de análise de dados em larga escala. Na verdade, às vezes o requisito de transformação de dados pode ser simplesmente converter os dados de outro formato (como CSV) para Parquet!
 
 ![](./media/image45.png)
 
-2.  No painel **Connect to data source**, em **Connection settings**,
-    selecione o botão de opção **Link to file**. Em seguida, insira
-    +++https://raw.githubusercontent.com/ekote/azure-architect/master/Generated-NYC-Taxi-Green-Discounts.csv+++ e
-    defina o nome da conexão como **+++dfconnection+++**. Certifique-se
-    de que **authentication kind** esteja definido como **Anonymous**.
-    Clique no botão **Next**.
+2.  No painel **Lakehouse explorer**, à esquerda, no menu **...** do nó **Files**, selecione **Refresh**.
 
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image46.png)
+![](./media/image46.png)
 
-3.  Na caixa de diálogo **Preview file data**, selecione **Create**.
+3.  Clique na pasta **transformed_data** para verificar se ela contém uma nova pasta chamada **orders**, que, por sua vez, contém um ou mais arquivos **Parquet**.
 
-![A screenshot of a computer Description automatically
-generated](./media/image47.png)
+![](./media/image47.png)
+
+4.  Clique em **+ Code** e insira o código a seguir para carregar um novo DataFrame a partir dos arquivos Parquet da pasta **transformed_data -\> orders**:
+
+```python
+orders_df = spark.read.format("parquet").load("Files/transformed_data/orders")
+display(orders_df)
+```
+
+5.  **Execute** a célula e verifique se os resultados mostram os dados dos pedidos carregados a partir dos arquivos Parquet.
 
 ![](./media/image48.png)
 
-### Tarefa 4: Transformar os dados de desconto
+### Tarefa 3: Salvar dados em arquivos particionados
 
-1.  Ao revisar os dados, vemos que os cabeçalhos parecem estar na
-    primeira linha. Promova-os a cabeçalhos selecionando o menu de
-    contexto da tabela, no canto superior esquerdo da área de
-    visualização, e selecione **Use first row as headers**.
+1.  Clique em **+ Code** para adicionar uma nova célula e insira o código a seguir, que salva o DataFrame particionando os dados por **Year** e **Month**. **Execute** a célula e aguarde a mensagem informando que os dados foram salvos.
+
+```python
+orders_df.write.partitionBy("Year","Month").mode("overwrite").parquet("Files/partitioned_data")
+print ("Transformed data saved!")
+```
 
 ![](./media/image49.png)
 
-***Observação:** Depois de promover os cabeçalhos, você verá uma nova
-etapa adicionada ao painel **Applied steps**, na parte superior do
-editor de dataflow, referente aos tipos de dados das suas colunas.*
+2.  No painel **Lakehouse explorer**, à esquerda, no menu **...** do nó **Files**, selecione **Refresh**.
 
 ![](./media/image50.png)
 
-2.  Clique com o botão direito do mouse na coluna **VendorID** e, no
-    menu de contexto exibido, selecione a opção **Unpivot other
-    columns**. Isso permite transformar as colunas em pares de
-    atributo-valor, nos quais as colunas se tornam linhas.
+3.  Expanda a pasta **partitioned_data** para verificar se ela contém uma hierarquia de pastas denominadas **Year=xxxx**, cada uma contendo pastas denominadas **Month=xxxx**. Cada pasta de mês contém um arquivo Parquet com os pedidos daquele mês.
 
 ![](./media/image51.png)
 
-3.  Com a tabela não dinamizada, renomeie as colunas **Attribute** e
-    **Value** clicando duas vezes sobre elas e alterando **Attribute**
-    para **+++Date+++** e **Value** para **+++Discount+++**.
-
 ![](./media/image52.png)
 
-4.  Altere o tipo de dados da coluna **Date** selecionando o menu de
-    tipo de dados à esquerda do nome da coluna e escolhendo **Date**.
+O particionamento de arquivos de dados é uma forma comum de otimizar o desempenho ao trabalhar com grandes volumes de dados. Essa técnica pode melhorar significativamente o desempenho e facilitar a filtragem dos dados.
+
+4.  Clique em **+ Code** para adicionar uma nova célula e insira o código a seguir para carregar os pedidos de 2021 dos dados particionados em um novo DataFrame:
+
+```python
+orders_2021_df = spark.read.format("parquet").load("Files/partitioned_data/Year=2021/Month=*")
+display(orders_2021_df)
+```
+
+5.  **Execute** a célula e verifique se os resultados mostram os dados dos pedidos de vendas de 2021. Observe que as colunas de particionamento especificadas no caminho (**Year** e **Month**) não estão incluídas no DataFrame.
 
 ![](./media/image53.png)
 
-5.  Selecione a coluna **Discount** e, em seguida, selecione a aba
-    **Transform** no menu. Selecione **Number column** e, depois, em
-    **Standard** nas transformações numéricas, selecione **Divide**.
+## Exercício 4: Trabalhar com tabelas e SQL
+
+Como você viu, os métodos nativos do objeto DataFrame permitem consultar e analisar dados de um arquivo com bastante eficiência. No entanto, muitos analistas de dados preferem trabalhar com tabelas que podem consultar usando a sintaxe SQL. O Spark fornece um *metastore*, no qual você pode definir tabelas relacionais. A biblioteca Spark SQL, que fornece o objeto DataFrame, também oferece suporte ao uso de instruções SQL para consultar tabelas no metastore. Ao usar esses recursos do Spark, você pode combinar a flexibilidade de um data lake com o esquema de dados estruturado e as consultas baseadas em SQL de um data warehouse relacional — daí o termo "data lakehouse".
+
+### Tarefa 1: Criar uma tabela gerenciada
+
+As tabelas em um metastore do Spark são abstrações relacionais sobre arquivos no data lake. As tabelas podem ser *gerenciadas* (nesse caso, os arquivos são gerenciados pelo metastore) ou *externas* (nesse caso, a tabela faz referência a um local de arquivos no data lake que você gerencia independentemente do metastore).
+
+1.  Clique em **+ Code** no notebook para adicionar uma nova célula de código e insira o código a seguir, que salva o DataFrame com os dados dos pedidos de vendas como uma tabela chamada **salesorders**:
+
+```python
+# Create a new table
+df.write.format("delta").saveAsTable("salesorders")
+
+# Get the table description
+spark.sql("DESCRIBE EXTENDED salesorders").show(truncate=False)
+```
+
+**Observação**: Vale destacar alguns pontos sobre este exemplo. Primeiro, nenhum caminho explícito é fornecido, portanto os arquivos da tabela serão gerenciados pelo metastore. Segundo, a tabela é salva no formato **delta**. Você pode criar tabelas com base em vários formatos de arquivo (incluindo CSV, Parquet, Avro e outros), mas o *Delta Lake* é uma tecnologia do Spark que adiciona recursos de banco de dados relacional às tabelas, incluindo suporte a transações, versionamento de linhas e outros recursos úteis. A criação de tabelas no formato delta é recomendada para data lakehouses no Fabric.
+
+2.  **Execute** a célula de código e revise a saída, que descreve a definição da nova tabela.
 
 ![](./media/image54.png)
 
-6.  Na caixa de diálogo **Divide**, insira o valor **+++**100**+++** e,
-    em seguida, clique no botão **OK**.
+3.  No painel **Lakehouse explorer**, no menu **...** da pasta **Tables**, selecione **Refresh**.
 
-![A screenshot of a computer Description automatically
-generated](./media/image55.png)
+![](./media/image55.png)
+
+4.  Expanda o nó **Tables** e verifique se a tabela **salesorders** foi criada no esquema **dbo**.
 
 ![](./media/image56.png)
 
-### Tarefa 7: Combinar os dados de viagens e descontos
-
-A próxima etapa é combinar as duas tabelas em uma única tabela que
-contenha o desconto a ser aplicado à viagem e o total ajustado.
-
-1.  Primeiro, ative o botão **Diagram view** para que você possa
-    visualizar ambas as consultas.
+5.  Passe o cursor do mouse sobre a tabela **salesorders**, clique nas reticências horizontais **(...)**, clique em **Load data** e selecione **Spark**.
 
 ![](./media/image57.png)
 
-2.  Selecione a consulta **Bronze** e, na aba **Home**, selecione o menu
-    **Combine**. Em seguida, escolha **Merge queries** e depois **Merge
-    queries as new**.
+6.  Uma nova célula de código é adicionada ao notebook. Ela usa a biblioteca Spark SQL para incorporar ao código PySpark uma consulta SQL na tabela **salesorders** e carregar os resultados da consulta em um DataFrame. O código gerado é semelhante ao seguinte. Clique no botão **▷ Run cell** para executá-lo.
+
+```python
+df = spark.sql("SELECT * FROM Fabric_lakehouse.dbo.salesorders LIMIT 1000")
+display(df)
+```
 
 ![](./media/image58.png)
 
-3.  Na caixa de diálogo **Merge**, selecione
-    **Generated-NYC-Taxi-Green-Discounts** no menu suspenso **Right
-    table for merge** e, em seguida, selecione o ícone de **“lâmpada”**
-    no canto superior direito da caixa de diálogo para visualizar o
-    mapeamento sugerido das colunas entre as três tabelas.
+### Tarefa 2: Criar uma tabela externa
 
-4.  Escolha cada um dos dois mapeamentos de colunas sugeridos, um de
-    cada vez, mapeando as colunas VendorID e Date de ambas as tabelas.
-    Quando os dois mapeamentos forem adicionados, os cabeçalhos das
-    colunas correspondentes serão destacados em cada tabela.
+Você também pode criar tabelas *externas*, nas quais os metadados do esquema são definidos no metastore do lakehouse, mas os arquivos de dados são armazenados em um local externo.
+
+1.  Abaixo dos resultados retornados pela primeira célula de código, use o botão **+ Code** para adicionar uma nova célula de código, caso ainda não exista. Em seguida, insira o código a seguir na nova célula.
+
+```python
+df.write.format("delta").saveAsTable("external_salesorder", path="<abfs_path>/external_salesorder")
+```
 
 ![](./media/image59.png)
 
-5.  Uma mensagem será exibida solicitando que você permita a combinação
-    de dados de várias fontes de dados para visualizar os resultados.
-    Selecione **OK**. 
+2.  No painel **Lakehouse explorer**, no menu **...** da pasta **Files**, selecione **Copy ABFS path** e cole o caminho no Bloco de Notas.
+
+O caminho ABFS é o caminho totalmente qualificado da pasta **Files** no armazenamento OneLake do seu lakehouse, semelhante a este:
+
+```text
+abfss://dp_Fabric<lab instance ID>@onelake.dfs.fabric.microsoft.com/Fabric_lakehouse.Lakehouse/Files
+```
 
 ![](./media/image60.png)
 
-6.  Na área da tabela, inicialmente será exibido um aviso informando que
-    “The evaluation was canceled because combining data from multiple
-    sources may reveal data from one source to another. Select Continue
-    if the possibility of revealing data is okay.”
+3.  Volte para a célula de código e substitua **\<abfs_path\>** pelo caminho que você copiou para o Bloco de Notas, para que o código salve o DataFrame como uma tabela externa, com os arquivos de dados em uma pasta chamada **external_salesorder** dentro da pasta **Files**. O caminho completo deverá ser semelhante a este:
 
-> Selecione **Continue** para exibir os dados combinados.
+```text
+abfss://dp_Fabric<lab instance ID>@onelake.dfs.fabric.microsoft.com/Fabric_lakehouse.Lakehouse/Files/external_salesorder
+```
+
+4.  Use o botão **▷ (Run cell)** à esquerda da célula para executá-la.
 
 ![](./media/image61.png)
 
-7.  Na caixa de diálogo Privacy Levels, selecione a **caixa de seleção**
-    :**Ignore Privacy Levels checks for this document. Ignoring privacy
-    Levels could expose sensitive or confidential data to an
-    unauthorized person** e clique no botão **Save**.
+5.  No painel **Lakehouse explorer**, no menu **...** da pasta **Tables**, selecione **Refresh**.
 
 ![](./media/image62.png)
 
+6.  Expanda o nó **Tables** e verifique se a tabela **external_salesorder** foi criada.
+
 ![](./media/image63.png)
 
-8.  Observe que uma nova consulta foi criada na Diagram view, mostrando
-    o relacionamento da nova consulta Merge com as duas consultas
-    criadas anteriormente. No painel da tabela do editor, role para a
-    direita na lista de colunas da consulta Merge para visualizar uma
-    nova coluna com valores de tabela. Essa é a coluna **"Generated NYC
-    Taxi-Green-Discounts"**, e seu tipo é **\[Table\]**.
-
-No cabeçalho da coluna, há um ícone com duas setas apontando em direções
-opostas, permitindo selecionar colunas da tabela. Desmarque todas as
-colunas, exceto **Discount**, e, em seguida, selecione **OK**.
+7.  No painel **Lakehouse explorer**, no menu **...** da pasta **Files**, selecione **Refresh**.
 
 ![](./media/image64.png)
 
-9.  Como o valor do desconto agora está no nível da linha, podemos criar
-    uma nova coluna para calcular o total após o desconto. Para isso,
-    selecione a aba **Add column** na parte superior do editor e escolha
-    **Custom column** no grupo **General**.
+8.  Expanda o nó **Files** e verifique se a pasta **external_salesorder** foi criada para os arquivos de dados da tabela.
 
 ![](./media/image65.png)
 
-10. Na caixa de diálogo **Custom column**, você pode usar a linguagem de
-    fórmulas do Power Query (também conhecida como M) para definir como
-    a nova coluna deve ser calculada. Insira
-    **+++TotalAfterDiscount+++** em **New column name**, selecione
-    **Currency** em **Data type** e insira a seguinte expressão M no
-    campo **Custom column formula**:
+### Tarefa 3: Comparar tabelas gerenciadas e externas
 
-+++if [total_amount] > 0 then [total_amount] * ( 1 -[Discount] ) else [total_amount]+++
+Vamos explorar as diferenças entre tabelas gerenciadas e externas.
 
-Em seguida, selecione **OK**.
+1.  Abaixo dos resultados retornados pela célula de código, use o botão **+ Code** para adicionar uma nova célula de código. Copie o código abaixo para a célula de código e use o botão **▷ (Run cell)** à esquerda da célula para executá-la.
+
+```sql
+%%sql
+
+DESCRIBE FORMATTED salesorders;
+```
 
 ![](./media/image66.png)
 
+2.  Nos resultados, visualize a propriedade **Location** da tabela, que deverá ser um caminho para o armazenamento OneLake do lakehouse terminando em **/Tables/salesorders** (talvez seja necessário ampliar a coluna **Data type** para ver o caminho completo).
+
 ![](./media/image67.png)
 
-11. Selecione a coluna recém-criada **TotalAfterDiscount** e, em
-    seguida, selecione a aba **Transform** na parte superior da janela
-    do editor. No grupo **Number column**, selecione o menu suspenso
-    **Rounding** e, depois, escolha **Round...**.
+3.  Em seguida, modifique o comando **DESCRIBE** para exibir os detalhes da tabela **external_salesorder**. Abaixo dos resultados retornados pela célula de código, use o botão **+ Code** para adicionar uma nova célula de código, copie o código abaixo e use o botão **▷ (Run cell)** à esquerda da célula para executá-la.
 
-**Observação**: Se você não encontrar a opção **Rounding**, expanda o
-menu para visualizar **Number column**.
+```sql
+%%sql
+
+DESCRIBE FORMATTED external_salesorder;
+```
+
+4.  Nos resultados, visualize a propriedade **Location** da tabela, que deverá ser um caminho para o armazenamento OneLake do lakehouse terminando em **/Files/external_salesorder** (talvez seja necessário ampliar a coluna **Data type** para ver o caminho completo).
 
 ![](./media/image68.png)
 
-12. Na caixa de diálogo **Round**, insira **2** no campo de número de
-    casas decimais e, em seguida, selecione **OK**.
+### Tarefa 4: Executar código SQL em uma célula
+
+Embora seja útil poder incorporar instruções SQL em uma célula que contém código PySpark, os analistas de dados geralmente querem trabalhar diretamente em SQL.
+
+1.  Clique em **+ Code** no notebook e insira o código a seguir. Clique no botão **▷ Run cell** e revise os resultados. Observe que:
+
+- A linha `%%sql` no início da célula (chamada de *magic*) indica que o runtime da linguagem Spark SQL deve ser usado para executar o código dessa célula, em vez do PySpark.
+
+- O código SQL faz referência à tabela **salesorders** que você criou anteriormente.
+
+- A saída da consulta SQL é exibida automaticamente como resultado abaixo da célula.
+
+```sql
+%%sql
+SELECT YEAR(OrderDate) AS OrderYear,
+       SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue
+FROM salesorders
+GROUP BY YEAR(OrderDate)
+ORDER BY OrderYear;
+```
 
 ![](./media/image69.png)
 
-13. Altere o tipo de dados de **lpepPickupDatetime** de **Date** para
-    **Date/Time**.
+**Observação**: Para obter mais informações sobre o Spark SQL e os DataFrames, consulte a [*Spark SQL documentation*](https://spark.apache.org/docs/2.2.0/sql-programming-guide.html).
+
+## Exercício 5: Visualizar dados com o Spark
+
+Uma imagem vale mais que mil palavras, e um gráfico geralmente é melhor do que mil linhas de dados. Embora os notebooks do Fabric incluam uma exibição de gráfico integrada para os dados exibidos a partir de um DataFrame ou de uma consulta Spark SQL, ela não foi projetada para gráficos abrangentes. No entanto, você pode usar bibliotecas gráficas do Python, como **matplotlib** e **seaborn**, para criar gráficos a partir dos dados de DataFrames.
+
+### Tarefa 1: Exibir resultados como um gráfico
+
+1.  Clique em **+ Code** no notebook e insira o código a seguir. Clique no botão **▷ Run cell** e observe que ele retorna os dados da tabela **salesorders** que você criou anteriormente.
+
+```sql
+%%sql
+SELECT * FROM salesorders
+```
 
 ![](./media/image70.png)
 
-14. Por fim, expanda o painel **Query settings** no lado direito do
-    editor, caso ainda não esteja expandido, e renomeie a consulta de
-    **Merge** para **+++Output+++**.
+2.  Na seção de resultados abaixo da célula, altere a opção **View** de **Table** para **+ New chart**.
 
 ![](./media/image71.png)
 
+3.  Use o botão **Start editing** no canto superior direito do gráfico para exibir o painel de opções do gráfico. Em seguida, defina as opções conforme indicado abaixo e selecione **Apply**:
+
+| **Opção** | **Valor** |
+|----|----|
+| **Chart type** | **Bar chart** |
+| **X-axis** | **Item** |
+| **Y-axis** | **Quantity** |
+| **Series Group** | **–None–** |
+| **Aggregation** | **Sum** |
+| **Missing and NULL values** | **Display as 0** |
+| **Stacked** | Desmarcado |
+
 ![](./media/image72.png)
-
-### Tarefa 8: Carregar a consulta de saída em uma tabela no Lakehouse
-
-Com a consulta de saída agora totalmente preparada e com os dados
-prontos para serem gerados, podemos definir o destino de saída da
-consulta.
-
-1.  Selecione a consulta **Output** criada anteriormente. Em seguida,
-    selecione o **+ icon** para adicionar **data destination** a este
-    Dataflow.
-
-2.  Na lista data destination, selecione a opção **Lakehouse** em New
-    destination.
 
 ![](./media/image73.png)
 
-3.  Na caixa de diálogo **Connect to data destination**, sua conexão já
-    deverá estar selecionada. Selecione **Next** para continuar.
+![](./media/image74.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image74.png)
-
-4.  Na caixa de diálogo **Choose destination target**, navegue até o
-    Lakehouse e, em seguida, selecione **Next** novamente.
+4.  Verifique se o gráfico está semelhante a este.
 
 ![](./media/image75.png)
 
-5.  Na caixa de diálogo **Choose destination settings**, verifique
-    novamente se as colunas estão mapeadas corretamente e selecione
-    **Save settings**.
+### Tarefa 2: Começar a usar o matplotlib
+
+1.  Clique em **+ Code** e copie e cole o código abaixo. **Execute** o código e observe que ele retorna um DataFrame do Spark contendo a receita anual.
+
+```python
+sqlQuery = "SELECT CAST(YEAR(OrderDate) AS CHAR(4)) AS OrderYear, \
+                SUM((UnitPrice * Quantity) + Tax) AS GrossRevenue \
+            FROM salesorders \
+            GROUP BY CAST(YEAR(OrderDate) AS CHAR(4)) \
+            ORDER BY OrderYear"
+df_spark = spark.sql(sqlQuery)
+df_spark.show()
+```
 
 ![](./media/image76.png)
 
-6.  De volta à janela principal do editor, confirme que o destino de
-    saída da tabela **Output** aparece no painel **Query settings** como
-    **Lakehouse** e, em seguida, selecione a opção **Save and Run** na
-    aba Home.
+2.  Para visualizar os dados como um gráfico, começaremos usando a biblioteca Python **matplotlib**. Essa biblioteca é a principal biblioteca de criação de gráficos, na qual muitas outras são baseadas, e oferece grande flexibilidade na criação de gráficos.
+
+3.  Clique em **+ Code** e copie e cole o código abaixo.
+
+```python
+from matplotlib import pyplot as plt
+
+# matplotlib requires a Pandas dataframe, not a Spark one
+df_sales = df_spark.toPandas()
+
+# Create a bar plot of revenue by year
+plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'])
+
+# Display the plot
+plt.show()
+```
+
+4.  Clique no botão **Run cell** e revise os resultados, que consistem em um gráfico de colunas com a receita bruta total de cada ano. Observe os seguintes recursos do código usado para produzir esse gráfico:
+
+- A biblioteca **matplotlib** requer um DataFrame do *Pandas*, portanto é necessário converter para esse formato o DataFrame do *Spark* retornado pela consulta Spark SQL.
+
+- No centro da biblioteca **matplotlib** está o objeto **pyplot**. Ele é a base da maior parte das funcionalidades de criação de gráficos.
+
+- As configurações padrão resultam em um gráfico utilizável, mas há bastante espaço para personalizá-lo.
 
 ![](./media/image77.png)
 
 ![](./media/image78.png)
 
+5.  Modifique o código para gerar o gráfico conforme indicado: substitua todo o código da célula pelo código a seguir, clique no botão **▷ Run cell** e revise a saída.
+
+```python
+from matplotlib import pyplot as plt
+
+# Clear the plot area
+plt.clf()
+
+# Create a bar plot of revenue by year
+plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
+
+# Customize the chart
+plt.title('Revenue by Year')
+plt.xlabel('Year')
+plt.ylabel('Revenue')
+plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)
+plt.xticks(rotation=45)
+
+# Show the figure
+plt.show()
+```
+
 ![](./media/image79.png)
 
-9.  Agora, clique no **workspace** **Data Factory-XXXX** no painel de
-    navegação do lado esquerdo.
+![](./media/image80.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image80.png)
+6.  O gráfico agora inclui um pouco mais de informações. Tecnicamente, um gráfico está contido em uma **Figure**. Nos exemplos anteriores, a Figure foi criada implicitamente para você, mas é possível criá-la explicitamente.
 
-10. No painel **Data FactoryXX**, selecione **DataFactoryLakehouse**
-    para visualizar a nova tabela carregada.
+7.  Modifique o código para gerar o gráfico conforme indicado: substitua todo o código da célula pelo código a seguir.
+
+```python
+from matplotlib import pyplot as plt
+
+# Clear the plot area
+plt.clf()
+
+# Create a Figure
+fig = plt.figure(figsize=(8,3))
+
+# Create a bar plot of revenue by year
+plt.bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
+
+# Customize the chart
+plt.title('Revenue by Year')
+plt.xlabel('Year')
+plt.ylabel('Revenue')
+plt.grid(color='#95a5a6', linestyle='--', linewidth=2, axis='y', alpha=0.7)
+plt.xticks(rotation=45)
+
+# Show the figure
+plt.show()
+```
+
+8.  **Execute novamente** a célula de código e visualize os resultados. A Figure determina a forma e o tamanho do gráfico. Uma Figure pode conter vários subplots, cada um em seu próprio *eixo*.
 
 ![](./media/image81.png)
 
-11. Confirme se a tabela **Output** aparece no esquema **dbo**.
-
 ![](./media/image82.png)
 
-## Exercício 3: Automatizar e enviar notificações com o Data Factory
+9.  Modifique o código para gerar o gráfico conforme indicado. **Execute novamente** a célula de código e visualize os resultados. A Figure contém os subplots especificados no código.
 
-### Tarefa 1: Adicionar uma atividade do Office 365 Outlook ao seu pipeline
+```python
+from matplotlib import pyplot as plt
 
-1.  Navegue até o espaço de trabalho **Data_FactoryXX** e clique nele no
-    menu de navegação à esquerda.
+# Clear the plot area
+plt.clf()
 
-![A screenshot of a computer Description automatically
-generated](./media/image83.png)
+# Create a figure for 2 subplots (1 row, 2 columns)
+fig, ax = plt.subplots(1, 2, figsize = (10,4))
 
-2.  Selecione a opção **+ New item** na página do **workspace** e
-    selecione **Pipeline**.
+# Create a bar plot of revenue by year on the first axis
+ax[0].bar(x=df_sales['OrderYear'], height=df_sales['GrossRevenue'], color='orange')
+ax[0].set_title('Revenue by Year')
 
-![A screenshot of a computer Description automatically
-generated](./media/image84.png)
+# Create a pie chart of yearly order counts on the second axis
+yearly_counts = df_sales['OrderYear'].value_counts()
+ax[1].pie(yearly_counts)
+ax[1].set_title('Orders per Year')
+ax[1].legend(yearly_counts.keys().tolist())
 
-3.  Forneça First_Pipeline1 como **+++First_Pipeline1+++**e selecione
-    **Create**.
+# Add a title to the Figure
+fig.suptitle('Sales Data')
+
+# Show the figure
+plt.show()
+```
+
+![](./media/image83.png)
+
+![](./media/image84.png)
+
+**Observação**: Para saber mais sobre a criação de gráficos com o matplotlib, consulte a [*matplotlib documentation*](https://matplotlib.org/).
+
+### Tarefa 3: Usar a biblioteca seaborn
+
+Embora o **matplotlib** permita criar gráficos complexos de vários tipos, pode ser necessário escrever um código relativamente complexo para obter os melhores resultados. Por esse motivo, ao longo dos anos, muitas novas bibliotecas foram desenvolvidas com base no matplotlib para abstrair sua complexidade e ampliar seus recursos. Uma dessas bibliotecas é a **seaborn**.
+
+1.  Clique em **+ Code** e copie e cole o código abaixo.
+
+```python
+import seaborn as sns
+
+# Clear the plot area
+plt.clf()
+
+# Create a bar chart
+ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+plt.show()
+```
+
+2.  **Execute** o código e observe que ele exibe um gráfico de barras usando a biblioteca seaborn.
 
 ![](./media/image85.png)
 
-3.  Selecione a guia **Home** no editor do pipeline e localize a
-    atividade **Add copy data**.
+![](./media/image86.png)
 
-> ![](./media/image86.png)
+3.  **Modifique** o código conforme indicado. **Execute** o código modificado e observe que o seaborn permite definir um tema de cores consistente para os gráficos.
 
-5.  Na guia **Source**, insira as seguintes configurações e selecione
-    **Test connection**.
+```python
+import seaborn as sns
 
-| Setting | Value |
-|---|---|
-| Connection | +++dfconnection User-XXXX+++ |
-| Connection Type | Select **HTTP** |
-| File format | **Delimited Text** |
+# Clear the plot area
+plt.clf()
+
+# Set the visual theme for seaborn
+sns.set_theme(style="whitegrid")
+
+# Create a bar chart
+ax = sns.barplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+plt.show()
+```
 
 ![](./media/image87.png)
 
-6.  Na guia **Destination**, insira as seguintes configurações:
-
-| Setting | Value |
-|---|---|
-| Connection | **Lakehouse** |
-| Lakehouse | Select **DataFactoryLakehouse** |
-| Root Folder | Select the **Table** radio button |
-| Table | Select **New**, enter `+++Generated-NYC-Taxi-Green-Discounts+++`, and select **Create**. |
-
 ![](./media/image88.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image89.png)
+4.  **Modifique** o código novamente conforme indicado. **Execute** o código modificado para visualizar a receita anual como um gráfico de linhas.
 
-7.  Na faixa de opções, selecione **Run**.
+```python
+import seaborn as sns
+
+# Clear the plot area
+plt.clf()
+
+# Create a line chart
+ax = sns.lineplot(x="OrderYear", y="GrossRevenue", data=df_sales)
+plt.show()
+```
+
+![](./media/image89.png)
 
 ![](./media/image90.png)
 
-8.  Na caixa de diálogo **Save and run?**, clique no botão **Save and
-    run**.
+**Observação**: Para saber mais sobre a criação de gráficos com o seaborn, consulte a [*seaborn documentation*](https://seaborn.pydata.org/index.html).
 
-![A screenshot of a computer Description automatically
-generated](./media/image91.png)
+### Tarefa 4: Usar tabelas Delta para dados de streaming
+
+O Delta Lake oferece suporte a dados de streaming. As tabelas Delta podem atuar como *destino* (sink) ou *fonte* (source) para fluxos de dados criados com a API Spark Structured Streaming. Neste exemplo, você usará uma tabela Delta como destino para alguns dados de streaming em um cenário simulado de Internet das Coisas (IoT).
+
+1.  Clique em **+ Code**, copie e cole o código abaixo e clique no botão **Run cell**.
+
+```python
+from notebookutils import mssparkutils
+from pyspark.sql.types import *
+from pyspark.sql.functions import *
+
+# Create a folder
+inputPath = 'Files/data/'
+mssparkutils.fs.mkdirs(inputPath)
+
+# Create a stream that reads data from the folder, using a JSON schema
+jsonSchema = StructType([
+    StructField("device", StringType(), False),
+    StructField("status", StringType(), False)
+])
+iotstream = spark.readStream.schema(jsonSchema).option("maxFilesPerTrigger", 1).json(inputPath)
+
+# Write some event data to the folder
+device_data = '''{"device":"Dev1","status":"ok"}
+{"device":"Dev1","status":"ok"}
+{"device":"Dev1","status":"ok"}
+{"device":"Dev2","status":"error"}
+{"device":"Dev1","status":"ok"}
+{"device":"Dev1","status":"error"}
+{"device":"Dev2","status":"ok"}
+{"device":"Dev2","status":"error"}
+{"device":"Dev1","status":"ok"}'''
+mssparkutils.fs.put(inputPath + "data.txt", device_data, True)
+print("Source stream created...")
+```
+
+![](./media/image91.png)
+
+2.  Verifique se a mensagem **Source stream created...** foi exibida. O código que você acabou de executar criou uma fonte de dados de streaming baseada em uma pasta na qual foram salvos alguns dados que representam leituras de dispositivos IoT hipotéticos.
+
+3.  Clique em **+ Code**, copie e cole o código abaixo e clique no botão **Run cell**.
+
+```python
+# Write the stream to a delta table
+delta_stream_table_path = 'Tables/dbo/iotdevicedata'
+checkpointpath = 'Files/delta/checkpoint'
+deltastream = iotstream.writeStream.format("delta").option("checkpointLocation", checkpointpath).start(delta_stream_table_path)
+print("Streaming to delta sink...")
+```
 
 ![](./media/image92.png)
 
-9.  Selecione a guia **Activities** no editor do pipeline e localize a
-    atividade **Office Outlook**.
+4.  Este código grava os dados de streaming dos dispositivos no formato delta em uma pasta chamada **iotdevicedata**. Como o caminho da pasta está dentro da pasta **Tables**, uma tabela será criada automaticamente para ela. Clique nas reticências horizontais ao lado de **Tables** e, em seguida, clique em **Refresh**.
 
 ![](./media/image93.png)
 
-10. Selecione e arraste o caminho On Success (uma caixa de seleção verde
-    no canto superior direito da atividade na tela do pipeline) da
-    atividade Copy data até a nova atividade Office 365 Outlook.
+![](./media/image94.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image94.png)
+5.  Clique em **+ Code**, copie e cole o código abaixo e clique no botão **Run cell**. Este código consulta a tabela **iotdevicedata**, que contém os dados dos dispositivos provenientes da fonte de streaming.
 
-11. Selecione a atividade Office 365 Outlook na tela do pipeline e, em
-    seguida, selecione a guia **Settings** na área de propriedades
-    abaixo da tela para configurar o e-mail. Clique no menu suspenso
-    **Connection** e selecione **Browse all**.
+```sql
+%%sql
+SELECT * FROM dbo.iotdevicedata;
+```
 
-![A screenshot of a computer Description automatically
-generated](./media/image95.png)
+![](./media/image95.png)
 
-12. Na janela ‘choose a data source’, selecione a fonte **Office 365
-    Email**.
+6.  Clique em **+ Code**, copie e cole o código abaixo e clique no botão **Run cell**. Este código grava mais dados hipotéticos dos dispositivos na fonte de streaming.
 
-![A screenshot of a computer Description automatically
-generated](./media/image96.png)
+```python
+# Add more data to the source stream
+more_data = '''{"device":"Dev1","status":"ok"}
+{"device":"Dev1","status":"ok"}
+{"device":"Dev1","status":"ok"}
+{"device":"Dev1","status":"ok"}
+{"device":"Dev1","status":"error"}
+{"device":"Dev2","status":"error"}
+{"device":"Dev1","status":"ok"}'''
+mssparkutils.fs.put(inputPath + "more-data.txt", more_data, True)
+```
 
-13. Entre com a conta da qual deseja enviar o e-mail. Você pode usar a
-    conexão existente com a conta que já está conectada.
+![](./media/image96.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image97.png)
+7.  Clique em **+ Code**, copie e cole o código abaixo e clique no botão **Run cell**. Este código consulta novamente a tabela **iotdevicedata**, que agora deverá incluir os dados adicionais adicionados à fonte de streaming.
 
-14. Clique em **Connect** para prosseguir.
+```sql
+%%sql
+SELECT * FROM dbo.iotdevicedata;
+```
 
-![A screenshot of a computer Description automatically
-generated](./media/image98.png)
+![](./media/image97.png)
 
-15. Selecione a atividade Office 365 Outlook na tela do pipeline e, na
-    guia **Settings** da área de propriedades abaixo da tela, configure
-    o e-mail.
+8.  Clique em **+ Code**, copie e cole o código abaixo e clique no botão **Run cell**. Este código interrompe o streaming.
 
-    - Insira seu endereço de e-mail na seção **To.** Se quiser usar
-      vários endereços, use ; para separá-los.
+```python
+deltastream.stop()
+```
 
-![A screenshot of a computer Description automatically
-generated](./media/image99.png)
+![](./media/image98.png)
 
-- Para **Subject**, selecione o campo para que a opção **Add dynamic
-  content** seja exibida e, em seguida, selecione-a para abrir a tela do
-  construtor de expressões do pipeline.
+### Tarefa 5: Salvar o notebook e encerrar a sessão do Spark
 
-![A screenshot of a computer Description automatically
-generated](./media/image100.png)
+Agora que você terminou de trabalhar com os dados, pode salvar o notebook com um nome significativo e encerrar a sessão do Spark.
 
-16. A caixa de diálogo **Pipeline expression builder** será exibida.
-    Insira a expressão a seguir e, em seguida, selecione **OK**:
+1.  Na barra de menus do notebook, use o ícone ⚙️ **Settings** para visualizar as configurações do notebook.
 
-+++@concat('DI in an Hour Pipeline Succeeded with Pipeline Run Id', pipeline().RunId)+++
+![](./media/image99.png)
+
+2.  Defina o **Name** do notebook como +++Explore Sales Orders+++ e feche o painel de configurações.
+
+![](./media/image100.png)
+
+3.  No menu do notebook, selecione **Stop session** para encerrar a sessão do Spark.
 
 ![](./media/image101.png)
 
-17. Para **Body**, selecione novamente o campo e escolha a opção **View
-    in expression builder** quando ela aparecer abaixo da área de texto.
-    Adicione novamente a expressão a seguir na caixa de diálogo
-    **Pipeline expression builder** que será exibida e, em seguida,
-    selecione **OK**:
-
-+++@concat('RunID = ', pipeline().RunId, ' ; ', 'Copied rows ', activity('Copy data1').output.rowsCopied, ' ; ','Throughput ', activity('Copy data1').output.throughput)+++
-
 ![](./media/image102.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image103.png)
+## Exercício 6: Limpar recursos
 
-\*\*  Observação:\*\* Substitua **Copy data1** pelo nome da sua própria
-atividade de cópia no pipeline.
+Neste laboratório, você aprendeu a usar o Spark para trabalhar com dados no Microsoft Fabric. Se você terminou de explorar seu lakehouse, pode excluir o workspace criado para este laboratório.
 
-18. Finally select the **Home** tab at the top of the pipeline editor,
-    and choose **Run**. Then select **Save and run** again on the
-    confirmation dialog to execute these activities.
+1.  Na barra à esquerda, selecione o ícone do seu workspace para visualizar todos os itens que ele contém.
 
-![A screenshot of a computer Description automatically
-generated](./media/image104.png)
+![](./media/image103.png)
 
-![A screenshot of a computer Description automatically
-generated](./media/image105.png)
+2.  No menu **...** da barra de ferramentas, selecione **Workspace settings**.
+
+![](./media/image104.png)
+
+3.  Selecione **General** e clique em **Remove this workspace**.
+
+![](./media/image105.png)
+
+4.  Na caixa de diálogo **Delete workspace?**, clique no botão **Delete**.
 
 ![](./media/image106.png)
 
 ![](./media/image107.png)
 
-19. Depois que o pipeline for executado com sucesso, verifique seu
-    e-mail para localizar o e-mail de confirmação enviado pelo pipeline.
+**Resumo**
 
-![](./media/image108.png)
-
-### Tarefa 2: Agendar a execução do pipeline
-
-Depois de concluir o desenvolvimento e os testes do pipeline, você pode
-agendá-lo para ser executado automaticamente.
-
-1.  Na guia **Home** da janela do editor do pipeline, selecione
-    **Schedule**.
-
-![A screenshot of a computer Description automatically
-generated](./media/image109.png)
-
-2.  Configure o agendamento conforme necessário. O exemplo abaixo agenda
-    o pipeline para ser executado diariamente às 20h00 até o final do
-    ano.
-
-![A screenshot of a schedule Description automatically
-generated](./media/image110.png)
-
-![](./media/image111.png)
-
-![](./media/image112.png)
-
-### Tarefa 3: Adicionar uma atividade de fluxo de dados ao pipeline
-
-1.  Passe o cursor sobre a linha verde que conecta a **atividade Copy**
-    à atividade **Office 365 Outlook** na tela do pipeline e selecione o
-    botão + para inserir uma nova atividade.
-
-![](./media/image113.png)
-
-2.  Selecione **Dataflow** no menu exibido.
-
-![](./media/image114.png)
-
-3.  A atividade Dataflow recém-criada é inserida entre a atividade Copy
-    e a atividade Office 365 Outlook e é selecionada automaticamente,
-    exibindo suas propriedades na área abaixo da tela. Selecione a guia
-    **Settings** na área de propriedades e, em seguida, selecione o
-    dataflow criado no **Exercício 2: Transformar dados com um dataflow
-    no Data Factory**.
-
-![](./media/image115.png)
-
-4.  Selecione a guia **Home** na parte superior do editor do pipeline e
-    selecione **Run**. Em seguida, selecione **Save and run** novamente
-    na caixa de diálogo de confirmação para executar essas atividades
-
-![](./media/image116.png)
-
-![A screenshot of a computer AI-generated content may be
-incorrect.](./media/image117.png)
-
-![](./media/image118.png)
-
-![](./media/image119.png)
-
-### Tarefa 4: Limpar recursos
-
-Você pode excluir relatórios, pipelines, warehouses e outros itens
-individualmente ou remover o workspace inteiro. Use as etapas a seguir
-para excluir o workspace criado para este tutorial.
-
-1.  Selecione seu **workspace, Data-FactoryvXX**, no menu de navegação à
-    esquerda. A exibição dos itens do workspace será aberta.
-
-![A screenshot of a computer Description automatically
-generated](./media/image83.png)
-
-2.  Selecione a opção **Workspace settings** na página do workspace,
-    localizada no canto superior direito.
-
-![](./media/image120.png)
-
-3.  Selecione a **guia** **General** e, em seguida, selecione **Remove
-    this workspace.**
-
-![](./media/image121.png)
+Neste laboratório, você criou um workspace e um lakehouse no Microsoft Fabric, fez o upload dos arquivos de pedidos de vendas e usou um notebook do Spark para explorar os dados. Você usou o PySpark para carregar os dados em um DataFrame, filtrou, agrupou, agregou e transformou os dados e salvou os resultados como arquivos Parquet e arquivos particionados para consultas eficientes. Em seguida, criou tabelas Delta gerenciadas e externas e comparou suas propriedades, consultou os dados com o Spark SQL e visualizou os dados com gráficos integrados, matplotlib e seaborn. Por fim, usou tabelas Delta para dados de streaming em um cenário simulado de IoT e limpou os recursos. Esses exercícios proporcionam uma compreensão abrangente do uso do Apache Spark no Microsoft Fabric para análise de dados.
